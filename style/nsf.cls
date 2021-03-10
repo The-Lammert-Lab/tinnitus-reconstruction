@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{nsf}
+\ProvidesClass{style/nsf}
 \LoadClass[11pt, letterpaper, timesnewroman, onecolumn]{article}
 
 \RequirePackage[margin=1in]{geometry}
