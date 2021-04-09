@@ -211,7 +211,8 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
 
-
+\def\eg{{\emph{e.g.,}}~}
+\def\ie{{\emph{i.e.,}}~}
 
 \begin{document}
 
@@ -227,17 +228,47 @@
 
 \section{Specific Aims}
 
-\noindent Realization of novel molecular function requires the ability
-to alter molecular complex formation. Enzymatic function can be
-altered by changing enzyme-substrate interactions via modification of
-an enzyme's active site. A redesigned enzyme may either perform a
-novel reaction on its native substrates or its native reaction on
-novel substrates.  We propose a novel algorithm for protein redesign,
-which searches over possible active site mutations and combines a
-statistical mechanics-derived ensemble-based approach to computing the
-binding constant with the speed and completeness of a branch-and-bound
-pruning algorithm. We will develop an efficient$\ldots$
+Tinnitus is the superstitious perception of ringing, buzzing, or hissing in the ears, which can range from mild and transient to debilitating.
+In the U.S. alone, it affects 45 million people per year, 30\% of which report their tinnitus to be moderate to severe.
+The main treatment is tinnitus retraining therapy (TRT),
+a type of habituation therapy that retrains a patient's nervous system by habituating it to non-fictive sounds that mimic the cognitive representation of the tinnitus sound.
+TRT requires the medical practitioner to identify an estimate of the tinnitus sound and play it back for the patient.
+In practice, this is inexact and inefficient.
+
+Reverse correlation involves the presentation of richly-varying stimuli (\eg white noise) to a subject,
+gathering responses of whether the subject perceives in any stimulus a percept corresponding to some abstract, cognitive category (\eg does this sound like your tinnitus?).
+Stimuli are random and unbiased, relying on few prior assumptions about the form of the representation.
+Regressing observed variables against the stimuli results in inferred cognitive representations.
+Indeed, the number of features
+recoverable using reverse correlation is effectively unlimited, and only constrained by broad
+assumptions of the method (\eg linearity). Higher-dimensional characterization of perceptual
+representations may help resolve many ambiguities inherent to lower-dimensional characterizations by
+supplying additional information necessary to distinguish between representations from different subjects.
+
+We have constructed a data processing pipeline using reverse correlation to infer unbiased estimates of cognitive representations of visual stimuli (\eg letters, faces) and phonological sounds (\eg /ee/).
+In the proposed work, we aim to directly uncover and reconstruct estimates of cognitive representations of tinnitus percepts using reverse correlation,
+improve the efficiency of reverse correlation through signal reconstruction,
+and characterize cognitive representations of tinnitus for use in diagnosis and treatment.
+This will result in an open-source software tool that efficiently constructs unbiased cognitive representations of tinnitus percepts
+and insight into subject-to-subject and longitudinal variability in tinnitus self-experience to improve diagnosis and treatment.
+
+\subsection{Uncover and reconstruct cognitive representations of tinnitus}
+Participants will classify white noise stimuli as sounding like their tinnitus or not.
+We will use reverse correlation to infer an unbiased estimate of each particpant's cognitive representation of their tinnitus percept.
+
+\subsection{Develop efficient reconstruction algorithm for cognitive representations using compressive sensing}
+We will develop an open-source compressive sensing data analysis pipeline to acquire convergent cognitive representations using fewer trials.
+Our pilot data demonstrates that compressive sensing affords a 90\% decrease in number of trials for equivalent resulant latent representation.
+We will also develop and distribute an open-source software
+implementation the of the reverse correlation method for speech perception, including the proposed
+compressive sensing framework, for use by the research community.
+
+\subsection{Characterize and interpret cognitive representations of tinnitus}
+Our compressive sensing framework will allow for rapid data acquisition from participants.
+We will characterize cognitive representations of tinnitus between participants and over time.
+What is the space of tinnitus cognitive representations? Are there subtypes or clusters on a lower dimensional manifold?
+We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
+providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
 
 \end{document}
-
 

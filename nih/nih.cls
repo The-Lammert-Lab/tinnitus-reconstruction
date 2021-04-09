@@ -70,7 +70,7 @@
 
 %%%% More code
 % preamble stuff
-\newcommand{\nih@PIname}{Donald, Bruce R.}
+\newcommand{\nih@PIname}{Lammert, Adam}
 \newcommand{\piname}[1]{\renewcommand{\nih@PIname}{#1}}
 
 % constants
@@ -83,7 +83,7 @@
             {}% fi
             {%
                 {{\sf\scriptsize Principal Investigator/Program Director%
-                    (Last, First, Middle):}}%
+                    (Last, First):}}%
             }% esle
     }
 }
