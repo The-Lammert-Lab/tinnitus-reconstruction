@@ -43,6 +43,8 @@
 \pagestyle{empty} % Suppress headers and footers
 
 \hyphenation{ionto-pho-re-tic iso-tro-pic fortran} % Specifies custom hyphenation points for words or words that shouldn't be hyphenated at all
+\def\eg{{\emph{e.g.,}}~}
+\def\ie{{\emph{i.e.,}}~}
 
 %----------------------------------------------------------------------------------------
 
@@ -295,7 +297,57 @@ using dimensionality-reduction and density-based clustering.
 In \emph{Aim \#1}, we will develop and run an experimental paradigm
 in which tinnitus patients listen to noisy stimuli and perform an alternate forced-choice task
 answering the question, ``Does this sound like your tinnitus?''
-In \emph{Aim \#2}, 
+Reverse correlation frees us from the methodological constraint of imposing strong \emph{a priori}
+assumptions about the tinnitus percept.
+In \emph{Aim \#2}, we will develop an open-source signal processing pipeline
+to reconstruct cognitive representations of tinnitus using compressive sensing.
+Compressive sensing holds promise to dramatically reduce the number of samples
+needed for accurate reconstruction, enabling us to run more experimental subjects for Aim \#1,
+and retest subjects to examine the stability of cognitive representations of tinnitus over time.
+\emph{Aim \#3} contextualizes reconstructed cognitive representations of tinnitus
+by visualizing underlying subtypes or clusters on a lower dimensional manifold.
+We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
+providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
+
+\begin{description}
+	\item[C.1. Aim \#1]{Uncover and reconstruct cognitive representations of tinnitus} 
+\end{description}
+
+In this aim, we will identify high-dimensional cognitive representations of tinnitus using reverse correlation.
+Current methods for estimating cognitive representations of tinnitus fall broadly into two primary categories,
+each of which has limitations.
+One approach is to use forced-choice selection tasks.
+In this experimental paradigm,
+the experimenter presents participants with multiple samples of auditory stimuli that vary in well-characterized
+and often highly-constrained ways, along specific dimensions (\eg pure tone frequency, width of spectral envelope)
+that are known to be, or are hypothesized to be, relevant to tinnitus representation or masking
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+The subject then makes a choice between stimuli.
+While new methodological advances in experiment design and technology have streamlined this approach
+\cite{korthOneStepCloser2020,henryComputerautomatedTinnitusAssessment2004,henryComputerautomatedTinnitusAssessment2013},
+it is still constrained by \emph{a priori} assumptions about the nature of tinnitus percepts.
+In contrast, likeness approaches use subjective judgment tasks,
+in which the subject rates how much (if at all) a presented stimulus is part of or masks their tinnitus percept
+\cite{norenaPsychoacousticCharacterizationTinnitus2002}.
+While likeness measures provide more complete reconstructions of tinnitus cognitive representations,
+likeness tests are time-consuming and generally not used in clinical practice
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+
+The highly-constrained nature of stimuli used in the forced selection approach necessarily results
+in recovered representations that are correspondingly constrained and typically low-dimensional. It has
+long been known, however, that representations limited to only a few dimensions are insufficient to
+account for the full richness of tinnitus experiences
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+Subjective judgment experiments yield more informative reconstructions but are time-consuming to employ.
+The nature of subjective judgment
+approach is such that it is best suited to uncover relations between perceptual categories, rather than
+characterizing cognitive representations directly, and thus provides limited information about how
+perceptual similarity comes about. While some of the recovered dimensions along which stimuli differ in
+these tasks correlate with frequently assumed dimensions of representation (\eg frequency and pitch to mask tinnitus percept),
+some recovered dimensions of contrast have no known characterization.
+Moreover, this approach is fundamentally limited by the precise stimuli presented to participants, and
+therefore may not systematically explore the entire space of perceptually-meaningful variables.
+
 
 
 %----------------------------------------------------------------------------------------
