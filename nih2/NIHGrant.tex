@@ -24,7 +24,7 @@
 
 \documentclass[11pt, notitlepage]{article} % Default font size and suppress title page
 
-\usepackage[utf8]{inputenc} % Required for inputting international characters
+% \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 % A note on fonts: As of 2019, NIH allows Arial, Georgia, Helvetica, and Palatino Linotype. Georgia and Arial are commercial fonts so you will need to use XeLaTeX and have them installed on your machine to use them. Palatino & Helvetica are available as free LaTeX packages so select the one you want and comment out the other.
 \usepackage{palatino} % Palatino font
@@ -39,14 +39,24 @@
 \usepackage[labelfont=bf]{caption} % Make figure numbering in captions bold
 \usepackage[top=0.5in,bottom=0.5in,left=0.5in,right=0.5in]{geometry} % Page margins
 \usepackage[style=numeric, sorting=nyt]{biblatex}
+\usepackage{color, colortbl, soul}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{caption}
+\usepackage[colorlinks=false]{hyperref}
+
+\newcommand{\myfloatalign}{\centering} % to be used with each float for alignment
+
+\definecolor{Gray}{gray}{0.9}
 \addbibresource[]{mybib.bib}
 \pagestyle{empty} % Suppress headers and footers
 
 \hyphenation{ionto-pho-re-tic iso-tro-pic fortran} % Specifies custom hyphenation points for words or words that shouldn't be hyphenated at all
 \def\eg{{\emph{e.g.,}}~}
 \def\ie{{\emph{i.e.,}}~}
+\def\cf{{\emph{cf.,}}~}
 
-%----------------------------------------------------------------------------------------
+%---------------------------------------------------------------------
 
 \begin{document}
 
@@ -309,19 +319,21 @@ by visualizing underlying subtypes or clusters on a lower dimensional manifold.
 We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
 providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
 
-\begin{description}
-	\item[C.1. Aim \#1]{Uncover and reconstruct cognitive representations of tinnitus} 
-\end{description}
+% \begin{description}
+% 	\item[C.1. Aim \#1]{Uncover and reconstruct cognitive representations of tinnitus} 
+% \end{description}
+
+\subsection*{C. Aim \#1: Uncover and reconstruct cognitive representations of tinnitus}
 
 In this aim, we will identify high-dimensional cognitive representations of tinnitus using reverse correlation.
-Current methods for estimating cognitive representations of tinnitus fall broadly into two primary categories,
-each of which has limitations.
+Current methods for estimating cognitive representations of tinnitus fall broadly into three primary categories,
+each of which has limitations (\autoref{tab:approaches}).
 One approach is to use forced-choice selection tasks.
 In this experimental paradigm,
 the experimenter presents participants with multiple samples of auditory stimuli that vary in well-characterized
 and often highly-constrained ways, along specific dimensions (\eg pure tone frequency, width of spectral envelope)
 that are known to be, or are hypothesized to be, relevant to tinnitus representation or masking
-\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryMeasurementTinnitus2016}.
 The subject then makes a choice between stimuli.
 While new methodological advances in experiment design and technology have streamlined this approach
 \cite{korthOneStepCloser2020,henryComputerautomatedTinnitusAssessment2004,henryComputerautomatedTinnitusAssessment2013},
@@ -337,7 +349,7 @@ The highly-constrained nature of stimuli used in the forced selection approach n
 in recovered representations that are correspondingly constrained and typically low-dimensional. It has
 long been known, however, that representations limited to only a few dimensions are insufficient to
 account for the full richness of tinnitus experiences
-\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryMeasurementTinnitus2016}.
 Subjective judgment experiments yield more informative reconstructions but are time-consuming to employ.
 The nature of subjective judgment
 approach is such that it is best suited to uncover relations between perceptual categories, rather than
@@ -348,7 +360,146 @@ some recovered dimensions of contrast have no known characterization.
 Moreover, this approach is fundamentally limited by the precise stimuli presented to participants, and
 therefore may not systematically explore the entire space of perceptually-meaningful variables.
 
+A third, more recent approach to uncovering cognitive representations is to employ neuroimaging
+(\eg fMRI) to identify neural activation patterns indicative of tinnitus.
+In investigations of functional connectivity in tinnitus patients,
+resting-state fMRI measures were found to be replicable and reliable,
+though no explicit representations have been proposed
+\cite{husainReplicabilityNeuralBehavioral2019}.
+This approach is also
+limited, in that it can only uncover representations that have a definite, localized seat in the brain.
+Cognitive representations, by contrast, are commonly understood to be constructs that need not have
+such a localized neural seat by definition, and which can best be revealed through analyzing behavior.
 
+% \begin{table}[h]
+% 	\centering
+% 	\begin{tabular}{| >{\raggedright}p{35mm} >{\raggedright\arraybackslash}p{40mm} >{\raggedright\arraybackslash}p{45mm} >{\raggedright\arraybackslash}p{50mm}|} 
+% 		\hline
+% 		Approach & Stimulus & Measurements & Output \\ [0.5ex] 
+% 		\hline
+% 		\rowcolor{Gray} Forced selection & Constructed stimuli, constrained variation & Subjective choice & Representation with \newline defined acoustic properties \\
+% 		Likeness measures & Constructed stimuli, constrained variation & Subjective ratings & Frequency spectra \\
+% 		\rowcolor{Gray} Neural monitoring & N/A & Neural signals (\eg fMRI) & Correlation maps in localized brain regions, functional connectivity maps \\
+% 		\textbf{Reverse Correlation} & Constructed stimuli, unconstrained variation & Response classification (\eg present/absent) & Representations best explaining classification behavior \\
+% 		\hline
+% 	\end{tabular}
+% 	\caption{Comparison of approaches for estimating cognitive representations.
+% 	Each approach has benefits and limitations regarding stimuli, measurements, and output.
+% 	The proposed approach, featured in the final row, is the only approach that can directly
+% 	uncover a time-frequency map of the cognitive representation that best explains tinnitus percepts.}
+% 	\label{table:1}
+% \end{table}
+
+\begin{table}[h]
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{>{\raggedright}p{35mm} >{\raggedright\arraybackslash}p{40mm} >{\raggedright\arraybackslash}p{45mm} >{\raggedright\arraybackslash}p{50mm}}
+		\toprule
+		\textbf{Approach} & \textbf{Stimulus} & \textbf{Measurements} & \textbf{Output} \\ [0.5ex] 
+		\rowcolor{Gray} Forced selection & Constructed stimuli, constrained variation & Subjective choice & Representation with \newline defined acoustic properties \\
+		Likeness measures & Constructed stimuli, constrained variation & Subjective ratings & Frequency spectra \\
+		\rowcolor{Gray} Neural monitoring & N/A & Neural signals (\eg fMRI) & Correlation maps in localized brain regions, functional connectivity maps \\
+		\textbf{Reverse Correlation} & Constructed stimuli, unconstrained variation & Response classification (\eg present/absent) & Representations best explaining classification behavior \\
+		\bottomrule
+	\end{tabularx}
+	\caption[Approaches]{Comparison of approaches for estimating cognitive representations.
+	Each approach has benefits and limitations regarding stimuli, measurements, and output.
+	The proposed approach, featured in the final row, is the only approach that can directly
+	uncover a time-frequency map of the cognitive representation that best explains tinnitus percepts.}
+	\label{tab:approaches}
+\end{table}
+
+In a set of two experiments described below, we propose to implement a reverse correlation
+approach for recovering cognitive representations of speech which allows for unconstrained, direct
+characterization of latent representations from yes-no responses to randomly-generated stimuli.
+Participants will be asked to classify random auditory stimuli as containing or not containing their tinnitus percept.
+Latent representations that drive the top-down process
+can then be estimated by regressing observed responses against the stimuli over many trials \cite{mineaultImprovedClassificationImages2009}.
+
+Reverse correlation has been applied across multiple fields to reveal underlying representations by application of unconstrained, noisy input.
+Reverse correlation has been used to characterize low-level latent representations encapsulated in neural tuning
+(\eg receptive fields) \cite{ringachReverseCorrelationNeurophysiology2004}
+and has been used to successfully recover cognitive representations underlying visual perception \cite{gosselinSuperstitiousPerceptionsReveal2003,}
+Both existing experimental work (\cf Fig 2B in \cite{brimijoinInternalRepresentationVowel2013})
+and our preliminary simulation experiments (\hl{FIGURE CITATION}) suggest that this method can be successfully translated
+into the auditory domain.
+Reverse correlation allows us (1) to uncover more complex, potentially higher-dimensional representations
+than would be possible using more focused, constrained stimuli,
+(2) to recover directly the nature of the representations themselves rather than the relation
+between the tinnitus percept and a masking sound,
+and (3) to recover cognitive representations of the tinnitus percept directly rather than a neural correlate.
+In short, reverse correlation will be able to provide deeper understanding of cognitive representations of tinnitus percepts
+than is possible with conventional methods.
+
+\subsubsection*{C.1. Method}
+
+The proposed method for uncovering perceptual representations can be divided
+into a sequence of three main parts:
+(1) construction of vague, ``random'' stimuli for presentation to subjects,
+(2) experimental procedure and data collection,
+and (3) reconstruction of perceptual representations from subject responses.
+
+\begin{description}
+	\item[C.1.1. Stimuli Construction]{}
+\end{description}
+
+Stimuli will be generated randomly, in keeping with prior work in the visual domain
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+The meaning of ``random'' with respect to the stimuli presented to subjects
+refers specifically to the shape of spectral envelope in the frequency domain.
+This shape will be determined randomly for all stimuli
+and will not be informed by prior knowledge
+or statistics over canonical examples of tinnitus.
+These random spectral envelopes will be used as the basis for building spectrograms
+that sound like tinnitus percepts.
+
+Our preliminary testing suggests that truly random envelopes
+often result in the perception of colored noise.
+Minimal additional spectral-temporal constraints may need to be imposed on stimuli
+such that participants will interpret the stimuli as intending to be tinnitus percepts.
+This is similar to the approach taken in some visual domain experiments,
+where bandlimited random stimuli, or stimuli with partial superimposed templates,
+are presented \cite{smithMeasuringInternalRepresentations2012} (\hl{CITE}).
+
+\hl{What are we doing to create the stimuli?}
+
+\begin{description}
+	\item[C.1.2. Experimental Procedure] 
+\end{description}
+
+\hl{Where are we getting our subjects?}
+
+\hl{How are we evaluating tinnitus in our subjects?}
+
+\hl{How do we phrase what we want the subjects to do?}
+
+\begin{description}
+	\item[C.1.3. Reconstructing Representations] 
+\end{description}
+
+To reconstruct cognitive representations from subject responses,
+we will generate a classification spectrogram by taking the difference
+between a spectrogram generated from the positive labels (the ``yes'' responses)
+and a spectrogram generated from the negative labels (the ``no'' responses)
+(\hl{FIGURE CITATION}).
+Such reconstructed representations are the best least-squares fit to the behavioral data
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+We theorize that the classification spectrogram is used as a template vector
+against which stimuli were compared in a linear matching model of response generation.
+
+\subsection*{C.2. Aim \#2: Develop an efficient reconstruction algorithm for cognitive representations using compressive sensing}
+
+In this aim, we employ advanced signal processing techniques to overcome critical inefficiencies
+in reverse correlation that limit its scope and impact.
+
+Current attempts to characterize perceptual mechanisms using reverse correlation
+are limited in scope due to inefficiencies inherent to conventional methods.
+While reverse correlation allows for relatively unconstrained and unbiased
+estimation of latent representations using straightforward stimulus-response data
+\cite{marmarelisWhiteNoiseMethodSystem1978,nishimotoReceptiveFieldProperties2006},
+the number of stimulus-response samples required for accurate estimation
+is typically very large \cite{mineaultImprovedClassificationImages2009}.
+This inefficiency limits the feasibility of applying reverse correlation more broadly,
+as subject participation must be maintained over long timelines.
 
 %----------------------------------------------------------------------------------------
 %	PROGRESS REPORT
