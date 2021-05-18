@@ -91,29 +91,37 @@ Our guiding hypothesis is that reverse correlation will produce estimates of tin
 	\item[Aim \#1: Uncover and reconstruct cognitive representations of tinnitus]{} 
 \end{description}
 
+To reconstruct cognitive representations of tinnitus from a binary classification task.
 Participants will classify white noise stimuli as sounding like their tinnitus or not.
-We will use reverse correlation to infer an unbiased estimate of each participant's cognitive representation of their tinnitus percept. 
+Reverse correlation will be used to infer an unbiased estimate of each participant's
+cognitive representation of their tinnitus percept.
 
 \begin{description}
 	\item[Aim \#2: Develop efficient reconstruction algorithm for cognitive representations using compressive sensing]{} 
 \end{description}
 
-The efficiency of this method can be optimized to require fewer samples using advanced signal processing techniques.
-We will develop an open-source compressive sensing data analysis pipeline to acquire convergent cognitive representations using fewer trials.
-Our pilot data demonstrates that compressive sensing affords a 90\% decrease in number of trials for equivalent resulant latent representation.
-We will also develop and distribute an open-source software implementation the of the reverse correlation method for speech perception,
-including the proposed compressive sensing framework, for use by the research community.
+To enhance the efficiency of reverse correlation using compressive sensing,
+which requires significantly fewer samples to achieve convergent accuracy.
+The reverse correlation and compressive sensing framework will be released
+as an open-source software implementation for use by the research community.
+Our pilot data demonstrates that compressive sensing affords a 90\% decrease
+in the number of trials for equivalent resultant latent representation.
+
 
 \begin{description}
 	\item[Aim \#3: Characterize and interpret cognitive representations of tinnitus]{} 
 \end{description}
 
-Our compressive sensing framework will allow for rapid data acquisition from participants.
-We will characterize cognitive representations of tinnitus between participants and over time.
-What is the space of tinnitus cognitive representations?
-Are there subtypes or clusters on a lower dimensional manifold?
-We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
-providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
+To characterize cognitive representations of tinnitus between participants and over time.
+Dimensionality reduction algorithms will reveal latent similarities between
+tinnitus representations which will be subtyped using a data-driven approach.
+
+% Our compressive sensing framework will allow for rapid data acquisition from participants.
+% We will characterize cognitive representations of tinnitus between participants and over time.
+% What is the space of tinnitus cognitive representations?
+% Are there subtypes or clusters on a lower dimensional manifold?
+% We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
+% providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
 
 %----------------------------------------------------------------------------------------
 %	SIGNIFICANCE
@@ -137,12 +145,15 @@ to reliably define and measure \cite{vajsakovicPrinciplesMethodsPsychoacoustic20
 
 Current methods to determine cognitive representations of tinnitus
 are inefficient and introduce bias, resulting in a lack of standardization in tinnitus assessment \cite{henryTinnitusEpidemiologicPerspective2020}.
-Alternate forced-choice (AFC) paradigm tasks ask the patient to determine which of two sounds
+One common method is the alternate forced-choice (AFC) paradigm task, which asks the patient to determine which of two sounds
 is closer to their tinnitus percept
 \cite{henryComparisonTwoComputerautomated2001,henryComputerautomatedTinnitusAssessment2004,henryComputerautomatedTinnitusAssessment2013,korthOneStepCloser2020}.
 Recent computer and methodological advances have made the test more portable and efficient,
 but the AFC paradigm still relies on assumptions about the subject's tinnitus percept.
 Tinnitus percepts are too heterogeneous to be represented by pure tones or small-envelope waveforms.
+\autoref{fig:tinnitusexamples} displays spectrograms of example tinnitus percepts
+from the American Tinnitus Association website,
+showing the heterogeneity of tinnius percepts as well as their richness in frequency spectra and temporal characteristics.
 Adequately sampling the psychoacoustic space of possible tinnitus percepts via an AFC task is unfeasible.
 Other approaches have attempted to capture the richness of tinnitus percepts using likeness measures,
 in which the subject rates whether a presented stimulus is part of their tinnitus percept or not \cite{norenaPsychoacousticCharacterizationTinnitus2002}.
@@ -152,6 +163,14 @@ Both these approaches involve the subject comparing an external stimulus to thei
 however AFC tasks introduce biases by artificially limiting the stimulus space and likeness measures are time-consuming.
 \emph{We believe that a novel reverse correlation-based approach will produce efficient and unbiased cognitive representations of tinnitus percepts}
 \cite{gosselinSuperstitiousPerceptionsReveal2003}.
+
+\begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
+	\centering
+	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_6.png}
+	\caption{Examples of tinnitus spectrograms from the American Tinnitus Association website.
+	These spectrograms are heterogeneous as well as high-dimensional; the signals contain many frequency bands and vary over time.}
+	\label{fig:tinnitusexamples}
+\end{figure}
 
 Reverse correlation allows for unconstrained and unbiased
 characterization of latent representations directly from stimulus-response data by eliciting responses to
@@ -173,7 +192,7 @@ and even abstract psychological
 categories (\eg ``male'' vs. ``female'' faces; \cite{brinkmanVisualisingMentalRepresentations2017,manginiMakingIneffableExplicit2004,ponsotCrackingSocialCode2018}.
 Recent work in vision has demonstrated that
 reverse correlation can effectively characterize cognitive representations underlying letter and face
-recognition \hl{(Fig 2A)} \cite{gosselinSuperstitiousPerceptionsReveal2003,liuSeeingJesusToast2014}.
+recognition \cite{gosselinSuperstitiousPerceptionsReveal2003,liuSeeingJesusToast2014}.
 One speech study has also estimated steady-state representations of vowels the /a/
 and /i/ using a closely-related paradigm to the one proposed here (Fig 2B; \cite{brimijoinInternalRepresentationVowel2013}). Our
 proposed use of reverse correlation in the domain of speech expands on classic efforts to understand
@@ -342,6 +361,7 @@ providing direct insight into commonalities and variability of tinnitus experien
 In this aim, we will identify high-dimensional cognitive representations of tinnitus using reverse correlation.
 Current methods for estimating cognitive representations of tinnitus fall broadly into three primary categories,
 each of which has limitations (\autoref{tab:approaches}).
+
 One approach is to use forced-choice selection tasks.
 In this experimental paradigm,
 the experimenter presents participants with multiple samples of auditory stimuli that vary in well-characterized
@@ -422,15 +442,29 @@ such a localized neural seat by definition, and which can best be revealed throu
 	\label{tab:approaches}
 \end{table}
 
-In a set of two experiments described below, we propose to implement a reverse correlation
+We propose to implement a reverse correlation
 approach for recovering cognitive representations of speech which allows for unconstrained, direct
 characterization of latent representations from yes-no responses to randomly-generated stimuli.
 Participants will be asked to classify random auditory stimuli as containing or not containing their tinnitus percept.
-Latent representations that drive the top-down process
+This is a transductive task that we model as comparing a stimulus to a latent ``cognitive template'' in a top-down process
+(\autoref{fig:template}).
+The latent representation that drives that top-down process
 can then be estimated by regressing observed responses against the stimuli over many trials \cite{mineaultImprovedClassificationImages2009}.
+We use random stimuli in order to sample the space of percepts without biasing towards any particular representation, a problem with other approaches.
+
+\begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
+	\centering
+	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_1.png}
+	\caption{Model of the discrimination task as a transductive process.
+	Random stimuli is filtered by the subject using low-level sensory mechanisms.
+	The perceptual discrimination task however is a top-down process that
+	compares the sensory information to a perceptual representation ``template''
+	to determine if the stimulus belongs to that perceptual representation.}
+	\label{fig:template}
+\end{figure}
 
 Reverse correlation has been applied across multiple fields to reveal underlying representations by application of unconstrained, noisy input.
-Reverse correlation has been used to characterize low-level latent representations encapsulated in neural tuning
+It has been used to characterize low-level latent representations encapsulated in neural tuning
 (\eg receptive fields) \cite{ringachReverseCorrelationNeurophysiology2004}
 and has been used to successfully recover cognitive representations underlying visual perception \cite{gosselinSuperstitiousPerceptionsReveal2003,}
 Both existing experimental work (\cf Fig 2B in \cite{brimijoinInternalRepresentationVowel2013})
@@ -510,7 +544,7 @@ against which stimuli are compared in a linear matching model of response genera
 
 \begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
 	\centering
-	\includegraphics[width=0.5\textwidth]{Figures/BlankFigure.pdf}
+	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_3.png}
 	\caption{Schematic overview of experiments proposed in Aim \#1.
 	Simulation results are shown, demonstrating proof-of-concept
 	for the proposed reverse correlation paradigm.}
@@ -579,7 +613,7 @@ meaning that they can be represented by a sum of a small number of functions
 from an appropriately-chosen basis set ($s = \Psi^{T}x$, for basis $\Psi$ and weights $s$).
 A key insight of compressive sensing is that response variables, $y$,
 stem from a process of comparing stimuli to latent representations
-($y = \Phi x$, for measurement $\Phi$).
+($y = \Phi x$, for measurement $\Phi$) (\autoref{fig:csexplanation}).
 It is then possible to estimate the latent representation
 using only a small number of measurements
 by acquiring the basis function representation directly (\ie $ y = \Phi \Psi s$)
@@ -598,7 +632,31 @@ is a highly effective way to ensure accurate reconstruction of latent representa
 within the compressive sensing framework
 \cite{candesIntroductionCompressiveSampling2008,candesRestrictedIsometryProperty2008,wojtaszczykStabilityInstanceOptimality2010}.
 In other words, the somewhat
-unusual model of sampling assumed by compressive sensing maps directly onto reverse correlation. 
+unusual model of sampling assumed by compressive sensing maps directly onto reverse correlation.
+
+\begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
+	\centering
+	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_5.png}
+	\caption{Comparison of reverse correlation and compressive sensing.
+	(\emph{a}) In reverse correlation, the vector of subject responses is modeled as
+	resulting from the multiplication of a latent representation vector, $x$,
+	and a stimulus matrix, $\Phi$, which can be thought of as a similarity calculation
+	between the latent representation and a vector representation of each presented stimulus.
+	(\emph{b}) An estimate of the latent representation, $\hat{x}$, is then reconstructed
+	by regressing responses against the stimuli.
+	(\emph{c}) In compressive sensing,
+	the vector of subject responses is modeled as resulting from the multiplication
+	of a sparse latent representation vector, $s$, and a compressive sensing matrix, $\Theta$.
+	The compressive sensing matrix is formed by multiplying a matrix of basis functions
+	by the stimulus matrix, $\Theta = \Phi \Psi$, which amounts to a similarity calculation
+	between the stimuli and the known basis functions.
+	(\emph{d}) An estimate of the sparse latent representation, $\hat{s}$, is then reconstructed
+	by regressing the responses against the compressive sensing sparse representations
+	and known basis functions, $\hat{x} = \Psi \hat{s}$. Note that the response vector, $y$,
+	in compressive sensing is generally assumed to contain many fewer entries than
+	in reverse correlation without sacrificing reconstruction accuracy.}
+	\label{fig:csexplanation}
+\end{figure}
 
 \paragraph{Simulations and preliminary evidence}
 
