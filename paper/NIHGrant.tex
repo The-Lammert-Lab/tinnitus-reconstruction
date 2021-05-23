@@ -438,26 +438,29 @@ such a localized neural seat by definition, and which can best be revealed throu
 	\caption[Approaches]{Comparison of approaches for estimating cognitive representations.
 	Each approach has benefits and limitations regarding stimuli, measurements, and output.
 	The proposed approach, featured in the final row, is the only approach that can directly
-	uncover a time-frequency map of the cognitive representation that best explains tinnitus percepts.}
+	uncover a time-frequency map of the cognitive representation (a spectrogram) that best explains tinnitus percepts.}
 	\label{tab:approaches}
 \end{table}
 
 We propose to implement a reverse correlation
 approach for recovering cognitive representations of speech which allows for unconstrained, direct
 characterization of latent representations from yes-no responses to randomly-generated stimuli.
-Participants will be asked to classify random auditory stimuli as containing or not containing their tinnitus percept.
-This is a transductive task that we model as comparing a stimulus to a latent ``cognitive template'' in a top-down process
+Participants will be asked to classify auditory stimuli,
+which vary in their time-frequency content, as containing or not containing their tinnitus percept.
+This is a transductive task which we model as comparing a stimulus to a latent ``cognitive template'' in a top-down process
 (\autoref{fig:template}).
 The latent representation that drives that top-down process
 can then be estimated by regressing observed responses against the stimuli over many trials \cite{mineaultImprovedClassificationImages2009}.
-We use random stimuli in order to sample the space of percepts without biasing towards any particular representation, a problem with other approaches.
+We use random stimuli,
+\ie stimuli where the frequency magnitudes are randomly chosen, in order to sample the space of percepts without biasing towards any particular representation, a problem with other approaches.
+We will consider both time-varying and stationary stimuli, \ie where the spectral content of the stimuli changes over time and where it remains constant.
 
 \begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
 	\centering
 	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_1.png}
 	\caption{Model of the discrimination task as a transductive process.
 	Random stimuli is filtered by the subject using low-level sensory mechanisms.
-	The perceptual discrimination task however is a top-down process that
+	The perceptual discrimination task is modeled as a top-down process that
 	compares the sensory information to a perceptual representation ``template''
 	to determine if the stimulus belongs to that perceptual representation.}
 	\label{fig:template}
@@ -546,6 +549,10 @@ against which stimuli are compared in a linear matching model of response genera
 	\centering
 	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_3.png}
 	\caption{Schematic overview of experiments proposed in Aim \#1.
+	Subjects are presented with random stimuli,
+	which is compared to a latent internal representation.
+	Reverse correlation is used to reconstruct the latent internal representation
+	from many trials.
 	Simulation results are shown, demonstrating proof-of-concept
 	for the proposed reverse correlation paradigm.}
 	\label{fig:experiment}
@@ -600,7 +607,7 @@ without the drawback of biasing estimates.
 Compressive sensing will extend the range of possible cognitive and perceptual mechanisms that can be estimated
 by dramatically decreases the number of trials needed for signal reconstruction.
 Since compressive sensing can be directly substituted for conventional, regression-based estimation,
-it can be directly substituted into eixsting experimental protocols without requiring other changes.
+it can be directly substituted into existing experimental protocols without requiring other changes.
 Our ultimate objective is to develop and validate a compressive sensing
 data processing pipeline – culminating in an open-source software tool – that will allow for
 efficient and accurate reconstruction of latent representations using data 
@@ -692,9 +699,9 @@ increase the method's potential for widespread use.
 	\includegraphics[width=\textwidth]{Figures/CompSensExamples.pdf}
 	\caption{Compressive sensing (CS) delivers accurate signal reconstruction from sampling
 	with a comparatively small number of samples.
-	The latent representation in \emph{A} is estimated in \emph{B-E}.
-	In \emph{B-C} conventional regression-based estimation is used
-	and in \emph{D-E} compressive sensing is used.
+	The latent representation in (\emph{A}) is estimated in (\emph{B-E}).
+	In (\emph{B-C}) conventional regression-based estimation is used
+	and in (\emph{D-E}) compressive sensing is used.
 	The number of samples $n$ is displayed along with the correlation coefficient $r^2$
 	between the estimated reconstruction and the original signal,
 	as a measure of reconstruction quality.}
@@ -785,25 +792,82 @@ We will use principle component analysis (PCA), t-stochastic neighbor embedding 
 and uniform manifold approximation and projection (UMAP; \cite{mcinnesUMAPUniformManifold2020}).
 Applying these dimensionality-reduction algorithms to a collection of representations
 will identify major modes of variation across those representations,
-and, in the case of PCA, provide an analysis of the proportion of variance explained by each mode
-(the PCA eigenvalues).
+uncovering latent similarities between representations.
 Clusters of data points become readily visible in the lower-dimensional manifold generated
 by these unsupervised machine learning methods, each of which represents
-a data-driven tinnitus subtype.
+a data-driven tinnitus subtype (\autoref{fig:dimredexample}).
 We will characterize these subtypes, identifying their properties and assigning them descriptive names.
 In the case of PCA and UMAP, new data can be mapped into the lower-dimensional manifold,
 allowing representations from new subjects to be classified into these subtypes.
 
-\paragraph{Stability of tinnitus percepts over time}
+\begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
+	\centering
+	\includegraphics[width=0.8\textwidth]{Figures/umap.png}
+	\caption{Tinnitus representations with different spectral characteristics cluster in a lower dimensional manifold.
+	Tinnitus representation waveforms were generated using examples from the American Tinnitus Association website with added Gaussian noise.
+	(\emph{a}) shows the frequency spectra for representative waveforms. In (\emph{b}), the waveforms
+	are dimensonally-reduced using UMAP from 8,193 dimensions to 2.
+	The waveforms cluster in this lower dimensional, revealing latent similarities.}
+	\label{fig:dimredexample}
+\end{figure}
 
-It is an open question in tinnitus research, whether tinnitus percepts remain stable over time
-\cite{husainReplicabilityNeuralBehavioral2019}.
-Using data from subjects who returned to perform the experiment multiple times
-over the course of several weeks,
-we will examine representations derived from each experiment instance
-to quantitatively evaluate drift in the tinnitus representation over time.
-We will assess measures of variance and spectral distance between representations
-computed during different temporally-separated experiment sessions.
+\paragraph{Improving stimuli generation through data-driven distributions}
+
+In Aim \#1, we generate stimuli by randomly sampling Fourier coefficients from a flat distribution to generate a spectrum.
+We enforce minimal constraints on the stimuli (\eg that the frequency content is audible).
+This has the benefit of reducing bias in the reconstructed representations,
+but results in experiments that take longer to converge to a good reconstruction.
+Previous studies using reverse correlation have attempted to reduce noise in the reconstructed representation
+(and thus converge much faster) by carefully selecting stimuli biased towards a certain representation.
+For example, Smith and colleagues \cite{smithMeasuringInternalRepresentations2012}
+devised a task to uncover cognitive representations of faces using reverse correlation,
+using pictures of human faces distorted by noise as stimuli for the task.
+While this allowed the experimenters to perform fewer trials to achieve good reconstructions,
+it introduced bias of what experimenters think human faces look like (by selecting the pictures),
+defeating one of the main advantages of reverse correlation.
+
+We propose to improve stimuli generation by exploiting our data from subsequent experiments.
+Each putative reconstruction that we uncover leads to a new known data point hypothesized to lie on the manifold
+of tinnitus representations.
+We can treat this manifold much like a distribution and sample our stimuli from it,
+resulting in stimuli that sound ``less random'' and more like actual tinnitus percepts.
+This closed-loop experimental protocol means that our stimuli generation becomes more tinnitus-like
+with every reconstruction, without introducing experimenter bias \emph{a priori}.
+
+We will implement a variational autoencoder (VAE), a type of unsupervised machine learning model
+that learns a latent representation of data as well as how to generate new data
+that appears similar to data the model has been presented with before.
+A VAE consists of an encoder artificial neural network
+which constructs a latent representation
+as a zero-mean, unit-variance normal-distributed vector
+and a decoder artificial neural network
+that reconstructs the input (\autoref{fig:vae}).
+By training the VAE on reconstructed representations,
+forcing the encoder to create a latent representation
+and the decoder to reproduce the input from the latent representation,
+the model will learn the manifold of tinnitus percepts.
+By sampling the latent vector,
+we can generate new stimuli informed by the representations the model has learned.
+One limitation of VAEs is that sampling from the latent vector
+tends to produce new data points that appear noisy.
+In our experiment, this is a benefit,
+as noisy, random stimuli is crucial to reverse correlation.
+Through this generative model,
+we will create stimuli that appear closer to actual tinnitus percepts
+by learning directly from the data
+without introducing external experimenter bias.
+
+\begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
+	\centering
+	\includegraphics[width=0.8\textwidth]{Figures/variational-autoencoder.png}
+	\caption{Diagram of a variational autoencoder (VAE) learning a representation of the digit ``2''.
+	VAEs assume that the data, $x$, are generated by a directed graphical model, $p_\theta(x|z)$,
+	and that the encoder is learning an approximation $q_\phi(z|x)$, where $\phi$ and $\theta$
+	denote the parameters of encoder and decoder respectively.
+	The latent representation, $z$, is interpreted as originating from a multivariate Gaussian distribution.
+	By sampling from the latent distribution, new data can be generated. Figure from \cite{IntroductionAutoencoders2020}.}
+	\label{fig:vae}
+\end{figure}
 
 \paragraph{Acceleration of diagnosis through subtype identification}
 
@@ -819,6 +883,17 @@ while the subject performs the task.
 When convergent accuracy is reached, the task will automatically conclude.
 By this process, both patient and clinician time is optimized, while still providing high-fidelity quantitative medical data
 for use in diagnosis and treatment.
+
+\paragraph{Stability of tinnitus percepts over time}
+
+It is an open question in tinnitus research, whether tinnitus percepts remain stable over time
+\cite{husainReplicabilityNeuralBehavioral2019}.
+Using data from subjects who returned to perform the experiment multiple times
+over the course of several weeks,
+we will examine representations derived from each experiment instance
+to quantitatively evaluate drift in the tinnitus representation over time.
+We will assess measures of variance and spectral distance between representations
+computed during different temporally-separated experiment sessions.
 
 % %----------------------------------------------------------------------------------------
 % %	PROGRESS REPORT
