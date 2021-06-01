@@ -91,30 +91,28 @@ Our guiding hypothesis is that reverse correlation will produce estimates of tin
 	\item[Aim \#1: Uncover and reconstruct cognitive representations of tinnitus]{} 
 \end{description}
 
-To reconstruct cognitive representations of tinnitus from a binary classification task.
-Participants will classify white noise stimuli as sounding like their tinnitus or not.
-Reverse correlation will be used to infer an unbiased estimate of each participant's
-cognitive representation of their tinnitus percept.
+To reconstruct perceptual representations of tinnitus using a novel reverse correlation procedure. Participants with tinnitus will be presented with richly varying stimuli in the context of a yes-no behavioral response paradigm. Perceptual representations can be estimated by regressing observed responses against the stimuli over many trials. Reconstructed representations will be compared to conventional estimates of tinnitus from the same participants. Expected outcome: reconstructed representations of tinnitus will more detailed and less biased than any those obtained through conventional methods.
 
 \begin{description}
 	\item[Aim \#2: Develop efficient reconstruction algorithm for cognitive representations using compressive sensing]{} 
 \end{description}
 
-To enhance the efficiency of reverse correlation using compressive sensing,
-which requires significantly fewer samples to achieve convergent accuracy.
-The reverse correlation and compressive sensing framework will be released
-as an open-source software implementation for use by the research community.
-Our pilot data demonstrates that compressive sensing affords a 90\% decrease
-in the number of trials for equivalent resultant latent representation.
+To enhance the efficiency of the reverse correlation procedure using compressive sensing, which substantially reduces the number of trials required to accurately reconstruct perceptual representations. We will use compressive sensing to more efficiently and more accurately reconstruct cognitive representations using data obtained in Aim \#1. Expected outcome: compressive sensing is expected to improve efficiency of the reverse correlation procedure by up to 90\%.
+% The reverse correlation and compressive sensing framework will be released
+% as an open-source software implementation for use by the research community.
+% Our pilot data demonstrates that compressive sensing affords a 90\% decrease
+% in the number of trials for equivalent resultant latent representation.
 
 
 \begin{description}
 	\item[Aim \#3: Characterize and interpret cognitive representations of tinnitus]{} 
 \end{description}
 
-To characterize cognitive representations of tinnitus between participants and over time.
-Dimensionality reduction algorithms will reveal latent similarities between
-tinnitus representations which will be subtyped using a data-driven approach.
+To characterize variability in perceptual representations of tinnitus between participants and over time. We will use unsupervised machine learning techniques to reveal latent similarities between tinnitus representations, and subsequently cluster those into distinct categories. Expected outcome: Unsupervised machine learning will identify distinct categories of tinnitus, which will allow us to further improve the effiency and accuracy of uncovering tinnitus representations through improved stimulus generation and representation classification. 
+
+
+% Dimensionality reduction algorithms will reveal latent similarities between
+% tinnitus representations which will be subtyped using a data-driven approach.
 
 % Our compressive sensing framework will allow for rapid data acquisition from participants.
 % We will characterize cognitive representations of tinnitus between participants and over time.
@@ -157,9 +155,9 @@ showing the heterogeneity of tinnius percepts as well as their richness in frequ
 Adequately sampling the psychoacoustic space of possible tinnitus percepts via an AFC task is unfeasible.
 Other approaches have attempted to capture the richness of tinnitus percepts using likeness measures,
 in which the subject rates whether a presented stimulus is part of their tinnitus percept or not \cite{norenaPsychoacousticCharacterizationTinnitus2002}.
-While this method is able to capture more features of cognitive representations of tinnitus,
-it is time-consuming and limited by the aural skills of the subject \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
-Both these approaches involve the subject comparing an external stimulus to their cognitive representation of the tinnitus percept,
+While these methods capture more features of cognitive representations of tinnitus,
+they are time-consuming and limited by the aural skills of the subject \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+Both AFC and likeness measures involve the subject comparing an external stimulus to their cognitive representation of the tinnitus percept,
 however AFC tasks introduce biases by artificially limiting the stimulus space and likeness measures are time-consuming.
 \emph{We believe that a novel reverse correlation-based approach will produce efficient and unbiased cognitive representations of tinnitus percepts}
 \cite{gosselinSuperstitiousPerceptionsReveal2003}.
@@ -167,7 +165,7 @@ however AFC tasks introduce biases by artificially limiting the stimulus space a
 \begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
 	\centering
 	\includegraphics[width=0.8\textwidth]{Figures/Figures_tinnitus_6.png}
-	\caption{Examples of tinnitus spectrograms from the American Tinnitus Association website.
+	\caption{Examples of tinnitus spectrograms from the American Tinnitus Association website \cite{Symptoms2015}.
 	These spectrograms are heterogeneous as well as high-dimensional; the signals contain many frequency bands and vary over time.}
 	\label{fig:tinnitusexamples}
 \end{figure}
@@ -184,8 +182,7 @@ It has become a primary method used to characterize the latent representations e
 (\eg receptive fields; \cite{ringachReverseCorrelationNeurophysiology2004}), and is closely related to the widely-used ``white noise approach'' to
 characterizing physiological \cite{marmarelisWhiteNoiseMethodSystem1978} and engineering \cite{ljungMeasureLackFit1978} systems. 
 
-Reverse correlation, in addition to its prominence as an important tool relative to lower-level
-neural mechanisms, has been increasingly used for inferring higher-level cognitive representations,
+Reverse correlation has been increasingly used for inferring higher-level cognitive representations as well,
 including psychophysical kernels that drive the top-down processes of perception
 \cite{ahumadaStimulusFeaturesSignal1971, neriReceptivePerceptiveFields2006,gosselinSuperstitiousPerceptionsReveal2003,smithMeasuringInternalRepresentations2012}, 
 and even abstract psychological
@@ -193,7 +190,7 @@ categories (\eg ``male'' vs. ``female'' faces; \cite{brinkmanVisualisingMentalRe
 Recent work in vision has demonstrated that
 reverse correlation can effectively characterize cognitive representations underlying letter and face
 recognition \cite{gosselinSuperstitiousPerceptionsReveal2003,liuSeeingJesusToast2014}.
-One speech study has also estimated steady-state representations of vowels the /a/
+One speech study has also estimated steady-state representations of vowels /a/
 and /i/ using a closely-related paradigm to the one proposed here (Fig 2B; \cite{brimijoinInternalRepresentationVowel2013}). Our
 proposed use of reverse correlation in the domain of speech expands on classic efforts to understand
 top-down processing in speech with the presentation of rich, vague stimuli to elicit responses from
@@ -203,7 +200,7 @@ stimuli, such as white noise, are sufficient to engage the top-down process, eve
 characterize the latent representations.
 
 Incomplete characterizations of cognitive representations impoverish our scientific understanding of tinnitus,
-weak causal explanations for its etiology, and hinder progress towards effective treatments.
+weaken causal explanations for its etiology, and hinder progress towards effective treatments.
 Reverse correlation shows promise to provide a more complete characterization of cognitive representations of tinnitus
 and is applicable to other psychophysical domains as well.
 Directly characterizing complex representations of tinnitus can enable more effective, targeted treatments,
@@ -211,9 +208,9 @@ reveal insights about subtypes of the condition, and pave the way for new tinnit
 Fully characterizing a high-dimensional representation of tinnitus will improve causal explanations
 for currently unexplained variability in tinnitus experience both between subjects and within single subjects over time.
 
-\begin{description}
-	\item[A.3. Rigor of the Prior Research]{}
-\end{description}
+% \begin{description}
+% 	\item[A.3. Rigor of the Prior Research]{}
+% \end{description}
 
 \emph{The premise of the proposed work is that reverse correlation will deliver unbiased estimates
 of cognitive representations of tinnitus. Furthermore, that compressive sensing will dramatically
@@ -337,9 +334,12 @@ We will release our open-source software tool online with bindings to popular sc
 In the proposed project, we will use reverse correlation to reveal unbiased high-dimensional
 representations of tinnitus and further characterize the condition
 using dimensionality-reduction and density-based clustering.
+We will use data regarding the space of tinnitus Representations
+to iteratively improve our stimulus generation and representation classification algorithms.
 In \emph{Aim \#1}, we will develop and run an experimental paradigm
 in which tinnitus patients listen to noisy stimuli and perform an alternate forced-choice task
 answering the question, ``Does this sound like your tinnitus?''
+Instead of using limited, preconstructed stimuli, we will randomly sample from a distribution.
 Reverse correlation frees us from the methodological constraint of imposing strong \emph{a priori}
 assumptions about the tinnitus percept.
 In \emph{Aim \#2}, we will develop an open-source signal processing pipeline
@@ -351,6 +351,8 @@ and retest subjects to examine the stability of cognitive representations of tin
 by visualizing underlying subtypes or clusters on a lower dimensional manifold.
 We will employ dimensionality reduction and clustering algorithms to represent and visualize the data,
 providing direct insight into commonalities and variability of tinnitus experience in and between subjects.
+Furthermore, we will use information about the distribution of representations
+to iteratively improve our stimulus generation and data-driven subtype classification processes.
 
 % \begin{description}
 % 	\item[C.1. Aim \#1]{Uncover and reconstruct cognitive representations of tinnitus} 
@@ -362,8 +364,9 @@ In this aim, we will identify high-dimensional cognitive representations of tinn
 Current methods for estimating cognitive representations of tinnitus fall broadly into three primary categories,
 each of which has limitations (\autoref{tab:approaches}).
 
-One approach is to use forced-choice selection tasks.
-In this experimental paradigm,
+Two common approaches are alternate forced choice tasks with constructed stimuli
+and likeness measures.
+In the former experimental paradigm,
 the experimenter presents participants with multiple samples of auditory stimuli that vary in well-characterized
 and often highly-constrained ways, along specific dimensions (\eg pure tone frequency, width of spectral envelope)
 that are known to be, or are hypothesized to be, relevant to tinnitus representation or masking
@@ -379,6 +382,17 @@ While likeness measures provide more complete reconstructions of tinnitus cognit
 likeness tests are time-consuming and generally not used in clinical practice
 \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
 
+A third, more recent approach to uncovering cognitive representations is to employ neuroimaging
+(\eg fMRI) to identify neural activation patterns indicative of tinnitus.
+In investigations of functional connectivity in tinnitus patients,
+resting-state fMRI measures were found to be replicable and reliable,
+though no explicit representations have been proposed
+\cite{husainReplicabilityNeuralBehavioral2019}.
+This approach is also
+limited, in that it can only uncover representations that have a definite, localized seat in the brain.
+Cognitive representations, by contrast, are commonly understood to be constructs that need not have
+such a localized neural seat by definition, and which can best be revealed through analyzing behavior.
+
 The highly-constrained nature of stimuli used in the forced selection approach necessarily results
 in recovered representations that are correspondingly constrained and typically low-dimensional. It has
 long been known, however, that representations limited to only a few dimensions are insufficient to
@@ -393,17 +407,6 @@ these tasks correlate with frequently assumed dimensions of representation (\eg 
 some recovered dimensions of contrast have no known characterization.
 Moreover, this approach is fundamentally limited by the precise stimuli presented to participants, and
 therefore may not systematically explore the entire space of perceptually-meaningful variables.
-
-A third, more recent approach to uncovering cognitive representations is to employ neuroimaging
-(\eg fMRI) to identify neural activation patterns indicative of tinnitus.
-In investigations of functional connectivity in tinnitus patients,
-resting-state fMRI measures were found to be replicable and reliable,
-though no explicit representations have been proposed
-\cite{husainReplicabilityNeuralBehavioral2019}.
-This approach is also
-limited, in that it can only uncover representations that have a definite, localized seat in the brain.
-Cognitive representations, by contrast, are commonly understood to be constructs that need not have
-such a localized neural seat by definition, and which can best be revealed through analyzing behavior.
 
 % \begin{table}[h]
 % 	\centering
@@ -473,11 +476,11 @@ and has been used to successfully recover cognitive representations underlying v
 Both existing experimental work (\cf Fig 2B in \cite{brimijoinInternalRepresentationVowel2013})
 and our preliminary simulation experiments (\autoref{fig:csexample}) suggest that this method can be successfully translated
 into the auditory domain.
-Reverse correlation allows us (1) to uncover more complex, potentially higher-dimensional representations
+Reverse correlation allows us (\emph{a}) to uncover more complex, potentially higher-dimensional representations
 than would be possible using more focused, constrained stimuli,
-(2) to recover directly the nature of the representations themselves rather than the relation
+(\emph{b} to recover directly the nature of the representations themselves rather than the relation
 between the tinnitus percept and a masking sound,
-and (3) to recover cognitive representations of the tinnitus percept directly rather than a neural correlate.
+and (\emph{c}) to recover cognitive representations of the tinnitus percept directly rather than a neural correlate.
 In short, reverse correlation will be able to provide deeper understanding of cognitive representations of tinnitus percepts
 than is possible with conventional methods.
 
@@ -511,12 +514,12 @@ Minimal additional spectral-temporal constraints may need to be imposed on stimu
 such that participants will interpret the stimuli as intending to be tinnitus percepts.
 This is similar to the approach taken in some visual domain experiments,
 where bandlimited random stimuli, or stimuli with partial superimposed templates,
-are presented \cite{smithMeasuringInternalRepresentations2012} (\hl{CITE}).
+are presented \cite{smithMeasuringInternalRepresentations2012}.
 The basic approach will be to use inverse Fourier transforms to generate 0.5-s noise stimuli
-including frequencies from 0.1 to 22 kHz.
+including frequencies from 0.1 to 22 kHz \cite{brimijoinInternalRepresentationVowel2013}.
 We will impose minimal constraints on the stimuli generation process,
 in order to selectively generate stimuli approaching the heterogeneous samples of tinnitus percepts
-provided by the American Tinnitus Association on their website.
+provided by the American Tinnitus Association on their website \cite{Symptoms2015}.
 
 \paragraph{Experimental procedure}
 
@@ -527,8 +530,11 @@ with primary (\ie subjective, not somatosensory) tinnitus.
 
 During the experiment, subjects will be asked to perform an computerized alternate forced-choice task,
 selecting whether the presented stimulus sounds similar to their tinnitus percept or not.
+They will be told that the stimuli are representations of tinnitus from other patients.
 Each signal will be presented to subjects over headphones
-at a comfortable listening level ($\approx 75$ dB SPL).
+at an audible level ($\approx 75$ dB SPL) after which
+the subject will select either ``yes'' or ``no'' via keyboard presses.
+The next trial will begin after a 500-ms pause.
 Subjects will be asked to perform the task in hour-long blocks with a rest period in-between.
 Subjects can perform the task for one or more blocks at their choice,
 and will be compensated for their participation.
@@ -551,8 +557,8 @@ against which stimuli are compared in a linear matching model of response genera
 	\caption{Schematic overview of experiments proposed in Aim \#1.
 	Subjects are presented with random stimuli,
 	which is compared to a latent internal representation.
-	Reverse correlation is used to reconstruct the latent internal representation
-	from many trials.
+	Reverse correlation is used to reconstruct an estimate of the latent internal representation
+	over many trials.
 	Simulation results are shown, demonstrating proof-of-concept
 	for the proposed reverse correlation paradigm.}
 	\label{fig:experiment}
@@ -669,7 +675,7 @@ unusual model of sampling assumed by compressive sensing maps directly onto reve
 
 We have conducted simulation studies to begin validating compressive sensing
 for improving the efficiency of reverse correlation.
-Fpr example, using a template time-frequency representation, $x$,
+For example, using a template time-frequency representation, $x$,
 as a proxy for the latent representation of interest,
 we generate plausible yes/no subject responses, $y \in \{-1, 1\})$,
 based on the similarity between the template
@@ -702,7 +708,7 @@ increase the method's potential for widespread use.
 	The latent representation in (\emph{A}) is estimated in (\emph{B-E}).
 	In (\emph{B-C}) conventional regression-based estimation is used
 	and in (\emph{D-E}) compressive sensing is used.
-	The number of samples $n$ is displayed along with the correlation coefficient $r^2$
+	The number of samples, $n$, is displayed along with the correlation coefficient, $r^2$,
 	between the estimated reconstruction and the original signal,
 	as a measure of reconstruction quality.}
 	\label{fig:csexample}
@@ -775,21 +781,28 @@ and accelerate the diagnostic process.
 Surveys of tinnitus patients have identified sixteen qualitative subtypes of tinnitus
 \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,meikleTinnitusArchiveArchive2004,stoufferCharacterizationTinnitusTinnitus1990},
 but these categories are limited by the fuzziness of linguistic categories and the musical ability of the tinnitus patients.
-One tinnitus patient we interviewed, who has a degree in music performance,
+Tinnitus subtypes are used to better explain and quantify the condition,
+however qualitative subtypes are ill-defined.
+While one tinnitus patient we interviewed, who has a degree in music performance,
 was able to identify her tinnitus as sounding like a particular note played on the crotales,
-a niche percussion instrument.
-For most tinnitus patients who lack the depth of vocabulary to explain their tinnitus percept that precisely,
-linguistic description of tinnitus can be vague and overlapping.
-For instance, two of the aforementioned categories are ``high tension wire'' and ``transformer noise,''
-which may mean different things to different people and are difficult to disambiguate.
-Therefore, we propose to perform a quantitative analysis of the recovered high-dimensional tinnitus percepts
-to reveal data-driven latent subtypes of tinnitus.
+a niche percussion instrument,
+most tinnitus patients lack the depth of vocabulary to explain their tinnitus percept that precisely.
+Accordingly, linguistic description of tinnitus can be vague and overlapping.
+For instance, two of the subtypes in \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021} are ``high tension wire'' and ``transformer noise.''
+Is ``high tension wire'' meant in the colloquial sense of high-voltage power lines,
+or does it mean the reverberation of a tightly-pulled string?
+If the latter, then how is the sound of a high-voltage power line
+disambiguated from the sound of a distribution transformer,
+which is
+mounted on a utility pole and connected directly to the high-voltage wires?
+Instead of linguistic categories, we propose to use latent variable analysis
+to reveal data-driven subtypes of tinnitus.
 
-We will perform a quantitative analysis based on latent variable analysis methods.
+We will perform a quantitative analysis of tinnitus representations based on latent variable analysis methods
+to reveal underlying similarities between representations.
 Latent variable methods relate observed variation (\eg in tinnitus representations)
 to latent variables that capture the observed variation (\eg major variation types across tinnitus percepts).
-We will use principle component analysis (PCA), t-stochastic neighbor embedding (t-SNE; \cite{vandermaatenBarnesHutSNE2013}),
-and uniform manifold approximation and projection (UMAP; \cite{mcinnesUMAPUniformManifold2020}).
+We will use principle component analysis (PCA) and uniform manifold approximation and projection (UMAP; \cite{mcinnesUMAPUniformManifold2020}).
 Applying these dimensionality-reduction algorithms to a collection of representations
 will identify major modes of variation across those representations,
 uncovering latent similarities between representations.
@@ -797,24 +810,26 @@ Clusters of data points become readily visible in the lower-dimensional manifold
 by these unsupervised machine learning methods, each of which represents
 a data-driven tinnitus subtype (\autoref{fig:dimredexample}).
 We will characterize these subtypes, identifying their properties and assigning them descriptive names.
-In the case of PCA and UMAP, new data can be mapped into the lower-dimensional manifold,
+New data can be mapped into the lower-dimensional manifold,
 allowing representations from new subjects to be classified into these subtypes.
 
 \begin{figure}[h] % Figure at bottom of the page ([b] argument, could be "t" for top or "h" for here)
 	\centering
 	\includegraphics[width=0.8\textwidth]{Figures/umap.png}
 	\caption{Tinnitus representations with different spectral characteristics cluster in a lower dimensional manifold.
-	Tinnitus representation waveforms were generated using examples from the American Tinnitus Association website with added Gaussian noise.
-	(\emph{a}) shows the frequency spectra for representative waveforms. In (\emph{b}), the waveforms
+	Tinnitus representation waveforms were generated
+	using examples from the American Tinnitus Association website with added Gaussian noise
+	\cite{Symptoms2015}.
+	(\emph{a}) shows the frequency spectra for representative waveforms. (\emph{b}) The waveforms
 	are dimensonally-reduced using UMAP from 8,193 dimensions to 2.
-	The waveforms cluster in this lower dimensional, revealing latent similarities.}
+	The waveforms cluster in this lower dimensional space, revealing latent similarities.}
 	\label{fig:dimredexample}
 \end{figure}
 
 \paragraph{Improving stimuli generation through data-driven distributions}
 
 In Aim \#1, we generate stimuli by randomly sampling Fourier coefficients from a flat distribution to generate a spectrum.
-We enforce minimal constraints on the stimuli (\eg that the frequency content is audible).
+We enforce only minimal constraints on the stimuli (\eg that the frequency content is audible).
 This has the benefit of reducing bias in the reconstructed representations,
 but results in experiments that take longer to converge to a good reconstruction.
 Previous studies using reverse correlation have attempted to reduce noise in the reconstructed representation

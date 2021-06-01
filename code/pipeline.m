@@ -44,7 +44,7 @@ f = [f{:}];
 
 n_data_points_per_cluster = 20;
 n_data_points = n_data_points_per_cluster * length(data_files);
-noise_magnitude = 1;
+noise_magnitude = 20;
 
 % replicate the canonical representations
 % x = repmat(f, 1, n_data_points);
@@ -68,11 +68,11 @@ y = y + noise_magnitude * randn(size(y));
 
 U = UMAP();
 y_new = U.fit_transform(y');
+y_new_pca = pca(y, 'NumComponents', 2);
 
 c = colormaps.linspecer(length(data_files));
 
-
-%% No Color, with Alpha
+%% No Color, with Alpha, PCA
 % plot some sample spectra
 % and the reduced representation
 fig1 = figure('outerposition',[3 3 1000 1000],'PaperUnits','points','PaperSize',[1000 1000]);
@@ -88,92 +88,58 @@ for ii = 1:length(data_files)
 end
 axis square
 xlabel(ax(1), 'frequency (kHz')
-ylabel(ax(1), 'magnitude')
+ylabel(ax(1), 'power (dB)')
 % set(ax(1), 'YScale', 'log')
-axlib.label(ax(1), 'a')
+axlib.label(ax(1), 'a', 'FontSize', 40)
 
 % plotting the reduced representation
 ax(2) = subplot(1, 2, 2);
+title('PCA projection')
 hold on
-gscatter(ax(2), y_new(:, 1), y_new(:, 2), labels(:), c);
-legend(data_names)
+gscatter(ax(2), y_new_pca(:, 1), y_new_pca(:, 2), labels(:), c);
+legend(data_names, 'Location', 'best')
 axis square
-xlabel('dim 1 (a.u.)')
-ylabel('dim 2 (a.u.)')
+xlabel('dimension 1')
+ylabel('dimension 2')
 axlib.equalize(ax(2),'x','y')
-axlib.label(ax(2), 'b')
+axlib.label(ax(2), 'b', 'FontSize', 40)
 
 figlib.pretty()
 figlib.tight()
 
 axlib.separate(ax(2))
 
-%% Color, no Alpha
+%% No Color, with Alpha, UMAP
 % plot some sample spectra
 % and the reduced representation
-fig2 = figure('outerposition',[3 3 1000 1000],'PaperUnits','points','PaperSize',[1000 1000]);
+fig1 = figure('outerposition',[3 3 1000 1000],'PaperUnits','points','PaperSize',[1000 1000]);
 
 % plotting the sample spectra
 ax(1) = subplot(1, 2, 1);
 hold on
 for ii = 1:length(data_files)
     y_index = 1 + (n_data_points_per_cluster - 1) * ii;
-    plot(ax(1), f(:, 1)/1e3, y(:, y_index), 'Color', c(ii, :));
-    % plt = plot(ax(1), f(:, 1)/1e3, y(:, y_index), );
-    % plt.Color(4) = 0.3;
-end
-axis square
-xlabel(ax(1), 'frequency (kHz')
-ylabel(ax(1), 'magnitude')
-% set(ax(1), 'YScale', 'log')
-axlib.label(ax(1), 'a')
-
-% plotting the reduced representation
-ax(2) = subplot(1, 2, 2);
-hold on
-gscatter(ax(2), y_new(:, 1), y_new(:, 2), labels(:), c);
-legend(data_names)
-axis square
-xlabel('dim 1 (a.u.)')
-ylabel('dim 2 (a.u.)')
-axlib.equalize(ax(2),'x','y')
-axlib.label(ax(2), 'b')
-
-figlib.pretty()
-figlib.tight()
-
-axlib.separate(ax(2))
-
-%% Color, Alpha
-% plot some sample spectra
-% and the reduced representation
-fig2 = figure('outerposition',[3 3 1000 1000],'PaperUnits','points','PaperSize',[1000 1000]);
-
-% plotting the sample spectra
-ax(1) = subplot(1, 2, 1);
-hold on
-for ii = 1:length(data_files)
-    y_index = 1 + (n_data_points_per_cluster - 1) * ii;
-    plt = plot(ax(1), f(:, 1)/1e3, y(:, y_index), 'Color', c(ii, :));
-    % plt = plot(ax(1), f(:, 1)/1e3, y(:, y_index), );
+    % plot(ax(1), f(:, 1)/1e3, y(:, y_index), 'Color', c(ii, :));
+    plt = plot(ax(1), f(:, 1)/1e3, y(:, y_index), 'k');
     plt.Color(4) = plot_alpha;
 end
 axis square
 xlabel(ax(1), 'frequency (kHz')
-ylabel(ax(1), 'magnitude')
+ylabel(ax(1), 'power (dB)')
 % set(ax(1), 'YScale', 'log')
-axlib.label(ax(1), 'a')
+axlib.label(ax(1), 'a', 'FontSize', 40)
 
 % plotting the reduced representation
 ax(2) = subplot(1, 2, 2);
+title('UMAP projection')
 hold on
 gscatter(ax(2), y_new(:, 1), y_new(:, 2), labels(:), c);
-legend(data_names)
+legend(data_names, 'Location', 'best')
 axis square
-xlabel('dim 1 (a.u.)')
-ylabel('dim 2 (a.u.)')
+xlabel('dimension 1')
+ylabel('dimension 2')
 axlib.equalize(ax(2),'x','y')
-axlib.label(ax(2), 'b')
+axlib.label(ax(2), 'b', 'FontSize', 40)
 
 figlib.pretty()
 figlib.tight()
