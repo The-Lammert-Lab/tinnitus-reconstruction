@@ -521,22 +521,27 @@ We will impose minimal constraints on the stimuli generation process,
 in order to selectively generate stimuli approaching the heterogeneous samples of tinnitus percepts
 provided by the American Tinnitus Association on their website \cite{Symptoms2015}.
 
-\paragraph{Experimental procedure}
+\paragraph{Subject Recruitment}
 
 Subjects will be recruited from the clinical population by \hl{our clinical collaborator}
-and will be assessed by the Tinnitus Severity Scale.
+and will be assessed by the Tinnitus Severity Scale,
+which measures the negative impact tinnitus has on a subject's quality of life.
 We will not screen for unilateral or bilateral tinnitus but will only include subjects
 with primary (\ie subjective, not somatosensory) tinnitus.
 
+\paragraph{Experimental procedure}
+
 During the experiment, subjects will be asked to perform an computerized alternate forced-choice task,
 selecting whether the presented stimulus sounds similar to their tinnitus percept or not.
-They will be told that the stimuli are representations of tinnitus from other patients.
+They will be told that the stimuli are tinnitus-like sounds corrupted by noise
+and that not all will sound like their tinnitus percept.
 Each signal will be presented to subjects over headphones
 at an audible level ($\approx 75$ dB SPL) after which
 the subject will select either ``yes'' or ``no'' via keyboard presses.
 The next trial will begin after a 500-ms pause.
-Subjects will be asked to perform the task in hour-long blocks with a rest period in-between.
-Subjects can perform the task for one or more blocks at their choice,
+Subjects will be asked to perform the task in 80-trial blocks with a rest period in-between.
+We will ask subjects to perform 20 blocks at minimum, which should take about a half an hour.
+Subjects can perform the task for more blocks at their choice,
 and will be compensated for their participation.
 
 \paragraph{Reconstructing representations}
@@ -869,7 +874,7 @@ and the decoder to reproduce the input from the latent representation,
 the model will learn the manifold of tinnitus percepts.
 By sampling the latent vector,
 we can generate new stimuli informed by the representations the model has learned.
-One limitation of VAEs is that sampling from the latent vector
+One limitation of VAEs is that sampling from the latent distribution
 tends to produce new data points that appear noisy.
 In our experiment, this is a benefit,
 as noisy, random stimuli is crucial to reverse correlation.
