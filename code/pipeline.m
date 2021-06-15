@@ -25,8 +25,8 @@ plot_alpha = 0.03;
 
 %% Compute gold-standard spectra
 
-s = {};
-f = {};
+s = cell(5, 1);
+f = cell(5, 1);
 for ii = 1:length(data_files)
     [s{ii}, f{ii}] = wav2spect([data_dir, data_files{ii}]);
 end
