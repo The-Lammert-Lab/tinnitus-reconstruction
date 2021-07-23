@@ -275,4 +275,4 @@ TSWLatexianTemp*
 # Makeindex log files
 *.lpz
 
-experiment/Data/*
+code/experiment/Data/*
