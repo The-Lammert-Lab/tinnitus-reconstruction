@@ -34,16 +34,19 @@ A(1:5) = -4;
 
 n = length(A);
 m = 12500; % 2.5% of recommended 20k trials
-
 %%%%%%%%%%%%%%%%%%%
 % Real Basis
-
+% create sparse signal by taking the discrete cosine transform
+% and picking out the 32 strongest frequencies
+% this has the effect of making the signal more sparse
+% and "smoothing" the signal by removing low-power frequencies
 ii = 32;
 b = dct(A);
 bm = zeros(n,1);
-[val idx] = sort(abs(b(:)),'descend');
+[val, idx] = sort(abs(b(:)),'descend');
 bm(abs(b)>val(ii)) = b(abs(b)>val(ii));
 
+% plot the sparsified signal vs the original
 AA = idct(bm);
 figure
 plot(A,'k');
@@ -55,16 +58,29 @@ A = AA;
 %%%%%%%%%%%%%%%%%%%
 % Subject Selection Process
 
+% create an l x n matrix
+% where the rows are copies of the row vector A'
 AA = repmat(A',l,1);
-X = round(rand(l,n));
 
+% create a binary random l x n matrix
+% e.g., 
+% [0 1 0
+%  1 0 1
+%  0 1 0]
+X = round(rand(l,n));
 % % Ideal selection
 % e = sum((X-AA).^2,2);
 % y = double(e>=prctile(e,49.5));
 % y(y==0) = -1;
 
 % Ideal Selection
+
+% "measure" A by including half the frequency content at random
 e = X*A;
+
+% response vector
+% if e(ii) is above median, then the response is 1
+% else, the response is -1
 y = double(e>=prctile(e,50));
 y(y==0) = -1;
 
@@ -151,7 +167,7 @@ s1 = zhangpassivegamma(Theta,ym,gamma);
 
 ym_est = sign(Theta*s1);
 
-corrcoef(ym,ym_est)
+corrcoef(ym,ym_est);
 
 %%%%%%%%%%%%%%%%%%%
 % Viz Weighting Reconstruction
@@ -262,8 +278,6 @@ fprintf('Squared Correlation - CS, Zhang Passive, High Sample: %5.4f\n',r^2)
 %%%%%%%%%%%%%%%%%%%
 % Viz Image Quality - Proposal Experiment & Figure
 
-return
-
 gamma = 64;
 
 W = (500:500:l)';
@@ -273,7 +287,7 @@ CORRcs = zeros(length(W),1);
 
 for itor = 1:length(W)
     
-    w = W(itor)
+    w = W(itor);
     
     % Construct Theta
     yw = y(1:w);

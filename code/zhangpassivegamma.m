@@ -5,7 +5,7 @@ n = size(Phi,2);
 
 a = (1/m)*(Phi'*y);
 
-[val idx] = sort(abs(a),'descend');
+[val, ~] = sort(abs(a),'descend');
 gamma = val(h+1);
 
 if norm(a,inf) <= gamma
