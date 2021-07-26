@@ -43,7 +43,7 @@ s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
 y = ifft(s); % transform from freq to time domain
         
 % end
-stim = real(y) .* hamming(length(y));
+stim = real(y);% .* hamming(length(y));
 % stim = real(Y).*hamming(length(Y));
 % stim_tf = XX;
 

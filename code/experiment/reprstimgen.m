@@ -1,4 +1,4 @@
-function [stim stim_tf Fs nfft nframes] = reprstimgen(minfreq,maxfreq,nbins_freq,bindur,totaldur,probfact)
+function [stim, stim_tf, Fs, nfft, nframes] = reprstimgen(minfreq,maxfreq,nbins_freq,bindur,totaldur,probfact)
 
 % Example inputs
 % minfreq = 100; % minimum frequency for synthesis

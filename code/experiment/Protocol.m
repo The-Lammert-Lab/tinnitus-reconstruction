@@ -19,7 +19,7 @@ numblocks = 20; % number of blocks
 minfreq = 100; % minimum frequency for synthesis
 maxfreq = 22000; % maximum frequency for synthesis
 nbins_freq = 100; % number of frequency bins
-bindur = 0.02; % duration of the time bins in seconds
+bindur = 0.5; % duration of the time bins in seconds
 totaldur = 0.30; % total dur of signal in seconds
 probfact = 0.40; % "percent" t-f bins filled
 nbins_time = totaldur/bindur;
@@ -54,9 +54,9 @@ fprintf(fid,[subjid ',' num2str(today) ',' num2str(thetime) ',' num2str(tottrial
 fclose(fid);
 
 % Load Presentations Screens
-Screen1 = imread('fixationscreen/Slide1.png');
-Screen2 = imread('fixationscreen/Slide2.png');
-Screen3 = imread('fixationscreen/Slide3.png');
+Screen1 = imread('fixationscreen/Slide1B.png');
+Screen2 = imread('fixationscreen/Slide2B.png');
+Screen3 = imread('fixationscreen/Slide3B.png');
 Screen4 = imread('fixationscreen/Slide4.png');
 
 % Create Data Files
@@ -75,27 +75,41 @@ while (value ~= 102)
 end
 
 % Run Trials
+first_trial = true;
 while (1)
     
     % Generate Stimulus
-    [stim stim_tf Fs nfft nframes] = reprstimgen(minfreq,maxfreq,nbins_freq,bindur,totaldur,probfact);
-    
+    % [stim, stim_tf, Fs, nfft, nframes] = reprstimgen(minfreq,maxfreq,nbins_freq,bindur,totaldur,probfact);
+    if first_trial == true
+        [stim, Fs, nfft] = generate_stimuli(minfreq, maxfreq, nbins_freq, bindur, probfact);
+        first_trial = false;
+    end
     % Reminder Screen
     imshow(Screen2);
     
     % Save Stimulus to File
-    for stor = 1:nfft*nframes
-        fprintf(fid_stim,[num2str(stim_tf(stor)) ',']);
+    for stor = 1:nfft
+        fprintf(fid_stim,[num2str(stim(stor)) ',']);
     end
     fprintf(fid_stim,'\n');
     
     % Present Stimulus
     soundsc(stim,Fs)
+
+    if first_trial == false
+        [stim, Fs, nfft] = generate_stimuli(minfreq, maxfreq, nbins_freq, bindur, probfact);
+
+        % Save Stimulus to File
+        for stor = 1:nfft
+            fprintf(fid_stim,[num2str(stim(stor)) ',']);
+        end
+        fprintf(fid_stim,'\n');
+    end
         
     % Obtain Response
     k = waitforbuttonpress;
     value = double(get(gcf,'CurrentCharacter')); % f - 102, j - 106
-    while (value ~= 102) && (value ~= 106)
+    while isempty(value) || (value ~= 102) && (value ~= 106)
         k = waitforbuttonpress;
         value = double(get(gcf,'CurrentCharacter'));
     end

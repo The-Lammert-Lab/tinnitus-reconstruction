@@ -1,0 +1,4 @@
+subjectID: M1
+datadir: ./Data
+n_trials: 80
+n_blocks: 20
