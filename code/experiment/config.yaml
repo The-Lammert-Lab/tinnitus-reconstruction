@@ -2,3 +2,9 @@ subjectID: M1
 datadir: ./Data
 n_trials: 80
 n_blocks: 20
+minfreq: 100
+maxfreq: 22000
+nbins_freq: 100
+bindur: 0.5
+totaldur: 0.30
+probfact: 0.40
