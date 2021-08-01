@@ -6,5 +6,5 @@ minfreq: 100
 maxfreq: 22000
 nbins_freq: 100
 bindur: 0.5
-totaldur: 0.30
+totaldur: 1
 probfact: 0.40

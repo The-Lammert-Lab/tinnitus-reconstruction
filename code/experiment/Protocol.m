@@ -109,6 +109,7 @@ function Protocol(varargin)
             [stim, Fs, nfft] = generate_stimuli(config.minfreq, config.maxfreq, config.nbins_freq, config.bindur, config.probfact);
             first_trial = false;
         end
+
         % Reminder Screen
         imshow(Screen2);
         
