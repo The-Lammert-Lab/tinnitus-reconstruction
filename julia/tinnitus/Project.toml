@@ -1,0 +1,4 @@
+name = "tinnitus"
+uuid = "3e341257-c18d-40e2-a304-a7847111ac80"
+authors = ["Alec Hoyland <alec.hoyland@posteo.net>"]
+version = "0.1.0"
