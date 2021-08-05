@@ -1,16 +1,13 @@
-function [stim, Fs, nfft] = generate_stimuli(varargin)
+function [stim, Fs, nfft] = generate_stimuli(options)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
 
-    options = struct;
-    options.min_freq = 100;
-    options.max_freq = 22e3;
-    options.n_bins = 100;
-    options.bin_duration = 0.4;
-    options.prob_f = 0.4;
-
-    if ~isempty(varargin)
-        options = corelib.parseNameValueArguments(options, varargin);
+    arguments
+        options.min_freq (1,1) {mustBeNumeric} = 100
+        options.max_freq (1,1) {mustBeNumeric} = 22e3
+        options.n_bins (1,1) {mustBeNumeric} = 100
+        options.bin_duration (1,1) {mustBeNumeric} = 0.4
+        options.prob_f (1,1) {mustBeNumeric} = 0.4
     end
 
     % Stimulus Configuration

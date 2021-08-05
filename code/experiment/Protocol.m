@@ -33,21 +33,12 @@ function Protocol(varargin)
         [file, abs_path] = uigetfile();
         config = ReadYaml(pathlib.join(abs_path, file));
     else
-        config.subjectID = 'M1';
-        config.datadir = './Data';
-        config.n_trials = 80;
-        config.n_blocks = 20;
-        config.minfreq = 100; % minimum frequency for synthesis
-        config.maxfreq = 22000; % maximum frequency for synthesis
-        config.nbins_freq = 100; % number of frequency bins
-        config.bindur = 0.5; % duration of the time bins in seconds
-        config.totaldur = 0.30; % total dur of signal in seconds
-        config.probfact = 0.40; % "percent" t-f bins filled
+        config = ReadYaml(options.config);
     end
 
     % Stimulus Configuration
 
-    nbins_time = config.totaldur/config.bindur;
+    % nbins_time = config.total_duration/config.bin_duration;
 
     % Create Meta File, checking for most recent files under this subjectID
     iter = 1;
@@ -104,9 +95,13 @@ function Protocol(varargin)
     while (1)
         
         % Generate Stimulus
-        % [stim, stim_tf, Fs, nfft, nframes] = reprstimgen(minfreq,maxfreq,nbins_freq,bindur,totaldur,probfact);
         if first_trial == true
-            [stim, Fs, nfft] = generate_stimuli(config.minfreq, config.maxfreq, config.nbins_freq, config.bindur, config.probfact);
+            [stim, Fs, nfft] = generate_stimuli(...
+                'min_freq', config.min_freq, ...
+                'max_freq', config.max_freq, ...
+                'n_bins', config.n_bins, ...
+                'bin_duration', config.bin_duration, ...
+                'prob_f', config.prob_f);
             first_trial = false;
         end
 
@@ -123,8 +118,12 @@ function Protocol(varargin)
         soundsc(stim,Fs)
 
         if first_trial == false
-            [stim, Fs, nfft] = generate_stimuli(config.minfreq, config.maxfreq, config.nbins_freq, config.bindur, config.probfact);
-
+            [stim, Fs, nfft] = generate_stimuli(...
+                'min_freq', config.min_freq, ...
+                'max_freq', config.max_freq, ...
+                'n_bins', config.n_bins, ...
+                'bin_duration', config.bin_duration, ...
+                'prob_f', config.prob_f);
             % Save Stimulus to File
             for stor = 1:nfft
                 fprintf(fid_stim,[num2str(stim(stor)) ',']);
