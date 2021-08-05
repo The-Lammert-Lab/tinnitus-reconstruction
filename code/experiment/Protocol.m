@@ -15,13 +15,10 @@
 % numtrials = 80; % number of trials
 % numblocks = 20; % number of blocks
 
-function Protocol(varargin)
+function Protocol(options)
 
-    options = struct;
-    options.config = [];
-
-    if ~isempty(varargin)
-        options = corelib.parseNameValueArguments(options, varargin);
+    arguments
+        options.config string
     end
 
     today = datestr(date,'yyyymmdd'); % today's date (for filenames)
