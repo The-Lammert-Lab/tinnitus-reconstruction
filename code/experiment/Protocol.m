@@ -169,7 +169,7 @@ function Protocol(varargin)
                 value = double(get(gcf,'CurrentCharacter'));
             end
         else % continue with block
-            pause(1)
+            % pause(1)
         end
         
     end
