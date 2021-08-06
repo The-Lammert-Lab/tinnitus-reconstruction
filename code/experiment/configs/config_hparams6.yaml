@@ -1,0 +1,9 @@
+subjectID: hparams6
+datadir: ./Data
+n_trials: 80
+n_blocks: 20
+min_freq: 100
+max_freq: 22000
+n_bins: 100
+bin_duration: 0.5
+prob_f: 0.50
