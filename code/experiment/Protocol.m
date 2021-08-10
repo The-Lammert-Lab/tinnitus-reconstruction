@@ -18,7 +18,7 @@
 function Protocol(options)
 
     arguments
-        options.config string
+        options.config char = []
     end
 
     today = datestr(date,'yyyymmdd'); % today's date (for filenames)
@@ -107,7 +107,7 @@ function Protocol(options)
     end
 
     %% Run Trials
-    counter = 1
+    counter = 0
     while (1)
 
         % Reminder Screen
@@ -116,6 +116,7 @@ function Protocol(options)
 
         
         % Present Stimulus
+        counter = counter + 1;
         soundsc(stimuli_matrix(:, counter), Fs)
             
         % Obtain Response
