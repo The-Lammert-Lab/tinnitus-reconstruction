@@ -149,6 +149,8 @@ function Protocol(options)
             imshow(Screen4)
             return
         elseif mod(tottrials,config.n_trials) == 0 % give rest before proceeding to next block
+            % reset counter
+            counter = 0;
             imshow(Screen3)
             k = waitforbuttonpress;
             value = double(get(gcf,'CurrentCharacter')); % f - 102
