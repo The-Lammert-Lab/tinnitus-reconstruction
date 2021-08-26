@@ -3,9 +3,9 @@
 
 config = ReadYaml('configs/config.yaml');
 
-n_bins = [10, 30, 100, 300, 1000];
-bin_duration = [0.3, 0.5, 0.75, 1];
-prob_f = [0.2, 0.4, 0.6, 0.8];
+n_bins = [1000];
+bin_duration = [1];
+prob_f = [0.20,0.25,0.30,0.35,0.40];
 
 hparam_matrix = allcomb(n_bins, bin_duration, prob_f);
 
