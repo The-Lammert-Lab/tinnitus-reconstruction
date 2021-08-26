@@ -15,13 +15,10 @@
 % numtrials = 80; % number of trials
 % numblocks = 20; % number of blocks
 
-function Protocol(varargin)
+function Protocol(options)
 
-    options = struct;
-    options.config = [];
-
-    if ~isempty(varargin)
-        options = corelib.parseNameValueArguments(options, varargin);
+    arguments
+        options.config char = []
     end
 
     today = datestr(date,'yyyymmdd'); % today's date (for filenames)
@@ -36,7 +33,7 @@ function Protocol(varargin)
         config = ReadYaml(options.config);
     end
 
-    % Stimulus Configuration
+    %% Stimulus Configuration
 
     % nbins_time = config.total_duration/config.bin_duration;
 
@@ -65,23 +62,42 @@ function Protocol(varargin)
         fclose(fid_prev);
     end
 
-    % Record Meta Data
+    %% Record Meta Data
     fprintf(fid,[config.subjectID ',' num2str(today) ',' num2str(thetime) ',' num2str(tottrials) '\n']);
     fclose(fid);
 
-    % Load Presentations Screens
+    %% Load Presentations Screens
     Screen1 = imread('fixationscreen/Slide1B.png');
     Screen2 = imread('fixationscreen/Slide2B.png');
     Screen3 = imread('fixationscreen/Slide3B.png');
     Screen4 = imread('fixationscreen/Slide4.png');
 
-    % Create Data Files
+    %% Create Data Files
     filename_stim = [config.datadir '/' config.subjectID '_' num2str(iter) '_stim.csv'];
     fid_stim = fopen(filename_stim,'w+');
     filename_resp = [config.datadir '/' config.subjectID '_' num2str(iter) '_resp.csv'];
     fid_resp = fopen(filename_resp,'w+');
 
-    % Intro Screen & Start
+    %% Generate stimuli
+
+    [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
+        'min_freq', config.min_freq, ...
+        'max_freq', config.max_freq, ...
+        'n_bins', config.n_bins, ...
+        'bin_duration', config.bin_duration, ...
+        'prob_f', config.prob_f, ...
+        'n_trials', config.n_trials);
+
+    % TODO: fix stimuli saving
+    % % save stimuli to file
+    % for ii = 1:size(stimuli_matrix, 2)
+    %     for stor = 1:nfft
+    %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);
+    %     end
+    %     fprintf(fid_stim,'\n');
+    % end
+
+    %% Intro Screen & Start
     imshow(Screen1);
     k = waitforbuttonpress;
     value = double(get(gcf,'CurrentCharacter')); % f - 102
@@ -90,46 +106,18 @@ function Protocol(varargin)
         value = double(get(gcf,'CurrentCharacter'));
     end
 
-    % Run Trials
-    first_trial = true;
+    %% Run Trials
+    counter = 0
     while (1)
-        
-        % Generate Stimulus
-        if first_trial == true
-            [stim, Fs, nfft] = generate_stimuli(...
-                'min_freq', config.min_freq, ...
-                'max_freq', config.max_freq, ...
-                'n_bins', config.n_bins, ...
-                'bin_duration', config.bin_duration, ...
-                'prob_f', config.prob_f);
-            first_trial = false;
-        end
 
         % Reminder Screen
         imshow(Screen2);
-        
-        % Save Stimulus to File
-        for stor = 1:nfft
-            fprintf(fid_stim,[num2str(stim(stor)) ',']);
-        end
-        fprintf(fid_stim,'\n');
+
+
         
         % Present Stimulus
-        soundsc(stim,Fs)
-
-        if first_trial == false
-            [stim, Fs, nfft] = generate_stimuli(...
-                'min_freq', config.min_freq, ...
-                'max_freq', config.max_freq, ...
-                'n_bins', config.n_bins, ...
-                'bin_duration', config.bin_duration, ...
-                'prob_f', config.prob_f);
-            % Save Stimulus to File
-            for stor = 1:nfft
-                fprintf(fid_stim,[num2str(stim(stor)) ',']);
-            end
-            fprintf(fid_stim,'\n');
-        end
+        counter = counter + 1;
+        soundsc(stimuli_matrix(:, counter), Fs)
             
         % Obtain Response
         k = waitforbuttonpress;
@@ -161,6 +149,8 @@ function Protocol(varargin)
             imshow(Screen4)
             return
         elseif mod(tottrials,config.n_trials) == 0 % give rest before proceeding to next block
+            % reset counter
+            counter = 0;
             imshow(Screen3)
             k = waitforbuttonpress;
             value = double(get(gcf,'CurrentCharacter')); % f - 102
@@ -168,13 +158,30 @@ function Protocol(varargin)
                 k = waitforbuttonpress;
                 value = double(get(gcf,'CurrentCharacter'));
             end
+
+            % generate stimuli for next block
+            [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
+                'min_freq', config.min_freq, ...
+                'max_freq', config.max_freq, ...
+                'n_bins', config.n_bins, ...
+                'bin_duration', config.bin_duration, ...
+                'prob_f', config.prob_f, ...
+                'n_trials', config.n_trials);
+
+            % % save stimuli to file
+            % for ii = 1:size(stimuli_matrix, 2)
+            %     for stor = 1:nfft
+            %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);
+            %     end
+            %     fprintf(fid_stim,'\n');
+            % end
         else % continue with block
             % pause(1)
         end
         
     end
 
-    % Close Files
+    %% Close Files
     fclose(fid);
     fclose(fid_stim);
     fclose(fid_resp);
