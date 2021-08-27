@@ -5,24 +5,25 @@ config = ReadYaml('configs/config.yaml');
 
 n_bins = [1000];
 bin_duration = [1];
-prob_f = [0.20,0.25,0.30,0.35,0.40];
+% prob_f = [0.20,0.25,0.30,0.35,0.40];
+n_bins_filled_mean = [10, 30, 100, 300];
+n_bins_filled_var = [1, 3, 10, 30];
 
-hparam_matrix = allcomb(n_bins, bin_duration, prob_f);
+hparam_matrix = allcomb(n_bins_filled_mean, n_bins_filled_var);
 
 for ii = 1:size(hparam_matrix, 1)
     % Create the directory
     subdir_name = ['stimuli_examples__', ...
-        'n_bins=', num2str(hparam_matrix(ii, 1)), '_', ...
-        'bin_duration=', num2str(hparam_matrix(ii, 2)), '_', ...
-        'prob_f=', num2str(hparam_matrix(ii, 3))];
+        'mean=', num2str(hparam_matrix(ii, 1)), '_', ...
+        'var=', num2str(hparam_matrix(ii, 2))];
     directory_path = pathlib.join('..', '..', 'data', subdir_name);
     mkdir(directory_path);
 
     % Generate the config file
     new_config = config;
-    new_config.n_bins = hparam_matrix(ii, 1);
-    new_config.bin_duration = hparam_matrix(ii, 2);
-    new_config.prob_f = hparam_matrix(ii, 3);
+    new_config.n_bins = 1000;
+    new_config.n_bins_filled_mean = hparam_matrix(ii, 1);
+    new_config.n_bins_filled_var = hparam_matrix(ii, 2);
 
     % Save the config file to the directory
     yaml.WriteYaml(pathlib.join(directory_path, 'config.yaml'), new_config);
@@ -35,7 +36,8 @@ for ii = 1:size(hparam_matrix, 1)
                 'max_freq', new_config.max_freq, ...
                 'n_bins', new_config.n_bins, ...
                 'bin_duration', new_config.bin_duration, ...
-                'prob_f', new_config.prob_f);
+                'n_bins_filled_mean', new_config.n_bins_filled_mean, ...
+                'n_bins_filled_var', new_config.n_bins_filled_var);
         % Save to the directory
         filename = ['stimuli_', num2str(qq), '.wav'];
         audiowrite(pathlib.join(directory_path, filename), stim, Fs);

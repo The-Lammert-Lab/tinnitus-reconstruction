@@ -7,8 +7,10 @@ function [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(options)
         options.max_freq (1,1) {mustBeNumeric} = 22e3
         options.n_bins (1,1) {mustBeNumeric} = 100
         options.bin_duration (1,1) {mustBeNumeric} = 0.4
-        options.prob_f (1,1) {mustBeNumeric} = 0.4
+        % options.prob_f (1,1) {mustBeNumeric} = 0.4
         options.n_trials (1,1) {mustBeNumeric} = 80
+        options.n_bins_filled_mean (1,1) {mustBeNumeric} = 10
+        options.n_bins_filled_var (1,1) {mustBeNumeric} = 3
     end
 
     % generate first stimulus
@@ -17,7 +19,8 @@ function [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(options)
         'max_freq', options.max_freq, ...
         'n_bins', options.n_bins, ...
         'bin_duration', options.bin_duration, ...
-        'prob_f', options.prob_f);
+        'n_bins_filled_mean', options.n_bins_filled_mean, ...
+        'n_bins_filled_var', options.n_bins_filled_var);
 
     % instantiate stimuli matrix
     stimuli_matrix = zeros(length(stim1), options.n_trials);
@@ -28,5 +31,6 @@ function [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(options)
             'max_freq', options.max_freq, ...
             'n_bins', options.n_bins, ...
             'bin_duration', options.bin_duration, ...
-            'prob_f', options.prob_f);
+            'n_bins_filled_mean', options.n_bins_filled_mean, ...
+            'n_bins_filled_var', options.n_bins_filled_var);
     end
