@@ -5,6 +5,7 @@ function x = cs(responses, Phi)
 
     Theta = zeros(n_samples, len_signal);
     for ii = 1:len_signal
+        ii/len_signal
         ek = zeros(1, len_signal);
         ek(ii) = 1;
         Psi = idct(ek)';
@@ -16,6 +17,7 @@ function x = cs(responses, Phi)
 
     x = zeros(len_signal, 1);
     for ii = 1:len_signal
+        ii/len_signal
         ek = zeros(1, len_signal);
         ek(ii) = 1;
         Psi = idct(ek)';

@@ -37,6 +37,9 @@ end
 s = [s{:}];
 f = [f{:}];
 
+s = downsample(s, 1);
+f = downsample(f, 1);
+
 %% Generate fake data
 
 n_data_points_per_cluster = 20;
@@ -63,7 +66,8 @@ y_new_pca = pca(y, 'NumComponents', 2);
 %% Signal reconstruction as a function of number of samples
 
 % n_samples = [100, 1e3, 1e4, 1e5];
-n_samples = round(logspace(1, 5));
+% n_samples = round(logspace(1, 4, 11));
+n_samples = [100]%, 3000, 10000];
 
 % select the first one for testing
 signal = s(:, 1);
@@ -74,7 +78,7 @@ reconstructions = zeros(length(signal), length(n_samples));
 % perform reconstruction fitting
 for ii = 1:length(n_samples)
     [y2, X2] = subject_selection_process(signal, n_samples(ii));
-    reconstructions(:, ii) = gs(y2, X2);
+    reconstructions(:, ii) = cs(y2, X2);
 end
 
 %% Plot reconstructions
@@ -82,18 +86,18 @@ end
 fig1 = figure;
 
 ax(1) = subplot(length(n_samples) + 1, 1, 1);
-plot(f(:, 1), 10*log10(signal))
+plot(f(:, 1)/1e3, normalize(10*log10(signal)))
 title('original')
-ylabel('magnitude (dB)')
+ylabel('magnitude (norm.)')
 
 for ii = 1:length(n_samples)
     ax(ii+1) = subplot(length(n_samples) + 1, 1, 1 + ii);
-    plot(f(:, 1), 10*log10(reconstructions(:, ii)));
+    plot(f(:, 1)/1e3, normalize(10*log10(reconstructions(:, ii))))
     title(['reconstruction n=' num2str(n_samples(ii))]);
-    ylabel('magnitude (dB)')
+    ylabel('magnitude (norm.)')
 end
 
-xlabel('frequency')
+xlabel('frequency (Hz)')
 axlib.equalize(ax, 'x', 'y')
 figlib.pretty()
 
@@ -102,7 +106,7 @@ figlib.pretty()
 r = corr(signal, reconstructions) .^2;
 
 fig2 = figure;
-scatter(n_samples, r)
+scatter(n_samples, r, 32)
 
 xlabel('# of samples')
 ylabel('r^2')

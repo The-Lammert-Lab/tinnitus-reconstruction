@@ -18,7 +18,7 @@
 %%%%%%%%%%%%%%%%%%%
 % Setup
 
-l = 100000;
+l = 20e3;
 
 A = imread('Screeching.png');
 A = rgb2gray(A);
@@ -33,7 +33,7 @@ A = flipud(A);
 A(1:5) = -4;
 
 n = length(A);
-m = 12500; % 2.5% of recommended 20k trials
+m = 5000; % 2.5% of recommended 20k trials
 %%%%%%%%%%%%%%%%%%%
 % Real Basis
 % create sparse signal by taking the discrete cosine transform
@@ -52,6 +52,7 @@ figure
 plot(A,'k');
 hold all
 plot(AA,'r')
+figlib.pretty()
 
 A = AA;
 
@@ -178,6 +179,7 @@ figure
 plot(ek(:)./max(ek(:)),'b'), hold all
 scatter(1:length(s1),s1./max(s1),'ro')
 legend('actual dct basis','biht basis')
+figlib.pretty()
 
 %%%%%%%%%%%%%%%%%%%
 % IMAGE RECONSTRUCTION - LSQ
@@ -251,14 +253,20 @@ f = linspace(100,10000,n)';
 figure('name','Compressive Sensing')
 subplot(5,1,1), plot(f,A), title('Cognitive Representation'), set(gca,'xtick',[]), ylabel('Power (dB)')
 axis([100 10000 -7 -1])
-subplot(5,1,2), plot(f,-x_gossl.*-(mean(A)./mean(x_gossl))), title('Conventional Estim (n=10k)'), set(gca,'xtick',[]), ylabel('Power (dB)')
+subplot(5,1,2), plot(f,-x_gossm.*-(mean(A)./mean(x_gossm))), title(['Conventional Estimation (n=' num2str(m) ')']), set(gca,'xtick',[]), ylabel('Power (dB)')
 axis([100 10000 -7 -1])
-subplot(5,1,3), plot(f,-x_gossm.*-(mean(A)./mean(x_gossm))), title('Conventional Estim (n=1000)'), set(gca,'xtick',[]), ylabel('Power (dB)')
+subplot(5,1,3), plot(f,-x_gossl.*-(mean(A)./mean(x_gossl))), title(['Conventional Estimation (n=' num2str(l) ')']), set(gca,'xtick',[]), ylabel('Power (dB)')
 axis([100 10000 -7 -1])
-subplot(5,1,4), plot(f,-x_csl1.*-(mean(A)./mean(x_csl1))), title('CS Reconstruction (n=1000)'), set(gca,'xtick',[]), ylabel('Power (dB)')
+subplot(5,1,4), plot(f,-x_csl1.*-(mean(A)./mean(x_csl1))), title(['CS Reconstruction (n=' num2str(m) ')']), set(gca,'xtick',[]), ylabel('Power (dB)')
 axis([100 10000 -7 -1])
-subplot(5,1,5), plot(f,-x_csl0.*-(mean(A)./mean(x_csl0))), title('CS Reconstruction (n=10k)'), xlabel('Frequency (Hz)'), ylabel('Power (dB)')
+subplot(5,1,5), plot(f,-x_csl0.*-(mean(A)./mean(x_csl0))), title(['CS Reconstruction (n=' num2str(l) ')']), xlabel('Frequency (Hz)'), ylabel('Power (dB)')
 axis([100 10000 -7 -1])
+
+% options = figlib.pretty();
+% % options.EqualiseX = true;
+% % options.EqualiseY = true;
+% options.FontSize = 24;
+% figlib.pretty(options)
 
 r = corr(A(:),x_gossl);
 fprintf('Squared Correlation - Linear, High Sample: %5.4f\n',r^2)
@@ -337,5 +345,5 @@ xlabel('Number of Samples','fontsize',18);
 ylabel('Correlation w/ Template (r^2)','fontsize',18);
 legend('Conventional Reconstruction','Compressive Sensing','location','SE');
 set(gca,'fontsize',18)
-
+figlib.pretty()
 %eof
