@@ -7,7 +7,9 @@ function [stim, Fs, nfft] = generate_stimuli(options)
         options.max_freq (1,1) {mustBeNumeric} = 22e3
         options.n_bins (1,1) {mustBeNumeric} = 100
         options.bin_duration (1,1) {mustBeNumeric} = 0.4
-        options.prob_f (1,1) {mustBeNumeric} = 0.4
+        % options.prob_f (1,1) {mustBeNumeric} = 0.4
+        options.n_bins_filled_mean (1,1) {mustBeNumeric} = 10
+        options.n_bins_filled_var (1,1) {mustBeNumeric} = 3
     end
 
     % Stimulus Configuration
@@ -25,10 +27,31 @@ function [stim, Fs, nfft] = generate_stimuli(options)
     end
 
     % Generate Random Freq Spec in dB Acccording to Frequency Bin Index
-    X = zeros(nfft/2,1);
-    for itor = 1:options.n_bins
-        X(binnum==itor) = -20 * floor(2 * rand(1,1) .^ options.prob_f);
+    
+    % master list of frequency bins unfilled
+    frequency_bin_list = 1:options.n_bins;
+
+    % sample from Gaussian distribution to get the number of bins to fill
+    n_bins_to_fill = normrnd(options.n_bins_filled_mean, options.n_bins_filled_var);
+
+    % fill the bins
+    X = -20 * ones(nfft/2, 1);
+    for ii = 1:n_bins_to_fill
+        % select a bin at random from the list
+        random_bin_index = 0;
+        while random_bin_index < 1 || random_bin_index > options.n_bins
+            random_bin_index = randi([1 length(frequency_bin_list)], 1, 1);
+        end
+        bin_to_fill = frequency_bin_list(random_bin_index);
+        % fill that bin
+        X(binnum==bin_to_fill) = 0;
+        % remove that bin from the master list
+        frequency_bin_list(frequency_bin_list==bin_to_fill) = [];
     end
+    % X = zeros(nfft/2,1);
+    % for itor = 1:options.n_bins
+    %     X(binnum==itor) = -20 * floor(2 * rand(1,1) .^ options.prob_f);
+    % end
 
     % Synthesize Audio
     phase = 2*pi*(rand(nfft/2,1)-0.5); % assign random phase to freq spec
