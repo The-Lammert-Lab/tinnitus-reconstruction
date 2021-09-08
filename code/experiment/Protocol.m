@@ -21,8 +21,7 @@ function Protocol(options)
         options.config char = []
     end
 
-    today = datestr(date,'yyyymmdd'); % today's date (for filenames)
-    thetime = datestr(now,'HHMMSS'); % today's date (for filenames)
+    this_datetime = datetime();
 
     % open a UI to get the config file for this set of trials
     % parse the config file to get options
@@ -33,52 +32,36 @@ function Protocol(options)
         config = ReadYaml(options.config);
     end
 
-    %% Stimulus Configuration
+    %% Setup
+    
+    % Compute the total trials done
+    total_trials_done = 0;
+    d = dir(pathlib.join(config.datadir, '*responses.csv'));
 
-    % nbins_time = config.total_duration/config.bin_duration;
-
-    % Create Meta File, checking for most recent files under this subjectID
-    iter = 1;
-    filename = [config.datadir '/' config.subjectID '_' num2str(iter) '_meta.csv'];
-    fid = fopen(filename,'r');
-    while fid>0
-        fclose(fid);
-        iter = iter + 1;
-        filename = [config.datadir '/' config.subjectID '_' num2str(iter) '_meta.csv'];
-        fid = fopen(filename,'r');
-    end
-    fid = fopen(filename,'w+');
-
-    % Determine # Completed Trials, read prior meta data, if existing
-    if iter < 2
-        tottrials = 0;
-    else
-        filename_prev = [config.datadir '/' config.subjectID '_' num2str(iter-1) '_meta.csv'];
-        fid_prev = fopen(filename_prev,'r');
-        tline = fgetl(fid_prev);
-        out1 = regexp(tline,',(\d)+$','tokens');
-        out1 = out1{:};
-        tottrials = str2num(out1{1});
-        fclose(fid_prev);
+    for ii = 1:length(d)
+        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
+        total_trials_done = total_trials_done + length(responses);
     end
 
-    %% Record Meta Data
-    fprintf(fid,[config.subjectID ',' num2str(today) ',' num2str(thetime) ',' num2str(tottrials) '\n']);
-    fclose(fid);
+    % Create files needed for saving the data
+    uuid = char(java.util.UUID.randomUUID);
+    filename_responses = pathlib.join(config.datadir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
+    filename_stimuli = pathlib.join(config.datadir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
+    filename_meta = pathlib.join(config.datadir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+
+    fid_responses = fopen(filename_responses, 'w');
+
 
     %% Load Presentations Screens
+
     Screen1 = imread('fixationscreen/Slide1B.png');
     Screen2 = imread('fixationscreen/Slide2B.png');
     Screen3 = imread('fixationscreen/Slide3B.png');
     Screen4 = imread('fixationscreen/Slide4.png');
 
-    %% Create Data Files
-    filename_stim = [config.datadir '/' config.subjectID '_' num2str(iter) '_stim.csv'];
-    fid_stim = fopen(filename_stim,'w+');
-    filename_resp = [config.datadir '/' config.subjectID '_' num2str(iter) '_resp.csv'];
-    fid_resp = fopen(filename_resp,'w+');
-
     %% Generate stimuli
+
+    % Generate a block of stimuli
     [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
         'min_freq', config.min_freq, ...
         'max_freq', config.max_freq, ...
@@ -87,18 +70,11 @@ function Protocol(options)
         'n_bins_filled_mean', config.n_bins_filled_mean, ...
         'n_bins_filled_var', config.n_bins_filled_var);
 
-    writematrix(stimuli_matrix, filename_stim);
-
-    % TODO: fix stimuli saving
-    % % save stimuli to file
-    % for ii = 1:size(stimuli_matrix, 2)
-    %     for stor = 1:nfft
-    %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);
-    %     end
-    %     fprintf(fid_stim,'\n');
-    % end
+    % Write the stimuli to file
+    writematrix(stimuli_matrix, filename_stimuli);
 
     %% Intro Screen & Start
+
     imshow(Screen1);
     k = waitforbuttonpress;
     value = double(get(gcf,'CurrentCharacter')); % f - 102
@@ -108,14 +84,13 @@ function Protocol(options)
     end
 
     %% Run Trials
+
     counter = 0;
     while (1)
 
         % Reminder Screen
         imshow(Screen2);
 
-
-        
         % Present Stimulus
         counter = counter + 1;
         soundsc(stimuli_matrix(:, counter), Fs)
@@ -136,21 +111,27 @@ function Protocol(options)
             case 102
                 respnum = -1;
         end
-        fprintf(fid_resp,[num2str(respnum) '\n']);
-        
-        % Increment Trial Counter, here and in metadata file
-        tottrials = tottrials + 1;
-        filename = [config.datadir '/' config.subjectID '_' num2str(iter) '_meta.csv'];
-        filename_stim = [config.datadir '/' config.subjectID '_' num2str(iter) '_stim.csv'];
-        fid = fopen(filename,'w+');
-        fprintf(fid,[config.subjectID ',' num2str(today) ',' num2str(thetime) ',' num2str(tottrials) '\n']);
-        fclose(fid);
+
+        % Write the response to file
+        fprintf(fid_responses, [num2str(respnum) '\n']);
+
+        % Update the number of trials done in this block
+        total_trials_done = total_trials_done + 1;
+
+        % Write the meta file
+        meta = {config.subjectID, uuid, this_datetime, total_trials_done};
+        meta_labels = {'subjectID', 'uuid', 'datetime', 'total_trials_done'};
+        writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
         % Decide How To Continue
-        if tottrials >= config.n_trials*config.n_blocks % end, all trials complete
+        if total_trials_done >= config.n_trials_per_block * config.n_blocks
+            fclose(fid_responses);
+            % end, all trials complete
             imshow(Screen4)
             return
-        elseif mod(tottrials,config.n_trials) == 0 % give rest before proceeding to next block
+        elseif mod(total_trials_done, config.n_trials_per_block) == 0 % give rest before proceeding to next block
+            fclose(fid_responses);
+
             % reset counter
             counter = 0;
             imshow(Screen3)
@@ -161,7 +142,17 @@ function Protocol(options)
                 value = double(get(gcf,'CurrentCharacter'));
             end
 
-            % generate stimuli for next block
+            % Generate new UUID
+            uuid = char(java.util.UUID.randomUUID);
+
+            % Generate new files
+            filename_responses = pathlib.join(config.datadir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
+            filename_stimuli = pathlib.join(config.datadir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
+            filename_meta = pathlib.join(config.datadir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+
+    fid_responses = fopen(filename_responses, 'w');
+
+            % Generate stimuli for next block
             [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
                 'min_freq', config.min_freq, ...
                 'max_freq', config.max_freq, ...
@@ -170,24 +161,14 @@ function Protocol(options)
                 'n_bins_filled_mean', config.n_bins_filled_mean, ...
                 'n_bins_filled_var', config.n_bins_filled_var);
 
-            % % save stimuli to file
-            writematrix(stimuli_matrix, filename_stim)
-            % for ii = 1:size(stimuli_matrix, 2)
-            %     for stor = 1:nfft
-            %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);
-            %     end
-            %     fprintf(fid_stim,'\n');
-            % end
+            % Save stimuli to file
+            writematrix(stimuli_matrix, filename_stimuli)
+
         else % continue with block
             % pause(1)
         end
         
     end
-
-    %% Close Files
-    fclose(fid);
-    fclose(fid_stim);
-    fclose(fid_resp);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %eof
