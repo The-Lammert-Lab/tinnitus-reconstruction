@@ -79,14 +79,15 @@ function Protocol(options)
     fid_resp = fopen(filename_resp,'w+');
 
     %% Generate stimuli
-
     [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
         'min_freq', config.min_freq, ...
         'max_freq', config.max_freq, ...
         'n_bins', config.n_bins, ...
         'bin_duration', config.bin_duration, ...
-        'prob_f', config.prob_f, ...
-        'n_trials', config.n_trials);
+        'n_bins_filled_mean', config.n_bins_filled_mean, ...
+        'n_bins_filled_var', config.n_bins_filled_var);
+
+    csvwrite(filename_stim, stimuli_matrix);
 
     % TODO: fix stimuli saving
     % % save stimuli to file
@@ -140,6 +141,7 @@ function Protocol(options)
         % Increment Trial Counter, here and in metadata file
         tottrials = tottrials + 1;
         filename = [config.datadir '/' config.subjectID '_' num2str(iter) '_meta.csv'];
+        filename_stim = [config.datadir '/' config.subjectID '_' num2str(iter) '_stim.csv'];
         fid = fopen(filename,'w+');
         fprintf(fid,[config.subjectID ',' num2str(today) ',' num2str(thetime) ',' num2str(tottrials) '\n']);
         fclose(fid);
@@ -165,10 +167,11 @@ function Protocol(options)
                 'max_freq', config.max_freq, ...
                 'n_bins', config.n_bins, ...
                 'bin_duration', config.bin_duration, ...
-                'prob_f', config.prob_f, ...
-                'n_trials', config.n_trials);
+                'n_bins_filled_mean', config.n_bins_filled_mean, ...
+                'n_bins_filled_var', config.n_bins_filled_var);
 
             % % save stimuli to file
+            csvwrite(filename_stim, stimuli_matrix)
             % for ii = 1:size(stimuli_matrix, 2)
             %     for stor = 1:nfft
             %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);

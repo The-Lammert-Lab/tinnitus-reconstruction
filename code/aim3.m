@@ -122,9 +122,9 @@ reconstructions_umap = U.transform(reconstructions');
 %% Plot clusters and UMAP'd reconstructions
 
 fig3 = figure;
-scatter(y_new(:, 1), y_new(:, 2))
+scatter(y_new(:, 1), y_new(:, 2), 60, 'filled', 'MarkerFaceAlpha', 0.75,'MarkerEdgeAlpha', 0.75)
 hold on
-scatter(reconstructions_umap(:, 1), reconstructions_umap(:, 2))
+scatter(reconstructions_umap(:, 1), reconstructions_umap(:, 2), 60, 'filled')
 
 xlabel('dimension 1')
 ylabel('dimension 2')
