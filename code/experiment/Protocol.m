@@ -87,7 +87,7 @@ function Protocol(options)
         'n_bins_filled_mean', config.n_bins_filled_mean, ...
         'n_bins_filled_var', config.n_bins_filled_var);
 
-    csvwrite(filename_stim, stimuli_matrix);
+    writematrix(stimuli_matrix, filename_stim);
 
     % TODO: fix stimuli saving
     % % save stimuli to file
@@ -171,7 +171,7 @@ function Protocol(options)
                 'n_bins_filled_var', config.n_bins_filled_var);
 
             % % save stimuli to file
-            csvwrite(filename_stim, stimuli_matrix)
+            writematrix(stimuli_matrix, filename_stim)
             % for ii = 1:size(stimuli_matrix, 2)
             %     for stor = 1:nfft
             %         fprintf(fid_stim, [num2str(stimuli_matrix(stor, ii)) ',']);
