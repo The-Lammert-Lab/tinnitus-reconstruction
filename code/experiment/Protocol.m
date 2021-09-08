@@ -108,7 +108,7 @@ function Protocol(options)
     end
 
     %% Run Trials
-    counter = 0
+    counter = 0;
     while (1)
 
         % Reminder Screen
