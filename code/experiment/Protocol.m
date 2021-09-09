@@ -36,12 +36,13 @@ function Protocol(options)
     
     % Compute the total trials done
     total_trials_done = 0;
-    d = dir(pathlib.join(config.datadir, '*responses.csv'));
+    d = dir(pathlib.join(config.datadir, [config.subjectID '_responses*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
         total_trials_done = total_trials_done + length(responses);
     end
+    fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
 
     % Create files needed for saving the data
     uuid = char(java.util.UUID.randomUUID);
@@ -66,6 +67,7 @@ function Protocol(options)
         'min_freq', config.min_freq, ...
         'max_freq', config.max_freq, ...
         'n_bins', config.n_bins, ...
+        'n_trials', config.n_trials_per_block, ...
         'bin_duration', config.bin_duration, ...
         'n_bins_filled_mean', config.n_bins_filled_mean, ...
         'n_bins_filled_var', config.n_bins_filled_var);
@@ -150,19 +152,21 @@ function Protocol(options)
             filename_stimuli = pathlib.join(config.datadir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
             filename_meta = pathlib.join(config.datadir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
 
-    fid_responses = fopen(filename_responses, 'w');
+            fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
             [stimuli_matrix, Fs, nfft] = generate_stimuli_matrix(...
                 'min_freq', config.min_freq, ...
                 'max_freq', config.max_freq, ...
                 'n_bins', config.n_bins, ...
+                'n_trials', config.n_trials_per_block, ...
                 'bin_duration', config.bin_duration, ...
                 'n_bins_filled_mean', config.n_bins_filled_mean, ...
                 'n_bins_filled_var', config.n_bins_filled_var);
 
             % Save stimuli to file
             writematrix(stimuli_matrix, filename_stimuli)
+            fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
 
         else % continue with block
             % pause(1)
