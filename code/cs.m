@@ -1,4 +1,4 @@
-function x = cs(responses, Phi)
+function [x, s] = cs(responses, Phi)
     
     n_samples = length(responses);
     len_signal = size(Phi, 2);

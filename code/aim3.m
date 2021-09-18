@@ -67,7 +67,7 @@ y_new_pca = pca(y, 'NumComponents', 2);
 
 % n_samples = [100, 1e3, 1e4, 1e5];
 % n_samples = round(logspace(1, 4, 11));
-n_samples = [100]%, 3000, 10000];
+n_samples = [300, 1000, 10000];
 
 % select the first one for testing
 signal = s(:, 1);
@@ -86,18 +86,18 @@ end
 fig1 = figure;
 
 ax(1) = subplot(length(n_samples) + 1, 1, 1);
-plot(f(:, 1)/1e3, normalize(10*log10(signal)))
+plot(f(:, 1)/1e3, 10*log10(signal))
 title('original')
 ylabel('magnitude (norm.)')
 
 for ii = 1:length(n_samples)
     ax(ii+1) = subplot(length(n_samples) + 1, 1, 1 + ii);
-    plot(f(:, 1)/1e3, normalize(10*log10(reconstructions(:, ii))))
+    plot(f(:, 1)/1e3, 10*log10(reconstructions(:, ii)))
     title(['reconstruction n=' num2str(n_samples(ii))]);
     ylabel('magnitude (norm.)')
 end
 
-xlabel('frequency (Hz)')
+xlabel('frequency (kHz)')
 axlib.equalize(ax, 'x', 'y')
 figlib.pretty()
 

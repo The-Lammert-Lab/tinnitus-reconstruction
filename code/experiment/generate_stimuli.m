@@ -1,4 +1,4 @@
-function [stim, Fs, nfft] = generate_stimuli(options)
+function [stim, Fs, X] = generate_stimuli(options)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
 
