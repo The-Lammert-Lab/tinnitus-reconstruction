@@ -47,7 +47,7 @@ function [responses, stimuli] = collect_data(options)
         end
     end
 
-    responses = vertcat(responses);
-    stimuli = horzcat(stimuli);
+    responses = vertcat(responses{:});
+    stimuli = horzcat(stimuli{:});
 
 end % function

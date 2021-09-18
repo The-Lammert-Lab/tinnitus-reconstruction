@@ -1,4 +1,14 @@
-function [x, s] = cs(responses, Phi)
+function [x, s] = cs(responses, Phi, Gamma)
+
+    %   [x, s] = cs(responses, Phi)
+    % responses is an n x 1 vector
+    % Phi is an n x m matrix
+    % where n is the number of trials/samples
+    % and m is the dimensionality of the stimuli/spectrum/bins
+
+    if nargin < 3
+        Gamma = 32;
+    end
     
     n_samples = length(responses);
     len_signal = size(Phi, 2);
@@ -12,7 +22,6 @@ function [x, s] = cs(responses, Phi)
         Theta(:, ii) = Phi * Psi;
     end
 
-    Gamma = 32;
     s = zhangpassivegamma(Theta, responses, Gamma);
 
     x = zeros(len_signal, 1);
