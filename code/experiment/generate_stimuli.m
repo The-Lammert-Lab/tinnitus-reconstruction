@@ -1,4 +1,4 @@
-function [stim, Fs, X] = generate_stimuli(options)
+function [stim, Fs, X, f, filled_bins] = generate_stimuli(options)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
 
@@ -33,6 +33,7 @@ function [stim, Fs, X] = generate_stimuli(options)
 
     % sample from Gaussian distribution to get the number of bins to fill
     n_bins_to_fill = normrnd(options.n_bins_filled_mean, options.n_bins_filled_var);
+    filled_bins = zeros(length(n_bins_to_fill), 1);
 
     % fill the bins
     X = -20 * ones(nfft/2, 1);
@@ -43,6 +44,7 @@ function [stim, Fs, X] = generate_stimuli(options)
             random_bin_index = randi([1 length(frequency_bin_list)], 1, 1);
         end
         bin_to_fill = frequency_bin_list(random_bin_index);
+        filled_bins(ii) = bin_to_fill;
         % fill that bin
         X(binnum==bin_to_fill) = 0;
         % remove that bin from the master list
@@ -52,8 +54,10 @@ function [stim, Fs, X] = generate_stimuli(options)
     % for itor = 1:options.n_bins
     %     X(binnum==itor) = -20 * floor(2 * rand(1,1) .^ options.prob_f);
     % end
+    filled_bins = sort(filled_bins);
 
     % Synthesize Audio
+    f = linspace(options.min_freq, options.max_freq, length(X));
     phase = 2*pi*(rand(nfft/2,1)-0.5); % assign random phase to freq spec
     s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
     ss = [1; s; conj(flipud(s))];
