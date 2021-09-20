@@ -27,7 +27,7 @@ s_revcorr = 1 / (size(spect, 1)) * spect * responses;
 [x_cs_nb, s_cs_nb] = cs_no_basis(responses, spect');
 
 % Plotting
-figure;
+fig1 = figure;
 n_plots = 4;
 for ii = n_plots:-1:1
     ax(ii) = subplot(n_plots, 1, ii);
@@ -50,6 +50,44 @@ xlabel('frequency (kHz)')
 
 figlib.pretty()
 
+% Binary representation
+
+spect_binarized = spect2bin(spect);
+
+% Reverse Correlation
+s_revcorr_binarized = 1 / (size(spect, 1)) * spect_binarized * responses;
+
+% Compressed Sensing, with basis
+[x_cs_binarized, s_cs_binarized] = cs(responses, spect_binarized');
+
+% Compressed Sensing, no basis
+[x_cs_nb_binarized, s_cs_nb_binarized] = cs_no_basis(responses, spect_binarized');
+
+% Plotting
+fig2 = figure;
+n_plots = 4;
+for ii = n_plots:-1:1
+    ax(ii) = subplot(n_plots, 1, ii);
+end
+
+% true spectrum
+plot(ax(1), 1e-3 * frequencies_true, 10*log10(repr_true));
+xlabel('frequency (kHz)')
+ylabel('power (dB)')
+
+% reverse correlation
+plot(ax(2), frequencies_est, s_revcorr_binarized);
+
+% compressed sensing, with basis
+plot(ax(3), frequencies_est, s_cs_binarized);
+
+% compressed sensing, no basis
+plot(ax(4), frequencies_est, s_cs_nb_binarized);
+xlabel('frequency (kHz)')
+
+figlib.pretty()
+
+
 % Gamma hyperparameter
 
 gammas = [1, 32, 64, 128, 256, 512];
@@ -60,7 +98,7 @@ for ii = 1:length(gammas)
     [~, s_matrix(:, ii)] = cs_no_basis(responses, spect', gammas(ii));
 end
 
-figure;
+fig3 = figure;
 plot(frequencies_est, s_matrix);
 
 leg = cell(length(gammas), 1);

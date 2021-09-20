@@ -1,13 +1,16 @@
-function binary_repr = spect2bins(X, options)
+function binary_repr = spect2bin(X, options)
 
     %   binary_repr = spect2bins(X, options)
-
+    %
     % Go from a spectrum representation of a stimulus
     % to a binary representation, where there is a true
     % value when a bin is filled and false elsewhere.
     %
-    % X: vector representing the stimulus spectrum in dB
+    % X: vector or matrix representing the stimulus spectrum in dB
+    % if X is a matrix, each column is considered a different spectrum
+    % and binary_repr is a matrix of size options.n_bins by size(X, 2)
     % 
+    % See Also: generate_stimuli, generate_stimuli_matrix, collect_data
     
     arguments
         X {mustBeNumeric}
@@ -37,9 +40,24 @@ function binary_repr = spect2bins(X, options)
     % Compute the binary representation
     % where there is a 'true', whenever there is
     % a filled bin and 'false' elsewhere
-    binary_repr = false(options.n_bins, 1);
-    for ii = 1:options.n_bins
-        binary_repr(ii) = any(X(binnum == ii) >= 0);
+    if isvector(X)
+        
+        binary_repr = false(options.n_bins, 1);
+        for ii = 1:options.n_bins
+            binary_repr(ii) = any(X(binnum == ii) >= 0);
+        end
+    
+    else
+
+        binary_repr = false(options.n_bins, size(X, 2));
+
+        for qq = 1:size(binary_repr, 2)
+            for ii = 1:options.n_bins
+                binary_repr(ii, qq) = any(X(binnum == ii, qq) >= 0);
+            end
+        end
+
     end
+
 
 end % function
