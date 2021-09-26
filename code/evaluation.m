@@ -11,20 +11,19 @@ config = ReadYaml(CONFIG_REL_PATH);
 [repr_true, frequencies_true] = wav2spect('/home/alec/data/sounds/ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav');
 
 % Get the spectrum in dB
-spect = 10*log10(abs(fft(stimuli)));
-spect = spect(1:floor(end/2), :);
+spect = signal2spect(stimuli);
 
 % Get the frequencies for the x-axis of the reconstructions
 frequencies_est = 1e-3 * linspace(config.min_freq, config.max_freq, length(spect));
 
 % Reverse Correlation
-s_revcorr = 1 / (size(spect, 1)) * spect * responses;
+x_revcorr = 1 / (size(spect, 1)) * spect * responses;
 
 % Compressed Sensing, with basis
-[x_cs, s_cs] = cs(responses, spect');
+x_cs = cs(responses, spect', 100);
 
 % Compressed Sensing, no basis
-[x_cs_nb, s_cs_nb] = cs_no_basis(responses, spect');
+x_cs_nb = cs_no_basis(responses, spect', 100);
 
 % Plotting
 fig1 = figure;
@@ -39,29 +38,62 @@ xlabel('frequency (kHz)')
 ylabel('power (dB)')
 
 % reverse correlation
-plot(ax(2), frequencies_est, s_revcorr);
+plot(ax(2), frequencies_est, x_revcorr);
 
 % compressed sensing, with basis
-plot(ax(3), frequencies_est, s_cs);
+plot(ax(3), frequencies_est, x_cs);
 
 % compressed sensing, no basis
-plot(ax(4), frequencies_est, s_cs_nb);
+plot(ax(4), frequencies_est, x_cs_nb);
 xlabel('frequency (kHz)')
 
 figlib.pretty()
 
 % Binary representation
 
-spect_binarized = spect2bin(spect);
+spect_binarized = spect2bin(spect, ...
+    'min_freq', config.min_freq, ...
+    'max_freq', config.max_freq, ...
+    'n_bins', config.n_bins, ...
+    'bin_duration', config.bin_duration, ...
+    'n_bins_filled_mean', config.n_bins_filled_mean, ...
+    'n_bins_filled_var', config.n_bins_filled_var);
 
 % Reverse Correlation
-s_revcorr_binarized = 1 / (size(spect, 1)) * spect_binarized * responses;
+spect_revcorr_binarized = 1 / (size(spect, 1)) * spect_binarized * responses;
+x_revcorr_binarized = bin2spect(...
+    spect_revcorr_binarized, ...
+    'min_freq', config.min_freq, ...
+    'max_freq', config.max_freq, ...
+    'n_bins', config.n_bins, ...
+    'bin_duration', config.bin_duration, ...
+    'n_bins_filled_mean', config.n_bins_filled_mean, ...
+    'n_bins_filled_var', config.n_bins_filled_var);
+s_revcorr_binarized = signal2spect(x_revcorr_binarized);
 
 % Compressed Sensing, with basis
-[x_cs_binarized, s_cs_binarized] = cs(responses, spect_binarized');
+spect_cs_binarized = cs(responses, spect_binarized', 100);
+x_cs_binarized = bin2spect(...
+    spect_cs_binarized, ...
+    'min_freq', config.min_freq, ...
+    'max_freq', config.max_freq, ...
+    'n_bins', config.n_bins, ...
+    'bin_duration', config.bin_duration, ...
+    'n_bins_filled_mean', config.n_bins_filled_mean, ...
+    'n_bins_filled_var', config.n_bins_filled_var);
+s_cs_binarized = signal2spect(x_cs_binarized);
 
 % Compressed Sensing, no basis
-[x_cs_nb_binarized, s_cs_nb_binarized] = cs_no_basis(responses, spect_binarized');
+spect_cs_nb_binarized = cs_no_basis(responses, spect_binarized', 100);
+x_cs_nb_binarized = bin2spect(...
+    spect_cs_nb_binarized, ...
+    'min_freq', config.min_freq, ...
+    'max_freq', config.max_freq, ...
+    'n_bins', config.n_bins, ...
+    'bin_duration', config.bin_duration, ...
+    'n_bins_filled_mean', config.n_bins_filled_mean, ...
+    'n_bins_filled_var', config.n_bins_filled_var);
+s_cs_nb_binarized = signal2spect(x_cs_nb_binarized);
 
 % Plotting
 fig2 = figure;
@@ -87,7 +119,7 @@ xlabel('frequency (kHz)')
 
 figlib.pretty()
 
-
+return
 % Gamma hyperparameter
 
 gammas = [1, 32, 64, 128, 256, 512];

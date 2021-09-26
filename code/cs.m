@@ -1,6 +1,7 @@
-function [x, s] = cs(responses, Phi, Gamma)
+function x = cs(responses, Phi, Gamma)
 
-    %   [x, s] = cs(responses, Phi)
+    %   [x] = cs(responses, Phi)
+    %
     % responses is an n x 1 vector
     % Phi is an n x m matrix
     % where n is the number of trials/samples
