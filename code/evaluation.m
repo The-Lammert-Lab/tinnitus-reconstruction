@@ -1,11 +1,12 @@
 % Evaluate the reconstructions for the pilot data
 
+%% Preliminaries
+
 CONFIG_REL_PATH = 'experiment/configs/config.yaml';
 config = ReadYaml(CONFIG_REL_PATH);
 
 % Collect the data from the data files
 [responses, stimuli] = collect_data('config', CONFIG_REL_PATH);
-
 
 % Get the true spectrum
 [repr_true, frequencies_true] = wav2spect('/home/alec/data/sounds/ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav');
@@ -14,7 +15,36 @@ config = ReadYaml(CONFIG_REL_PATH);
 spect = signal2spect(stimuli);
 
 % Get the frequencies for the x-axis of the reconstructions
-frequencies_est = 1e-3 * linspace(config.min_freq, config.max_freq, length(spect));
+frequencies_est = 1e-3 * (1:2:2*size(spect, 1));
+
+%% Evaluate the quality of reconstructions
+% using k dct coefficients
+
+% Compute the discrete cosine transform
+dct_coeffs = dct(repr_true);
+
+% Sort the coefficients by absolute value
+[sorted_coeffs, sorted_coeffs_indices] = sort(abs(dct_coeffs), 'descend');
+
+% How many coefficients to keep?
+k_coeffs_to_keep = round(logspace(0, log10(length(sorted_coeffs)/10), 11));
+
+% Keep k coefficients, inverse transform back
+% then look at r2
+r2 = zeros(size(k_coeffs_to_keep));
+for ii = 1:length(k_coeffs_to_keep)
+    these_coeffs = zeros(size(dct_coeffs));
+    these_coeffs(sorted_coeffs_indices(1:k_coeffs_to_keep(ii))) = dct_coeffs(sorted_coeffs_indices(1:k_coeffs_to_keep(ii)));
+    nnz(these_coeffs)
+    r2(ii) = corr(repr_true, idct(these_coeffs));
+end
+
+% Plot r2 as a function of number of kept coefficients
+fig = figure;
+scatter(k_coeffs_to_keep / length(dct_coeffs), r2)
+xlabel('fraction of kept coefficients')
+ylabel('r^2')
+figlib.pretty()
 
 % Reverse Correlation
 x_revcorr = 1 / (size(spect, 1)) * spect * responses;
