@@ -67,10 +67,10 @@ y_new_pca = pca(y, 'NumComponents', 2);
 
 % n_samples = [100, 1e3, 1e4, 1e5];
 % n_samples = round(logspace(1, 4, 11));
-n_samples = [300, 1000, 10000];
+n_samples = [1000, 10000, 20e3];
 
 % select the first one for testing
-signal = s(:, 1);
+signal = s(:, 5);
 
 % outputs
 reconstructions = zeros(length(signal), length(n_samples));
@@ -78,7 +78,7 @@ reconstructions = zeros(length(signal), length(n_samples));
 % perform reconstruction fitting
 for ii = 1:length(n_samples)
     [y2, X2] = subject_selection_process(signal, n_samples(ii));
-    reconstructions(:, ii) = cs(y2, X2);
+    reconstructions(:, ii) = cs(y2, X2, 200);
 end
 
 %% Plot reconstructions
@@ -88,13 +88,13 @@ fig1 = figure;
 ax(1) = subplot(length(n_samples) + 1, 1, 1);
 plot(f(:, 1)/1e3, 10*log10(signal))
 title('original')
-ylabel('magnitude (norm.)')
+ylabel('power (dB)')
 
 for ii = 1:length(n_samples)
     ax(ii+1) = subplot(length(n_samples) + 1, 1, 1 + ii);
     plot(f(:, 1)/1e3, 10*log10(reconstructions(:, ii)))
     title(['reconstruction n=' num2str(n_samples(ii))]);
-    ylabel('magnitude (norm.)')
+    ylabel('power (dB)')
 end
 
 xlabel('frequency (kHz)')
