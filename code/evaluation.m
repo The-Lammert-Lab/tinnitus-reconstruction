@@ -1,3 +1,39 @@
+% What is the best gamma value for reconstruction
+% based on reconstruction using DCT?
+
+% Get the true spectrum
+[repr_true, frequencies_true] = wav2spect('/home/alec/data/sounds/ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav');
+
+% sorted coefficients of the discrete cosine transform
+% of the true representation (the tinnitus waveform)
+coefficients = dct(repr_true);
+[~, coefficient_indices] = sort(abs(coefficients), 'descend');
+
+% how many coefficients to keep
+n_coeffs = round(logspace(0, log10(length(coefficient_indices)/10), 50));
+
+% container for correlation coefficients
+correlations = zeros(length(n_coeffs), 1);
+
+% compute reconstructions using only n coefficients from the dct
+for ii = 1:length(correlations)
+    coeffs_ = coefficients;
+    % set all coefficients except for the first n to zero
+    coeffs_(coefficient_indices(n_coeffs(ii)+1:end)) = 0;
+    % compute the correlation between the true representation (all coefficients)
+    % and the sparse representation in the time domain (using only n coefficients)
+    correlations(ii) = corr(repr_true, idct(coeffs_));
+end
+
+fig = figure;
+plot(n_coeffs, correlations)
+xlabel('n coefficients kept')
+ylabel('r^2')
+title('correlation as a function of dct coefficients')
+figlib.pretty()
+
+return
+
 % Evaluate the reconstructions for the pilot data
 
 CONFIG_REL_PATH = 'experiment/configs/config.yaml';
@@ -5,10 +41,6 @@ config = ReadYaml(CONFIG_REL_PATH);
 
 % Collect the data from the data files
 [responses, stimuli] = collect_data('config', CONFIG_REL_PATH);
-
-
-% Get the true spectrum
-[repr_true, frequencies_true] = wav2spect('/home/alec/data/sounds/ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav');
 
 % Get the spectrum in dB
 spect = signal2spect(stimuli);
