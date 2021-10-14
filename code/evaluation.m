@@ -33,9 +33,6 @@ title('correlation as a function of dct coefficients')
 figlib.pretty()
 
 
-
-return
-
 % Evaluate the reconstructions for the pilot data
 
 CONFIG_REL_PATH = 'experiment/configs/config.yaml';
@@ -48,10 +45,12 @@ config = ReadYaml(CONFIG_REL_PATH);
 spect = signal2spect(stimuli);
 
 % Get the frequencies for the x-axis of the reconstructions
-frequencies_est = 1e-3 * linspace(config.min_freq, config.max_freq, length(spect));
+frequencies_est = 1:2:(2*length(spect));
 
 % Reverse Correlation
 x_revcorr = 1 / (size(spect, 1)) * spect * responses;
+
+return
 
 % Compressed Sensing, with basis
 x_cs = cs(responses, spect', 100);
