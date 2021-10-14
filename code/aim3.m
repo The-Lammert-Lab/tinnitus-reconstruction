@@ -28,6 +28,8 @@ data_names = {
 };
 
 %% Compute gold-standard spectra
+% s is a matrix of frequency spectra
+% with frequencies f in Hz
 
 s = cell(5, 1);
 f = cell(5, 1);
@@ -37,6 +39,8 @@ end
 s = [s{:}];
 f = [f{:}];
 
+% downsampling factor is set to unity,
+% so don't downsample
 s = downsample(s, 1);
 f = downsample(f, 1);
 
@@ -64,12 +68,20 @@ y_new = U.fit_transform(y');
 y_new_pca = pca(y, 'NumComponents', 2);
 
 %% Signal reconstruction as a function of number of samples
+% Signal is the non-decibel true frequency spectrum.
+% Subject selection process involves generating
+% a binary random matrix, X,
+% that picks out frequencies from the true spectrum.
+% This isn't a true representation of how the experiment is being run,
+% since we are using the random matrix as our measurement matrix
+% for reverse correlation.
+% NOTE: talk to Adam about this
 
 % n_samples = [100, 1e3, 1e4, 1e5];
 % n_samples = round(logspace(1, 4, 11));
-n_samples = [1000, 10000, 20e3];
+n_samples = [1e3, 10e3, 20e3];
 
-% select the first one for testing
+% select the tea kettle sound
 signal = s(:, 5);
 
 % outputs

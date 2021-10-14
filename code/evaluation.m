@@ -32,6 +32,8 @@ ylabel('r^2')
 title('correlation as a function of dct coefficients')
 figlib.pretty()
 
+
+
 return
 
 % Evaluate the reconstructions for the pilot data
