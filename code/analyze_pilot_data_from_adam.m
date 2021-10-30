@@ -125,9 +125,9 @@ end
 binned_repr = spect2binnedrepr(T, B);
 
 n_trials = round([0.01, 0.03, 0.1, 0.3, 1] * length(I));
-x_gs = zeros(length(R), length(n_trials));
-x_cs = zeros(length(R), length(n_trials));
-x_cs_nb = zeros(length(R), length(n_trials));
+x_gs_binned = zeros(length(R), length(n_trials));
+x_cs_binned = zeros(length(R), length(n_trials));
+x_cs_nb_binned = zeros(length(R), length(n_trials));
 
 for ii = 1:length(n_trials)
     this_I = I(1:n_trials(ii));
