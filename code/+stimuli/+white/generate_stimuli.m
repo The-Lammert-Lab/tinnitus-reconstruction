@@ -31,6 +31,6 @@ function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     end
 
     % Synthesize Audio
-    stim = stimulus.synthesize_audio(X, nfft);
+    stim = stimuli.synthesize_audio(X, nfft);
 
 end % function

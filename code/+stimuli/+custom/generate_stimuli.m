@@ -27,7 +27,11 @@ function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     frequency_bin_list = 1:options.n_bins;
 
     % sample from Gaussian distribution to get the number of bins to fill
-    n_bins_to_fill = normrnd(options.n_bins_filled_mean, options.n_bins_filled_var);
+    n_bins_to_fill = -1;
+    
+    while n_bins_to_fill < 1
+        n_bins_to_fill = round(normrnd(options.n_bins_filled_mean, options.n_bins_filled_var));
+    end
     filled_bins = zeros(length(n_bins_to_fill), 1);
 
     % fill the bins
@@ -52,13 +56,13 @@ function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     filled_bins = sort(filled_bins);
 
     % Synthesize Audio
-    f = linspace(options.min_freq, options.max_freq, length(X));
-    phase = 2*pi*(rand(nfft/2,1)-0.5); % assign random phase to freq spec
-    s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
-    ss = [1; s; conj(flipud(s))];
-    stim = ifft(ss); % transform from freq to time domain
+    stim = stimuli.synthesize_audio(X, nfft);
 
     % get the binned representation
     binned_repr = -20 * ones(options.n_bins, 1);
-    binned_repr(filled_bins) = 0;
+    try
+        binned_repr(filled_bins) = 0;
+    catch
+        keyboard
+    end
 end % function
