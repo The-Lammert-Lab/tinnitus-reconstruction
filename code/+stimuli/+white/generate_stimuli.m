@@ -31,10 +31,6 @@ function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     end
 
     % Synthesize Audio
-    f = linspace(options.min_freq, options.max_freq, length(X));
-    phase = 2*pi*(rand(nfft/2,1)-0.5); % assign random phase to freq spec
-    s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
-    ss = [1; s; conj(flipud(s))];
-    stim = ifft(ss); % transform from freq to time domain
+    stim = stimulus.synthesize_audio(X, nfft);
 
 end % function
