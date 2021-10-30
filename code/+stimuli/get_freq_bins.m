@@ -7,6 +7,7 @@ function [binnum, Fs, nfft] = get_freq_bins(options)
         options.n_bins (1,1) {mustBeNumeric} = 100
         options.min_freq (1,1) {mustBeNumeric} = 100
         options.max_freq (1,1) {mustBeNumeric} = 22e3
+        options.bin_duration (1,1) {mustBeNumeric} = 0.4
     end
 
     Fs = 2*options.max_freq; % sampling rate of waveform
@@ -21,3 +22,5 @@ function [binnum, Fs, nfft] = get_freq_bins(options)
     for itor = 1:options.n_bins
         binnum(binnum <= binnd(itor) & binnum >= binst(itor)) = itor;
     end
+
+end % function

@@ -1,4 +1,4 @@
-function [stim, Fs, X, f, filled_bins] = generate_stimuli(options)
+function [stim, Fs, X, f, binned_repr] = generate_stimuli(options)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
 
@@ -15,7 +15,11 @@ function [stim, Fs, X, f, filled_bins] = generate_stimuli(options)
     % Stimulus Configuration
     
     % Define Frequency Bin Indices 1 through options.n_bins
-    [binnum, Fs, nfft] = stimuli.get_freq_bins(options);
+    [binnum, Fs, nfft] = stimuli.get_freq_bins(...
+        'min_freq', options.min_freq, ...
+        'max_freq', options.max_freq, ...
+        'bin_duration', options.bin_duration, ...
+        'n_bins', options.n_bins);
 
     % Generate Random Freq Spec in dB Acccording to Frequency Bin Index
     
@@ -53,4 +57,8 @@ function [stim, Fs, X, f, filled_bins] = generate_stimuli(options)
     s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
     ss = [1; s; conj(flipud(s))];
     stim = ifft(ss); % transform from freq to time domain
+
+    % get the binned representation
+    binned_repr = -20 * ones(options.n_bins, 1);
+    binned_repr(filled_bins) = 0;
 end % function
