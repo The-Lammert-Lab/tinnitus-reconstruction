@@ -11,7 +11,6 @@ function [stim, Fs, X, f, binned_repr] = generate_stimuli(options)
         options.bin_duration (1,1) {mustBeNumeric} = 0.4
         % options.prob_f (1,1) {mustBeNumeric} = 0.4
         % options.n_trials (1,1) {mustBeNumeric} = 80
-        options.amplitude_values {mustBeNumeric} = linspace(-20, 0, 6)
     end
 
     % Define Frequency Bin Indices 1 through options.n_bins
