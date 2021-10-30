@@ -13,18 +13,9 @@ function [stim, Fs, X, f, filled_bins] = generate_stimuli(options)
     end
 
     % Stimulus Configuration
-    Fs = 2*options.max_freq; % sampling rate of waveform
-    nfft = Fs*options.bin_duration; % number of samples for Fourier transform
-    % nframes = floor(totaldur/options.bin_duration); % number of temporal frames
-
+    
     % Define Frequency Bin Indices 1 through options.n_bins
-    bintops = round(mels2hz(linspace(hz2mels(options.min_freq), hz2mels(options.max_freq), options.n_bins+1)));
-    binst = bintops(1:end-1);
-    binnd = bintops(2:end);
-    binnum = linspace(options.min_freq, options.max_freq, nfft/2);
-    for itor = 1:options.n_bins
-        binnum(binnum <= binnd(itor) & binnum >= binst(itor)) = itor;
-    end
+    [binnum, Fs, nfft] = stimuli.get_freq_bins(options);
 
     % Generate Random Freq Spec in dB Acccording to Frequency Bin Index
     
