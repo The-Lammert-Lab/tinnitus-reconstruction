@@ -1,4 +1,4 @@
-function [stim, Fs, X, f, binned_repr] = generate_stimuli(options)
+function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     % Generate a matrix of stimuli
     % where the matrix is of size nfft x n_trials.
     % Bins are filled with an amplitude value chosen from options.amplitude_values
@@ -25,7 +25,7 @@ function [stim, Fs, X, f, binned_repr] = generate_stimuli(options)
     binned_repr = zeros(options.n_bins, 1);
 
     for ii = 1:options.n_bins
-        this_amplitude_value = options.amplitude_values(randi(length(options.amplitude_values)));
+        this_amplitude_value = -20 * rand();
         binned_repr(ii) = this_amplitude_value;
         X(binnum==ii) = this_amplitude_value;
     end

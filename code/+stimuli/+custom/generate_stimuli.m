@@ -1,4 +1,4 @@
-function [stim, Fs, X, f, binned_repr] = generate_stimuli(options)
+function [stim, Fs, X, binned_repr] = generate_stimuli(options)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
 
