@@ -34,7 +34,7 @@ function Protocol(options)
 
     %% Setup
 
-    stimuli = Stimuli(options.config);
+    stimuli = Stimuli(config);
     
     % Compute the total trials done
     total_trials_done = 0;
