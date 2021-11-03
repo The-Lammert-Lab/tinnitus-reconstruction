@@ -1,4 +1,4 @@
-function [y, X] = subject_selection_process(self, signal, stimulus_type)
+function [y, X, binned_repr] = subject_selection_process(self, signal, stimulus_type)
 
     % Model of a subject performing the task.
     % Takes in a signal (the gold standard)
@@ -13,12 +13,13 @@ function [y, X] = subject_selection_process(self, signal, stimulus_type)
     switch stimulus_type
     case 'default'
         X = round(rand(length(signal), self.n_trials));
+        binned_repr = []; % binned_repr is not defined for this stimulus generation process
     case 'brimijoin'
-        [~, ~, X, ~] = self.brimijoin_generate_stimuli_matrix();
+        [~, ~, X, binned_repr] = self.brimijoin_generate_stimuli_matrix();
     case 'custom'
-        [~, ~, X, ~] = self.custom_generate_stimuli_matrix();
+        [~, ~, X, binned_repr] = self.custom_generate_stimuli_matrix();
     case 'white'
-        [~, ~, X, ~] = self.white_generate_stimuli_matrix();
+        [~, ~, X, binned_repr] = self.white_generate_stimuli_matrix();
     end
 
     e = X' * signal();
