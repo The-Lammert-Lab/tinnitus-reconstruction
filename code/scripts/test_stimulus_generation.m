@@ -6,7 +6,7 @@
 
 %% Parameters
 
-n_trials = [100, 1000];%, 3000, 10000, 20000];
+n_trials = [100, 1000, 3000, 10000, 20000];
 
 %% Generate stimuli
 
@@ -93,9 +93,79 @@ for ii = 1:length(n_trials)
 end
 
 % Transform back to spectrum representation
-recon_binned_spect_brimijoin    = binnedrepr2spect(recon_binned_brimijoin', B);
-recon_binned_spect_custom       = binnedrepr2spect(recon_binned_custom', B);
-recon_binned_spect_white        = binnedrepr2spect(recon_binned_white', B);
+recon_binned_spect_brimijoin    = binnedrepr2spect(recon_binned_brimijoin', B)';
+recon_binned_spect_custom       = binnedrepr2spect(recon_binned_custom', B)';
+recon_binned_spect_white        = binnedrepr2spect(recon_binned_white', B)';
 
 %% Visualization
 
+% Output are recon_binned_spect_* which are 100x2
+% and recon_* which are 8800x2
+% as well as the gold-standard, spect, which is 8800x1.
+
+% Visualization of spectrum-based reconstruction
+% with one plot per number of trials
+% and subplots for each stimulus generation method.
+for qq = 1:length(n_trials)
+
+    fig = new_figure();
+    n_subplots = 5;
+    frequencies = 1:2:(2*length(spect));
+
+    for ii = n_subplots:-1:1
+        ax(ii) = subplot(n_subplots, 1, ii);
+    end
+
+    % plot the gold standard spectrum (normalized axes)
+    plot(ax(1), 1e-3 * frequencies, normalize(spect))
+
+    % plot the representation using the default stimulus generation method
+    plot(ax(2), 1e-3 * frequencies, normalize(recon_default(:, qq)))
+
+    % plot the representation using the custom stimulus generation method
+    plot(ax(3), 1e-3 * frequencies, normalize(recon_custom(:, qq)))
+
+    % plot the representation using the brimijoin stimulus generation method
+    plot(ax(4), 1e-3 * frequencies, normalize(recon_brimijoin(:, qq)))
+
+    % plot the representation using the white noise stimulus generation method
+    plot(ax(5), 1e-3 * frequencies, normalize(recon_white(:, qq)))
+
+    xlabel('frequency (kHz)')
+    axlib.equalize('xy')
+    figlib.pretty()
+    figlib.label()
+
+end % qq
+
+% Visualization of bin-basedd reconstruction
+% with one ploit per number of trials
+% and subplots for each stimulus generation method.
+for qq = 1:length(n_trials)
+
+    fig = new_figure();
+    n_subplots = 4;
+    frequencies = 1:2:(2*length(spect));
+
+    for ii = n_subplots:-1:1
+        ax(ii) = subplot(n_subplots, 1, ii);
+    end
+
+    % plot the gold standard spectrum (normalized axes)
+    plot(ax(1), 1e-3 * frequencies, normalize(spect))
+
+    % plot the representation using the custom stimulus generation method
+    plot(ax(2), 1e-3 * frequencies, normalize(recon_binned_spect_custom(:, qq)))
+
+    % plot the representation using the brimijoin stimulus generation method
+    plot(ax(3), 1e-3 * frequencies, normalize(recon_binned_spect_brimijoin(:, qq)))
+
+    % plot the representation using the white noise stimulus generation method
+    plot(ax(4), 1e-3 * frequencies, normalize(recon_binned_spect_white(:, qq)))
+
+    xlabel('frequency (kHz)')
+    axlib.equalize('xy')
+    figlib.pretty()
+    figlib.label()
+
+end % qq
