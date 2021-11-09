@@ -43,74 +43,177 @@ spect = half_cosine(t, 10);
 [y_white, X_white, binned_repr_white]               = stimuli.subject_selection_process(spect, 'white');
 [y_white_no_bins, X_white_no_bins]                  = stimuli.subject_selection_process(spect, 'white_no_bins');
 
-%% Reconstructions using the spectrum
+%% Vanilla reverse correlation reconstructions using the spectrum
 
-recon_default           = zeros(size(X_default, 1), length(n_trials));
-recon_brimijoin         = zeros(size(X_brimijoin, 1), length(n_trials));
-recon_custom            = zeros(size(X_custom, 1), length(n_trials));
-recon_white             = zeros(size(X_white, 1), length(n_trials));
-recon_white_no_bins     = zeros(size(X_white_no_bins, 1), length(n_trials));
+recon_gs_default           = zeros(size(X_default, 1), length(n_trials));
+recon_gs_brimijoin         = zeros(size(X_brimijoin, 1), length(n_trials));
+recon_gs_custom            = zeros(size(X_custom, 1), length(n_trials));
+recon_gs_white             = zeros(size(X_white, 1), length(n_trials));
+recon_gs_white_no_bins     = zeros(size(X_white_no_bins, 1), length(n_trials));
 
 for ii = 1:length(n_trials)
     % default
     this_y_default = y_default(1:n_trials(ii));
     this_X_default = X_default(:, 1:n_trials(ii));
-    recon_default(:, ii) = cs(this_y_default, this_X_default');
+    recon_gs_default(:, ii) = gs(this_y_default, this_X_default');
     
     % brimijoin
     this_y_brimijoin = y_brimijoin(1:n_trials(ii));
     this_X_brimijoin = X_brimijoin(:, 1:n_trials(ii));
-    recon_brimijoin(:, ii) = cs(this_y_brimijoin, this_X_brimijoin');
+    recon_gs_brimijoin(:, ii) = gs(this_y_brimijoin, this_X_brimijoin');
     
     % custom
     this_y_custom = y_custom(1:n_trials(ii));
     this_X_custom = X_custom(:, 1:n_trials(ii));
-    recon_custom(:, ii) = cs(this_y_custom, this_X_custom');
+    recon_gs_custom(:, ii) = gs(this_y_custom, this_X_custom');
     
     % white
     this_y_white = y_white(1:n_trials(ii));
     this_X_white = X_white(:, 1:n_trials(ii));
-    recon_white(:, ii) = cs(this_y_white, this_X_white');
+    recon_gs_white(:, ii) = gs(this_y_white, this_X_white');
 
     % white no bins
     this_y_white_no_bins = y_white_no_bins(1:n_trials(ii));
     this_X_white_no_bins = X_white_no_bins(:, 1:n_trials(ii));
-    recon_white_no_bins(:, ii) = cs(this_y_white_no_bins, this_X_white_no_bins');
+    recon_gs_white_no_bins(:, ii) = gs(this_y_white_no_bins, this_X_white_no_bins');
 end
 
-%% Reconstructions using the binned representation
+%% CS reconstructions using the spectrum
 
-recon_binned_brimijoin  = zeros(stimuli.n_bins, length(n_trials));
-recon_binned_custom     = zeros(stimuli.n_bins, length(n_trials));
-recon_binned_white      = zeros(stimuli.n_bins, length(n_trials));
+recon_cs_default           = zeros(size(X_default, 1), length(n_trials));
+recon_cs_brimijoin         = zeros(size(X_brimijoin, 1), length(n_trials));
+recon_cs_custom            = zeros(size(X_custom, 1), length(n_trials));
+recon_cs_white             = zeros(size(X_white, 1), length(n_trials));
+recon_cs_white_no_bins     = zeros(size(X_white_no_bins, 1), length(n_trials));
+
+for ii = 1:length(n_trials)
+    % default
+    this_y_default = y_default(1:n_trials(ii));
+    this_X_default = X_default(:, 1:n_trials(ii));
+    recon_cs_default(:, ii) = cs(this_y_default, this_X_default');
+    
+    % brimijoin
+    this_y_brimijoin = y_brimijoin(1:n_trials(ii));
+    this_X_brimijoin = X_brimijoin(:, 1:n_trials(ii));
+    recon_cs_brimijoin(:, ii) = cs(this_y_brimijoin, this_X_brimijoin');
+    
+    % custom
+    this_y_custom = y_custom(1:n_trials(ii));
+    this_X_custom = X_custom(:, 1:n_trials(ii));
+    recon_cs_custom(:, ii) = cs(this_y_custom, this_X_custom');
+    
+    % white
+    this_y_white = y_white(1:n_trials(ii));
+    this_X_white = X_white(:, 1:n_trials(ii));
+    recon_cs_white(:, ii) = cs(this_y_white, this_X_white');
+
+    % white no bins
+    this_y_white_no_bins = y_white_no_bins(1:n_trials(ii));
+    this_X_white_no_bins = X_white_no_bins(:, 1:n_trials(ii));
+    recon_cs_white_no_bins(:, ii) = cs(this_y_white_no_bins, this_X_white_no_bins');
+end
+
+%% CS reconstructions using the binned representation
+
+recon_cs_binned_brimijoin  = zeros(stimuli.n_bins, length(n_trials));
+recon_cs_binned_custom     = zeros(stimuli.n_bins, length(n_trials));
+recon_cs_binned_white      = zeros(stimuli.n_bins, length(n_trials));
 
 for ii = 1:length(n_trials)
     % brimijoin
     this_y_brimijoin = y_brimijoin(1:n_trials(ii));
     this_binned_repr_brimijoin = binned_repr_brimijoin(:, 1:n_trials(ii));
-    recon_binned_brimijoin(:, ii) = cs(this_y_brimijoin, this_binned_repr_brimijoin');
+    recon_cs_binned_brimijoin(:, ii) = cs(this_y_brimijoin, this_binned_repr_brimijoin');
     
     % custom
     this_y_custom = y_custom(1:n_trials(ii));
     this_binned_repr_custom = binned_repr_custom(:, 1:n_trials(ii));
-    recon_binned_custom(:, ii) = cs(this_y_custom, this_binned_repr_custom');
+    recon_cs_binned_custom(:, ii) = cs(this_y_custom, this_binned_repr_custom');
     
     % white
     this_y_white = y_white(1:n_trials(ii));
     this_binned_repr_white = binned_repr_white(:, 1:n_trials(ii));
-    recon_binned_white(:, ii) = cs(this_y_white, this_binned_repr_white');
+    recon_cs_binned_white(:, ii) = cs(this_y_white, this_binned_repr_white');
 end
 
 % Transform back to spectrum representation
-recon_binned_spect_brimijoin    = binnedrepr2spect(recon_binned_brimijoin', B)';
-recon_binned_spect_custom       = binnedrepr2spect(recon_binned_custom', B)';
-recon_binned_spect_white        = binnedrepr2spect(recon_binned_white', B)';
+recon_cs_binned_spect_brimijoin    = binnedrepr2spect(recon_cs_binned_brimijoin', B)';
+recon_cs_binned_spect_custom       = binnedrepr2spect(recon_cs_binned_custom', B)';
+recon_cs_binned_spect_white        = binnedrepr2spect(recon_cs_binned_white', B)';
 
 %% Visualization
 
-% Output are recon_binned_spect_* which are 100x2
-% and recon_* which are 8800x2
-% as well as the gold-standard, spect, which is 8800x1.
+% The gold standard is a 8800x1 vector stored in `spect`.
+% The reconstructions are 8800 x n_trials matrices stored
+% in variables beginning with `recon_`, e.g.,
+% `recon_cs_white`.
+%
+% We generate one figure for each combination
+% of number of samples (n_trials)
+% and stimulus generation method.
+
+recons_gs = {...
+    recon_gs_default, ...
+    recon_gs_brimijoin, ...
+    recon_gs_custom, ...
+    recon_gs_white, ...
+    recon_gs_white_no_bins
+};
+
+recons_cs = {...
+    recon_cs_default, ...
+    recon_cs_brimijoin, ...
+    recon_cs_custom, ...
+    recon_cs_white, ...
+    recon_cs_white_no_bins
+};
+
+stimuli_types = {...
+    'default', ...
+    'brimijoin', ...
+    'custom', ...
+    'white', ...
+    'white-no-bins'
+};
+
+reconstruction_type = {...
+    'vanilla', ...
+    'cs'
+};
+
+for ii = 1:length(stimuli_types)
+    for qq = 1:length(n_trials)
+        fig = new_figure();
+        fig.Name = ['reconstruction_half-cosine_', 'n_trials=' num2str(n_trials(qq)), ...
+                    '_', 'stimuli-type=', stimuli_types{ii}];
+        n_subplots = 3;
+
+        for ww = n_subplots:-1:1
+            ax(ww) = subplot(n_subplots, 1, ww);
+        end
+
+        % plot the gold-standard spectrum (normalized)
+        plot(ax(1), 1e-3 * frequencies, normalize(spect));
+
+        % plot the reverse correlation reconstruction (normalized)
+        plot(ax(2), 1e-3 * frequencies, normalize(recons_gs{ii}(:, qq)))
+
+        % plot the compressed sensing reconstruction (normalized)
+        plot(ax(3), 1e-3 * frequencies, normalize(recons_cs{ii}(:, qq)))
+
+        xlabel('frequency (kHz)')
+        title(['reconstruction half-cosine ', 'n-trials=', num2str(n_trials(qq)), ...
+              ' stimuli-type=', stimuli_types{ii}]);
+        axlib.equalize('xy')
+        figlib.pretty()
+        figlib.label()
+
+    end % qq
+end % ii
+
+figlib.saveall('Location', '~/data/figures')
+
+return
 
 % Visualization of spectrum-based reconstruction
 % with one plot per number of trials

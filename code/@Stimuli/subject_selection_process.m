@@ -24,7 +24,7 @@ function [y, X, binned_repr] = subject_selection_process(self, signal, stimulus_
         [~, ~, X, binned_repr] = self.white_no_bins_generate_stimuli_matrix();
     end
 
-    e = X' * signal();
+    e = X' * signal(:);
     y = double(e <= prctile(e, 50));
     y(y == 0) = -1;
 
