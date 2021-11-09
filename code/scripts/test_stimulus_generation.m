@@ -45,10 +45,11 @@ spect = half_cosine(t, 10);
 
 %% Reconstructions using the spectrum
 
-recon_default   = zeros(size(X_default, 1), length(n_trials));
-recon_brimijoin = zeros(size(X_brimijoin, 1), length(n_trials));
-recon_custom    = zeros(size(X_custom, 1), length(n_trials));
-recon_white     = zeros(size(X_white, 1), length(n_trials));
+recon_default           = zeros(size(X_default, 1), length(n_trials));
+recon_brimijoin         = zeros(size(X_brimijoin, 1), length(n_trials));
+recon_custom            = zeros(size(X_custom, 1), length(n_trials));
+recon_white             = zeros(size(X_white, 1), length(n_trials));
+recon_white_no_bins     = zeros(size(X_white_no_bins, 1), length(n_trials));
 
 for ii = 1:length(n_trials)
     % default
@@ -70,6 +71,11 @@ for ii = 1:length(n_trials)
     this_y_white = y_white(1:n_trials(ii));
     this_X_white = X_white(:, 1:n_trials(ii));
     recon_white(:, ii) = cs(this_y_white, this_X_white');
+
+    % white no bins
+    this_y_white_no_bins = y_white_no_bins(1:n_trials(ii));
+    this_X_white_no_bins = X_white_no_bins(:, 1:n_trials(ii));
+    recon_white_no_bins(:, ii) = cs(this_y_white_no_bins, this_X_white_no_bins');
 end
 
 %% Reconstructions using the binned representation
@@ -113,7 +119,7 @@ for qq = 1:length(n_trials)
 
     fig = new_figure();
     fig.Name = ['spect, ', 'n_trials=', num2str(n_trials(qq))];
-    n_subplots = 5;
+    n_subplots = 6;
     frequencies = 1:2:(2*length(spect));
 
     for ii = n_subplots:-1:1
@@ -134,6 +140,9 @@ for qq = 1:length(n_trials)
 
     % plot the representation using the white noise stimulus generation method
     plot(ax(5), 1e-3 * frequencies, normalize(recon_white(:, qq)))
+
+    % plot the representation using the binless white noise stimulus generation method
+    plot(ax(6), 1e-3 * frequencies, normalize(recon_white_no_bins(:, qq)))
 
     xlabel('frequency (kHz)')
     axlib.equalize('xy')
