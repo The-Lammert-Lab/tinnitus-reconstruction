@@ -20,6 +20,8 @@ function [y, X, binned_repr] = subject_selection_process(self, signal, stimulus_
         [~, ~, X, binned_repr] = self.custom_generate_stimuli_matrix();
     case 'white'
         [~, ~, X, binned_repr] = self.white_generate_stimuli_matrix();
+    case 'white_no_bins'
+        [~, ~, X, binned_repr] = self.white_no_bins_generate_stimuli_matrix();
     end
 
     e = X' * signal();

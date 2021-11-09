@@ -41,6 +41,7 @@ spect = half_cosine(t, 10);
 [y_brimijoin, X_brimijoin, binned_repr_brimijoin]   = stimuli.subject_selection_process(spect, 'brimijoin');
 [y_custom, X_custom, binned_repr_custom]            = stimuli.subject_selection_process(spect, 'custom');
 [y_white, X_white, binned_repr_white]               = stimuli.subject_selection_process(spect, 'white');
+[y_white_no_bins, X_white_no_bins]                  = stimuli.subject_selection_process(spect, 'white_no_bins');
 
 %% Reconstructions using the spectrum
 
