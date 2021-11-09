@@ -109,6 +109,7 @@ recon_binned_spect_white        = binnedrepr2spect(recon_binned_white', B)';
 for qq = 1:length(n_trials)
 
     fig = new_figure();
+    fig.Name = ['spect, ', 'n_trials=', num2str(n_trials(qq))];
     n_subplots = 5;
     frequencies = 1:2:(2*length(spect));
 
@@ -138,12 +139,13 @@ for qq = 1:length(n_trials)
 
 end % qq
 
-% Visualization of bin-basedd reconstruction
+% Visualization of bin-based reconstruction
 % with one ploit per number of trials
 % and subplots for each stimulus generation method.
 for qq = 1:length(n_trials)
 
     fig = new_figure();
+    fig.Name = ['binned, ', 'n_trials=', num2str(n_trials(qq))];
     n_subplots = 4;
     frequencies = 1:2:(2*length(spect));
 
