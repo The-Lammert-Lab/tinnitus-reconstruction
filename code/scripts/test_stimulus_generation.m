@@ -32,6 +32,8 @@ stimuli = Stimuli(options);
 % or sampling frequency.
 
 [~, ~, spect, ~] = stimuli.custom_generate_stimuli();
+t = linspace(-1, 1, length(spect));
+spect = half_cosine(t, 10);
 
 %% Get subject responses
 
