@@ -15,8 +15,8 @@ function [responses, stimuli] = collect_data(options)
     end
 
     % Find the files containing the data
-    glob_responses = pathlib.join(config.datadir, [config.subjectID '_responses*.csv']);
-    glob_stimuli = pathlib.join(config.datadir, [config.subjectID '_stimuli*.csv']);
+    glob_responses = pathlib.join(config.data_dir, [config.subjectID '_responses*.csv']);
+    glob_stimuli = pathlib.join(config.data_dir, [config.subjectID '_stimuli*.csv']);
     files_responses = dir(glob_responses);
     files_stimuli = dir(glob_stimuli);
 

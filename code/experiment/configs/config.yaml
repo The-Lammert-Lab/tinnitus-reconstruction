@@ -1,5 +1,5 @@
 subjectID: pilot_AH_test
-datadir: /home/alec/code/NIH-Proposal/code/experiment/Data
+data_dir: /home/alec/code/NIH-Proposal/code/experiment/Data
 n_trials_per_block: 100
 n_blocks: 10
 total_trials: 1000
