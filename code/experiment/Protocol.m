@@ -6,14 +6,10 @@
 %
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
-
-% % Setup
-% subjectID = 'M1'; % subject identifier
-% datadir = './Data'; % directory to locate responses
-% today = datestr(date,'yyyymmdd'); % today's date (for filenames)
-% thetime = datestr(now,'HHMMSS'); % today's date (for filenames)
-% numtrials = 80; % number of trials
-% numblocks = 20; % number of blocks
+% 
+% 
+%   Protocol()
+%   Protocol('config', 'path2config')
 
 function Protocol(options)
 
@@ -23,8 +19,9 @@ function Protocol(options)
 
     this_datetime = datetime();
 
-    % open a UI to get the config file for this set of trials
-    % parse the config file to get options
+    % Is a config file provided?
+    %   If so, read it.
+    %   If not, open a GUI dialog window to find it.
     if isempty(options.config)
         [file, abs_path] = uigetfile();
         config = ReadYaml(pathlib.join(abs_path, file));
@@ -38,7 +35,7 @@ function Protocol(options)
     
     % Compute the total trials done
     total_trials_done = 0;
-    d = dir(pathlib.join(config.datadir, [config.subjectID '_responses*.csv']));
+    d = dir(pathlib.join(config.data_dir, [config.subjectID '_responses*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
@@ -48,11 +45,24 @@ function Protocol(options)
 
     % Create files needed for saving the data
     uuid = char(java.util.UUID.randomUUID);
-    filename_responses = pathlib.join(config.datadir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-    filename_stimuli = pathlib.join(config.datadir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-    filename_meta = pathlib.join(config.datadir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+    filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
+    filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
+    filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
 
     fid_responses = fopen(filename_responses, 'w');
+
+    % Is this an A-X experiment protocol?
+    %   If it's an A-X experiment protocol,
+    %   then we should play a target sound before each stimulus
+    %   for each trial.
+    %   Whether we are doing an A-X protocol or an X protocol
+    %   is determined by the config file.
+    if isfield(config, 'target_dir') && ~isempty(config.target_dir)
+        % Load the sound file.
+        [target_sound, target_fs] = audioread(config.target_dir);
+    else
+        target_sound = [];
+    end
 
 
     %% Load Presentations Screens
@@ -84,12 +94,19 @@ function Protocol(options)
 
     counter = 0;
     while (1)
+        counter = counter + 1;
 
         % Reminder Screen
         imshow(Screen2);
 
+        % Present Target (if A-X protocol)
+        if ~isempty(target_sound)
+            soundsc(target_sound, target_fs)
+            pause(0.1)
+        end
+
+
         % Present Stimulus
-        counter = counter + 1;
         soundsc(stimuli_matrix(:, counter), Fs)
             
         % Obtain Response
@@ -143,9 +160,9 @@ function Protocol(options)
             uuid = char(java.util.UUID.randomUUID);
 
             % Generate new files
-            filename_responses = pathlib.join(config.datadir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-            filename_stimuli = pathlib.join(config.datadir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-            filename_meta = pathlib.join(config.datadir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+            filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
+            filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
+            filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
 
             fid_responses = fopen(filename_responses, 'w');
 

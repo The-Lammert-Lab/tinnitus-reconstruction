@@ -1,5 +1,5 @@
 subjectID: hparams3
-datadir: ./Data
+data_dir: ./Data
 n_trials: 80
 n_blocks: 20
 min_freq: 100

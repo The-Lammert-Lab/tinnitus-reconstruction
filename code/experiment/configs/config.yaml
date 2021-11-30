@@ -1,5 +1,5 @@
 subjectID: pilot_AH_test
-datadir: /home/alec/code/NIH-Proposal/code/experiment/Data
+data_dir: /home/alec/code/NIH-Proposal/code/experiment/Data
 n_trials_per_block: 100
 n_blocks: 10
 total_trials: 1000
@@ -10,3 +10,4 @@ bin_duration: 0.5
 totaldur: 1
 n_bins_filled_mean: 100
 n_bins_filled_var: 30
+# target_dir: /home/alec/data/sounds/ATA_Tinnitus_Buzzing_Tone_1sec.wav
