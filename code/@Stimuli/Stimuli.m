@@ -14,6 +14,15 @@ classdef Stimuli
 
     methods
         function self = Stimuli(options)
+            % Constructor for Stimuli class
+            %
+            %   stimuli = Stimuli() 
+            %   stimuli = Stimuli(options)
+            % 
+            % Arguments:
+            %   options: a 1x1 struct mapping to the properties of the class
+
+            % default values
             self.min_freq = 100;
             self.max_freq = 22e3;
             self.n_bins = 100;
@@ -23,16 +32,19 @@ classdef Stimuli
             self.n_bins_filled_var = 3;
             self.amplitude_values = linspace(-20, 0, 6);
 
+            % if called with no arguments,
+            % instantiate with default arguments
             if nargin < 1
                 return
             end
 
+            % set properties from an input struct, options
             self_fields = fieldnames(self);
             options_fields = fieldnames(options);
             if isa(options, 'struct')
                 for ii = 1:length(options_fields)
                     is_in = strcmp(options_fields(ii), self_fields);
-                    if sum(is_in) == 1
+                    if any(is_in)
                         self.(self_fields{is_in}) = options.(options_fields{ii});
                     end
                 end
