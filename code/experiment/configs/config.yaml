@@ -10,4 +10,4 @@ bin_duration: 0.5
 totaldur: 1
 n_bins_filled_mean: 100
 n_bins_filled_var: 30
-target_audio: /home/alec/data/sounds/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+target_audio_filepath: /home/alec/data/sounds/ATA_Tinnitus_Buzzing_Tone_1sec.wav
