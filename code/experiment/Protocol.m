@@ -57,9 +57,9 @@ function Protocol(options)
     %   for each trial.
     %   Whether we are doing an A-X protocol or an X protocol
     %   is determined by the config file.
-    if isfield(config, 'target_dir') && ~isempty(config.target_dir)
+    if isfield(config, 'target_audio') && ~isempty(config.target_audio)
         % Load the sound file.
-        [target_sound, target_fs] = audioread(config.target_dir);
+        [target_sound, target_fs] = audioread(config.target_audio);
     else
         target_sound = [];
     end
