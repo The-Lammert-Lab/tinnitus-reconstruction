@@ -31,7 +31,26 @@ function Protocol(options)
 
     %% Setup
 
+    % Instantiate stimulus generation object
     stimuli = Stimuli(config);
+    
+    % Determine the stimulus generation function
+    if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
+        % There is a weird feature/bug where putting `stimuli_type: white`
+        % in the config file returns a 256x3 matrix of ones.
+        if all(config.stimuli_type(:) == 1)
+            config.stimuli_type = 'white';
+        end
+    else
+        % Default to 'custom' stimulus generation
+        config.stimuli_type = 'custom';
+    end
+    
+    % Set the stimulus generation function as a character vector
+    %   This should be called as an eval statement.
+    %   You can't use an eval inside of an anonymous function,
+    %   so this is a workaround.
+    stimuli_generation_function = ['stimuli.', config.stimuli_type, '_generate_stimuli_matrix()'];
     
     % Compute the total trials done
     total_trials_done = 0;
@@ -75,7 +94,9 @@ function Protocol(options)
     %% Generate stimuli
 
     % Generate a block of stimuli
-    [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
+    % [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
+    [stimuli_matrix, Fs, nfft] = eval(stimuli_generation_function);
+    
 
     % Write the stimuli to file
     writematrix(stimuli_matrix, filename_stimuli);
@@ -102,12 +123,13 @@ function Protocol(options)
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
             soundsc(target_sound, target_fs)
-            pause(0.1)
+            pause(length(target_sound) / target_fs)
         end
 
 
         % Present Stimulus
         soundsc(stimuli_matrix(:, counter), Fs)
+        pause(length(stimuli_matrix(:, counter)) / Fs)
             
         % Obtain Response
         k = waitforbuttonpress;
@@ -167,7 +189,7 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
-            [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
+            [stimuli_matrix, Fs, nfft] = eval(stimuli_generation_function);
 
             % Save stimuli to file
             writematrix(stimuli_matrix, filename_stimuli)
