@@ -1,4 +1,4 @@
-subjectID: test
+subjectID: pilot_AH_stimuli=custom_protocol=AX_mean=100_var=100
 data_dir: /home/alec/code/NIH-Proposal/code/experiment/Data
 n_trials_per_block: 100
 n_blocks: 10
@@ -9,6 +9,6 @@ n_bins: 1000
 bin_duration: 0.5
 totaldur: 1
 n_bins_filled_mean: 100
-n_bins_filled_var: 30
+n_bins_filled_var: 100
 target_audio_filepath: /home/alec/data/sounds/ATA_Tinnitus_Buzzing_Tone_1sec.wav
 stimuli_type: custom

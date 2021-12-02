@@ -29,6 +29,9 @@ function Protocol(options)
         config = ReadYaml(options.config);
     end
 
+    % Set missing options
+    config.n_trials = config.n_trials_per_block;
+
     %% Setup
 
     % Instantiate stimulus generation object
@@ -96,7 +99,7 @@ function Protocol(options)
     % Generate a block of stimuli
     % [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
     [stimuli_matrix, Fs, nfft] = eval(stimuli_generation_function);
-    
+    keyboard
 
     % Write the stimuli to file
     writematrix(stimuli_matrix, filename_stimuli);
