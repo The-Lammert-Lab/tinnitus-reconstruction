@@ -1,8 +1,8 @@
 function [responses, stimuli] = collect_data(options)
 
     arguments
-        options.config char = []
-        options.verbose logical = true
+        options.config (1,:) {mustBeFile} = []
+        options.verbose (1,1) logical = true
     end
 
     % If no config file path is provided,
@@ -19,6 +19,11 @@ function [responses, stimuli] = collect_data(options)
     glob_stimuli = pathlib.join(config.data_dir, [config.subjectID '_stimuli*.csv']);
     files_responses = dir(glob_responses);
     files_stimuli = dir(glob_stimuli);
+
+    % Remove mismatched files
+    [mismatched_response_files, mismatched_stimuli_files] = filematch({files_responses.name}, {files_stimuli.name}, 'delimiter', '_');
+    files_responses(mismatched_response_files) = [];
+    files_stimuli(mismatched_stimuli_files) = [];
 
     % Checks for data validity
     corelib.verb(length(files_responses) ~= length(files_stimuli), 'WARN', 'number of stimuli and response files do not match')
