@@ -6,14 +6,15 @@
 
 %% Preamble
 
-RUN = false;
+RUN = true;
 
 % Set random number seed
 rng(1234);
 
 % Parameters
 n_bins_filled_mean      = [10, 30, 100, 200, 300];
-n_bins_filled_var       = [10, 30, 100, 200, 300];
+n_bins_filled_var       = [3, 10, 20, 30, 100];
+n_bins                  = [30, 100, 200, 300, 1000];
 data_dir                = '/home/alec/data/stimulus-hyperparameter-sweep';
 verbose                 = true;
 
@@ -44,17 +45,21 @@ target_signal = [s{:}];
 f = [f{:}];
 
 % Collect all combinations of parameters
-param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var, 1:size(target_signal, 2));
+param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var, n_bins, 1:size(target_signal, 2));
 
 % Remove combinations of parameters where the s.e.m. is > 1
-param_sets((param_sets(:, 1) ./ param_sets(:, 2)) < 1, :) = [];
+param_sets((param_sets(:, 1) ./ param_sets(:, 2)) <= 1.5, :) = [];
 
-% Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
-fig = new_figure();
-axis square
-scatter(param_sets(:, 1), param_sets(:, 2))
-xlabel('n bins filled mean')
-ylabel('n bins filled var')
+% Remove combinations of parameters where the mean is too close to the maximum
+param_sets(param_sets(:, 1) ./ param_sets(:, 3) >= 2/3, :) = []; 
+
+% % Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
+% fig = new_figure();
+% axis square
+% scatter(param_sets(:, 1), param_sets(:, 2))
+% xlabel('n bins filled mean')
+% ylabel('n bins filled var')
+% figlib.pretty()
 
 %% Run experiment
 
@@ -65,7 +70,8 @@ params_to_do = [];
 for ii = 1:size(param_sets, 1)
     file_ID =   ['n_bins_filled_mean=', num2str(param_sets(ii, 1)), '-', ...
                 'n_bins_filled_var=', num2str(param_sets(ii, 2)), '-', ...
-                'target_signal=', data_names{param_sets(ii, 3)}, ...
+                'n_bins=', num2str(param_sets(ii, 3)), '-', ...
+                'target_signal=', data_names{param_sets(ii, 4)}, ...
                 '.csv'];
     param_string = file_ID(1:end-4);
     
@@ -96,11 +102,11 @@ if RUN
             options = struct;
             options.min_freq            = 100;
             options.max_freq            = 22e3;
-            options.n_bins              = 300;
             options.bin_duration        = size(target_signal, 1) / options.max_freq;
             options.n_trials            = 2e3;
             options.n_bins_filled_mean  = params_to_do(ii, 1);
             options.n_bins_filled_var   = params_to_do(ii, 2);
+            options.n_bins              = params_to_do(ii, 3);
             options.amplitude_values    = linspace(-20, 0, 6);
 
             % Create stimulus generation object
@@ -108,15 +114,16 @@ if RUN
 
             % Generate the stimuli and response data
             % using a model of subject decision process
-            [y, X] = stimuli.subject_selection_process(target_signal(:, params_to_do(ii, 3)), 'custom');
+            [y, X] = stimuli.subject_selection_process(target_signal(:, params_to_do(ii, 4)), 'custom');
 
             % Get the reconstruction using compressed sensing (with basis)
             reconstruction = cs(y, X');
 
             % Save to directory
-            file_ID =   ['n_bins_filled_mean=', num2str(options.n_bins_filled_mean), '-', ...
-                        'n_bins_filled_var=', num2str(options.n_bins_filled_var), '-', ...
-                        'target_signal=', data_names{params_to_do(ii, 3)}, ...
+            file_ID =   ['n_bins_filled_mean=', num2str(param_sets(ii, 1)), '-', ...
+                        'n_bins_filled_var=', num2str(param_sets(ii, 2)), '-', ...
+                        'n_bins=', num2str(param_sets(ii, 3)), '-', ...
+                        'target_signal=', data_names{param_sets(ii, 4)}, ...
                         '.csv'];
             csvwrite(pathlib.join(data_dir, ['stimulus-', file_ID]), X);
             csvwrite(pathlib.join(data_dir, ['response-', file_ID]), y);
@@ -129,6 +136,9 @@ if RUN
     end 
     % progress_bar.release();
 end
+
+return
+% TODO
 
 %% Evaluation
 
@@ -176,3 +186,7 @@ T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_fill
 T2 = sortrows(T2, 'mean_r2', 'descend');
 T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal'});
 T3 = sortrows(T3, 'mean_r2', 'descend');
+
+fig2 = new_figure();
+heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2')
+figlib.pretty()
