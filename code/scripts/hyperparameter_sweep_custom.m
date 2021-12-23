@@ -6,7 +6,7 @@
 
 %% Preamble
 
-RUN = true;
+RUN = false;
 
 % Set random number seed
 rng(1234);
@@ -137,13 +137,12 @@ if RUN
     % progress_bar.release();
 end
 
-return
 % TODO
 
 %% Evaluation
 
 % Get reconstruction files
-reconstruction_files_struct = dir(pathlib.join(data_dir, 'reconstruction*'));
+reconstruction_files_struct = dir(pathlib.join(data_dir, 'reconstruction*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*'));
 reconstructions = cell(size(reconstruction_files_struct));
 reconstruction_files = cell(size(reconstruction_files_struct));
 
@@ -156,21 +155,22 @@ end
 reconstructions = [reconstructions{:}];
 
 % Get the parameter values from the files
-params = cell(length(reconstruction_files), 3);
-pattern = 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)-target_signal=(\w*)';
+params = cell(length(reconstruction_files), 4);
+pattern = 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)-n_bins=(\d*)-target_signal=(\w*)';
 
 for ii = 1:length(reconstruction_files)
-    these_params = regexp(reconstruction_files{ii}, 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)-target_signal=(\w*)', 'tokens');
+    these_params = regexp(reconstruction_files{ii}, pattern, 'tokens');
     if ~(length(these_params) > 1)
-        these_params = mat2cell(these_params{1}(:), 3, 1);
+        these_params = mat2cell(these_params{1}(:), 4, 1);
     end
     params(ii, :) = these_params{:};
 end
 
 % Convert to a data table
-T = cell2table(params, 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'target_signal'});
+T = cell2table(params, 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins', 'target_signal'});
 T.n_bins_filled_mean = str2double(T.n_bins_filled_mean);
 T.n_bins_filled_var = str2double(T.n_bins_filled_var);
+T.n_bins = str2double(T.n_bins);
 
 % Compute reconstruction quality (r^2)
 % T.r2 = zeros(height(T), 1);
@@ -182,11 +182,29 @@ end
 
 T.r2 = r2 .^2;
 T = sortrows(T, 'r2', 'descend');
-T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var'});
+T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins'});
 T2 = sortrows(T2, 'mean_r2', 'descend');
-T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal'});
+T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'n_bins'});
 T3 = sortrows(T3, 'mean_r2', 'descend');
+T4 = T(T.n_bins == 300, :);
+
 
 fig2 = new_figure();
 heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2')
+figlib.pretty()
+
+fig3 = new_figure();
+boxchart(T2.n_bins, T2.mean_r2)
+xlabel('n bins')
+ylabel('r^2')
+figlib.pretty();
+
+fig4 = new_figure();
+scatter(T2.n_bins, T2.mean_r2)
+xlabel('n bins')
+ylabel('r^2')
+figlib.pretty();
+
+fig5 = new_figure();
+heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2')
 figlib.pretty()
