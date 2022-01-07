@@ -6,15 +6,16 @@
 
 %% Preamble
 
-RUN = false;
+RUN = true;
+OVERWRITE = true;
 
 % Set random number seed
 rng(1234);
 
 % Parameters
-n_bins_filled_mean      = [10, 30, 100, 200, 300];
-n_bins_filled_var       = [3, 10, 20, 30, 100];
-n_bins                  = [30, 100, 200, 300, 1000];
+n_bins_filled_mean      = [1, 3, 10, 20, 30];
+n_bins_filled_var       = [0.01, 1, 3, 10];
+n_bins                  = 100;
 data_dir                = '/home/alec/data/stimulus-hyperparameter-sweep';
 verbose                 = true;
 
@@ -79,7 +80,7 @@ for ii = 1:size(param_sets, 1)
     response_filepath       = pathlib.join(data_dir, ['response-', file_ID]);
     reconstruction_filepath = pathlib.join(data_dir, ['reconstruction-', file_ID]);
 
-    if ~(isfile(stimulus_filepath) && isfile(response_filepath) && isfile(reconstruction_filepath))
+    if OVERWRITE || ~(isfile(stimulus_filepath) && isfile(response_filepath) && isfile(reconstruction_filepath))
         corelib.verb(verbose, 'INFO', ['Output files containing parameter set #', num2str(ii), ': "', param_string, '"', ...
                                        'unable to be acquired. Will reacquire.'])
         params_to_do(end+1, :) = param_sets(ii, :);
@@ -118,6 +119,8 @@ if RUN
 
             % Get the reconstruction using compressed sensing (with basis)
             reconstruction = cs(y, X');
+            % Get the reconstruction using compressed sensing (no basis)
+            reconstruction_nb = cs_no_basis(y, X');
 
             % Save to directory
             file_ID =   ['n_bins_filled_mean=', num2str(param_sets(ii, 1)), '-', ...
@@ -128,6 +131,7 @@ if RUN
             csvwrite(pathlib.join(data_dir, ['stimulus-', file_ID]), X);
             csvwrite(pathlib.join(data_dir, ['response-', file_ID]), y);
             csvwrite(pathlib.join(data_dir, ['reconstruction-', file_ID]), reconstruction);
+            csvwrite(pathlib.join(data_dir, ['reconstruction_nb', file_ID]), reconstruction_nb);
         catch
             corelib.verb(verbose, 'WARN', ['Failed to compute for parameter set: "', param_string, '".'])
         end
@@ -142,29 +146,19 @@ end
 %% Evaluation
 
 % Get reconstruction files
-reconstruction_files_struct = dir(pathlib.join(data_dir, 'reconstruction*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*'));
-reconstructions = cell(size(reconstruction_files_struct));
-reconstruction_files = cell(size(reconstruction_files_struct));
-
-for ii = 1:length(reconstructions)
-    reconstruction_files{ii} = pathlib.join(reconstruction_files_struct(ii).folder, reconstruction_files_struct(ii).name);
-    reconstructions{ii} = csvread(reconstruction_files{ii});
-end
-
-% Convert to a matrix of n_fft x n_param_sets
-reconstructions = [reconstructions{:}];
+file_glob = pathlib.join(data_dir, 'reconstruction*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*');
+file_glob_nb = pathlib.join(data_dir, 'reconstruction_nb*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*');
+[reconstructions, reconstruction_files] = collect_reconstructions(file_glob);
+[reconstructions_nb, reconstruction_files_nb] = collect_reconstructions(file_glob_nb);
 
 % Get the parameter values from the files
-params = cell(length(reconstruction_files), 4);
 pattern = 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)-n_bins=(\d*)-target_signal=(\w*)';
 
-for ii = 1:length(reconstruction_files)
-    these_params = regexp(reconstruction_files{ii}, pattern, 'tokens');
-    if ~(length(these_params) > 1)
-        these_params = mat2cell(these_params{1}(:), 4, 1);
-    end
-    params(ii, :) = these_params{:};
-end
+params = collect_parameters(reconstruction_files, pattern, 4);
+params_nb = collect_parameters(reconstruction_files_nb, pattern, 4);
+
+% Combine parameters using different bases
+basis = [true(size(params, 1), 1); false(size(params_nb, 1), 1)];
 
 % Convert to a data table
 T = cell2table(params, 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins', 'target_signal'});
@@ -172,39 +166,61 @@ T.n_bins_filled_mean = str2double(T.n_bins_filled_mean);
 T.n_bins_filled_var = str2double(T.n_bins_filled_var);
 T.n_bins = str2double(T.n_bins);
 
-% Compute reconstruction quality (r^2)
-% T.r2 = zeros(height(T), 1);
+% Add basis as new column
+T.basis = basis;
 
+% Compute reconstruction quality (r^2)
+
+% with basis
 r2 = zeros(length(reconstruction_files), 1);
 for ii = 1:length(reconstruction_files)
     r2(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions(:, ii));
 end
 
+% no basis
+r2_nb = zeros(length(reconstruction_files), 1);
+for ii = 1:length(reconstruction_files)
+    r2_nb(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions_nb(:, ii));
+end
+
 T.r2 = r2 .^2;
+T.r2_nb = r2_nb .^2;
+
 T = sortrows(T, 'r2', 'descend');
 T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins'});
 T2 = sortrows(T2, 'mean_r2', 'descend');
 T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'n_bins'});
 T3 = sortrows(T3, 'mean_r2', 'descend');
-T4 = T(T.n_bins == 300, :);
+T4 = T(T.n_bins == 100, :);
 
 
 fig2 = new_figure();
-heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2')
-figlib.pretty()
+heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
+title('r^2 as a fcn of stimulus parameters')
+figlib.pretty('FontSize', 36)
 
 fig3 = new_figure();
-boxchart(T2.n_bins, T2.mean_r2)
+boxchart(categorical(T.n_bins), T.r2)
 xlabel('n bins')
 ylabel('r^2')
-figlib.pretty();
+title('number of bins vs. r^2')
+figlib.pretty('FontSize', 36);
+
+fig3a = new_figure();
+boxchart(categorical(T2.n_bins), T2.mean_r2)
+xlabel('n bins')
+ylabel('r^2')
+title('number of bins vs. mean r^2')
+figlib.pretty('FontSize', 36);
 
 fig4 = new_figure();
 scatter(T2.n_bins, T2.mean_r2)
 xlabel('n bins')
 ylabel('r^2')
-figlib.pretty();
+title('number of bins vs. mean r^2')
+figlib.pretty('FontSize', 36);
 
 fig5 = new_figure();
-heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2')
-figlib.pretty()
+heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
+title('r^2 as a fcn of stimulus parameters (n bins = 300)')
+figlib.pretty('FontSize', 36)
