@@ -45,6 +45,9 @@ function params = collect_parameters(filenames, pattern, n_params)
 
     for ii = 1:length(filenames)
         these_params = regexp(filenames{ii}, pattern, 'tokens');
+        if isempty(these_params)
+            error(['regex failed to match with string: ', filenames{ii}, ' and regex pattern: ', pattern])
+        end
         if ~(length(these_params) > 1)
             these_params = mat2cell(these_params{1}(:), n_params, 1);
         end

@@ -7,7 +7,7 @@
 %% Preamble
 
 RUN = true;
-OVERWRITE = true;
+OVERWRITE = false;
 
 % Set random number seed
 rng(1234);
@@ -152,7 +152,7 @@ file_glob_nb = pathlib.join(data_dir, 'reconstruction_nb*n_bins_filled_mean=*-n_
 [reconstructions_nb, reconstruction_files_nb] = collect_reconstructions(file_glob_nb);
 
 % Get the parameter values from the files
-pattern = 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)-n_bins=(\d*)-target_signal=(\w*)';
+pattern = 'n_bins_filled_mean=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-n_bins_filled_var=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-n_bins=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-target_signal=(\w*)';
 
 params = collect_parameters(reconstruction_files, pattern, 4);
 params_nb = collect_parameters(reconstruction_files_nb, pattern, 4);
@@ -161,7 +161,7 @@ params_nb = collect_parameters(reconstruction_files_nb, pattern, 4);
 basis = [true(size(params, 1), 1); false(size(params_nb, 1), 1)];
 
 % Convert to a data table
-T = cell2table(params, 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins', 'target_signal'});
+T = cell2table([params; params_nb], 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins', 'target_signal'});
 T.n_bins_filled_mean = str2double(T.n_bins_filled_mean);
 T.n_bins_filled_var = str2double(T.n_bins_filled_var);
 T.n_bins = str2double(T.n_bins);
@@ -172,19 +172,18 @@ T.basis = basis;
 % Compute reconstruction quality (r^2)
 
 % with basis
-r2 = zeros(length(reconstruction_files), 1);
-for ii = 1:length(reconstruction_files)
+r2 = zeros(size(params, 1), 1);
+for ii = 1:size(params, 1)
     r2(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions(:, ii));
 end
 
 % no basis
-r2_nb = zeros(length(reconstruction_files), 1);
-for ii = 1:length(reconstruction_files)
+r2_nb = zeros(size(params_nb, 1), 1);
+for ii = 1:size(params_nb, 1)
     r2_nb(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions_nb(:, ii));
 end
 
-T.r2 = r2 .^2;
-T.r2_nb = r2_nb .^2;
+T.r2 = [r2; r2_nb] .^2;
 
 T = sortrows(T, 'r2', 'descend');
 T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins'});
