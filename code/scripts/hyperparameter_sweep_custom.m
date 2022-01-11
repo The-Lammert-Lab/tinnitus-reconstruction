@@ -131,7 +131,7 @@ if RUN
             csvwrite(pathlib.join(data_dir, ['stimulus-', file_ID]), X);
             csvwrite(pathlib.join(data_dir, ['response-', file_ID]), y);
             csvwrite(pathlib.join(data_dir, ['reconstruction-', file_ID]), reconstruction);
-            csvwrite(pathlib.join(data_dir, ['reconstruction_nb', file_ID]), reconstruction_nb);
+            csvwrite(pathlib.join(data_dir, ['reconstruction_nb-', file_ID]), reconstruction_nb);
         catch
             corelib.verb(verbose, 'WARN', ['Failed to compute for parameter set: "', param_string, '".'])
         end
@@ -169,6 +169,9 @@ T.n_bins = str2double(T.n_bins);
 % Add basis as new column
 T.basis = basis;
 
+% Add sum of reconstructions
+T.sum_recon = [sum(reconstructions, 1)'; sum(reconstructions_nb, 1)'];
+
 % Compute reconstruction quality (r^2)
 
 % with basis
@@ -180,10 +183,13 @@ end
 % no basis
 r2_nb = zeros(size(params_nb, 1), 1);
 for ii = 1:size(params_nb, 1)
-    r2_nb(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions_nb(:, ii));
+    r2_nb(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii + size(params, 1)})), reconstructions_nb(:, ii));
 end
 
 T.r2 = [r2; r2_nb] .^2;
+
+% Remove rows with NaN r^2
+T(isnan(T.r2), :) = [];
 
 T = sortrows(T, 'r2', 'descend');
 T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins'});
@@ -191,6 +197,8 @@ T2 = sortrows(T2, 'mean_r2', 'descend');
 T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'n_bins'});
 T3 = sortrows(T3, 'mean_r2', 'descend');
 T4 = T(T.n_bins == 100, :);
+
+return
 
 
 fig2 = new_figure();
