@@ -1,15 +1,15 @@
 classdef Stimuli
 
     properties
-        min_freq (1,1) {mustBeNumeric} = 100
-        max_freq (1,1) {mustBeNumeric} = 22e3
-        n_bins (1,1) {mustBeNumeric} = 100
+        min_freq (1,1) {mustBeNumeric, mustBePositive} = 100
+        max_freq (1,1) {mustBeNumeric, mustBePositive} = 22e3
+        n_bins (1,1) {mustBeInteger, mustBePositive} = 100
         bin_duration (1,1) {mustBeNumeric} = 0.4
-        % prob_f (1,1) {mustBeNumeric} = 0.4
-        n_trials (1,1) {mustBeNumeric} = 80
-        n_bins_filled_mean (1,1) {mustBeNumeric} = 10
-        n_bins_filled_var (1,1) {mustBeNumeric} = 3
-        amplitude_values {mustBeNumeric} = linspace(-20, 0, 6)
+        n_trials (1,1) {mustBeInteger, mustBePositive} = 80
+        n_bins_filled_mean (1,1) {mustBeInteger, mustBePositive} = 10
+        n_bins_filled_var (1,1) {mustBeInteger, mustBePositive} = 3
+        bin_prob (1,1) {mustBePositive, mustBeLessThanOrEqual(bin_prob, 1)} = 0.3
+        amplitude_values (1,:) {mustBeNumeric} = linspace(-20, 0, 6)
     end
 
     methods
@@ -31,6 +31,7 @@ classdef Stimuli
             self.n_bins_filled_mean = 10;
             self.n_bins_filled_var = 3;
             self.amplitude_values = linspace(-20, 0, 6);
+            self.bin_prob = 0.3;
 
             % if called with no arguments,
             % instantiate with default arguments

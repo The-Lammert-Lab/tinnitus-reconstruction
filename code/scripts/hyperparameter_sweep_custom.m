@@ -6,20 +6,22 @@
 
 %% Preamble
 
-RUN = true;
-OVERWRITE = false;
+% Script-level parameters
+RUN         = true;
+OVERWRITE   = false;
+VERBOSE     = true;
 
 % Set random number seed
 rng(1234);
 
-% Parameters
+% Create output directory
+data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
+mkdir(data_dir)
+
+% Numerical parameters
 n_bins_filled_mean      = [1, 3, 10, 20, 30];
 n_bins_filled_var       = [0.01, 1, 3, 10];
 n_bins                  = 100;
-data_dir                = '/home/alec/data/stimulus-hyperparameter-sweep';
-verbose                 = true;
-
-mkdir(data_dir)
 
 % Target signals
 sound_dir = '/home/alec/data/sounds/';
@@ -45,14 +47,40 @@ end
 target_signal = [s{:}];
 f = [f{:}];
 
-% Collect all combinations of parameters
-param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var, n_bins, 1:size(target_signal, 2));
+% Stimulus generation methods
+stimulus_generation_methods = {
+    'custom', ...
+    'brimijoin', ...
+    'white', ...
+    'white-no-bins'
+};
+
+% Reconstruction methods
+reconstruction_methods = {
+    'cs', ...
+    'cs-nb', ...
+    'linreg'
+};
+
+% Collect all combinations of numerical parameters
+param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var, n_bins);
 
 % Remove combinations of parameters where the s.e.m. is > 1
 param_sets((param_sets(:, 1) ./ param_sets(:, 2)) <= 1.5, :) = [];
 
 % Remove combinations of parameters where the mean is too close to the maximum
 param_sets(param_sets(:, 1) ./ param_sets(:, 3) >= 2/3, :) = []; 
+
+% Precompute all stimuli
+for ii = 1:length(stimulus_generation_methods)
+    stimulus_generation_method = stimulus_generation_methods{ii};
+    switch stimulus_generation_method
+    case 'custom'
+        for qq = 1:size(param_sets, 1)
+            
+        end
+    end % switch
+end % for        
 
 % % Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
 % fig = new_figure();
@@ -81,15 +109,15 @@ for ii = 1:size(param_sets, 1)
     reconstruction_filepath = pathlib.join(data_dir, ['reconstruction-', file_ID]);
 
     if OVERWRITE || ~(isfile(stimulus_filepath) && isfile(response_filepath) && isfile(reconstruction_filepath))
-        corelib.verb(verbose, 'INFO', ['Output files containing parameter set #', num2str(ii), ': "', param_string, '"', ...
+        corelib.verb(VERBOSE, 'INFO', ['Output files containing parameter set #', num2str(ii), ': "', param_string, '"', ...
                                        'unable to be acquired. Will reacquire.'])
         params_to_do(end+1, :) = param_sets(ii, :);
     else
-        corelib.verb(verbose, 'INFO', ['Output files associated with parameter set #', num2str(ii), ': "', param_string, '" acquired.'])
+        corelib.verb(VERBOSE, 'INFO', ['Output files associated with parameter set #', num2str(ii), ': "', param_string, '" acquired.'])
     end
 end
 
-corelib.verb(verbose, 'INFO', [num2str(size(params_to_do, 1)), ' parameter sets to evaluate.'])
+corelib.verb(VERBOSE, 'INFO', [num2str(size(params_to_do, 1)), ' parameter sets to evaluate.'])
 
 % Run all parameter sets identified in `params_to_do`
 % progress_bar = ProgressBar(size(params_to_do, 1), 'IsParallel', true, 'Title', 'hyperparameter sweep');
@@ -133,7 +161,7 @@ if RUN
             csvwrite(pathlib.join(data_dir, ['reconstruction-', file_ID]), reconstruction);
             csvwrite(pathlib.join(data_dir, ['reconstruction_nb-', file_ID]), reconstruction_nb);
         catch
-            corelib.verb(verbose, 'WARN', ['Failed to compute for parameter set: "', param_string, '".'])
+            corelib.verb(VERBOSE, 'WARN', ['Failed to compute for parameter set: "', param_string, '".'])
         end
 
         % updateParallel([], pwd);
@@ -170,7 +198,7 @@ T.n_bins = str2double(T.n_bins);
 T.basis = basis;
 
 % Add sum of reconstructions
-T.sum_recon = [sum(reconstructions, 1)'; sum(reconstructions_nb, 1)'];
+% T.sum_recon = [sum(reconstructions, 1)'; sum(reconstructions_nb, 1)'];
 
 % Compute reconstruction quality (r^2)
 
@@ -191,15 +219,24 @@ T.r2 = [r2; r2_nb] .^2;
 % Remove rows with NaN r^2
 T(isnan(T.r2), :) = [];
 
+% All data
+T = T(strcmp(T.target_signal, 'buzzing') | strcmp(T.target_signal, 'roaring'), :);
 T = sortrows(T, 'r2', 'descend');
-T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins'});
+
+% Grouping by n_bins_* and basis
+T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'basis'});
 T2 = sortrows(T2, 'mean_r2', 'descend');
+
+% Grouping by target signal
 T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'n_bins'});
 T3 = sortrows(T3, 'mean_r2', 'descend');
-T4 = T(T.n_bins == 100, :);
 
-return
+% Grouping by target signal and basis
+T4 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'basis'});
+T4 = sortrows(T4, 'mean_r2', 'descend');
 
+%% Visualization
+% return
 
 fig2 = new_figure();
 heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
@@ -207,27 +244,27 @@ title('r^2 as a fcn of stimulus parameters')
 figlib.pretty('FontSize', 36)
 
 fig3 = new_figure();
-boxchart(categorical(T.n_bins), T.r2)
-xlabel('n bins')
+boxchart(categorical(T.basis), T.r2)
+xlabel('basis?')
 ylabel('r^2')
-title('number of bins vs. r^2')
+title('basis vs. r^2')
 figlib.pretty('FontSize', 36);
 
 fig3a = new_figure();
-boxchart(categorical(T2.n_bins), T2.mean_r2)
-xlabel('n bins')
+boxchart(categorical(T2.basis), T2.mean_r2)
+xlabel('basis?')
 ylabel('r^2')
-title('number of bins vs. mean r^2')
+title('basis vs. mean r^2')
 figlib.pretty('FontSize', 36);
 
-fig4 = new_figure();
-scatter(T2.n_bins, T2.mean_r2)
-xlabel('n bins')
-ylabel('r^2')
-title('number of bins vs. mean r^2')
-figlib.pretty('FontSize', 36);
+% fig4 = new_figure();
+% scatter(T2.n_bins, T2.mean_r2)
+% xlabel('n bins')
+% ylabel('r^2')
+% title('number of bins vs. mean r^2')
+% figlib.pretty('FontSize', 36);
 
-fig5 = new_figure();
-heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
-title('r^2 as a fcn of stimulus parameters (n bins = 300)')
-figlib.pretty('FontSize', 36)
+% fig5 = new_figure();
+% heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
+% title('r^2 as a fcn of stimulus parameters (n bins = 300)')
+% figlib.pretty('FontSize', 36)

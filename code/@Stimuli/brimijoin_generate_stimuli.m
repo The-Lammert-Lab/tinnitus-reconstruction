@@ -3,6 +3,10 @@ function [stim, Fs, X, binned_repr] = brimijoin_generate_stimuli(self)
     % where the matrix is of size nfft x n_trials.
     % Bins are filled with an amplitude value chosen from self.amplitude_values
     % with equal probability.
+    % 
+    % Class Properties Used:
+    %   n_bins
+    %   amplitude_values
 
 
     [binnum, Fs, nfft] = self.get_freq_bins();

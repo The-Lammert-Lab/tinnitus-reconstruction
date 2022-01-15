@@ -1,6 +1,11 @@
 function [stim, Fs, X, binned_repr] = custom_generate_stimuli(self)
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
+    %
+    % Class Properties Used:
+    %   n_bins
+    %   n_bins_filled_mean
+    %   n_bins_filled_var
 
     % Define Frequency Bin Indices 1 through self.n_bins
     [binnum, Fs, nfft] = self.get_freq_bins();

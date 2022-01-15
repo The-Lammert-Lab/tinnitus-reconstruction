@@ -1,5 +1,8 @@
 function [stim, Fs, X, binned_repr] = white_no_bins_generate_stimuli(self)
     % Generate stimuli using a binless white-noise process.
+    % 
+    % Class Properties Used:
+    %   n_bins
 
     [~, Fs, nfft] = self.get_freq_bins();
 

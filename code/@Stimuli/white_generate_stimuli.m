@@ -2,6 +2,9 @@ function [stim, Fs, X, binned_repr] = white_generate_stimuli(self)
     % Generate a matrix of stimuli
     % where the matrix is of size nfft x n_trials.
     % Bins are filled with an amplitude value chosen randomly.
+    %
+    % Class Properties Used
+    %   n_bins
 
     % Define Frequency Bin Indices 1 through self.n_bins
     [binnum, Fs, nfft] = self.get_freq_bins();
