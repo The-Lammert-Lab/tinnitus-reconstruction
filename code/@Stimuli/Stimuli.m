@@ -7,7 +7,7 @@ classdef Stimuli
         bin_duration (1,1) {mustBeNumeric} = 0.4
         n_trials (1,1) {mustBeInteger, mustBePositive} = 80
         n_bins_filled_mean (1,1) {mustBeInteger, mustBePositive} = 10
-        n_bins_filled_var (1,1) {mustBeInteger, mustBePositive} = 3
+        n_bins_filled_var (1,1) {mustBeNumeric, mustBePositive} = 3
         bin_prob (1,1) {mustBePositive, mustBeLessThanOrEqual(bin_prob, 1)} = 0.3
         amplitude_values (1,:) {mustBeNumeric} = linspace(-20, 0, 6)
     end

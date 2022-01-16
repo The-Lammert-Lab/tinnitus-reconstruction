@@ -18,11 +18,6 @@ rng(1234);
 data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
 mkdir(data_dir)
 
-% Numerical parameters
-n_bins_filled_mean      = [1, 3, 10, 20, 30];
-n_bins_filled_var       = [0.01, 1, 3, 10];
-n_bins                  = 100;
-
 % Target signals
 sound_dir = '/home/alec/data/sounds/';
 data_files = {
@@ -60,27 +55,113 @@ reconstruction_methods = {
     'cs', ...
     'cs-nb', ...
     'linreg'
-};
+}; 
+
+%% Precompute all stimuli
+
+% Stimulus generation options
+options = struct;
+options.min_freq            = 100;
+options.max_freq            = 22e3;
+options.bin_duration        = size(target_signal, 1) / options.max_freq;
+options.n_trials            = 2e3;
+options.n_bins_filled_mean  = 1;
+options.n_bins_filled_var   = 1;
+options.n_bins              = 100;
+options.amplitude_values    = 1;
+
+% Custom
+stimuli = Stimuli(options);
+
+% Numerical parameters
+n_bins_filled_mean      = [1, 3, 10, 20, 30];
+n_bins_filled_var       = [0.01, 1, 3, 10];
 
 % Collect all combinations of numerical parameters
-param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var, n_bins);
+num_param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var);
 
 % Remove combinations of parameters where the s.e.m. is > 1
-param_sets((param_sets(:, 1) ./ param_sets(:, 2)) <= 1.5, :) = [];
+num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) <= 1.5, :) = [];
 
-% Remove combinations of parameters where the mean is too close to the maximum
-param_sets(param_sets(:, 1) ./ param_sets(:, 3) >= 2/3, :) = []; 
+% % Remove combinations of parameters where the mean is too close to the maximum
+% num_param_sets(num_param_sets(:, 1) ./ stimuli.n_bins >= 2/3, :) = [];
 
-% Precompute all stimuli
-for ii = 1:length(stimulus_generation_methods)
-    stimulus_generation_method = stimulus_generation_methods{ii};
-    switch stimulus_generation_method
-    case 'custom'
-        for qq = 1:size(param_sets, 1)
-            
-        end
-    end % switch
-end % for        
+% Create the filename, which includes all the parameter values
+% for the Stimulus object used to generate the stimuli
+% Then generate the stimuli and save to the file.
+for ii = 1:size(num_param_sets, 1)
+    stimuli.n_bins_filled_mean = num_param_sets(ii, 1);
+    stimuli.n_bins_filled_var = num_param_sets(ii, 2);
+    this_filename = ['stimuli--', 'method=custom-', prop2str(stimuli), '.csv'];
+    this_filename = pathlib.join(data_dir, this_filename);
+    if OVERWRITE || isfile(this_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+        csvwrite(this_filename, stimuli.custom_generate_stimuli_matrix());
+    end
+end
+
+% Brimijoin
+stimuli = Stimuli(options);
+stimuli.amplitude_values = linspace(-20, 0, 6);
+
+% Create the files
+this_filename = ['stimuli--', 'method=brimijoin-', prop2str(stimuli), '.csv'];
+this_filename = pathlib.join(data_dir, this_filename);
+if OVERWRITE || isfile(this_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+    csvwrite(this_filename, stimuli.brimijoin_generate_stimuli_matrix());
+end
+
+% Bernoulli
+stimuli = Stimuli(options);
+
+% Numerical parameters
+bin_prob = [0.1, 0.3, 0.5, 0.8];
+
+% Create the files
+for ii = 1:length(bin_prob)
+    stimuli.bin_prob = bin_prob(ii);
+    this_filename = ['stimuli--', 'method=bernoulli-', prop2str(stimuli), '.csv'];
+    this_filename = pathlib.join(data_dir, this_filename);
+    if OVERWRITE || isfile(this_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+        csvwrite(this_filename, stimuli.bernoulli_generate_stimuli_matrix());
+    end
+end
+
+% White
+stimuli = Stimuli(options);
+
+% Create the files
+this_filename = ['stimuli--', 'method=white-', prop2str(stimuli), '.csv'];
+this_filename = pathlib.join(data_dir, this_filename);
+if OVERWRITE || isfile(this_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+    csvwrite(this_filename, stimuli.white_generate_stimuli_matrix());
+end
+
+% White No Bins
+stimuli = Stimuli(options);
+
+% Create the files
+this_filename = ['stimuli--', 'method=white_no_bins-', prop2str(stimuli), '.csv'];
+this_filename = pathlib.join(data_dir, this_filename);
+if OVERWRITE || isfile(this_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+    csvwrite(this_filename, stimuli.white_no_bins_generate_stimuli_matrix());
+end
+
+return
 
 % % Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
 % fig = new_figure();
