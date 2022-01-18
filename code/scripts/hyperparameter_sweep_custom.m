@@ -152,7 +152,7 @@ end
 stimuli = Stimuli(options);
 
 % Create the files
-this_filename = ['stimuli--', 'method=white_no_bins-', prop2str(stimuli), '.csv'];
+this_filename = ['stimuli--', 'method=white_no_bins-', prop2str(stimuli, [], '&&'), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
 if OVERWRITE || isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -161,8 +161,28 @@ else
     csvwrite(this_filename, stimuli.white_no_bins_generate_stimuli_matrix());
 end
 
-return
 
+%% Collect all stimuli files
+% Read the stimuli filenames.
+% Collect the parameters in a data table
+% and the stimuli filepaths in a struct.
+
+% Collect all the file information
+stimuli_files = dir(pathlib.join(data_dir, 'stimuli--*.csv'));
+
+% Strip the file ending, e.g., '.csv'
+stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
+
+% Collect the parameters in a data table
+T = collect_parameters(stimuli_filenames);
+
+% TODO:
+%   * Convert numerical columns to numerical data
+%   * Iterate through the saved stimuli and run the reconstructions
+%   * Collect the data in a big data table
+%   * Analyze results
+
+return
 % % Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
 % fig = new_figure();
 % axis square
