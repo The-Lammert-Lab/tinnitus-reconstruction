@@ -32,7 +32,7 @@ function data_table = collect_parameters(filenames)
     end
 
     % ii = 1 condition
-    regex_result = regexp(filenames{1}, '([\w_]+)=([\w\.\d]+(,[\w\.\d]+)+)', 'tokens');
+    regex_result = regexp(filenames{1}, '([\w_]+)=([\-\w\d\.\,]*)', 'tokens');
     params_cell = cat(1, regex_result{:})';
     data_table = cell2table(params_cell(2, :), 'VariableNames', params_cell(1, :));
 

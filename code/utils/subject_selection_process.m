@@ -4,9 +4,15 @@
 % -1 for "no"
 % and 1 for "yes".
 
-function [y, X] = subject_selection_process(signal, n_samples)
+function [y, X] = subject_selection_process(signal, stimuli, n_samples)
 
-    X = round(rand(n_samples, length(signal)));
+    if isempty(stimuli)
+        X = round(rand(n_samples, length(signal)));
+    else
+        X = stimuli;
+    end
+
+
 
     % ideal selection
     e = X * signal(:);

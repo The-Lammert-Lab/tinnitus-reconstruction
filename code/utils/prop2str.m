@@ -38,7 +38,7 @@ function [stringified_properties] = prop2str(obj, properties_to_skip, property_s
     end
 
     if nargin < 3
-        property_separator = '-';
+        property_separator = '&&';
     end
 
     for ii = 1:length(props)-1

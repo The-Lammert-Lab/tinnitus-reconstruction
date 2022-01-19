@@ -92,7 +92,7 @@ num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) <= 1.5, :) = [];
 for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins_filled_mean = num_param_sets(ii, 1);
     stimuli.n_bins_filled_var = num_param_sets(ii, 2);
-    this_filename = ['stimuli--', 'method=custom-', prop2str(stimuli), '.csv'];
+    this_filename = ['stimuli--', 'method=custom&&', prop2str(stimuli), '.csv'];
     this_filename = pathlib.join(data_dir, this_filename);
     if OVERWRITE || isfile(this_filename)
         corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -107,7 +107,7 @@ stimuli = Stimuli(options);
 stimuli.amplitude_values = linspace(-20, 0, 6);
 
 % Create the files
-this_filename = ['stimuli--', 'method=brimijoin-', prop2str(stimuli), '.csv'];
+this_filename = ['stimuli--', 'method=brimijoin&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
 if OVERWRITE || isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -125,7 +125,7 @@ bin_prob = [0.1, 0.3, 0.5, 0.8];
 % Create the files
 for ii = 1:length(bin_prob)
     stimuli.bin_prob = bin_prob(ii);
-    this_filename = ['stimuli--', 'method=bernoulli-', prop2str(stimuli), '.csv'];
+    this_filename = ['stimuli--', 'method=bernoulli&&', prop2str(stimuli), '.csv'];
     this_filename = pathlib.join(data_dir, this_filename);
     if OVERWRITE || isfile(this_filename)
         corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -139,7 +139,7 @@ end
 stimuli = Stimuli(options);
 
 % Create the files
-this_filename = ['stimuli--', 'method=white-', prop2str(stimuli), '.csv'];
+this_filename = ['stimuli--', 'method=white&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
 if OVERWRITE || isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -152,7 +152,7 @@ end
 stimuli = Stimuli(options);
 
 % Create the files
-this_filename = ['stimuli--', 'method=white_no_bins-', prop2str(stimuli, [], '&&'), '.csv'];
+this_filename = ['stimuli--', 'method=white_no_bins&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
 if OVERWRITE || isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
@@ -175,6 +175,25 @@ stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutpu
 
 % Collect the parameters in a data table
 T = collect_parameters(stimuli_filenames);
+T = T(repelem(1:height(T), length(data_names)), :);
+
+% Add in the target signals
+target_signal_table = table(data_names', 'VariableNames', {'target_signal'});
+inds = repmat(1:height(target_signal_table), height(T)/height(target_signal_table), 1);
+target_signal_table = target_signal_table(corelib.vectorise(inds'), :);
+T = [T2, target_signal_table];
+
+%% Run the experiment
+
+r2_linear   = NaN(height(T), 1);
+r2_cs       = NaN(height(T), 1);
+r2_cs_nb    = NaN(height(T), 1);
+
+for ii = 1:length(stimuli_files)
+    % Read the stimuli file
+    this_stimulus = csvread(pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name));
+    [y, X] = subject_selection_process(target_signal(:, params_to_do(ii, 4)), this_stimulus);
+end
 
 % TODO:
 %   * Convert numerical columns to numerical data
