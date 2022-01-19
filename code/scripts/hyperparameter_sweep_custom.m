@@ -94,11 +94,24 @@ for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins_filled_var = num_param_sets(ii, 2);
     this_filename = ['stimuli--', 'method=custom&&', prop2str(stimuli), '.csv'];
     this_filename = pathlib.join(data_dir, this_filename);
-    if OVERWRITE || isfile(this_filename)
+    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+        [stimuli_matrix, ~, spect_matrix] = stimuli.custom_generate_stimuli_matrix();
+    end
+
+    if ~OVERWRITE && isfile(this_filename)
         corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
     else
         corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli.custom_generate_stimuli_matrix());
+        csvwrite(this_filename, stimuli_matrix);
+    end
+
+    if ~OVERWRITE && isfile(this_spect_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+        csvwrite(this_spect_filename, spect_matrix);
     end
 end
 
@@ -109,11 +122,24 @@ stimuli.amplitude_values = linspace(-20, 0, 6);
 % Create the files
 this_filename = ['stimuli--', 'method=brimijoin&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
-if OVERWRITE || isfile(this_filename)
+this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+    [stimuli_matrix, ~, spect_matrix] = stimuli.brimijoin_generate_stimuli_matrix();
+end
+
+if ~OVERWRITE && isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
 else
     corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli.brimijoin_generate_stimuli_matrix());
+    csvwrite(this_filename, stimuli_matrix);
+end
+
+if ~OVERWRITE && isfile(this_spect_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+    csvwrite(this_spect_filename, spect_matrix);
 end
 
 % Bernoulli
@@ -127,13 +153,27 @@ for ii = 1:length(bin_prob)
     stimuli.bin_prob = bin_prob(ii);
     this_filename = ['stimuli--', 'method=bernoulli&&', prop2str(stimuli), '.csv'];
     this_filename = pathlib.join(data_dir, this_filename);
-    if OVERWRITE || isfile(this_filename)
+    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+        [stimuli_matrix, ~, spect_matrix] = stimuli.bernoulli_generate_stimuli_matrix();
+    end
+
+    if ~OVERWRITE && isfile(this_filename)
         corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
     else
         corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli.bernoulli_generate_stimuli_matrix());
+        csvwrite(this_filename, stimuli_matrix);
+    end
+    
+    if ~OVERWRITE && isfile(this_spect_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+        csvwrite(this_spect_filename, spect_matrix);
     end
 end
+
 
 % White
 stimuli = Stimuli(options);
@@ -141,11 +181,24 @@ stimuli = Stimuli(options);
 % Create the files
 this_filename = ['stimuli--', 'method=white&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
-if OVERWRITE || isfile(this_filename)
+this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+    [stimuli_matrix, ~, spect_matrix] = stimuli.white_generate_stimuli_matrix();
+end
+
+if ~OVERWRITE && isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
 else
     corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli.white_generate_stimuli_matrix());
+    csvwrite(this_filename, stimuli_matrix);
+end
+
+if ~OVERWRITE && isfile(this_spect_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+    csvwrite(this_spect_filename, spect_matrix);
 end
 
 % White No Bins
@@ -154,11 +207,24 @@ stimuli = Stimuli(options);
 % Create the files
 this_filename = ['stimuli--', 'method=white_no_bins&&', prop2str(stimuli), '.csv'];
 this_filename = pathlib.join(data_dir, this_filename);
-if OVERWRITE || isfile(this_filename)
+this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+    [stimuli_matrix, ~, spect_matrix] = stimuli.white_no_bins_generate_stimuli_matrix();
+end
+
+if ~OVERWRITE && isfile(this_filename)
     corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
 else
     corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli.white_no_bins_generate_stimuli_matrix());
+    csvwrite(this_filename, stimuli_matrix);
+end
+
+if ~OVERWRITE && isfile(this_spect_filename)
+    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+else
+    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+    csvwrite(this_spect_filename, spect_matrix);
 end
 
 
@@ -168,32 +234,66 @@ end
 % and the stimuli filepaths in a struct.
 
 % Collect all the file information
-stimuli_files = dir(pathlib.join(data_dir, 'stimuli--*.csv'));
+stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
 
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
 
 % Collect the parameters in a data table
 T = collect_parameters(stimuli_filenames);
+
+% Duplicate the rows of the data table
+% by the number of target signals to evaluate against
 T = T(repelem(1:height(T), length(data_names)), :);
 
 % Add in the target signals
 target_signal_table = table(data_names', 'VariableNames', {'target_signal'});
 inds = repmat(1:height(target_signal_table), height(T)/height(target_signal_table), 1);
 target_signal_table = target_signal_table(corelib.vectorise(inds'), :);
-T = [T2, target_signal_table];
+T = [T, target_signal_table];
 
-%% Run the experiment
-
-r2_linear   = NaN(height(T), 1);
-r2_cs       = NaN(height(T), 1);
-r2_cs_nb    = NaN(height(T), 1);
+%% Compute the responses
 
 for ii = 1:length(stimuli_files)
     % Read the stimuli file
-    this_stimulus = csvread(pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name));
-    [y, X] = subject_selection_process(target_signal(:, params_to_do(ii, 4)), this_stimulus);
-end
+    this_stimulus_filepath = pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name);
+    this_stimulus = csvread(this_stimulus_filepath);
+
+    % For each target signal, compute the responses
+    for qq = 1:height(target_signal_table)
+        % Create the response file if it doesn't exist
+        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '.csv'];
+        this_response_filepath = strrep(this_response_filepath, 'stimuli-spect--', 'responses--');
+        
+        if ~OVERWRITE && isfile(this_response_filepath)
+            corelib.verb(VERBOSE, 'INFO', [this_response_filepath, ' exists, not recreating'])
+        else
+            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_response_filepath])
+            [y, X] = subject_selection_process(target_signal(:, ii), this_stimulus');
+            csvwrite(this_response_filepath, y);
+        end
+
+        % Create the reconstruction file if it doesn't exist
+        this_reconstruction_filepath = strrep(this_response_filepath, 'responses--', 'reconstruction--');
+        if ~OVERWRITE && isfile(this_reconstruction_filepath)
+            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_reconstruction_filepath]);
+        else
+            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_reconstruction_filepath]);
+            this_reconstruction = [cs(y, X'), cs_no_basis(y, X'), gs(y, X')];
+            csvwrite(this_reconstruction_filepath, this_reconstruction);
+        end
+    end % qq
+end % ii
+
+return
+
+%% Collect the responses
+% Compute the r^2 values and add to the table
+
+response_files = dir(pathlib.join(data_dir, 'responses--*.csv'));
+response_filenames = cellfun(@(x) x(1:end-4), {response_files.name}, 'UniformOutput', false);
+
+T2 = collect_parameters(response_filenames)
 
 % TODO:
 %   * Convert numerical columns to numerical data
