@@ -23,6 +23,7 @@ function Protocol(options)
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
     config = parse_config(options.config);
+    config.n_trials = config.n_trials_per_block;
 
     %% Setup
 
