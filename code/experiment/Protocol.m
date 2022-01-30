@@ -22,17 +22,12 @@ function Protocol(options)
     % Is a config file provided?
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
-    if isempty(options.config)
-        [file, abs_path] = uigetfile();
-        config = ReadYaml(pathlib.join(abs_path, file));
-    else
-        config = ReadYaml(options.config);
-    end
-
-    % Set missing options
-    config.n_trials = config.n_trials_per_block;
+    config = parse_config(options.config);
 
     %% Setup
+
+    % Useful variables
+    project_dir = pathlib.strip(mfilename('fullpath'), 2);
 
     % Instantiate stimulus generation object
     stimuli = Stimuli(config);
@@ -89,10 +84,10 @@ function Protocol(options)
 
     %% Load Presentations Screens
 
-    Screen1 = imread('fixationscreen/Slide1B.png');
-    Screen2 = imread('fixationscreen/Slide2B.png');
-    Screen3 = imread('fixationscreen/Slide3B.png');
-    Screen4 = imread('fixationscreen/Slide4.png');
+    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1B.png'));
+    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2B.png'));
+    Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3B.png'));
+    Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
 
     %% Generate stimuli
 
