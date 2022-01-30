@@ -1,4 +1,4 @@
-function params = collect_parameters(filenames, pattern, n_params)
+function data_table = collect_parameters(filenames)
     % Read parameters out from character vectors of text contained in
     % a character vector or cell array.
     % 
@@ -9,50 +9,40 @@ function params = collect_parameters(filenames, pattern, n_params)
     %       to read parameters out of.
     %       If `filenames` is a cell array, parameters are read from each
     %       character vector contained in the cell array.
-    % 
-    %   pattern: character vector or string
-    %       A regular expression pattern matching the parameters to extract.
-    % 
-    %   n_params: integer scalar
-    %       How many parameters are there?
+    %       Filenames should not have file endings like '.csv'.
+    %       The regular expressions are not sophisticated enough to skip them.
     % 
     % Outputs:
     % 
-    %   params: numerical matrix
-    %       m x n matrix of parameter values,
-    %       where m is the number of filenames
-    %       and n is the number of parameters.
+    %   data_table: table
     % 
     % Example:
     % 
-    %   params = collect_parameters('n_bins_filled_mean=10-n_bins_filled_var=3', 'n_bins_filled_mean=(\d*)-n_bins_filled_var=(\d*)')
+    %   data_table = collect_parameters(filenames)
     % 
     % See Also: collect_reconstructions, collect_data
 
 
     arguments
         filenames (:,1)
-        pattern (1,:) char
-        n_params (1,1) double {mustBeInteger, mustBePositive}
     end
 
     if isa(filenames, 'char')
         filenames = {filenames};
     end
-    
-    % Get the parameter values from the files
-    params = cell(length(filenames), n_params);
 
-    for ii = 1:length(filenames)
-        these_params = regexp(filenames{ii}, pattern, 'tokens');
-        if isempty(these_params)
-            error(['regex failed to match with string: ', filenames{ii}, ' and regex pattern: ', pattern])
+    % ii = 1 condition
+    regex_result = regexp(filenames{1}, '([\w_]+)=([\-\w\d\.\,]*)', 'tokens');
+    params_cell = cat(1, regex_result{:})';
+    data_table = cell2table(params_cell(2, :), 'VariableNames', params_cell(1, :));
+
+    if length(filenames) > 1
+        for ii = 2:length(filenames)
+            regex_result = regexp(filenames{ii}, '([\w_]*)=([\-\w\d\.\,]*)', 'tokens');
+            params_cell = cat(1, regex_result{:})';
+            new_data_table = cell2table(params_cell(2, :), 'VariableNames', params_cell(1, :));
+            data_table = [data_table; new_data_table];
         end
-        if ~(length(these_params) > 1)
-            these_params = mat2cell(these_params{1}(:), n_params, 1);
-        end
-        params(ii, :) = these_params{:};
     end
-
 
 end % function
