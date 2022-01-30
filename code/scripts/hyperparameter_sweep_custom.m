@@ -354,7 +354,7 @@ for ii = 1:length(r2_column_names)
 end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
-T2_skinny = T2(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2_cs', 'sem_r2_cs'});
+T2_skinny = T2(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs'});
 
 T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
 
