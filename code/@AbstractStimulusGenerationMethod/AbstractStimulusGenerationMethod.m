@@ -15,7 +15,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
     methods (Abstract)
         % Abstract methods common to all stimulus generation methods
         generate_stimulus(self)
-        generate_stimuli_matrix(self)
     end % abstract methods
 
     methods
@@ -49,6 +48,24 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             binnum = linspace(self.min_freq, self.max_freq, nfft/2);
             for itor = 1:self.n_bins
                 binnum(binnum <= binnd(itor) & binnum >= binst(itor)) = itor;
+            end
+        end % function
+
+        function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            % Generate matrix of stimuli.
+            % TODO: documentation for this
+
+            % generate first stimulus
+            binned_repr_matrix = zeros(self.n_bins, self.n_trials);
+            [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
+
+            % instantiate stimuli matrix
+            stimuli_matrix = zeros(length(stim1), self.n_trials);
+            spect_matrix = zeros(length(spect), self.n_trials);
+            stimuli_matrix(:, 1) = stim1;
+            spect_matrix(:, 1) = spect;
+            for ii = 2:self.n_trials
+                [stimuli_matrix(:, ii), ~, spect_matrix(:, 1), binned_repr_matrix(:, ii)] = self.generate_stimulus();
             end
         end % function
 
