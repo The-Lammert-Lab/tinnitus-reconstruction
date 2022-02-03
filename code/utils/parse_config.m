@@ -15,7 +15,7 @@ function config = parse_config(config_file, verbose)
     % 
 
     arguments
-        config_file (1,:) {mustBeFile}
+        config_file (1,:)
         verbose (1,1) {mustBeNumericOrLogical} = false
     end
 
@@ -34,6 +34,12 @@ function config = parse_config(config_file, verbose)
     end
 
     %% Perform specific parsing of config options
+    stimuli_types = {'Bernoulli', 'Brimijoin', 'GaussianNoise', 'GaussianNoiseNoBins', ...
+                    'GaussianPrior', 'UniformNoise', 'UniformNoiseNoBins', 'UniformPrior'};
+    stimuli_string = [stimuli_types(:), repmat({', '}, length(stimuli_types), 1)]';
+    stimuli_string = [stimuli_string{:}];
+    assert(any(strcmp(config.stimuli_type, stimuli_types)), ...
+        ['Unknown stimuli type: ' config.stimuli_type, '. Allowed values are: ', stimuli_string(1:end-2)], '.');
 
     % data_dir
     if ~isfield('data_dir', config) || isempty(config.data_dir)

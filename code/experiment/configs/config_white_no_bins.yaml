@@ -6,4 +6,4 @@ min_freq: 100
 max_freq: 22000
 n_bins: 100
 bin_duration: 0.5
-stimuli_type: white_no_bins
+stimuli_type: WhiteNoiseNoBins

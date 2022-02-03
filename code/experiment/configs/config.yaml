@@ -11,4 +11,4 @@ totaldur: 1
 n_bins_filled_mean: 100
 n_bins_filled_var: 100
 target_audio_filepath: /home/alec/data/sounds/ATA_Tinnitus_Buzzing_Tone_1sec.wav
-stimuli_type: custom
+stimuli_type: GaussianPrior

@@ -8,4 +8,4 @@ n_bins: 100
 n_bins_filled_mean: 20
 n_bins_filled_var: 3
 bin_duration: 0.5
-stimuli_type: custom
+stimuli_type: GaussianPrior
