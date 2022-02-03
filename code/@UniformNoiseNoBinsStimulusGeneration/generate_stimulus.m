@@ -1,4 +1,4 @@
-function [stim, Fs, X, binned_repr] = white_no_bins_generate_stimuli(self)
+function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % Generate stimuli using a binless white-noise process.
     % 
     % Class Properties Used:
