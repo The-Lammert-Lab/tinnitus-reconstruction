@@ -1,4 +1,4 @@
-function [stim, Fs, X, binned_repr] = bernoulli_generate_stimuli(self)
+function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % Generate a matrix of stimuli
     % where the matrix is of size nfft x n_trials.
     % Bins are filled with an an amplitude of -20 or 0.

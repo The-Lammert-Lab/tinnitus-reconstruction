@@ -29,27 +29,22 @@ function Protocol(options)
 
     % Useful variables
     project_dir = pathlib.strip(mfilename('fullpath'), 2);
-
-    % Instantiate stimulus generation object
-    stimuli = Stimuli(config);
     
     % Determine the stimulus generation function
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
         % There is a weird feature/bug where putting `stimuli_type: white`
         % in the config file returns a 256x3 matrix of ones.
         if all(config.stimuli_type(:) == 1)
-            config.stimuli_type = 'white';
+            config.stimuli_type = 'UniformNoiseNoBins';
         end
     else
         % Default to 'custom' stimulus generation
-        config.stimuli_type = 'custom';
+        config.stimuli_type = 'GaussianPrior';
     end
-    
-    % Set the stimulus generation function as a character vector
-    %   This should be called as an eval statement.
-    %   You can't use an eval inside of an anonymous function,
-    %   so this is a workaround.
-    stimuli_generation_function = ['stimuli.', config.stimuli_type, '_generate_stimuli_matrix()'];
+
+    % Instantiate the stimulus generation object
+    stimuli = eval([config.stimuli_type, 'StimulusGeneration()']);
+    stimuli = stimuli.from_config(config);
     
     % Compute the total trials done
     total_trials_done = 0;
@@ -94,7 +89,7 @@ function Protocol(options)
 
     % Generate a block of stimuli
     % [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
-    [stimuli_matrix, Fs, nfft] = eval(stimuli_generation_function);
+    [stimuli_matrix, Fs, nfft] = stimuli.generate_stimuli_matrix();
 
     % Write the stimuli to file
     writematrix(stimuli_matrix, filename_stimuli);
@@ -187,7 +182,7 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
-            [stimuli_matrix, Fs, nfft] = eval(stimuli_generation_function);
+            [stimuli_matrix, Fs, nfft] = stimuli.generate_stimuli_matrix();
 
             % Save stimuli to file
             writematrix(stimuli_matrix, filename_stimuli)
