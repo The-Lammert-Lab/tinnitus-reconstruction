@@ -69,6 +69,27 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             end
         end % function
 
+        function self = from_config(self, options)
+            % Set properties from a struct holding config options.
+
+            if isa(options, 'char')
+                options = ReadYaml(options);
+            end
+
+            self_fields = fieldnames(self);
+            options_fields = fieldnames(options);
+            if isa(options, 'struct')
+                for ii = 1:length(options_fields)
+                    is_in = strcmp(options_fields{ii}, self_fields);
+                    if any(is_in)
+                        self.(self_fields{is_in}) = options.(options_fields{ii});
+                    end
+                end
+            else
+                error('unknown type for "options", should be a character vector or a struct')
+            end
+        end % function
+
     end
 
     methods (Static)
