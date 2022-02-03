@@ -4,7 +4,7 @@ classdef BernoulliStimulusGeneration < AbstractStimulusGenerationMethod
     % of being at 0 dB, otherwise it is at -20 dB.
 
     properties
-        bin_prob (1,1) {mustBePositive, mustBeReal} = 0.3
+        bin_prob (1,1) {mustBePositive, mustBeReal, mustBeLessThanOrEqual(bin_prob, 1)} = 0.3
         n_bins (1,1) {mustBePositive, mustBeInteger, mustBeReal} = 100
     end
 
