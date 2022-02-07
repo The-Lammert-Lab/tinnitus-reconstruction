@@ -44,11 +44,16 @@ f = [f{:}];
 
 % Stimulus generation methods
 stimulus_generation_methods = {
-    'custom', ...
-    'brimijoin', ...
-    'white', ...
-    'white-no-bins'
+    BernoulliStimulusGeneration(), ...
+    BrimijoinStimulusGeneration(), ...
+    GaussianNoiseNoBinsStimulusGeneration(), ...
+    GaussianNoiseStimulusGeneration(), ...
+    GaussianPriorStimulusGeneration(), ...
+    UniformNoiseNoBinsStimulusGeneration(), ...
+    UniformNoiseStimulusGeneration(), ...
+    UniformPriorStimulusGeneration()
 };
+stimulus_generation_names = cellfun(@(x) strrep(class(x), 'StimulusGeneration', ''), stimulus_generation_methods, 'UniformOutput', false);
 
 % Reconstruction methods
 reconstruction_methods = {
@@ -59,23 +64,102 @@ reconstruction_methods = {
 
 %% Precompute all stimuli
 
-% Stimulus generation options
+% Stimulus generation options (default)
 options = struct;
 options.min_freq            = 100;
 options.max_freq            = 22e3;
-options.bin_duration        = size(target_signal, 1) / options.max_freq;
+options.duration            = size(target_signal, 1) / options.max_freq;
 options.n_trials            = 2e3;
+
+% Hyperparameters
 options.n_bins_filled_mean  = 1;
 options.n_bins_filled_var   = 1;
 options.n_bins              = 100;
 options.amplitude_values    = 1;
+options.amplitude_mean      = 1;
+options.amplitude_var       = 1;
+options.bin_prob            = 1;
 
-% Custom
-stimuli = Stimuli(options);
+for ii = 1:length(stimulus_generation_methods)
+    stimulus_generation_methods{ii} = stimulus_generation_methods{ii}.from_config(options);
+end
+
+% Check to make sure all hparams are accounted for
+a = properties(stimulus_generation_methods{1});
+for ii = 2:length(stimulus_generation_methods)
+    a = [a; properties(stimulus_generation_methods{ii})];
+end
+all_properties = unique(a);
+
+for ii = 1:length(all_properties)
+    assert(any(strcmp(all_properties{ii}, fieldnames(options))), ['[ERROR] stimulus parameter ', all_properties{ii}, ' not found in `options`.'])
+end
+
+% Tunable hyperparameters specific to different stimulus generation methods
+hparams = struct;
+
+% Bernoulli
+stimuli = stimulus_generation_methods{1};
+
+% Numerical parameters
+bin_prob = [0.1, 0.3, 0.5, 0.8];
+hparams.bin_prob = bin_prob;
+
+% Create the files
+for ii = 1:length(bin_prob)
+    stimuli.bin_prob = bin_prob(ii);
+    write_stimuli(data_dir, stimulus_generation_names{1}, stimuli, OVERWRITE, VERBOSE);
+end
+
+% Brimijoin
+stimuli = stimulus_generation_methods{2};
+
+% Numerical parameters
+amplitude_values = linspace(-20, 0, 6);
+hparams.amplitude_values = amplitude_values';
+
+% Create the file and save the stimuli
+stimuli.amplitude_values = amplitude_values;
+write_stimuli(data_dir, stimulus_generation_methods{2}, stimuli, OVERWRITE, VERBOSE);
+
+% Gaussian Noise No Bins
+stimuli = stimulus_generation_methods{3};
+
+% Numerical parameters
+amplitude_mean = [-10];
+amplitude_var = [1, 3, 5];
+hparams.amplitude_mean = amplitude_mean;
+hparams.amplitude_var = amplitude_var;
+
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(amplitude_mean, amplitude_var);
+
+% Create the files and stimuli
+for ii = 1:length(num_param_sets)
+    stimuli.amplitude_mean = num_param_sets(ii, 1);
+    stimuli.amplitude_var = num_param_sets(ii, 2);
+    write_stimuli(data_dir, stimulus_generation_names{3}, stimuli, OVERWRITE, VERBOSE);
+end
+
+% Gaussian Noise
+stimuli = stimulus_generation_methods{4};
+
+% Create the files and stimuli
+% All hyperparameters are the same as the method above
+for ii = 1:length(num_param_sets)
+    stimuli.amplitude_mean = num_param_sets(ii, 1);
+    stimuli.amplitude_var = num_param_sets(ii, 2);
+    write_stimuli(data_dir, stimulus_generation_names{4}, stimuli, OVERWRITE, VERBOSE);
+end
+
+% Gaussian Prior
+stimuli = stimulus_generation_methods{5};
 
 % Numerical parameters
 n_bins_filled_mean      = [1, 3, 10, 20, 30];
 n_bins_filled_var       = [0.01, 1, 3, 10];
+hparams.n_bins_filled_mean = n_bins_filled_mean;
+hparams.n_bins_filled_var = n_bins_filled_var;
 
 % Collect all combinations of numerical parameters
 num_param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var);
@@ -83,150 +167,20 @@ num_param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var);
 % Remove combinations of parameters where the s.e.m. is > 1
 num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) <= 1.5, :) = [];
 
-% % Remove combinations of parameters where the mean is too close to the maximum
-% num_param_sets(num_param_sets(:, 1) ./ stimuli.n_bins >= 2/3, :) = [];
-
-% Create the filename, which includes all the parameter values
-% for the Stimulus object used to generate the stimuli
-% Then generate the stimuli and save to the file.
+% Create files and stimuli
 for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins_filled_mean = num_param_sets(ii, 1);
     stimuli.n_bins_filled_var = num_param_sets(ii, 2);
-    this_filename = ['stimuli--', 'method=custom&&', prop2str(stimuli), '.csv'];
-    this_filename = pathlib.join(data_dir, this_filename);
-    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-        [stimuli_matrix, ~, spect_matrix] = stimuli.custom_generate_stimuli_matrix();
-    end
-
-    if ~OVERWRITE && isfile(this_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli_matrix);
-    end
-
-    if ~OVERWRITE && isfile(this_spect_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-        csvwrite(this_spect_filename, spect_matrix);
-    end
+    write_stimuli(data_dir, stimulus_generation_names{5}, stimuli, OVERWRITE, VERBOSE);
 end
 
-% Brimijoin
-stimuli = Stimuli(options);
-stimuli.amplitude_values = linspace(-20, 0, 6);
-
-% Create the files
-this_filename = ['stimuli--', 'method=brimijoin&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.brimijoin_generate_stimuli_matrix();
+% Uniform Noise No Bins
+% Uniform Noise
+% Uniform Prior
+for ii = 6:8
+    stimuli = stimulus_generation_methods{ii};
+    write_stimuli(data_dir, stimulus_generation_names{6}, stimuli, OVERWRITE, VERBOSE);
 end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
-% Bernoulli
-stimuli = Stimuli(options);
-
-% Numerical parameters
-bin_prob = [0.1, 0.3, 0.5, 0.8];
-
-% Create the files
-for ii = 1:length(bin_prob)
-    stimuli.bin_prob = bin_prob(ii);
-    this_filename = ['stimuli--', 'method=bernoulli&&', prop2str(stimuli), '.csv'];
-    this_filename = pathlib.join(data_dir, this_filename);
-    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-        [stimuli_matrix, ~, spect_matrix] = stimuli.bernoulli_generate_stimuli_matrix();
-    end
-
-    if ~OVERWRITE && isfile(this_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli_matrix);
-    end
-    
-    if ~OVERWRITE && isfile(this_spect_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-        csvwrite(this_spect_filename, spect_matrix);
-    end
-end
-
-
-% White
-stimuli = Stimuli(options);
-
-% Create the files
-this_filename = ['stimuli--', 'method=white&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.white_generate_stimuli_matrix();
-end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
-% White No Bins
-stimuli = Stimuli(options);
-
-% Create the files
-this_filename = ['stimuli--', 'method=white_no_bins&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.white_no_bins_generate_stimuli_matrix();
-end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
 
 %% Collect all stimuli files
 % Read the stimuli filenames.
@@ -565,3 +519,38 @@ T6_skinny = T6(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2
 % % heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
 % % title('r^2 as a fcn of stimulus parameters (n bins = 300)')
 % % figlib.pretty('FontSize', 36)
+
+function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, VERBOSE)
+    % Generate and save stimuli to a .csv file.
+
+    arguments
+        data_dir (1,:) {mustBeText}
+        stimulus_generation_name (1,:) {mustBeText}
+        stimuli (1,1)
+        OVERWRITE (1,1)
+        VERBOSE (1,1)
+    end
+
+    this_filename = ['stimuli--', 'method=', stimulus_generation_name,'&&', prop2str(stimuli), '.csv'];
+    this_filename = pathlib.join(data_dir, this_filename);
+    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
+
+    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
+        [stimuli_matrix, ~, spect_matrix] = stimuli.generate_stimuli_matrix();
+    end
+
+    if ~OVERWRITE && isfile(this_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+        csvwrite(this_filename, stimuli_matrix);
+    end
+    
+    if ~OVERWRITE && isfile(this_spect_filename)
+        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+    else
+        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+        csvwrite(this_spect_filename, spect_matrix);
+    end
+
+end % function
