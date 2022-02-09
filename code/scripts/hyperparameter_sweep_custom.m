@@ -193,19 +193,6 @@ stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
 
-% % Collect the parameters in a data table
-% T = collect_parameters(stimuli_filenames);
-
-% % Duplicate the rows of the data table
-% % by the number of target signals to evaluate against
-% T = T(repelem(1:height(T), length(data_names)), :);
-
-% % Add in the target signals
-% target_signal_table = table(data_names', 'VariableNames', {'target_signal'});
-% inds = repmat(1:height(target_signal_table), height(T)/height(target_signal_table), 1);
-% target_signal_table = target_signal_table(corelib.vectorise(inds'), :);
-% T = [T, target_signal_table];
-
 %% Compute the responses and reconstructions
 
 for ii = 1:length(stimuli_files)
