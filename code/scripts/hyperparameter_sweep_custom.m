@@ -15,11 +15,13 @@ VERBOSE     = true;
 rng(1234);
 
 % Create output directory
-data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
+project_dir = pathlib.strip(mfilename('fullpath'), 3);
+data_dir = pathlib.join(project_dir, 'data', 'stimulus-hyperparameter-sweep');
+% data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
 mkdir(data_dir)
 
 % Target signals
-sound_dir = '/home/alec/data/sounds/';
+sound_dir = pathlib.join(project_dir, 'data', 'sounds');
 data_files = {
     'ATA_Tinnitus_Buzzing_Tone_1sec.wav', ...
     'ATA_Tinnitus_Electric_Tone_1sec.wav', ...
@@ -37,18 +39,23 @@ data_names = {
 s = cell(5, 1);
 f = cell(5, 1);
 for ii = 1:length(data_files)
-    [s{ii}, f{ii}] = wav2spect([sound_dir, data_files{ii}]);
+    [s{ii}, f{ii}] = wav2spect(pathlib.join(sound_dir, data_files{ii}));
 end
 target_signal = [s{:}];
 f = [f{:}];
 
 % Stimulus generation methods
 stimulus_generation_methods = {
-    'custom', ...
-    'brimijoin', ...
-    'white', ...
-    'white-no-bins'
+    BernoulliStimulusGeneration(), ...
+    BrimijoinStimulusGeneration(), ...
+    GaussianNoiseNoBinsStimulusGeneration(), ...
+    GaussianNoiseStimulusGeneration(), ...
+    GaussianPriorStimulusGeneration(), ...
+    UniformNoiseNoBinsStimulusGeneration(), ...
+    UniformNoiseStimulusGeneration(), ...
+    UniformPriorStimulusGeneration() ...
 };
+stimulus_generation_names = cellfun(@(x) strrep(class(x), 'StimulusGeneration', ''), stimulus_generation_methods, 'UniformOutput', false);
 
 % Reconstruction methods
 reconstruction_methods = {
@@ -59,174 +66,137 @@ reconstruction_methods = {
 
 %% Precompute all stimuli
 
-% Stimulus generation options
+% Stimulus generation options (default)
 options = struct;
 options.min_freq            = 100;
 options.max_freq            = 22e3;
-options.bin_duration        = size(target_signal, 1) / options.max_freq;
+options.duration            = size(target_signal, 1) / options.max_freq;
 options.n_trials            = 2e3;
+
+% Hyperparameters
 options.n_bins_filled_mean  = 1;
 options.n_bins_filled_var   = 1;
 options.n_bins              = 100;
 options.amplitude_values    = 1;
+options.amplitude_mean      = 1;
+options.amplitude_var       = 1;
+options.bin_prob            = 1;
 
-% Custom
-stimuli = Stimuli(options);
+for ii = 1:length(stimulus_generation_methods)
+    stimulus_generation_methods{ii} = stimulus_generation_methods{ii}.from_config(options);
+end
+
+% Check to make sure all hparams are accounted for
+a = properties(stimulus_generation_methods{1});
+for ii = 2:length(stimulus_generation_methods)
+    a = [a; properties(stimulus_generation_methods{ii})];
+end
+all_properties = unique(a);
+
+for ii = 1:length(all_properties)
+    assert(any(strcmp(all_properties{ii}, fieldnames(options))), ['[ERROR] stimulus parameter ', all_properties{ii}, ' not found in `options`.'])
+end
+
+% Tunable hyperparameters specific to different stimulus generation methods
+hparams = struct;
+
+%% Bernoulli
+stimuli = stimulus_generation_methods{1};
+
+% Numerical parameters
+n_bins = [30, 100, 200];
+bin_prob = [0.1, 0.3, 0.5, 0.8];
+hparams.n_bins = n_bins;
+hparams.bin_prob = bin_prob;
+
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(n_bins, bin_prob);
+
+% Create the files
+for ii = 1:size(num_param_sets, 1)
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.bin_prob = num_param_sets(ii, 2);
+    write_stimuli(data_dir, stimulus_generation_names{1}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Brimijoin
+stimuli = stimulus_generation_methods{2};
+
+% Numerical parameters
+amplitude_values = linspace(-20, 0, 6);
+hparams.amplitude_values = amplitude_values';
+
+% Create the file and save the stimuli
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    stimuli.amplitude_values = amplitude_values;
+    write_stimuli(data_dir, stimulus_generation_names{2}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Gaussian Noise No Bins
+stimuli = stimulus_generation_methods{3};
+
+% Numerical parameters
+amplitude_mean = [-10];
+amplitude_var = [5, 10, 20];
+hparams.amplitude_mean = amplitude_mean;
+hparams.amplitude_var = amplitude_var;
+
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(n_bins, amplitude_mean, amplitude_var);
+
+% Create the files and stimuli
+for ii = 1:size(num_param_sets, 1)
+    stimuli.amplitude_mean = num_param_sets(ii, 1);
+    stimuli.amplitude_var = num_param_sets(ii, 2);
+    write_stimuli(data_dir, stimulus_generation_names{3}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Gaussian Noise
+stimuli = stimulus_generation_methods{4};
+
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(n_bins, amplitude_mean, amplitude_var);
+
+% Create the files and stimuli
+% All hyperparameters are the same as the method above
+for ii = 1:size(num_param_sets, 1)  
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.amplitude_mean = num_param_sets(ii, 2);
+    stimuli.amplitude_var = num_param_sets(ii, 3);
+    write_stimuli(data_dir, stimulus_generation_names{4}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Gaussian Prior
+stimuli = stimulus_generation_methods{5};
 
 % Numerical parameters
 n_bins_filled_mean      = [1, 3, 10, 20, 30];
 n_bins_filled_var       = [0.01, 1, 3, 10];
+hparams.n_bins_filled_mean = n_bins_filled_mean;
+hparams.n_bins_filled_var = n_bins_filled_var;
 
 % Collect all combinations of numerical parameters
-num_param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var);
+num_param_sets = allcomb(n_bins, n_bins_filled_mean, n_bins_filled_var);
 
 % Remove combinations of parameters where the s.e.m. is > 1
-num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) <= 1.5, :) = [];
+num_param_sets((num_param_sets(:, 2) ./ num_param_sets(:, 3)) <= 1.5, :) = [];
 
-% % Remove combinations of parameters where the mean is too close to the maximum
-% num_param_sets(num_param_sets(:, 1) ./ stimuli.n_bins >= 2/3, :) = [];
-
-% Create the filename, which includes all the parameter values
-% for the Stimulus object used to generate the stimuli
-% Then generate the stimuli and save to the file.
+% Create files and stimuli
 for ii = 1:size(num_param_sets, 1)
-    stimuli.n_bins_filled_mean = num_param_sets(ii, 1);
-    stimuli.n_bins_filled_var = num_param_sets(ii, 2);
-    this_filename = ['stimuli--', 'method=custom&&', prop2str(stimuli), '.csv'];
-    this_filename = pathlib.join(data_dir, this_filename);
-    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-        [stimuli_matrix, ~, spect_matrix] = stimuli.custom_generate_stimuli_matrix();
-    end
-
-    if ~OVERWRITE && isfile(this_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli_matrix);
-    end
-
-    if ~OVERWRITE && isfile(this_spect_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-        csvwrite(this_spect_filename, spect_matrix);
-    end
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.n_bins_filled_mean = num_param_sets(ii, 2);
+    stimuli.n_bins_filled_var = num_param_sets(ii, 3);
+    write_stimuli(data_dir, stimulus_generation_names{5}, stimuli, OVERWRITE, VERBOSE);
 end
 
-% Brimijoin
-stimuli = Stimuli(options);
-stimuli.amplitude_values = linspace(-20, 0, 6);
-
-% Create the files
-this_filename = ['stimuli--', 'method=brimijoin&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.brimijoin_generate_stimuli_matrix();
+%% Uniform Noise No Bins
+% Uniform Noise
+% Uniform Prior
+for ii = 6:8
+    stimuli = stimulus_generation_methods{ii};
+    write_stimuli(data_dir, stimulus_generation_names{ii}, stimuli, OVERWRITE, VERBOSE);
 end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
-% Bernoulli
-stimuli = Stimuli(options);
-
-% Numerical parameters
-bin_prob = [0.1, 0.3, 0.5, 0.8];
-
-% Create the files
-for ii = 1:length(bin_prob)
-    stimuli.bin_prob = bin_prob(ii);
-    this_filename = ['stimuli--', 'method=bernoulli&&', prop2str(stimuli), '.csv'];
-    this_filename = pathlib.join(data_dir, this_filename);
-    this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-        [stimuli_matrix, ~, spect_matrix] = stimuli.bernoulli_generate_stimuli_matrix();
-    end
-
-    if ~OVERWRITE && isfile(this_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-        csvwrite(this_filename, stimuli_matrix);
-    end
-    
-    if ~OVERWRITE && isfile(this_spect_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-    else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-        csvwrite(this_spect_filename, spect_matrix);
-    end
-end
-
-
-% White
-stimuli = Stimuli(options);
-
-% Create the files
-this_filename = ['stimuli--', 'method=white&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.white_generate_stimuli_matrix();
-end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
-% White No Bins
-stimuli = Stimuli(options);
-
-% Create the files
-this_filename = ['stimuli--', 'method=white_no_bins&&', prop2str(stimuli), '.csv'];
-this_filename = pathlib.join(data_dir, this_filename);
-this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
-
-if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename)
-    [stimuli_matrix, ~, spect_matrix] = stimuli.white_no_bins_generate_stimuli_matrix();
-end
-
-if ~OVERWRITE && isfile(this_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
-    csvwrite(this_filename, stimuli_matrix);
-end
-
-if ~OVERWRITE && isfile(this_spect_filename)
-    corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
-else
-    corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
-    csvwrite(this_spect_filename, spect_matrix);
-end
-
 
 %% Collect all stimuli files
 % Read the stimuli filenames.
@@ -239,20 +209,7 @@ stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
 
-% % Collect the parameters in a data table
-% T = collect_parameters(stimuli_filenames);
-
-% % Duplicate the rows of the data table
-% % by the number of target signals to evaluate against
-% T = T(repelem(1:height(T), length(data_names)), :);
-
-% % Add in the target signals
-% target_signal_table = table(data_names', 'VariableNames', {'target_signal'});
-% inds = repmat(1:height(target_signal_table), height(T)/height(target_signal_table), 1);
-% target_signal_table = target_signal_table(corelib.vectorise(inds'), :);
-% T = [T, target_signal_table];
-
-%% Compute the responses
+%% Compute the responses and reconstructions
 
 for ii = 1:length(stimuli_files)
     % Read the stimuli file
@@ -286,7 +243,6 @@ for ii = 1:length(stimuli_files)
 
         if OVERWRITE
             corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_reconstruction_filepath]);
-            this_reconstruction = [cs(y, this_stimulus'), cs_no_basis(y, this_stimulus'), gs(y, this_stimulus')];
             reconstruction_cs = cs(y, this_stimulus');
             reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
             reconstruction_linear = gs(y, this_stimulus');
@@ -317,7 +273,7 @@ reconstruction_filenames = cellfun(@(x) x(1:end-4), {reconstruction_files.name},
 
 % Gather the data into a data table
 T = collect_parameters(reconstruction_filenames);
-
+T = sortrows(T, 'ID');
 % Calculate r2 values
 r2 = NaN(length(reconstruction_files), 3);
 for ii = 1:length(reconstruction_files)
@@ -331,20 +287,18 @@ r2 = r2.^2;
 T = addvars(T, r2(:, 1), r2(:, 2), r2(:, 3), 'NewVariableNames', {'r2_cs', 'r2_cs_nb', 'r2_linear'});
 
 % Clean up table
-T.min_freq = str2double(T.min_freq);
-T.max_freq = str2double(T.max_freq);
-T.n_bins = str2double(T.n_bins);
-T.bin_duration = str2double(T.bin_duration);
-T.n_trials = str2double(T.n_trials);
-T.n_bins_filled_mean = str2double(T.n_bins_filled_mean);
-T.n_bins_filled_var = str2double(T.n_bins_filled_var);
-T.bin_prob = str2double(T.bin_prob);
+numeric_columns = {
+    'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
+    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var'};
+for ii = 1:length(numeric_columns)
+    T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
+end
 
 % Compute mean and standard deviation
 % over target signals
 r2_column_names = {'r2_cs', 'r2_cs_nb', 'r2_linear'};
 T2 = groupsummary(T, ...
-    {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_values'}, ...
+    {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var'}, ...
     {'mean', 'std'}, ...
     r2_column_names);
 
@@ -354,7 +308,7 @@ for ii = 1:length(r2_column_names)
 end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
-T2_skinny = T2(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs'});
+T2_skinny = T2(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
 T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
 
@@ -372,196 +326,3 @@ for ii = 1:length(r2_column_names)
     T6.(['sem_', r2_column_names{ii}]) = T6.(['std_', r2_column_names{ii}]) ./ T6.(['mean_' r2_column_names{ii}]);
 end
 T6_skinny = T6(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2_cs', 'sem_r2_cs'});
-% % TODO:
-% %   * Convert numerical columns to numerical data
-% %   * Iterate through the saved stimuli and run the reconstructions
-% %   * Collect the data in a big data table
-% %   * Analyze results
-
-% return
-% % % Plot the parameter sets of n_bins_filled_mean vs n_bins_filled_var
-% % fig = new_figure();
-% % axis square
-% % scatter(param_sets(:, 1), param_sets(:, 2))
-% % xlabel('n bins filled mean')
-% % ylabel('n bins filled var')
-% % figlib.pretty()
-
-% %% Run experiment
-
-% params_to_do = [];
-
-% % Check if any parameter sets have been evaluated before.
-% % If so, skip them.
-% for ii = 1:size(param_sets, 1)
-%     file_ID =   ['n_bins_filled_mean=', num2str(param_sets(ii, 1)), '-', ...
-%                 'n_bins_filled_var=', num2str(param_sets(ii, 2)), '-', ...
-%                 'n_bins=', num2str(param_sets(ii, 3)), '-', ...
-%                 'target_signal=', data_names{param_sets(ii, 4)}, ...
-%                 '.csv'];
-%     param_string = file_ID(1:end-4);
-    
-%     stimulus_filepath       = pathlib.join(data_dir, ['stimulus-', file_ID]);
-%     response_filepath       = pathlib.join(data_dir, ['response-', file_ID]);
-%     reconstruction_filepath = pathlib.join(data_dir, ['reconstruction-', file_ID]);
-
-%     if OVERWRITE || ~(isfile(stimulus_filepath) && isfile(response_filepath) && isfile(reconstruction_filepath))
-%         corelib.verb(VERBOSE, 'INFO', ['Output files containing parameter set #', num2str(ii), ': "', param_string, '"', ...
-%                                        'unable to be acquired. Will reacquire.'])
-%         params_to_do(end+1, :) = param_sets(ii, :);
-%     else
-%         corelib.verb(VERBOSE, 'INFO', ['Output files associated with parameter set #', num2str(ii), ': "', param_string, '" acquired.'])
-%     end
-% end
-
-% corelib.verb(VERBOSE, 'INFO', [num2str(size(params_to_do, 1)), ' parameter sets to evaluate.'])
-
-% % Run all parameter sets identified in `params_to_do`
-% % progress_bar = ProgressBar(size(params_to_do, 1), 'IsParallel', true, 'Title', 'hyperparameter sweep');
-
-% if RUN
-%     % progress_bar.setup([], [], []);
-%     for ii = progress(1:size(params_to_do, 1))
-%     % parfor ii = 1:size(params_to_do, 1)
-%         try
-%             % Stimulus generation options
-%             options = struct;
-%             options.min_freq            = 100;
-%             options.max_freq            = 22e3;
-%             options.bin_duration        = size(target_signal, 1) / options.max_freq;
-%             options.n_trials            = 2e3;
-%             options.n_bins_filled_mean  = params_to_do(ii, 1);
-%             options.n_bins_filled_var   = params_to_do(ii, 2);
-%             options.n_bins              = params_to_do(ii, 3);
-%             options.amplitude_values    = linspace(-20, 0, 6);
-
-%             % Create stimulus generation object
-%             stimuli = Stimuli(options);
-
-%             % Generate the stimuli and response data
-%             % using a model of subject decision process
-%             [y, X] = stimuli.subject_selection_process(target_signal(:, params_to_do(ii, 4)), 'custom');
-
-%             % Get the reconstruction using compressed sensing (with basis)
-%             reconstruction = cs(y, X');
-%             % Get the reconstruction using compressed sensing (no basis)
-%             reconstruction_nb = cs_no_basis(y, X');
-
-%             % Save to directory
-%             file_ID =   ['n_bins_filled_mean=', num2str(param_sets(ii, 1)), '-', ...
-%                         'n_bins_filled_var=', num2str(param_sets(ii, 2)), '-', ...
-%                         'n_bins=', num2str(param_sets(ii, 3)), '-', ...
-%                         'target_signal=', data_names{param_sets(ii, 4)}, ...
-%                         '.csv'];
-%             csvwrite(pathlib.join(data_dir, ['stimulus-', file_ID]), X);
-%             csvwrite(pathlib.join(data_dir, ['response-', file_ID]), y);
-%             csvwrite(pathlib.join(data_dir, ['reconstruction-', file_ID]), reconstruction);
-%             csvwrite(pathlib.join(data_dir, ['reconstruction_nb-', file_ID]), reconstruction_nb);
-%         catch
-%             corelib.verb(VERBOSE, 'WARN', ['Failed to compute for parameter set: "', param_string, '".'])
-%         end
-
-%         % updateParallel([], pwd);
-%     end 
-%     % progress_bar.release();
-% end
-
-% % TODO
-
-% %% Evaluation
-
-% % Get reconstruction files
-% file_glob = pathlib.join(data_dir, 'reconstruction*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*');
-% file_glob_nb = pathlib.join(data_dir, 'reconstruction_nb*n_bins_filled_mean=*-n_bins_filled_var=*-n_bins=*-target_signal=*');
-% [reconstructions, reconstruction_files] = collect_reconstructions(file_glob);
-% [reconstructions_nb, reconstruction_files_nb] = collect_reconstructions(file_glob_nb);
-
-% % Get the parameter values from the files
-% pattern = 'n_bins_filled_mean=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-n_bins_filled_var=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-n_bins=[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)-target_signal=(\w*)';
-
-% params = collect_parameters(reconstruction_files, pattern, 4);
-% params_nb = collect_parameters(reconstruction_files_nb, pattern, 4);
-
-% % Combine parameters using different bases
-% basis = [true(size(params, 1), 1); false(size(params_nb, 1), 1)];
-
-% % Convert to a data table
-% T = cell2table([params; params_nb], 'VariableNames', {'n_bins_filled_mean', 'n_bins_filled_var', 'n_bins', 'target_signal'});
-% T.n_bins_filled_mean = str2double(T.n_bins_filled_mean);
-% T.n_bins_filled_var = str2double(T.n_bins_filled_var);
-% T.n_bins = str2double(T.n_bins);
-
-% % Add basis as new column
-% T.basis = basis;
-
-% % Add sum of reconstructions
-% % T.sum_recon = [sum(reconstructions, 1)'; sum(reconstructions_nb, 1)'];
-
-% % Compute reconstruction quality (r^2)
-
-% % with basis
-% r2 = zeros(size(params, 1), 1);
-% for ii = 1:size(params, 1)
-%     r2(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii})), reconstructions(:, ii));
-% end
-
-% % no basis
-% r2_nb = zeros(size(params_nb, 1), 1);
-% for ii = 1:size(params_nb, 1)
-%     r2_nb(ii) = corr(target_signal(:, strcmp(data_names, T.target_signal{ii + size(params, 1)})), reconstructions_nb(:, ii));
-% end
-
-% T.r2 = [r2; r2_nb] .^2;
-
-% % Remove rows with NaN r^2
-% T(isnan(T.r2), :) = [];
-
-% % All data
-% T = T(strcmp(T.target_signal, 'buzzing') | strcmp(T.target_signal, 'roaring'), :);
-% T = sortrows(T, 'r2', 'descend');
-
-% % Grouping by n_bins_* and basis
-% T2 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'n_bins_filled_mean', 'n_bins_filled_var', 'basis'});
-% T2 = sortrows(T2, 'mean_r2', 'descend');
-
-% % Grouping by target signal
-% T3 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'n_bins'});
-% T3 = sortrows(T3, 'mean_r2', 'descend');
-
-% % Grouping by target signal and basis
-% T4 = varfun(@mean, T, 'InputVariables', 'r2', 'GroupingVariables', {'target_signal', 'basis'});
-% T4 = sortrows(T4, 'mean_r2', 'descend');
-
-% %% Visualization
-% % return
-
-% fig2 = new_figure();
-% heatmap(T, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
-% title('r^2 as a fcn of stimulus parameters')
-% figlib.pretty('FontSize', 36)
-
-% fig3 = new_figure();
-% boxchart(categorical(T.basis), T.r2)
-% xlabel('basis?')
-% ylabel('r^2')
-% title('basis vs. r^2')
-% figlib.pretty('FontSize', 36);
-
-% fig3a = new_figure();
-% boxchart(categorical(T2.basis), T2.mean_r2)
-% xlabel('basis?')
-% ylabel('r^2')
-% title('basis vs. mean r^2')
-% figlib.pretty('FontSize', 36);
-
-% % fig4 = new_figure();
-% % scatter(T2.n_bins, T2.mean_r2)
-% % xlabel('n bins')
-% % ylabel('r^2')
-% % title('number of bins vs. mean r^2')
-% % figlib.pretty('FontSize', 36);
-
-% % fig5 = new_figure();
-% % heatmap(T4, 'n_bins_filled_mean', 'n_bins_filled_var', 'ColorVariable', 'r2', 'FontSize', 36)
-% % title('r^2 as a fcn of stimulus parameters (n bins = 300)')
-% % figlib.pretty('FontSize', 36)

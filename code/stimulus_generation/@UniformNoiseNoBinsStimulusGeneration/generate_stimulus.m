@@ -4,8 +4,9 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % Class Properties Used:
     %   n_bins
 
-    [~, Fs, nfft] = self.get_freq_bins();
-
+    Fs = self.get_fs();
+    nfft = self.get_nfft();
+    
     % generate spectrum completely randomly
     % without bins
     % amplitudes are uniformly-distributed

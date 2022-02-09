@@ -32,13 +32,21 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             y(y == 0) = -1;
         end % function
 
+        function Fs = get_fs(self)
+            Fs = 2*self.max_freq;
+        end % function
+
+        function nfft = get_nfft(self)
+            nfft = self.get_fs() * self.duration;
+        end % function
+
         function [binnum, Fs, nfft] = get_freq_bins(self)
             % Generates a vector indicating
             % which frequencies belong to the same bin,
             % following a tonotopic map of audible frequency perception.
 
-            Fs = 2*self.max_freq; % sampling rate of waveform
-            nfft = Fs*self.duration; % number of samples for Fourier transform
+            Fs = self.get_fs(); % sampling rate of waveform
+            nfft = self.get_nfft(); % number of samples for Fourier transform
             % nframes = floor(totaldur/self.bin_duration); % number of temporal frames
 
             % Define Frequency Bin Indices 1 through self.n_bins
@@ -55,18 +63,35 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % Generate matrix of stimuli.
             % TODO: documentation for this
 
-            % generate first stimulus
-            binned_repr_matrix = zeros(self.n_bins, self.n_trials);
-            [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
+            if strcmp('n_bins', properties(self))
+                % generate first stimulus
+                binned_repr_matrix = zeros(self.n_bins, self.n_trials);
+                [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
 
-            % instantiate stimuli matrix
-            stimuli_matrix = zeros(length(stim1), self.n_trials);
-            spect_matrix = zeros(length(spect), self.n_trials);
-            stimuli_matrix(:, 1) = stim1;
-            spect_matrix(:, 1) = spect;
-            for ii = 2:self.n_trials
-                [stimuli_matrix(:, ii), ~, spect_matrix(:, 1), binned_repr_matrix(:, ii)] = self.generate_stimulus();
+                % instantiate stimuli matrix
+                stimuli_matrix = zeros(length(stim1), self.n_trials);
+                spect_matrix = zeros(length(spect), self.n_trials);
+                stimuli_matrix(:, 1) = stim1;
+                spect_matrix(:, 1) = spect;
+                for ii = 2:self.n_trials
+                    [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), binned_repr_matrix(:, ii)] = self.generate_stimulus();
+                end
+            else
+                % generate first stimulus
+                [stim1, Fs, spect, ~] = self.generate_stimulus();
+
+                % instantiate stimuli matrix
+                stimuli_matrix = zeros(length(stim1), self.n_trials);
+                spect_matrix = zeros(length(spect), self.n_trials);
+                stimuli_matrix(:, 1) = stim1;
+                spect_matrix(:, 1) = spect;
+                for ii = 2:self.n_trials
+                    [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), ~] = self.generate_stimulus();
+                end
+                binned_repr_matrix = [];
             end
+
+
         end % function
 
         function self = from_config(self, options)
