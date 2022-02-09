@@ -74,7 +74,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 stimuli_matrix(:, 1) = stim1;
                 spect_matrix(:, 1) = spect;
                 for ii = 2:self.n_trials
-                    [stimuli_matrix(:, ii), ~, spect_matrix(:, 1), binned_repr_matrix(:, ii)] = self.generate_stimulus();
+                    [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), binned_repr_matrix(:, ii)] = self.generate_stimulus();
                 end
             else
                 % generate first stimulus
@@ -86,7 +86,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 stimuli_matrix(:, 1) = stim1;
                 spect_matrix(:, 1) = spect;
                 for ii = 2:self.n_trials
-                    [stimuli_matrix(:, ii), ~, spect_matrix(:, 1), ~] = self.generate_stimulus();
+                    [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), ~] = self.generate_stimulus();
                 end
                 binned_repr_matrix = [];
             end

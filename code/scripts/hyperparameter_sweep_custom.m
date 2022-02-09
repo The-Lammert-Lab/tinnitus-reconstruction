@@ -17,6 +17,7 @@ rng(1234);
 % Create output directory
 project_dir = pathlib.strip(mfilename('fullpath'), 3);
 data_dir = pathlib.join(project_dir, 'data', 'stimulus-hyperparameter-sweep');
+% data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
 mkdir(data_dir)
 
 % Target signals
