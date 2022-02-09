@@ -38,7 +38,7 @@ data_names = {
 s = cell(5, 1);
 f = cell(5, 1);
 for ii = 1:length(data_files)
-    [s{ii}, f{ii}] = wav2spect([sound_dir, data_files{ii}]);
+    [s{ii}, f{ii}] = wav2spect(pathlib.join(sound_dir, data_files{ii}));
 end
 target_signal = [s{:}];
 f = [f{:}];
