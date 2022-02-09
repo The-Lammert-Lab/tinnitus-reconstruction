@@ -15,11 +15,12 @@ VERBOSE     = true;
 rng(1234);
 
 % Create output directory
-data_dir = '/home/alec/data/stimulus-hyperparameter-sweep';
+project_dir = pathlib.strip(mfilename('fullpath'), 3);
+data_dir = pathlib.join(project_dir, 'data', 'stimulus-hyperparameter-sweep');
 mkdir(data_dir)
 
 % Target signals
-sound_dir = '/home/alec/data/sounds/';
+sound_dir = pathlib.join(project_dir, 'data', 'sounds');
 data_files = {
     'ATA_Tinnitus_Buzzing_Tone_1sec.wav', ...
     'ATA_Tinnitus_Electric_Tone_1sec.wav', ...
