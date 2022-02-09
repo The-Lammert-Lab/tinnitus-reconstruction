@@ -104,12 +104,18 @@ hparams = struct;
 stimuli = stimulus_generation_methods{1};
 
 % Numerical parameters
+n_bins = [30, 100, 200];
 bin_prob = [0.1, 0.3, 0.5, 0.8];
+hparams.n_bins = n_bins;
 hparams.bin_prob = bin_prob;
 
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(n_bins, bin_prob);
+
 % Create the files
-for ii = 1:length(bin_prob)
-    stimuli.bin_prob = bin_prob(ii);
+for ii = 1:size(num_param_sets, 1)
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.bin_prob = num_param_sets(ii, 2);
     write_stimuli(data_dir, stimulus_generation_names{1}, stimuli, OVERWRITE, VERBOSE);
 end
 
@@ -121,23 +127,26 @@ amplitude_values = linspace(-20, 0, 6);
 hparams.amplitude_values = amplitude_values';
 
 % Create the file and save the stimuli
-stimuli.amplitude_values = amplitude_values;
-write_stimuli(data_dir, stimulus_generation_names{2}, stimuli, OVERWRITE, VERBOSE);
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    stimuli.amplitude_values = amplitude_values;
+    write_stimuli(data_dir, stimulus_generation_names{2}, stimuli, OVERWRITE, VERBOSE);
+end
 
 %% Gaussian Noise No Bins
 stimuli = stimulus_generation_methods{3};
 
 % Numerical parameters
 amplitude_mean = [-10];
-amplitude_var = [1, 3, 5];
+amplitude_var = [5, 10, 20];
 hparams.amplitude_mean = amplitude_mean;
 hparams.amplitude_var = amplitude_var;
 
 % Collect all combinations of numerical parameters
-num_param_sets = allcomb(amplitude_mean, amplitude_var);
+num_param_sets = allcomb(n_bins, amplitude_mean, amplitude_var);
 
 % Create the files and stimuli
-for ii = 1:length(num_param_sets)
+for ii = 1:size(num_param_sets, 1)
     stimuli.amplitude_mean = num_param_sets(ii, 1);
     stimuli.amplitude_var = num_param_sets(ii, 2);
     write_stimuli(data_dir, stimulus_generation_names{3}, stimuli, OVERWRITE, VERBOSE);
@@ -146,11 +155,15 @@ end
 %% Gaussian Noise
 stimuli = stimulus_generation_methods{4};
 
+% Collect all combinations of numerical parameters
+num_param_sets = allcomb(n_bins, amplitude_mean, amplitude_var);
+
 % Create the files and stimuli
 % All hyperparameters are the same as the method above
-for ii = 1:length(num_param_sets)
-    stimuli.amplitude_mean = num_param_sets(ii, 1);
-    stimuli.amplitude_var = num_param_sets(ii, 2);
+for ii = 1:size(num_param_sets, 1)  
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.amplitude_mean = num_param_sets(ii, 2);
+    stimuli.amplitude_var = num_param_sets(ii, 3);
     write_stimuli(data_dir, stimulus_generation_names{4}, stimuli, OVERWRITE, VERBOSE);
 end
 
@@ -164,15 +177,16 @@ hparams.n_bins_filled_mean = n_bins_filled_mean;
 hparams.n_bins_filled_var = n_bins_filled_var;
 
 % Collect all combinations of numerical parameters
-num_param_sets = allcomb(n_bins_filled_mean, n_bins_filled_var);
+num_param_sets = allcomb(n_bins, n_bins_filled_mean, n_bins_filled_var);
 
 % Remove combinations of parameters where the s.e.m. is > 1
-num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) <= 1.5, :) = [];
+num_param_sets((num_param_sets(:, 2) ./ num_param_sets(:, 3)) <= 1.5, :) = [];
 
 % Create files and stimuli
 for ii = 1:size(num_param_sets, 1)
-    stimuli.n_bins_filled_mean = num_param_sets(ii, 1);
-    stimuli.n_bins_filled_var = num_param_sets(ii, 2);
+    stimuli.n_bins = num_param_sets(ii, 1);
+    stimuli.n_bins_filled_mean = num_param_sets(ii, 2);
+    stimuli.n_bins_filled_var = num_param_sets(ii, 3);
     write_stimuli(data_dir, stimulus_generation_names{5}, stimuli, OVERWRITE, VERBOSE);
 end
 
