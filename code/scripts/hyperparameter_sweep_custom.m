@@ -191,11 +191,23 @@ for ii = 1:size(num_param_sets, 1)
 end
 
 %% Uniform Noise No Bins
-% Uniform Noise
-% Uniform Prior
-for ii = 6:8
-    stimuli = stimulus_generation_methods{ii};
-    write_stimuli(data_dir, stimulus_generation_names{ii}, stimuli, OVERWRITE, VERBOSE);
+stimuli = stimulus_generation_methods{6};
+write_stimuli(data_dir, stimulus_generation_names{6}, stimuli, OVERWRITE, VERBOSE);
+
+%% Uniform Noise
+stimuli = stimulus_generation_methods{7};
+
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    write_stimuli(data_dir, stimulus_generation_names{7}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Uniform Prior
+stimuli = stimulus_generation_methods{8};
+
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    write_stimuli(data_dir, stimulus_generation_names{8}, stimuli, OVERWRITE, VERBOSE);
 end
 
 %% Collect all stimuli files
