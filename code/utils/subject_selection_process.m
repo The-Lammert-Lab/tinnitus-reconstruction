@@ -40,8 +40,6 @@ function [y, X] = subject_selection_process(target_signal, stimuli, n_samples)
         X = stimuli;
     end
 
-
-
     % ideal selection
     e = X * target_signal(:);
     y = double(e >= prctile(e, 50));

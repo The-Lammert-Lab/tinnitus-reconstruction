@@ -35,13 +35,17 @@ function data_table = collect_parameters(filenames)
     regex_result = regexp(filenames{1}, '([\w_]+)=([\-\w\d\.\,]*)', 'tokens');
     params_cell = cat(1, regex_result{:})';
     data_table = cell2table(params_cell(2, :), 'VariableNames', params_cell(1, :));
+    data_table.ID = 1;
 
+    % Create and outer join each new data table,
+    % keeping column names the same
     if length(filenames) > 1
         for ii = 2:length(filenames)
             regex_result = regexp(filenames{ii}, '([\w_]*)=([\-\w\d\.\,]*)', 'tokens');
             params_cell = cat(1, regex_result{:})';
             new_data_table = cell2table(params_cell(2, :), 'VariableNames', params_cell(1, :));
-            data_table = [data_table; new_data_table];
+            new_data_table.ID = ii;
+            data_table = outerjoin(data_table, new_data_table, 'MergeKeys', true);
         end
     end
 

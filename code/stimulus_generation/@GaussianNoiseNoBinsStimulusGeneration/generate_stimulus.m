@@ -5,7 +5,8 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     %   amplitude_mean
     %   amplitude_var
 
-    [~, Fs, nfft] = self.get_freq_bins();
+    Fs = self.get_fs();
+    nfft = self.get_nfft();
 
     % generate spectrum completely randomly
     % without bins
