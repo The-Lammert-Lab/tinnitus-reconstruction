@@ -66,4 +66,4 @@ savepath
 ```
 
 Finally, in the `tinnitus-project/code` directory,
-run `startup.m` as a MATLAB script.
+run `setup.m` as a MATLAB script.
