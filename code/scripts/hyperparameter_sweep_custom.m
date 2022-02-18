@@ -143,7 +143,7 @@ hparams.amplitude_mean = amplitude_mean;
 hparams.amplitude_var = amplitude_var;
 
 % Collect all combinations of numerical parameters
-num_param_sets = allcomb(n_bins, amplitude_mean, amplitude_var);
+num_param_sets = allcomb(amplitude_mean, amplitude_var);
 
 % Create the files and stimuli
 for ii = 1:size(num_param_sets, 1)
@@ -310,7 +310,7 @@ end
 % over target signals
 r2_column_names = {'r2_cs', 'r2_cs_nb', 'r2_linear'};
 T2 = groupsummary(T, ...
-    {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var'}, ...
+    {'method', 'n_bins_filled_mean', 'n_bins', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var'}, ...
     {'mean', 'std'}, ...
     r2_column_names);
 
@@ -320,7 +320,7 @@ for ii = 1:length(r2_column_names)
 end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
-T2_skinny = T2(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
+T2_skinny = T2(:, {'method', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
 T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
 
