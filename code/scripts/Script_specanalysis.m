@@ -1,5 +1,6 @@
 
-direc = '../sounds/';
+project_dir = pathlib.strip(mfilename('fullpath'), 3);
+direc = pathlib.join(project_dir, 'data', 'sounds');
 filenames = {...
     'ATA_Tinnitus_Buzzing_Tone_1sec.wav';...
     'ATA_Tinnitus_Electric_Tone_1sec.wav';...
@@ -16,7 +17,7 @@ POW = [];
 
 for itor = 1:length(filenames)
     
-    [y Fs] = wavread([direc filenames{itor}]);
+    [y, Fs] = audioread(pathlib.join(direc, filenames{itor}));
     
     y = (y-min(y))/range(y);
     
@@ -99,7 +100,7 @@ cdf = cumsum(pdf);
 r = rand(nbins_freq,1);
 s = zeros(nbins_freq,1);
 for itor = 1:length(r)
-    [val idx] = min((cdf-r(itor)).^2);   
+    [val, idx] = min((cdf-r(itor)).^2);   
     s(itor) = hbins(idx);  
 end
 
@@ -128,27 +129,25 @@ Y = fft(y,Fs);
 freq = Fs/2*linspace(0,1,Fs/2+1);
 pxx = 10*log10(abs(Y(1:Fs/2+1)));
 
-return
-
-figure
+figure;
 plot(freq,pxx)
 axis([0 Fs/2 -80 0])
 xlabel('Freq (Hz)','fontsize',18)
 ylabel('Power (dB)','fontsize',18)
 
-figure
+figure;
 val = hist(pxx,hbins);
 plot(hbins,val./sum(val),'linewidth',2)
 xlabel('Power (dB)','fontsize',18)
 ylabel('Prob','fontsize',18)
 
-figure
-[val cntrs] = hist(y,31);
+figure;
+[val, cntrs] = hist(y,31);
 plot(cntrs,val./sum(val),'linewidth',2)
 xlabel('Sound Pressure Level','fontsize',18)
 ylabel('Prob','fontsize',18)
 
-figure
+figure;
 plot(linspace(0,1,length(y)),y)
 axis([0 1 min(y) max(y)])
 xlabel('Time (sec)','fontsize',18)
