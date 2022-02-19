@@ -12,6 +12,7 @@ filenames = {...
 
 POW = [];
 
+
 %%%%%%%%%%%%%%%%%%%%
 % Read Power Spectra
 
@@ -35,6 +36,7 @@ for itor = 1:length(filenames)
     %ylabel('Power (dB)')
     
 end
+return
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define Frequency Bin Indices 1 through nbins_freq
