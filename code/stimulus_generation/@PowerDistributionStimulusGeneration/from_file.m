@@ -1,4 +1,7 @@
 function self = from_file(self, filepath, variable)
+    % Loads a power distribution from a .mat or .csv file into the object.
+    % 
+    % See Also: PowerDistributionStimulusGeneration.build_distribution
 
     arguments
         self PowerDistributionStimulusGeneration

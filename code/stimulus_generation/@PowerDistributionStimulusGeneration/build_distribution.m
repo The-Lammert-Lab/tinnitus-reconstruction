@@ -1,5 +1,17 @@
 function [distribution] = build_distribution(self, save_path)
-    % Builds the default distribution from ATA tinnitus sample files.
+    % Builds the default power distribution from ATA tinnitus sample files.
+    % Saves the distribution as a vector in dB
+    % and the corresponding frequency vector.
+    % 
+    % Arguments:
+    %   save_path : character vector, default: pathlib.join(fileparts(mfilename('fullpath')), 'distribution.mat');
+    %       Path to .mat file where distribution should be saved.
+    % 
+    % Returns:
+    %   distribution : numeric vector
+    %       Power distribution in dB.
+    % 
+    % See Also: PowerDistributionStimulusGeneration.from_file, PowerDistributionStimulusGeneration.generate_stimulus
 
     %% Preamble
     project_dir = pathlib.strip(mfilename('fullpath'), 4);
