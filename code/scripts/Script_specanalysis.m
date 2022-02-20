@@ -36,7 +36,7 @@ for itor = 1:length(filenames)
     %ylabel('Power (dB)')
     
 end
-return
+% return
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define Frequency Bin Indices 1 through nbins_freq
@@ -83,6 +83,8 @@ for itor = 1:length(filenames)
     HIST(:,itor) = val./sum(val);
      
 end
+
+return
 
 figure
 plot(hbins,HIST)
