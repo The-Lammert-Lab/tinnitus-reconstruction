@@ -94,6 +94,10 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
         end % function
 
+        function freq = get_freq(self)
+            freq = linspace(self.min_freq, self.max_freq, self.get_nfft() / 2);
+        end % function
+
         function self = from_config(self, options)
             % Set properties from a struct holding config options.
 
