@@ -1,4 +1,4 @@
-function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, VERBOSE)
+function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, VERBOSE, properties_to_skip)
     % Generate and save stimuli to a .csv file.
 
     arguments
@@ -7,9 +7,10 @@ function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, V
         stimuli (1,1)
         OVERWRITE (1,1)
         VERBOSE (1,1)
+        properties_to_skip = {}
     end
 
-    this_filename = ['stimuli--', 'method=', stimulus_generation_name,'&&', prop2str(stimuli), '.csv'];
+    this_filename = ['stimuli--', 'method=', stimulus_generation_name,'&&', prop2str(stimuli, properties_to_skip), '.csv'];
     this_filename = pathlib.join(data_dir, this_filename);
     this_spect_filename = strrep(this_filename, 'stimuli--', 'stimuli-spect--');
 

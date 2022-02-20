@@ -53,7 +53,8 @@ stimulus_generation_methods = {
     GaussianPriorStimulusGeneration(), ...
     UniformNoiseNoBinsStimulusGeneration(), ...
     UniformNoiseStimulusGeneration(), ...
-    UniformPriorStimulusGeneration() ...
+    UniformPriorStimulusGeneration(), ...
+    PowerDistributionStimulusGeneration() ...
 };
 stimulus_generation_names = cellfun(@(x) strrep(class(x), 'StimulusGeneration', ''), stimulus_generation_methods, 'UniformOutput', false);
 
@@ -81,6 +82,7 @@ options.amplitude_values    = 1;
 options.amplitude_mean      = 1;
 options.amplitude_var       = 1;
 options.bin_prob            = 1;
+options.distribution        = [];
 
 for ii = 1:length(stimulus_generation_methods)
     stimulus_generation_methods{ii} = stimulus_generation_methods{ii}.from_config(options);
@@ -208,6 +210,16 @@ stimuli = stimulus_generation_methods{8};
 for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
     write_stimuli(data_dir, stimulus_generation_names{8}, stimuli, OVERWRITE, VERBOSE);
+end
+
+%% Power Distribution
+stimuli = stimulus_generation_methods{9};
+stimuli = stimuli.from_file();
+hparams.distribution = [];
+
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, OVERWRITE, VERBOSE, {'distribution'});
 end
 
 %% Collect all stimuli files

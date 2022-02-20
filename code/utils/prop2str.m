@@ -46,7 +46,7 @@ function [stringified_properties] = prop2str(obj, properties_to_skip, property_s
         val = obj.(prop);
 
         % if property should be skipped, skip it
-        if any(strcmp(val, properties_to_skip))
+        if any(strcmp(prop, properties_to_skip))
             continue
         end
         
