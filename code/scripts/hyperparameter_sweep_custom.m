@@ -53,7 +53,8 @@ stimulus_generation_methods = {
     GaussianPriorStimulusGeneration(), ...
     UniformNoiseNoBinsStimulusGeneration(), ...
     UniformNoiseStimulusGeneration(), ...
-    UniformPriorStimulusGeneration() ...
+    UniformPriorStimulusGeneration(), ...
+    PowerDistributionStimulusGeneration() ...
 };
 stimulus_generation_names = cellfun(@(x) strrep(class(x), 'StimulusGeneration', ''), stimulus_generation_methods, 'UniformOutput', false);
 
@@ -81,6 +82,7 @@ options.amplitude_values    = 1;
 options.amplitude_mean      = 1;
 options.amplitude_var       = 1;
 options.bin_prob            = 1;
+options.distribution        = [];
 
 for ii = 1:length(stimulus_generation_methods)
     stimulus_generation_methods{ii} = stimulus_generation_methods{ii}.from_config(options);
@@ -210,6 +212,16 @@ for ii = 1:length(n_bins)
     write_stimuli(data_dir, stimulus_generation_names{8}, stimuli, OVERWRITE, VERBOSE);
 end
 
+%% Power Distribution
+stimuli = stimulus_generation_methods{9};
+stimuli = stimuli.from_file();
+hparams.distribution = [];
+
+for ii = 1:length(n_bins)
+    stimuli.n_bins = n_bins(ii);
+    write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, OVERWRITE, VERBOSE, {'distribution'});
+end
+
 %% Collect all stimuli files
 % Read the stimuli filenames.
 % Collect the parameters in a data table
@@ -320,11 +332,12 @@ for ii = 1:length(r2_column_names)
 end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
-T2_skinny = T2(:, {'method', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
+T2_skinny = T2(:, {'method', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
-T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
+T3 = T(strcmp(T.method, 'GaussianNoiseNoBins') & T.amplitude_mean == -10 & T.amplitude_var == 10, :);
+% T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
 
-T4 = T(strcmp(T.method, 'white_no_bins'), :);
+% T4 = T(strcmp(T.method, 'white_no_bins'), :);
 
 T5 = T;
 T5(strcmp(T5.target_signal, 'teakettle'), :) = [];
