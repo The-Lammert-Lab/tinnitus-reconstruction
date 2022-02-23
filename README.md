@@ -48,6 +48,16 @@ You can use the `collect_data` function to gather the data into output matrices.
 [responses, stimuli] = collect_data('config', 'path_to_config_file');
 ```
 
+## Tinnitus representation reconstruction
+
+You can use compressed sensing (`cs`), compressed sensing without a basis (`cs_no_basis`) or linear regression (`gs`).
+
+Then do:
+
+```matlab
+x = cs(responses, stimuli');
+```
+
 ## Installing
 
 For most users, it is best to install the MATLAB toolbox from the latest [Release](https://github.com/alec-hoyland/tinnitus-project/releases#latest).

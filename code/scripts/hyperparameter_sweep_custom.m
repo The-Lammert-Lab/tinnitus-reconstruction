@@ -332,6 +332,7 @@ for ii = 1:length(r2_column_names)
 end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
+T2(isnan(T2.mean_r2_cs), :) = [];
 T2_skinny = T2(:, {'method', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
 T3 = T(strcmp(T.method, 'GaussianNoiseNoBins') & T.amplitude_mean == -10 & T.amplitude_var == 10, :);
