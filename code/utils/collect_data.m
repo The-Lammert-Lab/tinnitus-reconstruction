@@ -24,6 +24,14 @@ function [responses, stimuli] = collect_data(options)
     [mismatched_response_files, mismatched_stimuli_files] = filematch({files_responses.name}, {files_stimuli.name}, 'delimiter', '_');
     files_responses(mismatched_response_files) = [];
     files_stimuli(mismatched_stimuli_files) = [];
+    
+    if isempty(files_responses)
+        error(['No response files found at:  ', glob_responses, ' . Check that your config.data_dir and config.subjectID are correct'])
+    end
+
+    if isempty(files_stimuli)
+        error(['No stimuli files found at:  ', glob_stimuli, ' . Check that your config.data_dir and config.subjectID are correct'])
+    end
 
     % Checks for data validity
     corelib.verb(length(files_responses) ~= length(files_stimuli), 'WARN', 'number of stimuli and response files do not match')
