@@ -251,14 +251,14 @@ for ii = 1:length(stimuli_files)
         % Get the responses
         % Either load from file or generate and then save to file
         if OVERWRITE
-            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_response_filepath]);
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], ['Creating file: ', this_response_filepath]);
             [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
             csvwrite(this_response_filepath, y);
         elseif isfile(this_response_filepath)
-            corelib.verb(VERBOSE, 'INFO', [this_response_filepath, ' exists, loading...'])
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], [this_response_filepath, ' exists, loading...'])
             y = csvread(this_response_filepath);
         else
-            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_response_filepath]);
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], ['Creating file: ', this_response_filepath]);
             [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
             csvwrite(this_response_filepath, y);
         end
@@ -268,24 +268,25 @@ for ii = 1:length(stimuli_files)
         this_reconstruction_filepath = strrep(this_response_filepath, 'responses--', 'reconstruction--');
 
         if OVERWRITE
-            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_reconstruction_filepath]);
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], ['Creating file: ', this_reconstruction_filepath]);
             reconstruction_cs = cs(y, this_stimulus');
             reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
             reconstruction_linear = gs(y, this_stimulus');
             this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
             csvwrite(this_reconstruction_filepath, this_reconstruction);
         elseif isfile(this_reconstruction_filepath)
-            corelib.verb(VERBOSE, 'INFO', [this_reconstruction_filepath, ' exists, loading...']);
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], [this_reconstruction_filepath, ' exists, loading...']);
             this_reconstruction = csvread(this_reconstruction_filepath);
         else
-            corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_reconstruction_filepath]);
+            corelib.verb(VERBOSE, ['INFO ', datetime('now')], ['Creating file: ', this_reconstruction_filepath]);
             reconstruction_cs = cs(y, this_stimulus');
             reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
             reconstruction_linear = gs(y, this_stimulus');
             this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
             csvwrite(this_reconstruction_filepath, this_reconstruction);
         end
-        
+    
+        corelib.verb(VERBOSE, ['INFO ' datetime('now')], ['finished ', num2str(length(data_names) * (ii-1) + qq), '/', num2str(length(stimuli_files) * length(data_names))])
     end % qq
 end % ii
 
