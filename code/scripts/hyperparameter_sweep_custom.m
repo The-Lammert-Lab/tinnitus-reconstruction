@@ -141,7 +141,7 @@ end
 stimuli = stimulus_generation_methods{3};
 
 % Numerical parameters
-amplitude_mean = [-10];
+amplitude_mean = -35;
 amplitude_var = [5, 10, 20];
 hparams.amplitude_mean = amplitude_mean;
 hparams.amplitude_var = amplitude_var;
