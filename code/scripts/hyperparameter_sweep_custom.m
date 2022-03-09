@@ -343,6 +343,8 @@ T3 = T(strcmp(T.method, 'GaussianNoiseNoBins') & T.amplitude_mean == -10 & T.amp
 
 % T4 = T(strcmp(T.method, 'white_no_bins'), :);
 
+
+% Remove teakettle
 T5 = T;
 T5(strcmp(T5.target_signal, 'teakettle'), :) = [];
 
