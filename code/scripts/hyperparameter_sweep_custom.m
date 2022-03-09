@@ -311,7 +311,8 @@ end
 r2 = r2.^2;
 
 % Add r2 values to table
-T = addvars(T, r2(:, 1), r2(:, 2), r2(:, 3), 'NewVariableNames', {'r2_cs', 'r2_cs_nb', 'r2_linear'});
+r2_column_names = {'r2_cs', 'r2_cs_nb', 'r2_linear', 'r2_diff'};
+T = addvars(T, r2(:, 1), r2(:, 2), r2(:, 3), r2(:, 1) - r2(:, 3), 'NewVariableNames', r2_column_names);
 
 % Clean up table
 numeric_columns = {
@@ -323,7 +324,6 @@ end
 
 % Compute mean and standard deviation
 % over target signals
-r2_column_names = {'r2_cs', 'r2_cs_nb', 'r2_linear'};
 T2 = groupsummary(T, ...
     {'method', 'n_bins_filled_mean', 'n_bins', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var'}, ...
     {'mean', 'std'}, ...
@@ -354,4 +354,4 @@ T6 = sortrows(T6, 'mean_r2_cs', 'descend');
 for ii = 1:length(r2_column_names)
     T6.(['sem_', r2_column_names{ii}]) = T6.(['std_', r2_column_names{ii}]) ./ T6.(['mean_' r2_column_names{ii}]);
 end
-T6_skinny = T6(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2_cs', 'sem_r2_cs'});
+T6_skinny = T6(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});

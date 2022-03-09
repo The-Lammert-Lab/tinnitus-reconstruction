@@ -19,16 +19,16 @@ function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, V
     end
 
     if ~OVERWRITE && isfile(this_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_filename, ' exists, not recreating'])
+        corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_filename, ' exists, not recreating'])
     else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_filename])
+        corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_filename])
         csvwrite(this_filename, stimuli_matrix);
     end
     
     if ~OVERWRITE && isfile(this_spect_filename)
-        corelib.verb(VERBOSE, 'INFO', [this_spect_filename, ' exists, not recreating'])
+        corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_spect_filename, ' exists, not recreating'])
     else
-        corelib.verb(VERBOSE, 'INFO', ['Creating file: ', this_spect_filename])
+        corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_spect_filename])
         csvwrite(this_spect_filename, spect_matrix);
     end
 
