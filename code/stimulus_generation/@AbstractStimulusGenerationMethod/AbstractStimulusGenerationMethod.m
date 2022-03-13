@@ -91,7 +91,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 binned_repr_matrix = [];
             end
 
-
         end % function
 
         function freq = get_freq(self)

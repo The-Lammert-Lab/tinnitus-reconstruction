@@ -224,10 +224,48 @@ for ii = 1:length(n_bins)
     write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, OVERWRITE, VERBOSE, {'distribution'});
 end
 
-%% Collect all stimuli files
-% Read the stimuli filenames.
-% Collect the parameters in a data table
-% and the stimuli filepaths in a struct.
+return
+
+%% Reconstruction across the Bin Representation
+%   Collect all stimuli files.
+%   Read the stimuli filenames.
+%   Collect the parameters into a data table,
+%   and the stimuli filepaths into a struct.
+
+% Collect all file information
+stimuli_files_binrep = dir(pathlib.join(data_dir, 'stimuli-binrep--*.csv'));
+
+% Strip the file ending, e.g., '.csv'
+stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name}, 'UniformOutput', false);
+
+% Compute the resposnes and reconstructions
+
+for ii = 1:length(stimuli_files_binrep)
+    % Read the stimuli file
+    this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
+    this_stimulus_binrep = csvread(this_stimulus_binrep_filepath);
+
+    % For each target signal, compute the responses
+    for qq = 1:length(data_names)
+        % Create the response file if it doesn't exist
+        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '.csv'];
+        this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses--');
+
+        % Get the responses
+        % Either load from file, or generate an then save to file
+
+        if OVERWRITE
+            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_binrep_filepath]);
+            [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus_binrep');
+        end
+    end
+end
+
+%% Reconstruction across the Spectrum
+%   Collect all stimuli files
+%   Read the stimuli filenames.
+%   Collect the parameters in a data table
+%   and the stimuli filepaths in a struct.
 
 % Collect all the file information
 stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
@@ -235,7 +273,7 @@ stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
 
-%% Compute the responses and reconstructions
+% Compute the responses and reconstructions
 
 for ii = 1:length(stimuli_files)
     % Read the stimuli file
