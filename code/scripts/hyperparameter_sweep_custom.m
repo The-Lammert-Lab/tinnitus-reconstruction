@@ -224,8 +224,6 @@ for ii = 1:length(n_bins)
     write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, OVERWRITE, VERBOSE, {'distribution'});
 end
 
-return
-
 %% Reconstruction across the Bin Representation
 %   Collect all stimuli files.
 %   Read the stimuli filenames.
@@ -256,6 +254,10 @@ for ii = 1:length(stimuli_files_binrep)
 
         if OVERWRITE
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_binrep_filepath]);
+            % Add code to regenerate the correct stimulus generation object
+            % Then use it to get the binned representation of the target signal
+
+            return
             [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus_binrep');
         end
     end
