@@ -119,7 +119,7 @@ num_param_sets = allcomb(n_bins, bin_prob);
 for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins = num_param_sets(ii, 1);
     stimuli.bin_prob = num_param_sets(ii, 2);
-    write_stimuli(data_dir, stimulus_generation_names{1}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{1}, stimuli, false, VERBOSE);
 end
 
 %% Brimijoin
@@ -133,7 +133,7 @@ hparams.amplitude_values = amplitude_values';
 for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
     stimuli.amplitude_values = amplitude_values;
-    write_stimuli(data_dir, stimulus_generation_names{2}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{2}, stimuli, false, VERBOSE);
 end
 
 %% Gaussian Noise No Bins
@@ -152,7 +152,7 @@ num_param_sets = allcomb(amplitude_mean, amplitude_var);
 for ii = 1:size(num_param_sets, 1)
     stimuli.amplitude_mean = num_param_sets(ii, 1);
     stimuli.amplitude_var = num_param_sets(ii, 2);
-    write_stimuli(data_dir, stimulus_generation_names{3}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{3}, stimuli, false, VERBOSE);
 end
 
 %% Gaussian Noise
@@ -167,7 +167,7 @@ for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins = num_param_sets(ii, 1);
     stimuli.amplitude_mean = num_param_sets(ii, 2);
     stimuli.amplitude_var = num_param_sets(ii, 3);
-    write_stimuli(data_dir, stimulus_generation_names{4}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{4}, stimuli, false, VERBOSE);
 end
 
 %% Gaussian Prior
@@ -190,19 +190,19 @@ for ii = 1:size(num_param_sets, 1)
     stimuli.n_bins = num_param_sets(ii, 1);
     stimuli.n_bins_filled_mean = num_param_sets(ii, 2);
     stimuli.n_bins_filled_var = num_param_sets(ii, 3);
-    write_stimuli(data_dir, stimulus_generation_names{5}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{5}, stimuli, false, VERBOSE);
 end
 
 %% Uniform Noise No Bins
 stimuli = stimulus_generation_methods{6};
-write_stimuli(data_dir, stimulus_generation_names{6}, stimuli, OVERWRITE, VERBOSE);
+write_stimuli(data_dir, stimulus_generation_names{6}, stimuli, false, VERBOSE);
 
 %% Uniform Noise
 stimuli = stimulus_generation_methods{7};
 
 for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
-    write_stimuli(data_dir, stimulus_generation_names{7}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{7}, stimuli, false, VERBOSE);
 end
 
 %% Uniform Prior
@@ -210,7 +210,7 @@ stimuli = stimulus_generation_methods{8};
 
 for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
-    write_stimuli(data_dir, stimulus_generation_names{8}, stimuli, OVERWRITE, VERBOSE);
+    write_stimuli(data_dir, stimulus_generation_names{8}, stimuli, false, VERBOSE);
 end
 
 %% Power Distribution
@@ -220,7 +220,7 @@ hparams.distribution = [];
 
 for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
-    write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, OVERWRITE, VERBOSE, {'distribution'});
+    write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, false, VERBOSE, {'distribution'});
 end
 
 %% Reconstruction across the Bin Representation
@@ -235,11 +235,14 @@ stimuli_files_binrep = dir(pathlib.join(data_dir, 'stimuli-binrep--*.csv'));
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name}, 'UniformOutput', false);
 
-% Compute the resposnes and reconstructions
+% Compute the responses and reconstructions
 
 for ii = 1:length(stimuli_files_binrep)
     % Read the stimuli file
     this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
+
+    return
+
     this_stimulus_binrep = csvread(this_stimulus_binrep_filepath);
 
     % For each target signal, compute the responses
@@ -251,7 +254,7 @@ for ii = 1:length(stimuli_files_binrep)
         % Get the responses
         % Either load from file, or generate an then save to file
 
-        if OVERWRITE
+        if false
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_binrep_filepath]);
             % Add code to regenerate the correct stimulus generation object
             % Then use it to get the binned representation of the target signal
