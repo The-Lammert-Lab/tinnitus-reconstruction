@@ -66,6 +66,11 @@ reconstruction_methods = {
     'linreg'
 }; 
 
+% Numerical properties
+numeric_columns = {
+    'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
+    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var'};
+
 %% Precompute all stimuli
 
 % Stimulus generation options (default)
@@ -235,6 +240,12 @@ end
 % Collect all file information
 stimuli_files_binrep = dir(pathlib.join(data_dir, 'stimuli-binrep--*.csv'));
 
+% Remove all files with 0 bytes (empty CSVs)
+stimuli_files_binrep(~logical([stimuli_files_binrep.bytes])) = [];
+
+% Remove all files with 'NoBins' in the name
+stimuli_files_binrep(strcmp('NoBins', {stimuli_files_binrep.name})) = [];
+
 % Strip the file ending, e.g., '.csv'
 stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name}, 'UniformOutput', false);
 
@@ -244,24 +255,47 @@ for ii = 1:length(stimuli_files_binrep)
     % Read the stimuli file
     this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
 
-    this_stimulus_binrep = csvread(this_stimulus_binrep_filepath);
+    this_stimulus_binrep = csvread2(this_stimulus_binrep_filepath);
 
     % For each target signal, compute the responses
     for qq = 1:length(data_names)
         % Create the response file if it doesn't exist
-        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '.csv'];
-        this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses--');
+        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', 1, '.csv'];
+        this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses-binrep--');
 
         % Get the responses
         % Either load from file, or generate an then save to file
+        if isfile(this_response_binrep_filepath)
+            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_binrep_filepath, ' exists, loading...'])
+            y = csvread2(this_response_binrep_filepath);
+        else
+            property_struct = str2prop(this_response_binrep_filepath);
+            for ww = 1:length(numeric_columns)
+                if any(strcmp(numeric_columns{ww}, fieldnames(property_struct)))
+                    property_struct.(numeric_columns{ww}) = str2double(property_struct.(numeric_columns{ww}));
+                end
+            end
+            stimuli = stimulus_generation_methods{strcmp(property_struct.method, stimulus_generation_names)};
+            stimuli = stimuli.from_config(property_struct);
+            [B, ~, ~] = stimuli.get_freq_bins();
+            [y, ~] = subject_selection_process(spect2binnedrepr(target_signal(:, qq)', B), this_stimulus_binrep');
+            csvwrite(this_response_binrep_filepath, y);
+        end
 
-        if false
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_binrep_filepath]);
-            % Add code to regenerate the correct stimulus generation object
-            % Then use it to get the binned representation of the target signal
+        % Get the reconstructions
+        % Either load from file or generate and then save to file
+        this_reconstruction_binrep_filepath = strrep(this_response_binrep_filepath, 'responses-binrep--', 'reconstruction-binrep--');
 
-            return
-            [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus_binrep');
+        if isfile(this_reconstruction_binrep_filepath)
+            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_binrep_filepath, ' exists, loading...']);
+            this_reconstruction = csvread2(this_reconstruction_binrep_filepath);
+        else
+            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_binrep_filepath]);
+            reconstruction_cs = cs(y, this_stimulus');
+            reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
+            reconstruction_linear = gs(y, this_stimulus');
+            this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
+            csvwrite(this_reconstruction_binrep_filepath, this_reconstruction);
         end
     end
 end
@@ -283,19 +317,19 @@ stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutpu
 for ii = 1:length(stimuli_files)
     % Read the stimuli file
     this_stimulus_filepath = pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name);
-    this_stimulus = csvread(this_stimulus_filepath);
+    this_stimulus = csvread2(this_stimulus_filepath);
 
     % For each target signal, compute the responses
     for qq = 1:length(data_names)
         % Create the response file if it doesn't exist
-        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '.csv'];
+        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', 0, '.csv'];
         this_response_filepath = strrep(this_response_filepath, 'stimuli-spect--', 'responses--');
 
         % Get the responses
         % Either load from file or generate and then save to file
         if isfile(this_response_filepath)
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_filepath, ' exists, loading...'])
-            y = csvread(this_response_filepath);
+            y = csvread2(this_response_filepath);
         else
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_filepath]);
             [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
@@ -308,7 +342,7 @@ for ii = 1:length(stimuli_files)
 
         if isfile(this_reconstruction_filepath)
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_filepath, ' exists, loading...']);
-            this_reconstruction = csvread(this_reconstruction_filepath);
+            this_reconstruction = csvread2(this_reconstruction_filepath);
         else
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_filepath]);
             reconstruction_cs = cs(y, this_stimulus');
@@ -337,7 +371,7 @@ T = sortrows(T, 'ID');
 r2 = NaN(length(reconstruction_files), 3);
 for ii = 1:length(reconstruction_files)
     this_filename = pathlib.join(reconstruction_files(ii).folder, reconstruction_files(ii).name);
-    this_reconstruction = csvread(this_filename);
+    this_reconstruction = csvread2(this_filename);
     r2(ii, :) = corr(target_signal(:, strcmp(T.target_signal(ii), data_names)), this_reconstruction);
 end
 r2 = r2.^2;
@@ -347,9 +381,6 @@ r2_column_names = {'r2_cs', 'r2_cs_nb', 'r2_linear', 'r2_diff'};
 T = addvars(T, r2(:, 1), r2(:, 2), r2(:, 3), r2(:, 1) - r2(:, 3), 'NewVariableNames', r2_column_names);
 
 % Clean up table
-numeric_columns = {
-    'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
-    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var'};
 for ii = 1:length(numeric_columns)
     T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
 end

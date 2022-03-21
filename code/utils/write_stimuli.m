@@ -19,12 +19,8 @@ function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, V
     % or if the bin representation file doesn't exist and the stimulus generation method
     % uses bins,
     % generate data for them.
-    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename) || (~contains('NoBins', stimulus_generation_name) && ~isfile(this_binrep_filename))
-        if (~contains('NoBins', stimulus_generation_name))
-            [stimuli_matrix, ~, spect_matrix, binrep_matrix] = stimuli.generate_stimuli_matrix();
-        else
-            [stimuli_matrix, ~, spect_matrix] = stimuli.generate_stimuli_matrix();
-        end
+    if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename) || ~isfile(this_binrep_filename)
+        [stimuli_matrix, ~, spect_matrix, binrep_matrix] = stimuli.generate_stimuli_matrix();
     end
 
     % If overwrite is false, and the stimuli file exists, don't recreate it.
@@ -45,7 +41,7 @@ function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, V
 
     % If overwrite is false, and the bin representation file exists (for a stimulus generation method with bins),
     % don't recreate it.
-    if ~contains('NoBins', stimulus_generation_name) && ~OVERWRITE && isfile(this_binrep_filename)
+    if ~OVERWRITE && isfile(this_binrep_filename)
         corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_binrep_filename, ' exists, not recreating'])
     else
         corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_binrep_filename])
