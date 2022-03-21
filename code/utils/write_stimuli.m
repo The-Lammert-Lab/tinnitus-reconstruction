@@ -20,7 +20,11 @@ function write_stimuli(data_dir, stimulus_generation_name, stimuli, OVERWRITE, V
     % uses bins,
     % generate data for them.
     if OVERWRITE || ~isfile(this_filename) || ~isfile(this_spect_filename) || (~contains('NoBins', stimulus_generation_name) && ~isfile(this_binrep_filename))
-        [stimuli_matrix, ~, spect_matrix, binrep_matrix] = stimuli.generate_stimuli_matrix();
+        if (~contains('NoBins', stimulus_generation_name))
+            [stimuli_matrix, ~, spect_matrix, binrep_matrix] = stimuli.generate_stimuli_matrix();
+        else
+            [stimuli_matrix, ~, spect_matrix] = stimuli.generate_stimuli_matrix();
+        end
     end
 
     % If overwrite is false, and the stimuli file exists, don't recreate it.

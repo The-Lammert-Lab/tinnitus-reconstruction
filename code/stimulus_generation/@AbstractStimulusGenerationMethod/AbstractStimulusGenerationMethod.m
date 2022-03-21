@@ -63,7 +63,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % Generate matrix of stimuli.
             % TODO: documentation for this
 
-            if strcmp('n_bins', properties(self))
+            if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
                 binned_repr_matrix = zeros(self.n_bins, self.n_trials);
                 [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
