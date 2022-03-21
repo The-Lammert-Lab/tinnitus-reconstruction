@@ -291,9 +291,9 @@ for ii = 1:length(stimuli_files_binrep)
             this_reconstruction = csvread2(this_reconstruction_binrep_filepath);
         else
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_binrep_filepath]);
-            reconstruction_cs = cs(y, this_stimulus');
-            reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
-            reconstruction_linear = gs(y, this_stimulus');
+            reconstruction_cs = cs(y, this_stimulus_binrep');
+            reconstruction_cs_nb = cs_no_basis(y, this_stimulus_binrep');
+            reconstruction_linear = gs(y, this_stimulus_binrep');
             this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
             csvwrite(this_reconstruction_binrep_filepath, this_reconstruction);
         end
