@@ -36,6 +36,25 @@ f = [f{:}];
 
 ts_dct = dct(target_signal);
 
+% Get indices corresponding to top 40 magnitudes.
+
+[B, I] = sort(abs(ts_dct), 1, 'descend');
+
+% Get a compressed representation
+ts_dct_compressed = ts_dct;
+ts_dct_compressed(I(41:end, :)) = 0;
+return
+
+% Compare compressed representation to full representation
+for ii = 1:length(data_names)
+    ax = subplot(length(data_names), 1, ii);
+    plot(ax, db(idct(ts_dct(:, ii))))
+    hold on
+    plot(ax, db(idct(ts_dct_compressed(:, ii))))
+end
+
+return
+
 %% Plot the signals
 
 fig = new_figure();
