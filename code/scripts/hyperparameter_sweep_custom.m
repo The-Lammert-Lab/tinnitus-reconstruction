@@ -359,7 +359,7 @@ end % ii
 %% Collect results into a table
 
 % Collect all the file information
-reconstruction_files = dir(pathlib.join(data_dir, 'reconstruction--*.csv'));
+reconstruction_files = [dir(pathlib.join(data_dir, 'reconstruction--*.csv')), dir(pathlib.join(data_dir, 'reconstruction-binrep--*.csv'))];
 
 % Strip the file ending, e.g., '.csv'
 reconstruction_filenames = cellfun(@(x) x(1:end-4), {reconstruction_files.name}, 'UniformOutput', false);
