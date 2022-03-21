@@ -8,7 +8,6 @@
 
 % Script-level parameters
 RUN         = true;
-OVERWRITE   = false;
 VERBOSE     = true;
 
 % Set random number seed
@@ -290,11 +289,7 @@ for ii = 1:length(stimuli_files)
 
         % Get the responses
         % Either load from file or generate and then save to file
-        if OVERWRITE
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_filepath]);
-            [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
-            csvwrite(this_response_filepath, y);
-        elseif isfile(this_response_filepath)
+        if isfile(this_response_filepath)
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_filepath, ' exists, loading...'])
             y = csvread(this_response_filepath);
         else
@@ -307,14 +302,7 @@ for ii = 1:length(stimuli_files)
         % Either load from file or generate and then save to file
         this_reconstruction_filepath = strrep(this_response_filepath, 'responses--', 'reconstruction--');
 
-        if OVERWRITE
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_filepath]);
-            reconstruction_cs = cs(y, this_stimulus');
-            reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
-            reconstruction_linear = gs(y, this_stimulus');
-            this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
-            csvwrite(this_reconstruction_filepath, this_reconstruction);
-        elseif isfile(this_reconstruction_filepath)
+        if isfile(this_reconstruction_filepath)
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_filepath, ' exists, loading...']);
             this_reconstruction = csvread(this_reconstruction_filepath);
         else
