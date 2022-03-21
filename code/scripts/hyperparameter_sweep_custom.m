@@ -182,6 +182,9 @@ hparams.n_bins_filled_var = n_bins_filled_var;
 % Collect all combinations of numerical parameters
 num_param_sets = allcomb(n_bins, n_bins_filled_mean, n_bins_filled_var);
 
+% Remove combinations of parameters where n_bins_filled_mean / n_bins >= 2/3
+num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) >= 2/3, :) = [];
+
 % Remove combinations of parameters where the s.e.m. is > 1
 num_param_sets((num_param_sets(:, 2) ./ num_param_sets(:, 3)) <= 1.5, :) = [];
 
@@ -240,8 +243,6 @@ stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name},
 for ii = 1:length(stimuli_files_binrep)
     % Read the stimuli file
     this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
-
-    return
 
     this_stimulus_binrep = csvread(this_stimulus_binrep_filepath);
 
