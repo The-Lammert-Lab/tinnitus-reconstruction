@@ -261,7 +261,7 @@ for ii = 1:length(stimuli_files_binrep)
     for qq = 1:length(data_names)
         % Extract properties from the stimulus binrep filepath
         property_struct = str2prop(this_stimulus_binrep_filepath);
-        if contains(fieldnames(property_true), 'n_bins')
+        if contains(fieldnames(property_struct), 'n_bins')
             g = get_gamma(property_struct.n_bins);
         else
             g = get_gamma(100);
@@ -330,7 +330,7 @@ for ii = 1:length(stimuli_files)
     for qq = 1:length(data_names)
         % Extract properties from the stimulus binrep filepath
         property_struct = str2prop(this_stimulus_filepath);
-        if contains(fieldnames(property_true), 'n_bins')
+        if contains(fieldnames(property_struct), 'n_bins')
             g = get_gamma(property_struct.n_bins);
         else
             g = get_gamma(100);
