@@ -69,7 +69,7 @@ reconstruction_methods = {
 % Numerical properties
 numeric_columns = {
     'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
-    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var'};
+    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'bin_rep', 'gamma'};
 
 %% Precompute all stimuli
 
@@ -259,8 +259,16 @@ for ii = 1:length(stimuli_files_binrep)
 
     % For each target signal, compute the responses
     for qq = 1:length(data_names)
+        % Extract properties from the stimulus binrep filepath
+        property_struct = str2prop(this_stimulus_binrep_filepath);
+        if contains(fieldnames(property_true), 'n_bins')
+            g = get_gamma(property_struct.n_bins);
+        else
+            g = get_gamma(100);
+        end
+
         % Create the response file if it doesn't exist
-        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', 1, '.csv'];
+        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', num2str(1), '&&gamma', num2str(g), '.csv'];
         this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses-binrep--');
 
         % Get the responses
@@ -269,7 +277,6 @@ for ii = 1:length(stimuli_files_binrep)
             corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_binrep_filepath, ' exists, loading...'])
             y = csvread2(this_response_binrep_filepath);
         else
-            property_struct = str2prop(this_response_binrep_filepath);
             for ww = 1:length(numeric_columns)
                 if any(strcmp(numeric_columns{ww}, fieldnames(property_struct)))
                     property_struct.(numeric_columns{ww}) = str2double(property_struct.(numeric_columns{ww}));
@@ -321,8 +328,16 @@ for ii = 1:length(stimuli_files)
 
     % For each target signal, compute the responses
     for qq = 1:length(data_names)
+        % Extract properties from the stimulus binrep filepath
+        property_struct = str2prop(this_stimulus_filepath);
+        if contains(fieldnames(property_true), 'n_bins')
+            g = get_gamma(property_struct.n_bins);
+        else
+            g = get_gamma(100);
+        end
+
         % Create the response file if it doesn't exist
-        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', 0, '.csv'];
+        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', num2str(0), '&&gamma', num2str(g), '.csv'];
         this_response_filepath = strrep(this_response_filepath, 'stimuli-spect--', 'responses--');
 
         % Get the responses
@@ -359,7 +374,7 @@ end % ii
 %% Collect results into a table
 
 % Collect all the file information
-reconstruction_files = [dir(pathlib.join(data_dir, 'reconstruction--*.csv')), dir(pathlib.join(data_dir, 'reconstruction-binrep--*.csv'))];
+reconstruction_files = [dir(pathlib.join(data_dir, 'reconstruction--*.csv')); dir(pathlib.join(data_dir, 'reconstruction-binrep--*.csv'))];
 
 % Strip the file ending, e.g., '.csv'
 reconstruction_filenames = cellfun(@(x) x(1:end-4), {reconstruction_files.name}, 'UniformOutput', false);
