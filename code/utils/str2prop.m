@@ -36,7 +36,7 @@ function obj = str2prop(prop_string, properties_to_skip, property_separator, out
     regex_result = regexp(prop_string, '([\w_]+)=([\-\w\d\.\,]*)', 'tokens');
     params_cell = cat(1, regex_result{:})';
 
-    if strcmp(output_type, 'struct')
+    if ~strcmp(output_type, 'struct')
         obj = params_cell;
         return
     end
