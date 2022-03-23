@@ -31,6 +31,6 @@ function binned_repr = spect2binnedrepr(T, B, n_bins)
     binned_repr = zeros(size(T, 1), n_bins);
     for bin_num = 1:n_bins
         a = T(:, B == bin_num);
-        binned_repr(:, bin_num) = a(:, 1);
+        binned_repr(:, bin_num) = mean(a, 2);
     end
 end
