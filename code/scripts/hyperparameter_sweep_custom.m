@@ -7,7 +7,7 @@
 %% Preamble
 
 % Script-level parameters
-RUN         = true;
+RUN         = false;
 VERBOSE     = true;
 
 % Set random number seed
@@ -188,7 +188,7 @@ hparams.n_bins_filled_var = n_bins_filled_var;
 num_param_sets = allcomb(n_bins, n_bins_filled_mean, n_bins_filled_var);
 
 % Remove combinations of parameters where n_bins_filled_mean / n_bins >= 2/3
-num_param_sets((num_param_sets(:, 1) ./ num_param_sets(:, 2)) >= 2/3, :) = [];
+num_param_sets((num_param_sets(:, 2) ./ num_param_sets(:, 1)) >= 2/3, :) = [];
 
 % Remove combinations of parameters where the s.e.m. is > 1
 num_param_sets((num_param_sets(:, 2) ./ num_param_sets(:, 3)) <= 1.5, :) = [];
@@ -231,145 +231,143 @@ for ii = 1:length(n_bins)
     write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, false, VERBOSE, {'distribution'});
 end
 
-%% Reconstruction across the Bin Representation
-%   Collect all stimuli files.
-%   Read the stimuli filenames.
-%   Collect the parameters into a data table,
-%   and the stimuli filepaths into a struct.
+if RUN
 
-% Collect all file information
-stimuli_files_binrep = dir(pathlib.join(data_dir, 'stimuli-binrep--*.csv'));
+    %% Reconstruction across the Bin Representation
+    %   Collect all stimuli files.
+    %   Read the stimuli filenames.
+    %   Collect the parameters into a data table,
+    %   and the stimuli filepaths into a struct.
 
-% Remove all files with 0 bytes (empty CSVs)
-stimuli_files_binrep(~logical([stimuli_files_binrep.bytes])) = [];
+    % Collect all file information
+    stimuli_files_binrep = dir(pathlib.join(data_dir, 'stimuli-binrep--*.csv'));
 
-% Remove all files with 'NoBins' in the name
-stimuli_files_binrep(strcmp('NoBins', {stimuli_files_binrep.name})) = [];
+    % Remove all files with 0 bytes (empty CSVs)
+    stimuli_files_binrep(~logical([stimuli_files_binrep.bytes])) = [];
 
-% Strip the file ending, e.g., '.csv'
-stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name}, 'UniformOutput', false);
+    % Remove all files with 'NoBins' in the name
+    stimuli_files_binrep(strcmp('NoBins', {stimuli_files_binrep.name})) = [];
 
-% Compute the responses and reconstructions
+    % Strip the file ending, e.g., '.csv'
+    stimuli_filenames_binrep = cellfun(@(x) x(1:end-4), {stimuli_files_binrep.name}, 'UniformOutput', false);
 
-for ii = 1:length(stimuli_files_binrep)
-    % Read the stimuli file
-    this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
+    % Compute the responses and reconstructions
 
-    this_stimulus_binrep = csvread2(this_stimulus_binrep_filepath);
+    for ii = 1:length(stimuli_files_binrep)
+        % Read the stimuli file
+        this_stimulus_binrep_filepath = pathlib.join(stimuli_files_binrep(ii).folder, stimuli_files_binrep(ii).name);
+        this_stimulus_binrep = csvread2(this_stimulus_binrep_filepath);
 
-    % For each target signal, compute the responses
-    for qq = 1:length(data_names)
-        % Extract properties from the stimulus binrep filepath
-        property_struct = str2prop(this_stimulus_binrep_filepath);
-        if contains(fieldnames(property_struct), 'n_bins')
-            g = get_gamma(property_struct.n_bins);
-        else
-            g = get_gamma(100);
-        end
+        % Get the bins and stimuli object
+        [stimuli, property_struct] = stimuli_data_from_filename(stimuli_filenames_binrep{ii}, stimulus_generation_methods, stimulus_generation_names, numeric_columns);
+        [B, ~, ~] = stimuli.get_freq_bins();
 
-        % Create the response file if it doesn't exist
-        this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', num2str(1), '&&gamma', num2str(g), '.csv'];
-        this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses-binrep--');
-
-        % Get the responses
-        % Either load from file, or generate an then save to file
-        if isfile(this_response_binrep_filepath)
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_binrep_filepath, ' exists, loading...'])
-            y = csvread2(this_response_binrep_filepath);
-        else
-            for ww = 1:length(numeric_columns)
-                if any(strcmp(numeric_columns{ww}, fieldnames(property_struct)))
-                    property_struct.(numeric_columns{ww}) = str2double(property_struct.(numeric_columns{ww}));
-                end
+        %% For each target signal, compute the responses
+        for qq = 1:length(data_names)
+            % Extract properties from the stimulus binrep filepath
+            property_struct = str2prop(stimuli_filenames_binrep{ii});
+            if contains(fieldnames(property_struct), 'n_bins')
+                g = get_gamma(property_struct.n_bins);
+            else
+                g = get_gamma(100);
             end
-            stimuli = stimulus_generation_methods{strcmp(property_struct.method, stimulus_generation_names)};
-            stimuli = stimuli.from_config(property_struct);
-            [B, ~, ~] = stimuli.get_freq_bins();
-            [y, ~] = subject_selection_process(spect2binnedrepr(target_signal(:, qq)', B), this_stimulus_binrep');
-            csvwrite(this_response_binrep_filepath, y);
-        end
 
-        % Get the reconstructions
-        % Either load from file or generate and then save to file
-        this_reconstruction_binrep_filepath = strrep(this_response_binrep_filepath, 'responses-binrep--', 'reconstruction-binrep--');
+            % Create the response file if it doesn't exist
+            this_response_binrep_filepath = [this_stimulus_binrep_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep=', num2str(1), '&&gamma=', num2str(g), '.csv'];
+            this_response_binrep_filepath = strrep(this_response_binrep_filepath, 'stimuli-binrep--', 'responses-binrep--');
 
-        if isfile(this_reconstruction_binrep_filepath)
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_binrep_filepath, ' exists, loading...']);
-            this_reconstruction = csvread2(this_reconstruction_binrep_filepath);
-        else
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_binrep_filepath]);
-            reconstruction_cs = cs(y, this_stimulus_binrep');
-            reconstruction_cs_nb = cs_no_basis(y, this_stimulus_binrep');
-            reconstruction_linear = gs(y, this_stimulus_binrep');
-            this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
-            csvwrite(this_reconstruction_binrep_filepath, this_reconstruction);
+            % Get the responses
+            % Either load from file, or generate an then save to file
+            if isfile(this_response_binrep_filepath)
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_binrep_filepath, ' exists, loading...']);
+                y = csvread2(this_response_binrep_filepath);
+            else
+                [y, ~] = subject_selection_process(spect2binnedrepr(target_signal(:, qq)', B), this_stimulus_binrep');
+                csvwrite(this_response_binrep_filepath, y);
+            end
+
+            % Get the reconstructions
+            % Either load from file or generate and then save to file
+            this_reconstruction_binrep_filepath = strrep(this_response_binrep_filepath, 'responses-binrep--', 'reconstruction-binrep--');
+
+            if isfile(this_reconstruction_binrep_filepath)
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_binrep_filepath, ' exists, loading...']);
+                this_reconstruction = csvread2(this_reconstruction_binrep_filepath);
+            else
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_binrep_filepath]);
+                reconstruction_cs = cs(y, this_stimulus_binrep', g);
+                reconstruction_cs_nb = cs_no_basis(y, this_stimulus_binrep', g);
+                reconstruction_linear = gs(y, this_stimulus_binrep');
+                this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
+                csvwrite(this_reconstruction_binrep_filepath, this_reconstruction);
+            end
         end
     end
-end
 
-%% Reconstruction across the Spectrum
-%   Collect all stimuli files
-%   Read the stimuli filenames.
-%   Collect the parameters in a data table
-%   and the stimuli filepaths in a struct.
+    %% Reconstruction across the Spectrum
+    %   Collect all stimuli files
+    %   Read the stimuli filenames.
+    %   Collect the parameters in a data table
+    %   and the stimuli filepaths in a struct.
 
-% Collect all the file information
-stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
+    % Collect all the file information
+    stimuli_files = dir(pathlib.join(data_dir, 'stimuli-spect--*.csv'));
 
-% Strip the file ending, e.g., '.csv'
-stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
+    % Strip the file ending, e.g., '.csv'
+    stimuli_filenames = cellfun(@(x) x(1:end-4), {stimuli_files.name}, 'UniformOutput', false);
 
-% Compute the responses and reconstructions
+    % Compute the responses and reconstructions
 
-for ii = 1:length(stimuli_files)
-    % Read the stimuli file
-    this_stimulus_filepath = pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name);
-    this_stimulus = csvread2(this_stimulus_filepath);
+    for ii = 1:length(stimuli_files)
+        % Read the stimuli file
+        this_stimulus_filepath = pathlib.join(stimuli_files(ii).folder, stimuli_files(ii).name);
+        this_stimulus = csvread2(this_stimulus_filepath);
 
-    % For each target signal, compute the responses
-    for qq = 1:length(data_names)
-        % Extract properties from the stimulus binrep filepath
-        property_struct = str2prop(this_stimulus_filepath);
-        if contains(fieldnames(property_struct), 'n_bins')
-            g = get_gamma(property_struct.n_bins);
-        else
-            g = get_gamma(100);
-        end
+        % For each target signal, compute the responses
+        for qq = 1:length(data_names)
+            % Extract properties from the stimulus binrep filepath
+            property_struct = str2prop(this_stimulus_filepath);
+            if contains(fieldnames(property_struct), 'n_bins')
+                g = get_gamma(property_struct.n_bins);
+            else
+                g = get_gamma(100);
+            end
 
-        % Create the response file if it doesn't exist
-        this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep', num2str(0), '&&gamma', num2str(g), '.csv'];
-        this_response_filepath = strrep(this_response_filepath, 'stimuli-spect--', 'responses--');
+            % Create the response file if it doesn't exist
+            this_response_filepath = [this_stimulus_filepath(1:end-4), '&&target_signal=', data_names{qq}, '&&bin_rep=', num2str(0), '&&gamma=', num2str(g), '.csv'];
+            this_response_filepath = strrep(this_response_filepath, 'stimuli-spect--', 'responses--');
 
-        % Get the responses
-        % Either load from file or generate and then save to file
-        if isfile(this_response_filepath)
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_filepath, ' exists, loading...'])
-            y = csvread2(this_response_filepath);
-        else
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_filepath]);
-            [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
-            csvwrite(this_response_filepath, y);
-        end
+            % Get the responses
+            % Either load from file or generate and then save to file
+            if isfile(this_response_filepath)
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_response_filepath, ' exists, loading...'])
+                y = csvread2(this_response_filepath);
+            else
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_response_filepath]);
+                [y, ~] = subject_selection_process(target_signal(:, qq), this_stimulus');
+                csvwrite(this_response_filepath, y);
+            end
 
-        % Get the reconstructions
-        % Either load from file or generate and then save to file
-        this_reconstruction_filepath = strrep(this_response_filepath, 'responses--', 'reconstruction--');
+            % Get the reconstructions
+            % Either load from file or generate and then save to file
+            this_reconstruction_filepath = strrep(this_response_filepath, 'responses--', 'reconstruction--');
 
-        if isfile(this_reconstruction_filepath)
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_filepath, ' exists, loading...']);
-            this_reconstruction = csvread2(this_reconstruction_filepath);
-        else
-            corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_filepath]);
-            reconstruction_cs = cs(y, this_stimulus');
-            reconstruction_cs_nb = cs_no_basis(y, this_stimulus');
-            reconstruction_linear = gs(y, this_stimulus');
-            this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
-            csvwrite(this_reconstruction_filepath, this_reconstruction);
-        end
-    
-        corelib.verb(VERBOSE, ['INFO ' char(datetime('now'))], ['finished ', num2str(length(data_names) * (ii-1) + qq), '/', num2str(length(stimuli_files) * length(data_names))])
-    end % qq
-end % ii
+            if isfile(this_reconstruction_filepath)
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], [this_reconstruction_filepath, ' exists, loading...']);
+                this_reconstruction = csvread2(this_reconstruction_filepath);
+            else
+                corelib.verb(VERBOSE, ['INFO ', char(datetime('now'))], ['Creating file: ', this_reconstruction_filepath]);
+                reconstruction_cs = cs(y, this_stimulus', g);
+                reconstruction_cs_nb = cs_no_basis(y, this_stimulus', g);
+                reconstruction_linear = gs(y, this_stimulus');
+                this_reconstruction = [reconstruction_cs, reconstruction_cs_nb, reconstruction_linear];
+                csvwrite(this_reconstruction_filepath, this_reconstruction);
+            end
+        
+            corelib.verb(VERBOSE, ['INFO ' char(datetime('now'))], ['finished ', num2str(length(data_names) * (ii-1) + qq), '/', num2str(length(stimuli_files) * length(data_names))])
+        end % qq
+    end % ii
+end % RUN
 
 %% Collect results into a table
 
@@ -385,10 +383,29 @@ T = sortrows(T, 'ID');
 % Calculate r2 values
 r2 = NaN(length(reconstruction_files), 3);
 for ii = 1:length(reconstruction_files)
+
+    % Read the reconstruction file
     this_filename = pathlib.join(reconstruction_files(ii).folder, reconstruction_files(ii).name);
     this_reconstruction = csvread2(this_filename);
-    r2(ii, :) = corr(target_signal(:, strcmp(T.target_signal(ii), data_names)), this_reconstruction);
+
+    % Get the stimuli object
+    [stimuli, property_struct] = stimuli_data_from_filename(reconstruction_filenames{ii}, stimulus_generation_methods, stimulus_generation_names, numeric_columns);
+
+    % Get the target signal
+    this_target_signal = target_signal(:, strcmp(T.target_signal(ii), data_names));
+    
+    if property_struct.bin_rep
+        B = stimuli.get_freq_bins();
+        ts = spect2binnedrepr(this_target_signal', B);
+    else
+        ts = this_target_signal;
+    end
+
+    % Compute the r value
+    r2(ii, :) = corr(ts(:), this_reconstruction);
 end
+
+% Compute the r2 value
 r2 = r2.^2;
 
 % Add r2 values to table
@@ -403,7 +420,7 @@ end
 % Compute mean and standard deviation
 % over target signals
 T2 = groupsummary(T, ...
-    {'method', 'n_bins_filled_mean', 'n_bins', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var'}, ...
+    {'method', 'n_bins_filled_mean', 'n_bins', 'n_bins_filled_var', 'bin_prob', 'amplitude_values', 'amplitude_mean', 'amplitude_var', 'bin_rep'}, ...
     {'mean', 'std'}, ...
     r2_column_names);
 
@@ -414,7 +431,7 @@ end
 
 T2 = sortrows(T2, 'mean_r2_cs', 'descend');
 T2(isnan(T2.mean_r2_cs), :) = [];
-T2_skinny = T2(:, {'method', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
+T2_skinny = T2(:, {'method', 'bin_rep', 'n_bins', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'mean_r2_cs', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
 T3 = T(strcmp(T.method, 'GaussianNoiseNoBins') & T.amplitude_mean == -10 & T.amplitude_var == 10, :);
 % T3 = T(strcmp(T.method, 'custom') & T.n_bins_filled_mean == 20 & T.n_bins_filled_var == 3, :);
@@ -435,3 +452,19 @@ for ii = 1:length(r2_column_names)
     T6.(['sem_', r2_column_names{ii}]) = T6.(['std_', r2_column_names{ii}]) ./ T6.(['mean_' r2_column_names{ii}]);
 end
 T6_skinny = T6(:, {'method', 'n_bins_filled_mean', 'n_bins_filled_var', 'mean_r2_cs', 'mean_r2_diff', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
+
+
+function [stimuli, property_struct] = stimuli_data_from_filename(filename, stimulus_generation_methods, stimulus_generation_names, numeric_columns)
+    property_struct = str2prop(filename);
+    property_struct = set_numeric_columns_of_struct(property_struct, numeric_columns);
+    stimuli = stimulus_generation_methods{strcmp(property_struct.method, stimulus_generation_names)};
+    stimuli = stimuli.from_config(property_struct);
+end % function
+
+function property_struct = set_numeric_columns_of_struct(property_struct, numeric_columns)
+    for ww = 1:length(numeric_columns)
+        if any(strcmp(numeric_columns{ww}, fieldnames(property_struct)))
+            property_struct.(numeric_columns{ww}) = str2double(property_struct.(numeric_columns{ww}));
+        end
+    end
+end % function
