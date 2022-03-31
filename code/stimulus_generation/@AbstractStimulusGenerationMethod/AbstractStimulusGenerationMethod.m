@@ -40,30 +40,12 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             nfft = self.get_fs() * self.duration;
         end % function
 
-        function [binnum, Fs, nfft] = get_freq_bins(self)
-            % Generates a vector indicating
-            % which frequencies belong to the same bin,
-            % following a tonotopic map of audible frequency perception.
-
-            Fs = self.get_fs(); % sampling rate of waveform
-            nfft = self.get_nfft(); % number of samples for Fourier transform
-            % nframes = floor(totaldur/self.bin_duration); % number of temporal frames
-
-            % Define Frequency Bin Indices 1 through self.n_bins
-            bintops = round(mels2hz(linspace(hz2mels(self.min_freq), hz2mels(self.max_freq), self.n_bins+1)));
-            binst = bintops(1:end-1);
-            binnd = bintops(2:end);
-            binnum = linspace(self.min_freq, self.max_freq, nfft/2);
-            for itor = 1:self.n_bins
-                binnum(binnum <= binnd(itor) & binnum >= binst(itor)) = itor;
-            end
-        end % function
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
             % Generate matrix of stimuli.
             % TODO: documentation for this
 
-            if strcmp('n_bins', properties(self))
+            if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
                 binned_repr_matrix = zeros(self.n_bins, self.n_trials);
                 [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
@@ -90,7 +72,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 end
                 binned_repr_matrix = [];
             end
-
 
         end % function
 
