@@ -32,6 +32,8 @@ end
 target_signal = [s{:}];
 f = [f{:}];
 
+return
+
 %% Transform signals to DCT basis
 
 ts_dct = dct(target_signal);
