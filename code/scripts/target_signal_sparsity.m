@@ -32,27 +32,65 @@ end
 target_signal = [s{:}];
 f = [f{:}];
 
-return
+% Get bin-space representation
+
+options = struct;
+options.min_freq  = 100;
+options.max_freq  = 22e3;
+options.duration  = size(target_signal, 1) / options.max_freq;
+options.n_trials  = 2e3;
+stimgen = GaussianPriorStimulusGeneration();
+stimgen = stimgen.from_config(options);
+
+target_signal_binrep = stimgen.spect2binnedrepr(target_signal);
+
+% Convert signals to decibels
+
+target_signal_db = convert_to_db(target_signal);
+target_signal_binrep_db = convert_to_db(target_signal_binrep);
 
 %% Transform signals to DCT basis
 
-ts_dct = dct(target_signal);
+ts_dct = dct(target_signal_db);
+ts_br_dct = dct(target_signal_binrep_db);
 
 % Get indices corresponding to top 40 magnitudes.
 
 [B, I] = sort(abs(ts_dct), 1, 'descend');
+[B_br, I_br] = sort(abs(ts_br_dct), 1, 'descend');
 
 % Get a compressed representation
+
 ts_dct_compressed = ts_dct;
-ts_dct_compressed(I(41:end, :)) = 0;
-return
+for ii = 1:size(ts_dct_compressed, 2)
+    ts_dct_compressed(I(33:end, ii), ii) = 0;
+end
+
+ts_br_dct_compressed = ts_br_dct;
+for ii = 1:size(ts_br_dct_compressed, 2)
+    ts_br_dct_compressed(I_br(11:end, ii), ii) = 0;
+end
 
 % Compare compressed representation to full representation
+fig1 = new_figure();
 for ii = 1:length(data_names)
     ax = subplot(length(data_names), 1, ii);
-    plot(ax, db(idct(ts_dct(:, ii))))
+    plot(ax, idct(ts_dct(:, ii)));
     hold on
-    plot(ax, db(idct(ts_dct_compressed(:, ii))))
+    plot(ax, idct(ts_dct_compressed(:, ii)));
+end
+
+fig2 = new_figure();
+for ii = 1:length(data_names)
+    ax = subplot(length(data_names), 1, ii);
+    plot(ax, idct(ts_br_dct(:, ii)));
+    hold on
+    plot(ax, idct(ts_br_dct_compressed(:, ii)));
+end
+
+r2 = zeros(size(ts_br_dct, 2), 1);
+for ii = 1:length(r2)
+    r2(ii) = corr(idct(ts_br_dct(:, ii)), idct(ts_br_dct_compressed(:, ii)));
 end
 
 return
