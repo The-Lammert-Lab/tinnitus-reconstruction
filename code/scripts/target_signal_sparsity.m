@@ -75,10 +75,14 @@ end
 fig1 = new_figure();
 for ii = 1:length(data_names)
     ax = subplot(length(data_names), 1, ii);
-    plot(ax, idct(ts_dct(:, ii)));
+    plot(ax, 1e-3 * stimgen.get_freq(), idct(ts_dct(:, ii)));
     hold on
-    plot(ax, idct(ts_dct_compressed(:, ii)));
+    plot(ax, 1e-3 * stimgen.get_freq(), idct(ts_dct_compressed(:, ii)));
+    ylabel('amplitude')
+    xlabel('frequency (kHz)')
+    title(data_names{ii})
 end
+figlib.pretty()
 
 fig2 = new_figure();
 for ii = 1:length(data_names)
@@ -86,12 +90,20 @@ for ii = 1:length(data_names)
     plot(ax, idct(ts_br_dct(:, ii)));
     hold on
     plot(ax, idct(ts_br_dct_compressed(:, ii)));
+    ylabel('amplitude')
+    xlabel('bins')
+    title(data_names{ii})
+end
+figlib.pretty()
+
+r2 = zeros(size(ts_dct, 2), 1);
+r2_br = zeros(size(ts_br_dct, 2), 1);
+for ii = 1:length(r2)
+    r2(ii) = corr(idct(ts_dct(:, ii)), idct(ts_dct_compressed(:, ii)));
+    r2_br(ii) = corr(idct(ts_br_dct(:, ii)), idct(ts_br_dct_compressed(:, ii)));
 end
 
-r2 = zeros(size(ts_br_dct, 2), 1);
-for ii = 1:length(r2)
-    r2(ii) = corr(idct(ts_br_dct(:, ii)), idct(ts_br_dct_compressed(:, ii)));
-end
+T = table(r2, r2_br, data_names(:), 'VariableNames', {'r2', 'r2_br', 'target_signal'})
 
 return
 
