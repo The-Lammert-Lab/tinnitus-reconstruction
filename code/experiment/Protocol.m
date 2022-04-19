@@ -25,6 +25,9 @@ function Protocol(options)
     config = parse_config(options.config);
     config.n_trials = config.n_trials_per_block;
 
+    % Try to create the data directory if it doesn't exist
+    mkdir(config.data_dir);
+
     %% Setup
 
     % Useful variables
