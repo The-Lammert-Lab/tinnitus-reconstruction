@@ -281,3 +281,6 @@ data/*
 **/*.prj
 **/*.mltbx
 figures/*
+
+# MacOS nonsense
+.DS_Store

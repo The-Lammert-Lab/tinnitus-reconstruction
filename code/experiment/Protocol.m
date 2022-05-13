@@ -80,6 +80,7 @@ function Protocol(options)
         target_sound = [];
     end
 
+    target_sound = target_sound(1:floor(target_fs*0.5)); %ACL added (5MAY2022) to shorten target sound to 500ms
 
     %% Load Presentations Screens
 
@@ -119,7 +120,7 @@ function Protocol(options)
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
             soundsc(target_sound, target_fs)
-            pause(length(target_sound) / target_fs)
+            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
         end
 
 
