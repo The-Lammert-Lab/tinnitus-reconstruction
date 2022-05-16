@@ -16,6 +16,8 @@ There are four required fields:
 Other fields include:
 
 * **data_dir**: path to directory where output files from the experiment should be saved
+* **stimuli_save_type**: either `waveform`, `spectrum`, or `bins`. Determines in what form
+data from the experiment should be saved.
 * various stimuli parameters including:
     - **min_freq**: the minimum frequency (in Hz) of the stimuli
     - **max_freq**: the maximum frequency (in Hz) of the stimuli
