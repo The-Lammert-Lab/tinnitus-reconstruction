@@ -11,3 +11,4 @@ n_bins_filled_var: 3
 bin_duration: 0.5
 stimuli_type: GaussianPrior
 target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+stimuli_save_type: bins
