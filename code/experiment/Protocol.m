@@ -93,10 +93,19 @@ function Protocol(options)
 
     % Generate a block of stimuli
     % [stimuli_matrix, Fs, nfft] = stimuli_object.custom_generate_stimuli_matrix();
-    [stimuli_matrix, Fs, nfft] = stimuli_object.generate_stimuli_matrix();
+    [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
 
     % Write the stimuli to file
-    writematrix(stimuli_matrix, filename_stimuli);
+    switch config.stimuli_save_type
+    case 'waveform'
+        writematrix(stimuli_matrix, filename_stimuli);
+    case 'spectrum'
+        writematrix(spect_matrix, filename_stimuli);
+    case 'bins'
+        write_matrix(binned_repr_matrix, filename_stimuli);
+    otherwise
+        error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
+    end
 
     %% Intro Screen & Start
 
@@ -186,10 +195,19 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
-            [stimuli_matrix, Fs, nfft] = stimuli_object.generate_stimuli_matrix();
+            [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
 
             % Save stimuli to file
-            writematrix(stimuli_matrix, filename_stimuli)
+            switch config.stimuli_save_type
+            case 'waveform'
+                writematrix(stimuli_matrix, filename_stimuli);
+            case 'spectrum'
+                writematrix(spect_matrix, filename_stimuli);
+            case 'bins'
+                write_matrix(binned_repr_matrix, filename_stimuli);
+            otherwise
+                error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
+            end
             fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
 
         else % continue with block
