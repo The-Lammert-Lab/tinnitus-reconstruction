@@ -42,12 +42,21 @@ function config = parse_config(config_file, verbose)
         ['Unknown stimuli type: ' config.stimuli_type, '. Allowed values are: ', stimuli_string(1:end-2)], '.');
 
     % data_dir
-    if ~isfield('data_dir', config) || isempty(config.data_dir)
+    if ~isfield(config, 'data_dir') || isempty(config.data_dir)
         project_dir = pathlib.strip(mfilename('fullpath'), 3);
         data_dir = pathlib.join(project_dir, 'code', 'experiment', 'Data');
         corelib.verb(verbose, 'parse_config', ['data_dir is empty, filling with: ', data_dir])
         config.data_dir = data_dir;
     end
+
+    % stimuli_save_type
+    if ~isfield(config, 'stimuli_save_type') || isempty(config.stimuli_save_type)
+        config.stimuli_save_type = 'waveform';
+        corelib.verb(verbose, 'parse_config', 'stimuli_save_type is empty, filling with: waveform.')
+    end
+    assert(any(strcmp(config.stimuli_save_type, {'bins', 'waveform', 'spectrum'})), ...
+        ['Unknown stimuli save type: ', config.stimuli_save_type, '. Allowed values are: [bins, waveform, spectrum].'])
+
 
 end % function
 
