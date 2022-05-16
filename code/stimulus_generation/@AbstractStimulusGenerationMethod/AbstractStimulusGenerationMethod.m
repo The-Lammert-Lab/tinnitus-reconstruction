@@ -43,7 +43,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
             % Generate matrix of stimuli.
-            % TODO: documentation for this
+            % TODO: #19 documentation for this
 
             if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
