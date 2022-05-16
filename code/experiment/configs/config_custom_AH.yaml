@@ -1,4 +1,4 @@
-subjectID: pilot&&subject=AH&&stimuli_type=custom&&n_bins_filled_mean=20&&n_bins_filled_var=3
+subjectID: pilot&&subject=AH&&stimuli_type=custom&&n_bins_filled_mean=30&&n_bins_filled_var=3
 data_dir: /home/alec/code/tinnitus-project/code/experiment/Data
 n_trials_per_block: 100
 n_blocks: 10
