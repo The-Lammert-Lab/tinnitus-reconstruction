@@ -46,8 +46,8 @@ function Protocol(options)
     end
 
     % Instantiate the stimulus generation object
-    stimuli = eval([config.stimuli_type, 'StimulusGeneration()']);
-    stimuli = stimuli.from_config(config);
+    stimuli_object = eval([config.stimuli_type, 'StimulusGeneration()']);
+    stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
     total_trials_done = 0;
@@ -92,8 +92,8 @@ function Protocol(options)
     %% Generate stimuli
 
     % Generate a block of stimuli
-    % [stimuli_matrix, Fs, nfft] = stimuli.custom_generate_stimuli_matrix();
-    [stimuli_matrix, Fs, nfft] = stimuli.generate_stimuli_matrix();
+    % [stimuli_matrix, Fs, nfft] = stimuli_object.custom_generate_stimuli_matrix();
+    [stimuli_matrix, Fs, nfft] = stimuli_object.generate_stimuli_matrix();
 
     % Write the stimuli to file
     writematrix(stimuli_matrix, filename_stimuli);
@@ -186,7 +186,7 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
-            [stimuli_matrix, Fs, nfft] = stimuli.generate_stimuli_matrix();
+            [stimuli_matrix, Fs, nfft] = stimuli_object.generate_stimuli_matrix();
 
             % Save stimuli to file
             writematrix(stimuli_matrix, filename_stimuli)
