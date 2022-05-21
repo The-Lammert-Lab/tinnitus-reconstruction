@@ -378,6 +378,7 @@
 \newcommand{\etal}{\textit{et al}., }
 \newcommand{\ie}{\textit{i}.\textit{e}., }
 \newcommand{\eg}{\textit{e}.\textit{g}.\ }
+\newcommand{\cf}{\textit{cf}.\ }
 \usepackage{hyperref}
 
 % correct bad hyphenation here
@@ -612,8 +613,44 @@ of the PTS can inform individualized tinnitus treatment with enhanced habituatio
 \section{Materials and Methods }
 % To use this template, type over sections of the template or cut and paste from another document. Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline. 
 % IEEE will do the final formatting of your paper. However, you should format your manuscript for submission to IEEE OJEMB for review and also for preparing for preprint that will be e-published several days after you upload the final version of an accepted manuscript. 
-aaa
+
+\subsection{Stimulus Generation}
+
+To generate stimuli, we partition the frequency space $f \in [100,~22,000]$ Hz into 100 mel-spaced frequency bins
+so that each bin is perceptually different to a listener.
+For each stimulus, we randomly select ${round}(\mathcal{N}(30, \sqrt{0.3}))$ bins
+with equal probability to be ``filled'' with power $0$ dB.
+Unfilled bins are set to $-20$ dB.
+The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
+
+Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
+nine stimulus generation methods and hundreds of hyperparameter values
+(\cf Supplementary Information).
+
 \subsection{Theory}
+
+A subject performing $n$ trials with $b$ frequency bins produces
+a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
+and a response column vector $y \in {1,-1}^n$,
+where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
+We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$.
+The one-bit compressed sensing reconstruction problem is then:
+
+\begin{equation}
+	y = \mathrm{sgn}(\Psi \Phi x)
+\end{equation}
+
+which is an underdetermined system with infinite solutions.
+Compressed sensing says that when $\Theta = \Psi \Phi$
+is sufficiently well-behaved \cite{candesIntroductionCompressiveSampling2008}
+that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
+We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
+
+\begin{equation}
+	\hat{x} = \min_{||x||_2 \leq 1} - \frac{1}{n} (\Theta x)^{\mathrm{T}} y + \lambda ||x||_1
+\end{equation}
+
+with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
 
