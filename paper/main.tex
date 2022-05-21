@@ -374,6 +374,11 @@
 % \usepackage[backend=biber, style=ieee]{biblatex}
 % \addbibresource{mybib.bib}
 % \usepackage{csquotes}
+\usepackage{soul}
+\newcommand{\etal}{\textit{et al}., }
+\newcommand{\ie}{\textit{i}.\textit{e}., }
+\newcommand{\eg}{\textit{e}.\textit{g}.\ }
+\usepackage{hyperref}
 
 % correct bad hyphenation here
 \hyphenation{com-press-ive sens-ing cor-rel-a-tion}
@@ -386,7 +391,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\flogo}
-\fancyhead[LE,RO]{\$\{PAPER ID NUMBER\}}
+\fancyhead[L,RO]{\hl{PAPER ID NUMBER}}
 \rhead{\textcolor{violet}{\Large\textbf{Technology Letter         }} \thepage}
 \pagestyle{fancyplain}
 
@@ -398,7 +403,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{\textcolor{violet}{Compressive Sensing for Characterization of Tinnitus\vspace{0.25cm}}}
+\title{\textcolor{violet}{Compressed Sensing for Characterization of Tinnitus\vspace{0.25cm}}}
 
 %
 %
@@ -422,8 +427,16 @@
 % 	Samantha Peznola is a Research Assistant at WPI;
 % 	and Dr. Adam C. Lammert is Assistant Professor of Biomedical Engineering at WPI.
 % }}
-\author{Alec%
-\thanks{aaaaaa}}
+\author{Alec Hoyland, Adam C. Lammert\textsuperscript{\textdagger{}}%
+\thanks{This work was supported in part by the University of Massachusetts
+Center for Clinical and Translation Science Pilot Project Program 2022,
+grant no. \hl{GRANT NUMBER}.}%
+\thanks{Mr. Hoyland is a graduate student in the Department of Biomedical Engineering
+at Worcester Polytechnic Institute (WPI).
+Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.}%
+\thanks{\textsuperscript{\textdagger{}} Corresponding Author}%
+\thanks{Code is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
+Data are available upon request.}}
 
 % note the % following the last \IEEEmembership and also \thanks - 
 % these prevent an unwanted space from occurring between the last author name
@@ -479,37 +492,104 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-— \textit{Goal}: The purpose of this document is to illustrate how one should prepare manuscripts for submission to the IEEE Open Journal of Engineering in Medicine and Biology (OJEMB). Please notice that this is the template for TECHNOLOGY LETTERS. These are short manuscripts with primary focus on the development of new devices, methods, and technologies. The material must be organized in a main manuscript body and a section entitled Supplementary Materials. The main manuscript body should be limited to 1,000 words and the material should be organized in the following sections (in the order shown here): Introduction, Materials and Methods, Results, Discussion, Conclusions. Authors can include in the main manuscript body up to 3 display items (i.e. figures and tables). In addition, the main manuscript body should include an abstract and up to 20 references. The references are not considered in the 1,000-word count. The abstract should be organized in subsections as shown here (i.e., Goal, Methods, Results, Conclusions). An impact statement should be included. The impact statement should be a short paragraph of no more than 30 words. Additional material should be included in the Supplementary Materials section of the manuscript. The Supplementary Materials section should either be organized in sections as per the main manuscript body (using up to 4,000 words) or it should be used to provide readers with a set of up to 10 additional display items (i.e. figures and tables). \textit{Methods}: Use this document as a template if you are using Latex. Otherwise, use this document as an instruction set. \textit{Results}: Paper titles should be written in uppercase and lowercase letters as shown above. Do not cite references in the abstract. Do not delete the blank line immediately above the abstract; it sets the footnote at the bottom of this column. The abstract should not exceed 150 words. \textit{Conclusions}: Preparing carefully your manuscript will lead to enhanced readability.
+— \textit{Goal}: Make tinnitus characterization better.
+\textit{Methods}: Use reverse correlation and compressed sensing.
+\textit{Results}: Cool and fun results! Much data, very wow!
+\textit{Conclusions}: Alec and Adam are cool and smart.
+% The purpose of this document is to illustrate how one should prepare manuscripts for submission to the IEEE Open Journal of Engineering in Medicine and Biology (OJEMB). Please notice that this is the template for TECHNOLOGY LETTERS. These are short manuscripts with primary focus on the development of new devices, methods, and technologies. The material must be organized in a main manuscript body and a section entitled Supplementary Materials. The main manuscript body should be limited to 1,000 words and the material should be organized in the following sections (in the order shown here): Introduction, Materials and Methods, Results, Discussion, Conclusions. Authors can include in the main manuscript body up to 3 display items (i.e. figures and tables). In addition, the main manuscript body should include an abstract and up to 20 references. The references are not considered in the 1,000-word count. The abstract should be organized in subsections as shown here (i.e., Goal, Methods, Results, Conclusions). An impact statement should be included. The impact statement should be a short paragraph of no more than 30 words. Additional material should be included in the Supplementary Materials section of the manuscript. The Supplementary Materials section should either be organized in sections as per the main manuscript body (using up to 4,000 words) or it should be used to provide readers with a set of up to 10 additional display items (i.e. figures and tables). \textit{Methods}: Use this document as a template if you are using Latex. Otherwise, use this document as an instruction set. \textit{Results}: Paper titles should be written in uppercase and lowercase letters as shown above. Do not cite references in the abstract. Do not delete the blank line immediately above the abstract; it sets the footnote at the bottom of this column. The abstract should not exceed 150 words. \textit{Conclusions}: Preparing carefully your manuscript will lead to enhanced readability.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-Enter up to 5 keywords in alphabetical order, separated by commas.
+	compressed sensing, reverse correlation, tinnitus, barging into other people's fields
+	and showing them up with MATH!
 \end{IEEEkeywords}
-
-
-
-
-
 
 % For peer review papers, you can put extra information on the cover
 % page as needed:
-% \ifCLASSOPTIONpeerreview
-% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
-% \fi
+\ifCLASSOPTIONpeerreview
+\begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+\fi
 %
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
-%\begin{minipage}[t]{1\columnwidth}
-\textbf{\textit{Impact Statement-} The authors should include here a significance statement of no more than 30 words. The statement should summarize the main findings of the research work reported in the manuscript.}\\
+\begin{minipage}[t]{1\columnwidth}
+\textbf{\textit{Impact Statement}\textemdash{}\hl{30 words on significance}}\\
 \\
-%\end{minipage}
+\end{minipage}
 
 \section{Introduction}
 
-\IEEEPARstart{T}{his}  document is a Latex  template for Technology Letters to be submitted to IEEE OJEMB \cite{ahumadaStimulusFeaturesSignal1971}. Submissions must have the sections listed in the following exactly in the order shown here: Introduction, Materials and Methods, Results, Discussion, Conclusions. Manuscripts to be submitted to IEEE OJEMB as a Science Letters must use a different template. For both types of manuscript, the authors can opt to add a Supplementary Materials section.
+\IEEEPARstart{T}{innitus}\textemdash{}the perception of sound (\eg ringing, buzzing)
+in the absence of an external stimulus\textemdash{}affects over 50 million people in the U.S.,
+a third of which experience functional cognitive impairment and substantial reduction
+in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+Primary treatment options for tinnitus are currently limited by a lack of methods
+for accurately characterizing the internal sounds experienced by patients.
+Tinnitus treatment typically involves \textit{sound therapy}, a form of habituation therapy,
+which involves target exposure to external sounds to attenuate the perception of tinnitus
+or to encourage patients to perceive their tinnitus as a neutral stimulus
+\cite{jastreboff25YearsTinnitus2015}.
+Critically, treatment outcomes have been repeatedly shown to improve
+when the external sounds used in sound therapy are closely informed
+by the internal tinnitus experience of the patient
+\cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007},
+specifically, its component frequencies that constitute
+the \textit{psychoacoustic spectrum} (PTS).
+However, existing methods for characterizing the PTS rely on reductionist assumptions
+concerning the nature of tinnitus sounds (\eg that they are pure tones or have small-width Gaussian spectra)
+and produce characterizations that are correspondingly bias and incomplete
+when compared to the spectral variety of tinnitus percepts\textemdash{}less than
+50\% of tinnitus patients
+report their tinnitus sounding like ``ringing'' \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+There is a pressing need for methods to more completely characterize the PTS
+\cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002},
+to further improve treatment outcomes for patients suffering from tinnitus.
+
+We utilize \textit{reverse correlation} approach to characterize the PTS more completely,
+without the strong biases introduced by existing methods.
+Reverse correlation is a widely-accepted method for unconstrained and unbiased estimation
+of latent neural representations (\eg neural receptive fields)
+based on the white-noise method for black-box system identification
+\cite{ringachReverseCorrelationNeurophysiology2004,ljungMeasureLackFit1978}.
+This method has been used to characterize the psychophysical processes of perception
+in vision (\eg faces) and audition (\eg phonemes)
+\cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013}
+all on the basis of stimulus-response data
+\cite{marmarelisWhiteNoiseMethodSystem1978,neriReceptivePerceptiveFields2006}.
+In reverse correlation, subjects are presented with richly-varying random stimuli (\eg white noise)
+and make simple ``yes/no'' responses about whether they perceive a particular signal
+(\eg their tinnitus percept).
+Internal representations, such as the PTS, can be estimated
+by regressing subject responses against the stimuli over many trials.
+Despite widespread use in characterizing neural and cognitive representations,
+reverse correlation has never been used for tinnitus characterization.
+One limitation of reverse correlation is the sheer number of trials
+required to recover a good signal reconstruction.
+Classically, reverse correlation has required a large number of stimulus-response trials
+to yield accurate results (\eg 20,000 trials in \cite{gosselinSuperstitiousPerceptionsReveal2003}),
+a property that makes reverse correlation time-consuming in a clinical setting.
+
+We overcome this limitation of reverse correlation using \textit{compressed sensing} (CS)
+to reconstruct the PTS with high fidelity using far fewer trials.
+Compressive sensing can reduce the number of trials
+required an order of magnitude compared to conventional estimation, thereby allowing for efficient and
+accurate characterization of tinnitus within a single clinical visit. Compressive sensing has gained broad
+recognition in medical imaging \hl{[CITE]}, due to its ability to reduce scan times without sacrificing image quality or
+introducing bias, and its promise for similarly improving reverse correlation has been recently demonstrated by
+our group \textit{in-silico} \hl{[CITE]}.
+
+Our long-term goal is to improve outcomes for patients suffering from tinnitus by providing a validated
+clinical assay, based on the demonstrated capabilities of the reverse correlation approach, that clinicians can
+use to accurately and efficiently characterize the individualized perceptual experience of tinnitus. Our guiding
+hypothesis is that reverse correlation will produce PTS estimates that patients will consistently report as being
+similar to their own tinnitus experience. The rationale for this work is that accurate and efficient characterization
+of the PTS can inform individualized tinnitus treatment with enhanced habituation therapies.
+
+% document is a Latex  template for Technology Letters to be submitted to IEEE OJEMB \cite{ahumadaStimulusFeaturesSignal1971}. Submissions must have the sections listed in the following exactly in the order shown here: Introduction, Materials and Methods, Results, Discussion, Conclusions. Manuscripts to be submitted to IEEE OJEMB as a Science Letters must use a different template. For both types of manuscript, the authors can opt to add a Supplementary Materials section.
+
 % The very first letter is a 2 line initial drop letter followed
 % by the rest of the first word in caps.
 % 
@@ -530,162 +610,165 @@ Enter up to 5 keywords in alphabetical order, separated by commas.
 
 
 \section{Materials and Methods }
-To use this template, type over sections of the template or cut and paste from another document. Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline. 
-IEEE will do the final formatting of your paper. However, you should format your manuscript for submission to IEEE OJEMB for review and also for preparing for preprint that will be e-published several days after you upload the final version of an accepted manuscript. 
+% To use this template, type over sections of the template or cut and paste from another document. Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline. 
+% IEEE will do the final formatting of your paper. However, you should format your manuscript for submission to IEEE OJEMB for review and also for preparing for preprint that will be e-published several days after you upload the final version of an accepted manuscript. 
+aaa
+\subsection{Theory}
 
+\subsection{Experiment}
 
-\subsection{Abbreviations and Acronyms}
-Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IEEE, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IEEE” in the title of this article).
+% \subsection{Abbreviations and Acronyms}
+% Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IEEE, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IEEE” in the title of this article).
 
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
 
 \section{Results}
-If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
-\cite{ahumadaStimulusFeaturesSignal1971}
-\subsection{Equations}
-Number equations consecutively with equation numbers in parentheses flush with the right margin, as in (1). First use the equation editor to create the equation. Then select the “Equation” markup style. Press the tab key and write the equation number in parentheses. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Use parentheses to avoid ambiguities in denominators. Punctuate equations when they are part of a sentence, as in
+% If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
+% \cite{ahumadaStimulusFeaturesSignal1971}
+% \subsection{Equations}
+% Number equations consecutively with equation numbers in parentheses flush with the right margin, as in (1). First use the equation editor to create the equation. Then select the “Equation” markup style. Press the tab key and write the equation number in parentheses. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Use parentheses to avoid ambiguities in denominators. Punctuate equations when they are part of a sentence, as in
 
-\begin{equation}
-\begin{multlined}
-\int_{0}^{r_{2}} F(r,\varphi)dr d\varphi=[\sigma r_{2}/(2\mu_{0})]\\
-\int_{0}^{+\infty}exp(-\lambda |z_{j}-z_{i} |)\lambda^{-1} J_{1}(\lambda r_{2}) J_{0}(\lambda r_{1})d\lambda 
-\label{Eq:Example}
-\end{multlined}
-\end{equation}
+% \begin{equation}
+% \begin{multlined}
+% \int_{0}^{r_{2}} F(r,\varphi)dr d\varphi=[\sigma r_{2}/(2\mu_{0})]\\
+% \int_{0}^{+\infty}exp(-\lambda |z_{j}-z_{i} |)\lambda^{-1} J_{1}(\lambda r_{2}) J_{0}(\lambda r_{1})d\lambda 
+% \label{Eq:Example}
+% \end{multlined}
+% \end{equation}
 
-Be sure that the symbols in your equation have been defined before the equation appears or immediately following. Italicize symbols (T might refer to temperature, but T is the unit tesla). Refer to “(1),” not “Eq. (1)” or “equation (1),” except at the beginning of a sentence: “Equation (1) is ... .”
-A general IEEE styleguide is available at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}
+% Be sure that the symbols in your equation have been defined before the equation appears or immediately following. Italicize symbols (T might refer to temperature, but T is the unit tesla). Refer to “(1),” not “Eq. (1)” or “equation (1),” except at the beginning of a sentence: “Equation (1) is ... .”
+% A general IEEE styleguide is available at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=\linewidth]{fig1}
-	\caption{Magnetization as a function of applied field. Note that “Fig.” is abbreviated. There is a period after the figure number, followed by two spaces. It is good practice to explain the significance of the figure in the caption.}
-	\label{fig:examplesinglefig}
-\end{figure}
-
-
-\section{Discussion }
-Figure \ref{fig:examplesinglefig} shows a standard figure.
-
-\subsection{Sizing of Graphics}
-Most charts, graphs, and tables are one column wide (3.5 inches / 88 millimeters / 21 picas) or page wide (7.16 inches / 181 millimeters / 43 picas). The maximum depth a graphic can be is 8.5 inches (216 millimeters / 54 picas). When choosing the depth of a graphic, please allow space for a caption. Figures can be sized between column and page widths if the author chooses, however it is recommended that figures are not sized less than column width unless when necessary. 
+% \begin{figure}[t]
+% 	\centering
+% 	\includegraphics[width=\linewidth]{fig1}
+% 	\caption{Magnetization as a function of applied field. Note that “Fig.” is abbreviated. There is a period after the figure number, followed by two spaces. It is good practice to explain the significance of the figure in the caption.}
+% 	\label{fig:examplesinglefig}
+% \end{figure}
 
 
+% \section{Discussion }
+% Figure \ref{fig:examplesinglefig} shows a standard figure.
 
-\begin{table}[ht]
-	\begin{center}	
-		\small
-		\resizebox{1\columnwidth}{!}{
-			\begin{tabular}{ m{0.15\columnwidth} >{\raggedleft}m{0.35\columnwidth} m{0.5\columnwidth} }	
-				\multicolumn{3}{c}{\textsc{Units for Magnetic Properties}} \\
-				\hhline{===}
-				{Symbol} & {Quantity} & {Conversion from Gaussian and CGS EMU to SI$^{a}$} \\ 
-				\hline
-				$\Phi$ & magnetic flux & $1~Mx\rightarrow 10^{-8}~Wb= 10^{-8}~V\cdot~S$\\
-				B & magnetic flux density, magnetic induction & $1~G\rightarrow 10^{-4}~T= 10^{-4}~Wb/m^{2}$ \\
-				H & magnetic field strength & $1~Oe\rightarrow 10^{3}/(4\pi)~A/m$\\
-				m & magnetic moment & $1~erg/G=1~emu\rightarrow10^{-3}~A\cdot~m^{2}=10^{-3}A/m$\\
-				M & magnetization & $1~erg/(G\cdot~cm^{3})=1~emu/cm^{3}\rightarrow10^{3}~A/m$ \\
-				4$\pi$M & magnetization & $1~G \rightarrow10^{3}/(4\pi)~A/m$\\
-				$\sigma$ & specific magnetization & $1~erg/(G\dot~g)=1~emu/g \rightarrow1~A\cdot~m^{2}/kg$ \\
-				j & magnetic dipole moment & $1~erg/G=1~emu \rightarrow4\pi\times10^{-10}~Wb\cdot~m$\\
-				J & magnetic polarization & $1~erg/(G\cdot cm^{3})=1~emu/cm^{3} \rightarrow4\pi\times10^{-4}~T$\\
-				$\chi,\kappa$ & susceptibility & $1 \rightarrow4\pi$\\
-				$\chi_{\rho}$ & mass susceptibility & $1~cm^{3}/g\rightarrow4\pi\times10{-3}~m^{3}/kg$ \\
-				$\mu$ & permeability & $1\rightarrow4~\pi\times10^{-7}~H/m=4\pi\times10{-7}~Wb/(A\cdot~m)$\\
-				$\mu_{\rho}$ & relative permeability & $\mu\rightarrow\mu_{r}$ \\
-				w,W & energy density & $1~erg/cm^{3} \rightarrow10^{-1}~J/m^{3}$\\
-				N,D & demagnetizing factor & $1 \rightarrow1/(4\pi)$\\
-				\hhline{===}
+% \subsection{Sizing of Graphics}
+% Most charts, graphs, and tables are one column wide (3.5 inches / 88 millimeters / 21 picas) or page wide (7.16 inches / 181 millimeters / 43 picas). The maximum depth a graphic can be is 8.5 inches (216 millimeters / 54 picas). When choosing the depth of a graphic, please allow space for a caption. Figures can be sized between column and page widths if the author chooses, however it is recommended that figures are not sized less than column width unless when necessary. 
+
+
+
+% \begin{table}[ht]
+% 	\begin{center}	
+% 		\small
+% 		\resizebox{1\columnwidth}{!}{
+% 			\begin{tabular}{ m{0.15\columnwidth} >{\raggedleft}m{0.35\columnwidth} m{0.5\columnwidth} }	
+% 				\multicolumn{3}{c}{\textsc{Units for Magnetic Properties}} \\
+% 				\hhline{===}
+% 				{Symbol} & {Quantity} & {Conversion from Gaussian and CGS EMU to SI$^{a}$} \\ 
+% 				\hline
+% 				$\Phi$ & magnetic flux & $1~Mx\rightarrow 10^{-8}~Wb= 10^{-8}~V\cdot~S$\\
+% 				B & magnetic flux density, magnetic induction & $1~G\rightarrow 10^{-4}~T= 10^{-4}~Wb/m^{2}$ \\
+% 				H & magnetic field strength & $1~Oe\rightarrow 10^{3}/(4\pi)~A/m$\\
+% 				m & magnetic moment & $1~erg/G=1~emu\rightarrow10^{-3}~A\cdot~m^{2}=10^{-3}A/m$\\
+% 				M & magnetization & $1~erg/(G\cdot~cm^{3})=1~emu/cm^{3}\rightarrow10^{3}~A/m$ \\
+% 				4$\pi$M & magnetization & $1~G \rightarrow10^{3}/(4\pi)~A/m$\\
+% 				$\sigma$ & specific magnetization & $1~erg/(G\dot~g)=1~emu/g \rightarrow1~A\cdot~m^{2}/kg$ \\
+% 				j & magnetic dipole moment & $1~erg/G=1~emu \rightarrow4\pi\times10^{-10}~Wb\cdot~m$\\
+% 				J & magnetic polarization & $1~erg/(G\cdot cm^{3})=1~emu/cm^{3} \rightarrow4\pi\times10^{-4}~T$\\
+% 				$\chi,\kappa$ & susceptibility & $1 \rightarrow4\pi$\\
+% 				$\chi_{\rho}$ & mass susceptibility & $1~cm^{3}/g\rightarrow4\pi\times10{-3}~m^{3}/kg$ \\
+% 				$\mu$ & permeability & $1\rightarrow4~\pi\times10^{-7}~H/m=4\pi\times10{-7}~Wb/(A\cdot~m)$\\
+% 				$\mu_{\rho}$ & relative permeability & $\mu\rightarrow\mu_{r}$ \\
+% 				w,W & energy density & $1~erg/cm^{3} \rightarrow10^{-1}~J/m^{3}$\\
+% 				N,D & demagnetizing factor & $1 \rightarrow1/(4\pi)$\\
+% 				\hhline{===}
 				
-			\end{tabular}
-		}
-	\end{center}
-%\normalsize
-	\caption{Vertical lines are optional in tables. Statements that serve as captions for the entire table do not need footnote letters.\\
-	$^{a}$Gaussian units are the same as cg emu for magnetostatics; Mx = maxwell, G = gauss, Oe = oersted; Wb = weber, V = volt, s = second, T = tesla, m = meter, A = ampere, J = joule, kg = kilogram, H = henry.
-	}
-	\label{Exp}
-\end{table}
+% 			\end{tabular}
+% 		}
+% 	\end{center}
+% %\normalsize
+% 	\caption{Vertical lines are optional in tables. Statements that serve as captions for the entire table do not need footnote letters.\\
+% 	$^{a}$Gaussian units are the same as cg emu for magnetostatics; Mx = maxwell, G = gauss, Oe = oersted; Wb = weber, V = volt, s = second, T = tesla, m = meter, A = ampere, J = joule, kg = kilogram, H = henry.
+% 	}
+% 	\label{Exp}
+% \end{table}
 
 
 
-\subsection{Using Labels Within Figures}
-\subsubsection{Figure Axis labels}
-Figure axis labels are often a source of confusion. Use words rather than symbols. As an example, write the quantity “Magnetization,” or “Magnetization M,” not just “M.” Put units in parentheses. Do not label axes only with units. As in Fig. 1, for example, write “Magnetization (A/m)” or “Magnetization (A$\cdot m^{-1}$),” not just “A/m.” Do not label axes with a ratio of quantities and units. For example, write “Temperature (K),” not “Temperature/K.” 
-Figure labels should be legible, approximately 8 to 10 point type.
+% \subsection{Using Labels Within Figures}
+% \subsubsection{Figure Axis labels}
+% Figure axis labels are often a source of confusion. Use words rather than symbols. As an example, write the quantity “Magnetization,” or “Magnetization M,” not just “M.” Put units in parentheses. Do not label axes only with units. As in Fig. 1, for example, write “Magnetization (A/m)” or “Magnetization (A$\cdot m^{-1}$),” not just “A/m.” Do not label axes with a ratio of quantities and units. For example, write “Temperature (K),” not “Temperature/K.” 
+% Figure labels should be legible, approximately 8 to 10 point type.
 
-\subsubsection{Subfigure Labels in Multipart Figures and Tables}
-Multipart figures should be combined and labeled before final submission. Labels should appear centered below each subfigure in 8 point Times New Roman font in the format of (a) (b) (c). 
+% \subsubsection{Subfigure Labels in Multipart Figures and Tables}
+% Multipart figures should be combined and labeled before final submission. Labels should appear centered below each subfigure in 8 point Times New Roman font in the format of (a) (b) (c). 
 
-\subsection{Referencing a Figure or Table Within Your Paper}
-When referencing your figures and tables within your paper, use the abbreviation “Fig.” even at the beginning of a sentence. Do not abbreviate “Table.” Tables should be numbered with Roman Numerals.
+% \subsection{Referencing a Figure or Table Within Your Paper}
+% When referencing your figures and tables within your paper, use the abbreviation “Fig.” even at the beginning of a sentence. Do not abbreviate “Table.” Tables should be numbered with Roman Numerals.
 
-\subsection{Checking Your Figures: The IEEE Graphics Checker}
-The IEEE Graphics Checker Tool enables authors to pre-screen their graphics for compliance with IEEE Transactions and Journals standards before submission. The online tool is located at \underline{http://graphicsqc.ieee.org/}. 
-For more information on using the Graphics Checker Tool 
-or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{graphics@ieee.org}.
-For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
+% \subsection{Checking Your Figures: The IEEE Graphics Checker}
+% The IEEE Graphics Checker Tool enables authors to pre-screen their graphics for compliance with IEEE Transactions and Journals standards before submission. The online tool is located at \underline{http://graphicsqc.ieee.org/}. 
+% For more information on using the Graphics Checker Tool 
+% or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{graphics@ieee.org}.
+% For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
 
 \section{Conclusion}
 
-A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
-\\
-\textsc{Supplementary Materials}
-\par Supplementary materials are encouraged. Please use the Supplementary Materials template. If you have Supplementary Materials, please use this section to direct readers to the Supplementary Materials and give them a brief overview of what they can expect to find in the Supplementary Materials. \\
-\\
-\textsc{Acknowledgment}
-\par Write “F. A. Author thanks ... .” In most cases, sponsor and financial support acknowledgments are placed in the unnumbered footnote on the first page, not here.\\
-\\
-\textsc{REFERENCES AND FOOTNOTES}
+% A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
+% \\
+% \textsc{Supplementary Materials}
+% \par Supplementary materials are encouraged. Please use the Supplementary Materials template. If you have Supplementary Materials, please use this section to direct readers to the Supplementary Materials and give them a brief overview of what they can expect to find in the Supplementary Materials. \\
+% \\
+% \textsc{Acknowledgment}
+% \par Write “F. A. Author thanks ... .” In most cases, sponsor and financial support acknowledgments are placed in the unnumbered footnote on the first page, not here.\\
+% \\
+% \textsc{REFERENCES AND FOOTNOTES}
 
-\subsection{References}
+% \subsection{References}
 
-See the end of this document for formats and examples of common references. For a complete discussion of references and their formats, see “The IEEE Style Manual,” available as a PDF link off the  \underline{\textit{Author Digital Toolbox}} main page.
+% See the end of this document for formats and examples of common references. For a complete discussion of references and their formats, see “The IEEE Style Manual,” available as a PDF link off the  \underline{\textit{Author Digital Toolbox}} main page.
 
-\subsection{Footnotes}
-Number footnotes separately in superscripts\footnote{It is recommended that footnotes be avoided (except for the unnumbered footnote with the receipt date on the first page). Instead, try to integrate the footnote information into the text.}.  Place the actual footnote at the bottom of the column in which it is cited; do not put footnotes in the reference list (endnotes). Use letters for table footnotes (see Table I). 
+% \subsection{Footnotes}
+% Number footnotes separately in superscripts\footnote{It is recommended that footnotes be avoided (except for the unnumbered footnote with the receipt date on the first page). Instead, try to integrate the footnote information into the text.}.  Place the actual footnote at the bottom of the column in which it is cited; do not put footnotes in the reference list (endnotes). Use letters for table footnotes (see Table I). 
 
 
 
-\section{Submitting Your Paper for Review}
+% \section{Submitting Your Paper for Review}
 
-{
-	\subsection{Uploading the Document}
-	All submissions must be uploaded via ScholarOne Manuscripts. Include full mailing addresses and e-mail addresses of all authors when uploading a manuscript. In addition, designate one author as the “corresponding author.” This is the author to whom proofs of the paper will be sent. Proofs are sent to the corresponding author only.
+% {
+% 	\subsection{Uploading the Document}
+% 	All submissions must be uploaded via ScholarOne Manuscripts. Include full mailing addresses and e-mail addresses of all authors when uploading a manuscript. In addition, designate one author as the “corresponding author.” This is the author to whom proofs of the paper will be sent. Proofs are sent to the corresponding author only.
 	
-	\subsection{Review Stage Using ScholarOne$^{\tiny\textregistered}$ Manuscripts}
-	Contributions to IEEE OJEMB must be submitted electronically on IEEE’s on-line manuscript submission and peer-review system, ScholarOne$^{\tiny\textregistered}$ Manuscripts at \textit{http://mc.manuscriptcentral.com/embs-ieee}. First check if you have an existing account. If there is none, please create a new account. After logging in, go to your Author Center and click “Submit First Draft of a New Manuscript.” 
-	There are various steps to the submission process; you must complete all steps for a complete submission. At the end of each step you must click “Save and Continue”; just uploading the paper is not sufficient. After the last step, you should see a confirmation that the submission is complete. You should also receive an e-mail confirmation. For inquiries regarding the submission of your paper on ScholarOne Manuscripts, please contact oprs-support@ieee.org or call +1 732 465 5861.
+% 	\subsection{Review Stage Using ScholarOne$^{\tiny\textregistered}$ Manuscripts}
+% 	Contributions to IEEE OJEMB must be submitted electronically on IEEE’s on-line manuscript submission and peer-review system, ScholarOne$^{\tiny\textregistered}$ Manuscripts at \textit{http://mc.manuscriptcentral.com/embs-ieee}. First check if you have an existing account. If there is none, please create a new account. After logging in, go to your Author Center and click “Submit First Draft of a New Manuscript.” 
+% 	There are various steps to the submission process; you must complete all steps for a complete submission. At the end of each step you must click “Save and Continue”; just uploading the paper is not sufficient. After the last step, you should see a confirmation that the submission is complete. You should also receive an e-mail confirmation. For inquiries regarding the submission of your paper on ScholarOne Manuscripts, please contact oprs-support@ieee.org or call +1 732 465 5861.
 	
-	\subsection{Final Stage Using ScholarOne Manuscripts}
-	Upon acceptance, you will receive an email with specific instructions regarding the submission of your final files.  To avoid any delays in publication, please be sure to follow these instructions.  Final submissions should include source files of your accepted manuscript, high quality graphic files, and a formatted pdf file.  If you have any questions regarding the final submission process, please contact the administrative contact for the journal. 
-}
+% 	\subsection{Final Stage Using ScholarOne Manuscripts}
+% 	Upon acceptance, you will receive an email with specific instructions regarding the submission of your final files.  To avoid any delays in publication, please be sure to follow these instructions.  Final submissions should include source files of your accepted manuscript, high quality graphic files, and a formatted pdf file.  If you have any questions regarding the final submission process, please contact the administrative contact for the journal. 
+% }
 
 
-\section{Editorial Policy}
-{
-	Do not publish “preliminary” data or results. The submitting author is responsible for obtaining agreement of all coauthors and any consent required from sponsors before submitting a paper. IEEE OJEMB strongly discourages courtesy authorship. It is the obligation of the authors to cite relevant prior work. IEEE OJEMB expects the main source of references be archival journal articles or books or thesis. Conference proceeding papers should be minimized since many are not undergoing rigorous peer reviews. 
-	At least two reviews are required for every paper submitted. Indecipherable English is a valid reason for rejection. There is a service available that will help you improve your English for a fee, and the link to that service can be found at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}. 
+% \section{Editorial Policy}
+% {
+% 	Do not publish “preliminary” data or results. The submitting author is responsible for obtaining agreement of all coauthors and any consent required from sponsors before submitting a paper. IEEE OJEMB strongly discourages courtesy authorship. It is the obligation of the authors to cite relevant prior work. IEEE OJEMB expects the main source of references be archival journal articles or books or thesis. Conference proceeding papers should be minimized since many are not undergoing rigorous peer reviews. 
+% 	At least two reviews are required for every paper submitted. Indecipherable English is a valid reason for rejection. There is a service available that will help you improve your English for a fee, and the link to that service can be found at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}. 
 	
-}
+% }
 
-\section{Publication Principles}
-{
-	The two types of contents of that are published are; 1) peer-reviewed and 2) archival. IEEE OJEMB publishes scholarly articles of archival value as well as tutorial expositions and critical reviews of classical subjects and topics of current interest. 
-	Authors should consider the following points:
-	\begin{enumerate}
-		\item Technical papers submitted for publication must advance the state of knowledge and must cite relevant prior work. 
-		\item The length of a submitted paper should be commensurate with the importance, or appropriate to the complexity, of the work. 
-		\item Authors must convince both peer reviewers and the editors of the scientific and technical merit of a paper; the standards of proof are higher when extraordinary or unexpected results are reported. 
-		\item Because replication is required for scientific progress, papers submitted for publication must provide sufficient information to allow readers to perform similar experiments or calculations and use the reported results. Although not everything need be disclosed, a paper must contain new, useable, and fully described information. For example, a specimen’s chemical composition need not be reported if the main purpose of a paper is to introduce a new measurement technique. Authors should expect to be challenged by reviewers if the results are not supported by adequate data and critical details.
-		\item Papers that describe ongoing work or announce the latest technical achievement, which are suitable for presentation at a professional conference, may not be appropriate for publication.
-	\end{enumerate}
+% \section{Publication Principles}
+% {
+% 	The two types of contents of that are published are; 1) peer-reviewed and 2) archival. IEEE OJEMB publishes scholarly articles of archival value as well as tutorial expositions and critical reviews of classical subjects and topics of current interest. 
+% 	Authors should consider the following points:
+% 	\begin{enumerate}
+% 		\item Technical papers submitted for publication must advance the state of knowledge and must cite relevant prior work. 
+% 		\item The length of a submitted paper should be commensurate with the importance, or appropriate to the complexity, of the work. 
+% 		\item Authors must convince both peer reviewers and the editors of the scientific and technical merit of a paper; the standards of proof are higher when extraordinary or unexpected results are reported. 
+% 		\item Because replication is required for scientific progress, papers submitted for publication must provide sufficient information to allow readers to perform similar experiments or calculations and use the reported results. Although not everything need be disclosed, a paper must contain new, useable, and fully described information. For example, a specimen’s chemical composition need not be reported if the main purpose of a paper is to introduce a new measurement technique. Authors should expect to be challenged by reviewers if the results are not supported by adequate data and critical details.
+% 		\item Papers that describe ongoing work or announce the latest technical achievement, which are suitable for presentation at a professional conference, may not be appropriate for publication.
+% 	\end{enumerate}
 	
 	
-}
+% }
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,mybib}
