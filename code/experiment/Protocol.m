@@ -102,7 +102,7 @@ function Protocol(options)
     case 'spectrum'
         writematrix(spect_matrix, filename_stimuli);
     case 'bins'
-        write_matrix(binned_repr_matrix, filename_stimuli);
+        writematrix(binned_repr_matrix, filename_stimuli);
     otherwise
         error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
     end
@@ -204,7 +204,7 @@ function Protocol(options)
             case 'spectrum'
                 writematrix(spect_matrix, filename_stimuli);
             case 'bins'
-                write_matrix(binned_repr_matrix, filename_stimuli);
+                writematrix(binned_repr_matrix, filename_stimuli);
             otherwise
                 error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
             end
