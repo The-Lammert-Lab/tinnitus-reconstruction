@@ -1,12 +1,9 @@
-function x = get_reconstruction(responses, stimuli_matrix, config, method)
+function x = get_reconstruction(options)
 
     %
-    %   x = get_reconstruction(responses, stimuli_matrix)
+    %   x = get_reconstruction('key', value, ...)
     % 
-    %   x = get_reconstruction(responses, stimuli_matrix, config)
-    % 
-    %   x = get_reconstruction(responses, stimuli_matrix, config, method)
-    % 
+    %   x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
     % 
     % Compute the reconstruction, given the response vector
     % and the stimuli matrix
@@ -16,38 +13,51 @@ function x = get_reconstruction(responses, stimuli_matrix, config, method)
     % See Also: collect_reconstructions, collect_data
 
     arguments
-        responses (:,1) {mustBeNumeric}
-        stimuli_matrix {mustBeNumeric}
-        config = []
-        method (1,:) {mustBeText} = 'cs'
+        options.config_file (1,:) = ''
+        options.config = []
+        options.preprocessing = {}
+        options.method = 'cs'
+        options.verbose (1,1) logical = true
     end
 
-    if isempty(config)
-        PREPROCESSING = false;
-    elseif ischar(config) || isstring(config)
-        % read the config file => struct
-        config = ReadYaml(config);
-        PREPROCESSING = true;
+    % If no config file path is provided,
+    % open a UI to load the config
+    if isempty(options.config) && isempty(options.config_file)
+        [file, abs_path] = uigetfile();
+        config = parse_config(pathlib.join(abs_path, file), options.verbose);
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config file loaded from GUI')
+    elseif isempty(options.config)
+        config = parse_config(options.config_file, options.verbose);
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object provided')
     else
-        PREPROCESSING = true;
+        config = options.config;
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object loaded from provided file')
     end
 
-    %% Preprocessing Step
-    if PREPROCESSING
-        if strcmp(config.stimuli_save_type, 'bins')
-            if size(stimuli_matrix, 1) > config.n_bins
-                % stimuli are probably saved as waveforms
-                % but should be in bins
-                stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
-                stimgen.from_config(config);
-                stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
-                stimuli_matrix = stimgen.spect2binnedrepr(stimuli_matrix); % spectrum => bin repr
-            end
+    % collect the data from files
+    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose);
+
+    % bin preprocessing
+    if strcmp(config.stimuli_save_type, 'bins') && any(contains(options.preprocessing, 'bins'))
+        if size(stimuli_matrix, 1) > config.n_bins
+            % stimuli are probably saved as waveforms
+            % but should be in bins
+            corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bin preprocessing')
+            stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
+            stimgen.from_config(config);
+            stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
+            stimuli_matrix = stimgen.spect2binnedrepr(stimuli_matrix); % spectrum => bin repr
         end
     end
 
+    % bit flip preprocessing
+    if contains(options.preprocessing, 'bit flip')
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bit flip preprocessing')
+        responses = -1 * responses;
+    end
+
     %% Reconstruction Step
-    switch method
+    switch options.method
     case 'cs'
         x = cs(responses, stimuli_matrix');
     case 'cs_nb'

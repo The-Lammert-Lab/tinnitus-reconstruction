@@ -24,12 +24,14 @@ function data_table = collect_parameters(filenames)
 
 
     arguments
-        filenames (:,1)
+        filenames (1,:)
     end
 
     if isa(filenames, 'char')
         filenames = {filenames};
     end
+
+    filenames = filenames(:);
 
     % ii = 1 condition
     regex_result = regexp(filenames{1}, '([\w_]+)=([\-\w\d\.\,]*)', 'tokens');
