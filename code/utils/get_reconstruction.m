@@ -18,6 +18,7 @@ function x = get_reconstruction(options)
         options.preprocessing = {}
         options.method = 'cs'
         options.verbose (1,1) logical = true
+        options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
     end
 
     % If no config file path is provided,
@@ -57,13 +58,15 @@ function x = get_reconstruction(options)
     end
 
     %% Reconstruction Step
+    n_trials = round(options.fraction * length(stimuli_matrix(1, :)));
+
     switch options.method
     case 'cs'
-        x = cs(responses, stimuli_matrix');
+        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
     case 'cs_nb'
-        x = cs_no_basis(responses, stimuli_matrix');
+        x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
     case 'linear'
-        x = gs(responses, stimuli_matrix');
+        x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
     otherwise
         error('Unknown method')
     end
