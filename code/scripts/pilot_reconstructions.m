@@ -34,6 +34,8 @@ for ii = 1:length(data_files)
     [s{ii}, f{ii}] = wav2spect(pathlib.join(sound_dir, data_files{ii}));
 end
 target_signal = [s{:}];
+% convert to dB
+target_signal = 10 * log10(target_signal);
 f = [f{:}];
 
 % Directory containing the data
@@ -68,30 +70,34 @@ T.config_filename = config_filenames';
 trial_fractions = [0.3, 0.5, 1.0];
 
 % Container for r^2 values
-r2_cs = zeros(length(config_ids), length(trial_fractions));
-r2_lr = zeros(length(config_ids), length(trial_fractions));
+r2_cs_bins = zeros(length(config_ids), length(trial_fractions));
+r2_lr_bins = zeros(length(config_ids), length(trial_fractions));
 
 % Container for reconstructions
 reconstructions_lr = cell(length(config_ids), length(trial_fractions));
 reconstructions_cs = cell(length(config_ids), length(trial_fractions));
 
 % Compute the reconstructions
-for ii = progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate', 1)
+for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate', 1)
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
+    corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])
 
     for qq = 1:length(trial_fractions)
+        corelib.verb(true, 'INFO: pilot_reconstructions', ['trial fractions: ', num2str(trial_fractions(qq))])
         % Compute the reconstructions
         if strcmp(T.subject{ii}, 'AL')
             preprocessing = {'bins', 'bit flip'};
         else
-            preprocessing = {};
+            preprocessing = {'bins'};
         end
+        corelib.verb(true, 'INFO: pilot_reconstructions', 'computing CS reconstruction')
         reconstructions_cs{ii, qq} = get_reconstruction('config', config, ...
                                     'preprocessing', preprocessing, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
                                     'verbose', true);
+        corelib.verb(true, 'INFO: pilot_reconstructions', 'computing linear reconstruction')
         reconstructions_lr{ii, qq} = get_reconstruction('config', config, ...
                                     'preprocessing', preprocessing, ...
                                     'method', 'linear', ...
@@ -99,18 +105,18 @@ for ii = progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate
                                     'verbose', true);
         
         % Compute the r^2 values
-        r2_cs(ii, qq) = corr(reconstructions_cs{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
-        r2_lr(ii, qq) = corr(reconstructions_lr{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
+        r2_cs_bins(ii, qq) = corr(reconstructions_cs{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
+        r2_lr_bins(ii, qq) = corr(reconstructions_lr{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
     end
 end
 
-r2_lr = r2_lr .^ 2;
-r2_cs = r2_cs .^ 2;
+r2_lr_bins = r2_lr_bins .^ 2;
+r2_cs_bins = r2_cs_bins .^ 2;
 
 % Build the data table
 for ii = 1:length(trial_fractions)
-    T.(['r2_lr_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_lr(:, ii);
-    T.(['r2_cs_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_cs(:, ii);
+    T.(['r2_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_lr_bins(:, ii);
+    T.(['r2_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_cs_bins(:, ii);
 end
 
 % Clean up table
@@ -119,7 +125,41 @@ numeric_columns = {
     'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'bin_rep', 'gamma'};
 for ii = 1:length(numeric_columns)
     if any(strcmp(T.Properties.VariableNames, numeric_columns{ii}))
-        disp(true)
         T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
     end
 end
+
+%% Visualization
+
+T.reconstructions_cs_1 = reconstructions_cs(:, 3);
+
+% Plotting the bin-representation of the target signal vs. the reconstructions
+
+fig1 = new_figure();
+cmap = colormaps.linspecer(length(unique(T.subject)));
+
+subplot_labels = {'buzzing', 'roaring'};
+
+for ii = 2:-1:1
+    ax(ii) = subplot(2, 1, ii, 'Parent', fig1);
+    hold on
+end
+
+for qq = 1:length(subplot_labels)
+
+    % True signal
+    plot(ax(qq), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{qq}))), '-ok');
+    ylabel(ax(qq), 'norm. bin ampl. (a.u.)')
+    
+    % Reconstructions
+    T2 = T(strcmp(T.target_audio, subplot_labels{qq}), :);
+    for ii = 1:height(T2)
+        plot(ax(qq), normalize(T2.reconstructions_cs_1{ii}), '-o', 'Color', cmap(:, ii))
+    end
+    
+    title(ax(qq), ['bin reconstructions, ', subplot_labels{qq}])
+end
+
+legend(ax(1), [{'g.c.'}; T2.subject])
+xlabel(ax(2), 'bins')
+figlib.pretty()
