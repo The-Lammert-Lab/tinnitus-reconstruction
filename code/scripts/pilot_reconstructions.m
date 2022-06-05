@@ -81,6 +81,9 @@ reconstructions_cs = cell(length(config_ids), length(trial_fractions));
 reconstructions_rand = cell(length(config_ids), 1);
 reconstructions_synth = cell(length(config_ids), 1);
 
+% Container for counting yesses
+yesses = zeros(length(config_ids), 1);
+
 % Compute the reconstructions
 for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate', 1)
     config_file = this_dir(ii);
@@ -97,7 +100,7 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
             preprocessing = {'bins'};
         end
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing CS reconstruction')
-        [reconstructions_cs{ii, qq}, ~, stimuli_matrix] = get_reconstruction('config', config, ...
+        [reconstructions_cs{ii, qq}, responses, stimuli_matrix] = get_reconstruction('config', config, ...
                                     'preprocessing', preprocessing, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
@@ -115,6 +118,9 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
         r2_lr_bins(ii, qq) = corr(reconstructions_lr{ii, qq}, this_target_signal);
     end
 
+    % Outside the inner loop,
+    % `responses` and `stimuli_matrix` are full-size.
+
     % Compute reconstructions using random responses
     corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using random responses')
     responses_rand = sign(0.5 - rand(size(stimuli_matrix, 2), 1));
@@ -126,6 +132,9 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     responses_synth = subject_selection_process(this_target_signal, stimuli_matrix');
     reconstructions_synth{ii} = cs(responses_synth, stimuli_matrix');
     r2_synth(ii) = corr(reconstructions_synth{ii}, this_target_signal);
+
+    % Count number of 'yes' results and normalize
+    yesses(ii) = sum(responses > 0) / length(responses);
 end
 
 r2_lr_bins = r2_lr_bins .^ 2;
@@ -140,6 +149,7 @@ for ii = 1:length(trial_fractions)
 end
 T.r2_rand = r2_rand;
 T.r2_synth = r2_synth;
+T.yesses = yesses;
 
 % Clean up table
 numeric_columns = {
@@ -153,7 +163,7 @@ end
 
 %% Visualization
 
-T.reconstructions_cs_1 = reconstructions_cs(:, 3);
+T.reconstructions_cs_1 = reconstructions_cs(:, end);
 T.reconstructions_rand = reconstructions_rand;
 T.reconstructions_synth = reconstructions_synth;
 
@@ -180,7 +190,11 @@ for qq = 1:length(subplot_labels)
     for ii = 1:height(T2)
         plot(ax(qq), normalize(T2.reconstructions_cs_1{ii}), '-o', 'Color', cmap(ii, :))
     end
+
+    % Random (baseline) reconstruction (using linear regression)
     plot(ax(qq), normalize(T2.reconstructions_rand{1}), '-o', 'Color', cmap(ii + 1, :))
+
+    % Synthetic reconstruction (using compressed sensing)
     plot(ax(qq), normalize(T2.reconstructions_synth{1}), '-o', 'Color', cmap(ii + 2, :))
     
     title(ax(qq), ['bin reconstructions, ', subplot_labels{qq}])
