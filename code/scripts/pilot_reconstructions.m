@@ -72,10 +72,12 @@ trial_fractions = [0.3, 0.5, 1.0];
 % Container for r^2 values
 r2_cs_bins = zeros(length(config_ids), length(trial_fractions));
 r2_lr_bins = zeros(length(config_ids), length(trial_fractions));
+r2_rand = zeros(length(config_ids), 1);
 
 % Container for reconstructions
 reconstructions_lr = cell(length(config_ids), length(trial_fractions));
 reconstructions_cs = cell(length(config_ids), length(trial_fractions));
+reconstructions_rand = cell(length(config_ids), 1);
 
 % Compute the reconstructions
 for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate', 1)
@@ -92,7 +94,7 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
             preprocessing = {'bins'};
         end
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing CS reconstruction')
-        reconstructions_cs{ii, qq} = get_reconstruction('config', config, ...
+        [reconstructions_cs{ii, qq}, ~, stimuli_matrix] = get_reconstruction('config', config, ...
                                     'preprocessing', preprocessing, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
@@ -104,20 +106,28 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
                                     'fraction', trial_fractions(qq), ...
                                     'verbose', true);
         
+                                    
         % Compute the r^2 values
         r2_cs_bins(ii, qq) = corr(reconstructions_cs{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
         r2_lr_bins(ii, qq) = corr(reconstructions_lr{ii, qq}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
     end
+
+    % Compute reconstructions using random responses
+    responses_rand = sign(0.5 - rand(size(stimuli_matrix, 2), 1));
+    reconstructions_rand{ii} = gs(responses_rand, stimuli_matrix');
+    r2_rand(ii) = corr(reconstructions_rand{ii}, binned_target_signal(:, strcmp(data_names, T.target_audio{ii})));
 end
 
 r2_lr_bins = r2_lr_bins .^ 2;
 r2_cs_bins = r2_cs_bins .^ 2;
+r2_rand = r2_rand .^ 2;
 
 % Build the data table
 for ii = 1:length(trial_fractions)
     T.(['r2_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_lr_bins(:, ii);
     T.(['r2_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_cs_bins(:, ii);
 end
+T.r2_rand = r2_rand;
 
 % Clean up table
 numeric_columns = {
@@ -132,11 +142,12 @@ end
 %% Visualization
 
 T.reconstructions_cs_1 = reconstructions_cs(:, 3);
+T.reconstructions_rand = reconstructions_rand;
 
 % Plotting the bin-representation of the target signal vs. the reconstructions
 
 fig1 = new_figure();
-cmap = colormaps.linspecer(length(unique(T.subject)));
+cmap = colormaps.linspecer(length(unique(T.subject)) + 1);
 
 subplot_labels = {'buzzing', 'roaring'};
 
@@ -154,12 +165,13 @@ for qq = 1:length(subplot_labels)
     % Reconstructions
     T2 = T(strcmp(T.target_audio, subplot_labels{qq}), :);
     for ii = 1:height(T2)
-        plot(ax(qq), normalize(T2.reconstructions_cs_1{ii}), '-o', 'Color', cmap(:, ii))
+        plot(ax(qq), normalize(T2.reconstructions_cs_1{ii}), '-o', 'Color', cmap(ii, :))
     end
+    plot(ax(qq), normalize(T2.reconstructions_rand {1}), '-o', 'Color', cmap(ii + 1, :))
     
     title(ax(qq), ['bin reconstructions, ', subplot_labels{qq}])
 end
 
-legend(ax(1), [{'g.c.'}; T2.subject])
+legend(ax(1), [{'g.c.'}; T2.subject; {'baseline'}])
 xlabel(ax(2), 'bins')
 figlib.pretty()
