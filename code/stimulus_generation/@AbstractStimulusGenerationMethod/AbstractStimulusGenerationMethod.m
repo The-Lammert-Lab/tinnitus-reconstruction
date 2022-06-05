@@ -21,6 +21,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         % Concrete methods that are inherited by subclasses.
 
         function [y, X, binned_repr] = subject_selection_process(self, signal)
+
+            %   [y, X, binned_repr] = subject_selection_process(self, signal)
+            % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
             % and returns an n_samples x 1 vector

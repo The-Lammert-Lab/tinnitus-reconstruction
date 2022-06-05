@@ -1,7 +1,7 @@
-function x = get_reconstruction(options)
+function [x, responses_output, stimuli_matrix_output] = get_reconstruction(options)
 
     %
-    %   x = get_reconstruction('key', value, ...)
+    %   [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
     % 
     %   x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
     % 
@@ -59,6 +59,9 @@ function x = get_reconstruction(options)
 
     %% Reconstruction Step
     n_trials = round(options.fraction * length(stimuli_matrix(1, :)));
+
+    responses_output = responses(1:n_trials);
+    stimuli_matrix_output = stimuli_matrix(:, 1:n_trials);
 
     switch options.method
     case 'cs'
