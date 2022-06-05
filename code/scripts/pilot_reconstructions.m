@@ -116,11 +116,13 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     end
 
     % Compute reconstructions using random responses
+    corelib.verb(true, 'INFO: pilot_reconstructions', ['Computing reconstructions using random responses'])
     responses_rand = sign(0.5 - rand(size(stimuli_matrix, 2), 1));
     reconstructions_rand{ii} = gs(responses_rand, stimuli_matrix');
     r2_rand(ii) = corr(reconstructions_rand{ii}, this_target_signal);
-
+    
     % Compute reconstructions from the in-silico process
+    corelib.verb(true, 'INFO: pilot_reconstructions', ['Computing reconstructions using synthetic responses'])
     responses_synth = subject_selection_process(this_target_signal, stimuli_matrix');
     reconstructions_synth{ii} = cs(responses_synth, stimuli_matrix');
     r2_synth(ii) = corr(reconstructions_synth{ii}, this_target_signal);
