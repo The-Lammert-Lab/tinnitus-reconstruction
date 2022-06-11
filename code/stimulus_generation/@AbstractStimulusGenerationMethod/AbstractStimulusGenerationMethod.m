@@ -89,12 +89,17 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             self_fields = fieldnames(self);
             options_fields = fieldnames(options);
             if isa(options, 'struct')
-                for ii = 1:length(options_fields)
-                    is_in = strcmp(options_fields{ii}, self_fields);
-                    if any(is_in)
-                        self.(self_fields{is_in}) = options.(options_fields{ii});
+                    for ii = 1:length(options_fields)
+                        is_in = strcmp(options_fields{ii}, self_fields);
+                        if any(is_in)
+                            self.(self_fields{is_in}) = options.(options_fields{ii});
+                        end
                     end
-                end
+                    % Create distribution file and rebuild self if Power Distribution protocol
+                    if strcmp(options.stimuli_type, 'PowerDistribution')
+                        self.build_distribution(options.distribution_filepath);
+                        self = self.from_file(options.distribution_filepath);
+                    end
             else
                 error('unknown type for "options", should be a character vector or a struct')
             end
