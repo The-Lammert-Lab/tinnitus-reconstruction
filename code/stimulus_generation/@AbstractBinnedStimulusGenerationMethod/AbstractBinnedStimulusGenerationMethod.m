@@ -43,7 +43,7 @@ methods
         binst = bintops(1:end-1);
         binnd = bintops(2:end);
         binnum = zeros(nfft/2, 1);
-        frequency_vector = linspace(0, Fs/2, nfft/2);
+        frequency_vector = linspace(0, Fs/2, nfft/2)';
 
         for itor = 1:self.n_bins
             binnum(frequency_vector <= binnd(itor) & frequency_vector >= binst(itor)) = itor;

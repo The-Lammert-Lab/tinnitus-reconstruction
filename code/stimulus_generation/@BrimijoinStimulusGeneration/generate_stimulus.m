@@ -10,15 +10,19 @@ function [stim, Fs, spect, binned_repr] = generate_stimulus(self)
     % Returns:
     %   stim: n x 1 numerical vector
     %       The stimulus waveform,
-    %       where n is self.nfft() + 1.
+    %       where n is self.get_nfft() + 1.
     %   Fs: 1x1 numerical scalar
     %       The sample rate in Hz.
     %   spect: m x 1 numerical vector
     %       The half-spectrum,
-    %       where m is self.nfft() / 2,
+    %       where m is self.get_nfft() / 2,
     %       in dB.
     %   binned_repr: self.n_bins x 1 numerical vector
     %       The binned representation.
+    %   frequency_vector: m x 1 numerical vector
+    %       The frequencies associated with the spectrum,
+    %       where m is self.get_nfft() / 2,
+    %       in Hz.
     % 
     % Class Properties Used:
     %   n_bins
@@ -27,7 +31,7 @@ function [stim, Fs, spect, binned_repr] = generate_stimulus(self)
     % See Also: get_freq_bins, generate_stimuli_matrix
 
 
-    [binnum, Fs, nfft] = self.get_freq_bins();
+    [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
 
     % X = zeros(nfft/2, 1);
     spect = self.get_empty_spectrum();
