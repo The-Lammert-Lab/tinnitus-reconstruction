@@ -1,6 +1,6 @@
-function [stim, Fs, spect, binned_repr] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
     %
-    %   [stim, Fs, spect, binned_repr] = generate_stimulus(self)
+    %   [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
     % 
     % 
     % Generate a matrix of stimuli
