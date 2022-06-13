@@ -1,4 +1,7 @@
 function [stim, Fs, X, binned_repr] = generate_stimulus(self)
+    %
+    %   [stim, Fs, X, binned_repr] = generate_stimulus(self)
+    % 
     % Generate a matrix of stimuli
     % where the matrix is of size nfft x n_trials.
     % Bins are filled with an amplitude value chosen from self.amplitude_values
