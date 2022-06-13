@@ -32,8 +32,6 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
 
 
     [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
-
-    % X = zeros(nfft/2, 1);
     spect = self.get_empty_spectrum();
     binned_repr = zeros(self.n_bins, 1);
 

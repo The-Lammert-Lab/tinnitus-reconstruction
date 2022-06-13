@@ -1,7 +1,28 @@
-function [stim, Fs, X, binned_repr] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+    %
+    %   [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+    % 
+    % 
     % Generates stimuli by assigning the power in each bin
     % by sampling from a power distribution
     % learned from ATA tinnitus examples.
+    % 
+    % Returns:
+    %   stim: n x 1 numerical vector
+    %       The stimulus waveform,
+    %       where n is self.get_nfft() + 1.
+    %   Fs: 1x1 numerical scalar
+    %       The sample rate in Hz.
+    %   spect: m x 1 numerical vector
+    %       The half-spectrum,
+    %       where m is self.get_nfft() / 2,
+    %       in dB.
+    %   binned_repr: self.n_bins x 1 numerical vector
+    %       The binned representation.
+    %   frequency_vector: m x 1 numerical vector
+    %       The frequencies associated with the spectrum,
+    %       where m is self.get_nfft() / 2,
+    %       in Hz.
     % 
     % Class Properties Used:
     %   n_bins
@@ -11,10 +32,11 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     end
 
     % Define Frequency Bin Indices 1 through self.n_bins
-    [binnum, Fs, nfft] = self.get_freq_bins();
+    [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
+    spect = self.get_empty_spectrum();
 
     % Get the histogram of the power distribution for binning
-    [pdf, bin_edges, bin_id] = histcounts(self.distribution, 16, 'Normalization', 'pdf');
+    [pdf, bin_edges, ~] = histcounts(self.distribution, 16, 'Normalization', 'pdf');
     bin_centers = bin_edges(1) + cumsum(diff(bin_edges)/2);
     pdf = (pdf + 0.01 * mean(pdf));
     pdf = pdf/sum(pdf);
@@ -29,15 +51,14 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     end
 
     % Create the random frequency spectrum
-    X = zeros(length(self.get_freq()), 1);
     binned_repr = zeros(self.n_bins, 1);
     for ii = 1:self.n_bins
-        X(binnum==ii) = s(ii);
+        spect(binnum==ii) = s(ii);
         binned_repr(ii) = s(ii);
     end
 
     % Generate the waveform
-    stim = self.synthesize_audio(X, nfft);
+    stim = self.synthesize_audio(spect, nfft);
 
 
 
