@@ -8,8 +8,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         % since they are not abstract themselves.
         min_freq (1,1) {mustBePositive, mustBeReal} = 100
         max_freq (1,1) {mustBePositive, mustBeReal} = 22e3
-        duration (1,1) {mustBePositive, mustBeReal} = 0.4
+        duration (1,1) {mustBePositive, mustBeReal} = 0.5
         n_trials (1,1) {mustBePositive, mustBeReal} = 100
+        Fs (1,1) {mustBePositive, mustBeReal} = 44.1e3
     end % abstract properties
 
     methods (Abstract)
@@ -21,6 +22,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         % Concrete methods that are inherited by subclasses.
 
         function [y, X, binned_repr] = subject_selection_process(self, signal)
+
+            %   [y, X, binned_repr] = subject_selection_process(self, signal)
+            % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
             % and returns an n_samples x 1 vector
@@ -33,7 +37,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         end % function
 
         function Fs = get_fs(self)
-            Fs = 2*self.max_freq;
+            Fs = self.Fs;
         end % function
 
         function nfft = get_nfft(self)

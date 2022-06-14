@@ -4,10 +4,14 @@ function [y, X] = subject_selection_process(target_signal, stimuli, n_samples)
     % corresponding to yes and no statements
     % about how well the stimuli correspond to the target signal.
     % 
+    %   y = subject_selection_process(target_signal, stimuli)
+    %   
+    %   [y, X] = subject_selection_process(target_signal, [], n_samples)
+    % 
     % Arguments:
     % 
     %   target_signal: numerical vector
-    %       The signal to compare against (e.g., the tinnitus signal).
+    %       The n x 1 signal to compare against (e.g., the tinnitus signal).
     % 
     %   stimuli: numerical matrix
     %       An m x n matrix where m is the number of samples/trials
@@ -26,13 +30,7 @@ function [y, X] = subject_selection_process(target_signal, stimuli, n_samples)
     %   X: numerical matrix
     %       The stimuli.
     % 
-    % Examples:
-    % 
-    %   y = subject_selection_process(target_signal, stimuli)
-    % 
-    %   [y, X] = subject_selection_process(target_signal, [], n_samples)
-    % 
-    % See Also: Stimuli/subject_selection_process
+    % See Also: AbstractStimulusGeneration/subject_selection_process
     % 
     if isempty(stimuli)
         X = round(rand(n_samples, length(target_signal)));
