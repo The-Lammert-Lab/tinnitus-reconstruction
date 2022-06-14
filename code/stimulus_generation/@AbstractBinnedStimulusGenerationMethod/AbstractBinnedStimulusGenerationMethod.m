@@ -42,13 +42,32 @@ methods
         bintops = round(mels2hz(linspace(hz2mels(self.min_freq), hz2mels(self.max_freq), self.n_bins+1)));
         binst = bintops(1:end-1);
         binnd = bintops(2:end);
-        binnum = linspace(self.min_freq, self.max_freq, nfft/2);
+        binnum = zeros(nfft/2, 1);
+        frequency_vector = linspace(0, Fs/2, nfft/2)';
+
         for itor = 1:self.n_bins
-            binnum(binnum <= binnd(itor) & binnum >= binst(itor)) = itor;
+            binnum(frequency_vector <= binnd(itor) & frequency_vector >= binst(itor)) = itor;
         end
 
-        frequency_vector = linspace(0, Fs/2, nfft/2);
     end % function
+
+    function spect = get_empty_spectrum(self)
+        % 
+        %   [spect] = self.get_empty_spectrum();
+        % 
+        %   Returns:
+        %       spect: n x 1 numerical vector
+        %           where n is equal to the number of fft points (nfft).
+        % 
+        %   Returns a spectrum vector of the correct size
+        %   with all values set to -100 dB.
+        % 
+        % See Also: get_freq_bins
+
+        spect = -100 * ones(self.get_nfft() / 2, 1);
+
+    end % function
+
 
     function binned_repr = spect2binnedrepr(self, T)
         % Get the binned representation
