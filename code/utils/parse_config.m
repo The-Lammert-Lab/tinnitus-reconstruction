@@ -21,7 +21,7 @@ function config = parse_config(config_file, verbose)
 
     % Load the config file
     if isempty(config_file)
-        [file, abs_path] = uigetfile();
+        [file, abs_path] = uigetfile('*.yaml');
         config = ReadYaml(pathlib.join(abs_path, file));
     else
         config = ReadYaml(config_file);
@@ -35,7 +35,8 @@ function config = parse_config(config_file, verbose)
 
     %% Perform specific parsing of config options
     stimuli_types = {'Bernoulli', 'Brimijoin', 'GaussianNoise', 'GaussianNoiseNoBins', ...
-                    'GaussianPrior', 'UniformNoise', 'UniformNoiseNoBins', 'UniformPrior'};
+                    'GaussianPrior', 'UniformNoise', 'UniformNoiseNoBins', 'UniformPrior', ...
+                    'PowerDistribution'};
     stimuli_string = [stimuli_types(:), repmat({', '}, length(stimuli_types), 1)]';
     stimuli_string = [stimuli_string{:}];
     assert(any(strcmp(config.stimuli_type, stimuli_types)), ...

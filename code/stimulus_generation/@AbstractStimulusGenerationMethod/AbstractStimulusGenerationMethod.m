@@ -99,6 +99,23 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                         self.(self_fields{is_in}) = options.(options_fields{ii});
                     end
                 end
+                % Create distribution file and rebuild self if Power Distribution protocol
+                if strcmp(options.stimuli_type, 'PowerDistribution')
+                    % If file exists, try to load directly
+                    if exists(options.distribution_filepath, 'file') == 2
+                        [~, ~, ext] = fileparts(options.distribution_filepath);
+                        if strcmp(ext, '.mat')
+                            self.distribution = load(options.distribution_filepath);
+                        elseif strcmp(ext, '.csv')
+                            self.distribution = readmatrix(options.distribution_filepath);
+                        else
+                            warn('unknown file extension for distribution filepath')
+                            self.distribution = self.build_distribution(options.distribution_filepath);
+                        end
+                    else
+                        self.distribution = self.build_distribution(options.distribution_filepath);
+                    end
+                end
             else
                 error('unknown type for "options", should be a character vector or a struct')
             end
