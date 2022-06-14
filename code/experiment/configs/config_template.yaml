@@ -1,0 +1,13 @@
+subjectID: pilot&&subject=AH&&stimuli_type=GaussianPrior&&n_bins_filled_mean=20&&n_bins_filled_var=3&&target_signal=buzzing
+n_trials_per_block: 100
+n_blocks: 10
+total_trials: 1000
+min_freq: 100
+max_freq: 13000
+n_bins: 100
+n_bins_filled_mean: 30
+n_bins_filled_var: 3
+duration: 0.5
+stimuli_type: GaussianPrior
+target_audio_filepath: /Users/alammert/Documents/0000-Tinnitus/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+data_dir: /home/alec/code/tinnitus-project/code/experiment/Data/data_pilot
