@@ -102,10 +102,10 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 % Create distribution file and rebuild self if Power Distribution protocol
                 if strcmp(options.stimuli_type, 'PowerDistribution')
                     % If file exists, try to load directly
-                    if exists(options.distribution_filepath, 'file') == 2
+                    if exist(options.distribution_filepath, 'file') == 2
                         [~, ~, ext] = fileparts(options.distribution_filepath);
                         if strcmp(ext, '.mat')
-                            self.distribution = load(options.distribution_filepath);
+                            self.distribution = struct2array(load(options.distribution_filepath, 'distribution'));
                         elseif strcmp(ext, '.csv')
                             self.distribution = readmatrix(options.distribution_filepath);
                         else
