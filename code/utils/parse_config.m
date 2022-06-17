@@ -16,7 +16,7 @@ function config = parse_config(config_file, verbose)
 
     arguments
         config_file (1,:)
-        verbose (1,1) {mustBeNumericOrLogical} = false
+        verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
     % Load the config file
@@ -53,7 +53,7 @@ function config = parse_config(config_file, verbose)
     % stimuli_save_type
     if ~isfield(config, 'stimuli_save_type') || isempty(config.stimuli_save_type)
         config.stimuli_save_type = 'waveform';
-        corelib.verb(verbose, 'INFO: parse_config', 'stimuli_save_type is empty, filling with: waveform.')
+        corelib.verb(verbose, 'WARN: parse_config', 'stimuli_save_type is empty, filling with: waveform.')
     end
     assert(any(strcmp(config.stimuli_save_type, {'bins', 'waveform', 'spectrum'})), ...
         ['Unknown stimuli save type: ', config.stimuli_save_type, '. Allowed values are: [bins, waveform, spectrum].'])
