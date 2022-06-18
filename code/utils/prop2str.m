@@ -29,7 +29,7 @@ function [stringified_properties] = prop2str(obj, properties_to_skip, property_s
     % See Also: collect_parameters
 
     stringified_properties = [];
-    props = properties(obj);
+    props = fieldnames(obj);
 
     if nargin < 2
         properties_to_skip = {};
