@@ -28,7 +28,7 @@ function config = parse_config(config_file, verbose)
     end
 
     % Check for required config options
-    required_fields = {'stimuli_type', 'n_trials_per_block', 'n_blocks', 'subjectID'};
+    required_fields = {'stimuli_type', 'n_trials_per_block', 'n_blocks', 'experiment_name', 'subject_ID'};
     for ii = 1:length(required_fields)
         assert(isfield(config, required_fields{ii}), ['required_field: ', required_fields{ii}]);
     end
