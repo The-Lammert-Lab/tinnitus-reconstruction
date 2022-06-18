@@ -46,8 +46,35 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
-            % Generate matrix of stimuli.
-            % TODO: documentation for this
+            %
+            %   [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            %
+            % Generates a matrix of stimuli.
+            % Explicitly calls the `generate_stimulus()`
+            % class method.
+            % 
+            % Returns:
+            %   stim: n x self.n_trials numerical vector
+            %       The stimulus waveform,
+            %       where n is self.get_nfft() + 1.
+            % 
+            %   Fs: 1x1 numerical scalar
+            %       The sample rate in Hz.
+            % 
+            %   spect: m x self.n_trials numerical vector
+            %       The half-spectrum,
+            %       where m is self.get_nfft() / 2,
+            %       in dB.
+            % 
+            %   binned_repr: self.n_bins x self.n_trials numerical vector
+            %       The binned representation.
+            % 
+            %   frequency_vector: m x self.n_trials numerical vector
+            %       The frequencies associated with the spectrum,
+            %       where m is self.get_nfft() / 2,
+            %       in Hz.
+            % 
+            % See Also: generate_stimulus
 
             if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
