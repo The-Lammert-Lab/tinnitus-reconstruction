@@ -29,7 +29,7 @@ function Protocol(options)
     mkdir(config.data_dir);
 
     %% Setup
-
+    
     % Useful variables
     project_dir = pathlib.strip(mfilename('fullpath'), 2);
     
@@ -44,14 +44,17 @@ function Protocol(options)
         % Default to 'custom' stimulus generation
         config.stimuli_type = 'GaussianPrior';
     end
-
+    
+    % Generate the experiment ID
+    expID = get_experiment_ID(config);
+    
     % Instantiate the stimulus generation object
     stimuli_object = eval([config.stimuli_type, 'StimulusGeneration()']);
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
     total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, [config.subjectID '_responses*.csv']));
+    d = dir(pathlib.join(config.data_dir, [expID '_responses*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
@@ -61,9 +64,9 @@ function Protocol(options)
 
     % Create files needed for saving the data
     uuid = char(java.util.UUID.randomUUID);
-    filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-    filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-    filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+    filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
+    filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
+    filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
 
     fid_responses = fopen(filename_responses, 'w');
 
@@ -161,7 +164,7 @@ function Protocol(options)
         total_trials_done = total_trials_done + 1;
 
         % Write the meta file
-        meta = {config.subjectID, uuid, this_datetime, total_trials_done};
+        meta = {expID, uuid, this_datetime, total_trials_done};
         meta_labels = {'subjectID', 'uuid', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
@@ -188,9 +191,9 @@ function Protocol(options)
             uuid = char(java.util.UUID.randomUUID);
 
             % Generate new files
-            filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-            filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-            filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+            filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
+            filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
+            filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
 
             fid_responses = fopen(filename_responses, 'w');
 
