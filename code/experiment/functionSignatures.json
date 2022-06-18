@@ -1,0 +1,15 @@
+{
+    "Protocol": {
+        "inputs": [
+            {
+                "name": "config_file",
+                "kind": "namevalue",
+                "type": [
+                    "file=*.yaml"
+                ],
+                "repeating": false,
+                "purpose": "File path to configuration file specifying the experiment"
+            }
+        ]
+    }
+}

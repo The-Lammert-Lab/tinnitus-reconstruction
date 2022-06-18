@@ -15,7 +15,7 @@ function config = parse_config(config_file, verbose)
     % 
 
     arguments
-        config_file (1,:)
+        config_file (1,:) = []
         verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
