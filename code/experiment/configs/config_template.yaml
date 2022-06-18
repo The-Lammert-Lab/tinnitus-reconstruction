@@ -1,14 +1,87 @@
-subjectID: pilot&&subject=AH&&stimuli_type=GaussianPrior&&n_bins_filled_mean=20&&n_bins_filled_var=3&&target_signal=buzzing
+# This is a template config file that describes how to customize it.
+# It is a fully-functional config file on its own,
+# but includes additional comments to help explain what the different
+# fields mean. 
+
+# The subject ID is a unique code that identifies the experiment.
+# The form of the subject ID is as follows:
+# 
+# NAME_OF_EXPERIMENT&&subject=SUBJECT_CODE&&PROPERTY=VALUE&&...
+# 
+# You can have any number of PROPERTY=VALUE elements, delimited by &&.
+# When gathering data from the experiment, these are used as parameter fields,
+# so you should include the stimuli_type, any parameters unique to the stimuli,
+# and any other variables in the experiment.
+# For example, if you are evaluating a pilot study
+# using the GaussianPrior method and are varying the target signal,
+# it should look something like this:
+# TODO: #35 automate generating the subjectID
+subjectID: pilot&&subject=AH&&stimuli_type=GaussianPrior&&n_bins_filled_mean=30&&n_bins_filled_var=3&&target_signal=buzzing
+
+# These fields describe the number of trials in the experiment.
+
+# n_trial_per_block is the number of trials per block of the experiment.
+# A block is a set of contiguous trials without a break a break.
+# Subjects get a break between blocks.
+# These are both required fields.
 n_trials_per_block: 100
 n_blocks: 10
+
+# The total trials should be the number of trials per block
+# times the number of blocks.
+# This is not a required field.
 total_trials: 1000
+
+# These "freq" fields describe the frequency range of the stimuli,
+# including the minimum frequency and maximum frequency,
+# both in Hz.
+# The duration field describes the duration
+# of the stimului in seconds.
+# These are not required fields.
+# Default values are set to min_freq = 100 and max_freq = 22000
+# and duration = 0.5.
+# These defaults are defined in
+# tinnitus-project/code/stimulus-generation/@AbstractStimulusGenerationMethod.
 min_freq: 100
 max_freq: 13000
+duration: 0.5
+
+# For a stimulus type that uses bins,
+# the number of bins are set here.
+# This should be a positive scalar integer.
 n_bins: 100
+
+# This required parameter gives the stimuli type.
+# The name is the class that defines the stimuli type
+# without "StimulusGeneration".
+stimuli_type: GaussianPrior
+
+# Some stimulus generation methods have other parameters
+# associated with them.
+# For example, the Gaussian Prior stimulus generation method
+# requires an n_bins_filled_mean and n_bins_filled_var property.
+# You can see what extra parameters are required for your method
+# by inspecting the class definition for the method, 
+# e.g., at tinnitus-project/code/stimulus-generation/.
+# If you do not overwrite values in the config,
+# default values are used, which are described
+# in the class definition.
 n_bins_filled_mean: 30
 n_bins_filled_var: 3
-duration: 0.5
-stimuli_type: GaussianPrior
+
+# For an experiment with a target signal
+# (i.e., for pilot subjects)
+# this field describes the full filepath
+# to the target signal audio file.
 target_audio_filepath: /Users/alammert/Documents/0000-Tinnitus/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+
+# This is the path where the output files are saved.
+# This is not a required field.
+# If it is is unset, it will default to
+# tinnitus-project/code/experiment/Data.
 data_dir: /home/alec/code/tinnitus-project/code/experiment/Data/data_pilot
+
+# This field determines in what form the stimuli are saved.
+# The available options are 'bins', 'waveform', or 'spectrum'.
+# If not set, it will default to 'waveform'.
 stimuli_save_type: bins

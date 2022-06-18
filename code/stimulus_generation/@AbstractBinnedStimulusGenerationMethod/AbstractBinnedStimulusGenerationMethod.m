@@ -12,7 +12,7 @@ methods
         % 
         %   [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins()  
         % 
-        % Arguments:
+        % Outputs:
         % 
         %   binnum: n x 1 numerical vector
         %       Contains the mapping from frequency to bin number
