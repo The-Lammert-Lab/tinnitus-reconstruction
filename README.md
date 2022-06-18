@@ -41,6 +41,12 @@ stimgen = GaussianPriorStimulusGeneration();
 stimgen = stimgen.from_config('path/to/config_file.yaml');
 ```
 
+You can generate a serialized experiment ID via:
+
+```matlab
+expID = get_experiment_ID(config);
+```
+
 ## Stimulus generation methods
 
 Stimulus generation classes are defined [here](https://github.com/alec-hoyland/tinnitus-project/tree/main/code/stimulus_generation).

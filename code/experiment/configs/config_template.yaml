@@ -3,20 +3,8 @@
 # but includes additional comments to help explain what the different
 # fields mean. 
 
-# The subject ID is a unique code that identifies the experiment.
-# The form of the subject ID is as follows:
-# 
-# NAME_OF_EXPERIMENT&&subject=SUBJECT_CODE&&PROPERTY=VALUE&&...
-# 
-# You can have any number of PROPERTY=VALUE elements, delimited by &&.
-# When gathering data from the experiment, these are used as parameter fields,
-# so you should include the stimuli_type, any parameters unique to the stimuli,
-# and any other variables in the experiment.
-# For example, if you are evaluating a pilot study
-# using the GaussianPrior method and are varying the target signal,
-# it should look something like this:
-# TODO: #35 automate generating the subjectID
-subjectID: pilot&&subject=AH&&stimuli_type=GaussianPrior&&n_bins_filled_mean=30&&n_bins_filled_var=3&&target_signal=buzzing
+experiment_name: pilot
+subject_ID: AH
 
 # These fields describe the number of trials in the experiment.
 
