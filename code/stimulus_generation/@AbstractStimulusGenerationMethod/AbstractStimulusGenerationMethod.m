@@ -8,8 +8,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         % since they are not abstract themselves.
         min_freq (1,1) {mustBePositive, mustBeReal} = 100
         max_freq (1,1) {mustBePositive, mustBeReal} = 22e3
-        duration (1,1) {mustBePositive, mustBeReal} = 0.4
+        duration (1,1) {mustBePositive, mustBeReal} = 0.5
         n_trials (1,1) {mustBePositive, mustBeReal} = 100
+        Fs (1,1) {mustBePositive, mustBeReal} = 44.1e3
     end % abstract properties
 
     methods (Abstract)
@@ -20,20 +21,23 @@ classdef (Abstract) AbstractStimulusGenerationMethod
     methods
         % Concrete methods that are inherited by subclasses.
 
-        function [y, X, binned_repr] = subject_selection_process(self, signal)
+        function [y, spect, binned_repr] = subject_selection_process(self, signal)
+
+            %   [y, spect, binned_repr] = subject_selection_process(self, signal)
+            % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
             % and returns an n_samples x 1 vector
             % of -1 for "no"
             % and 1 for "yes"
-            [~, ~, X, binned_repr] = self.generate_stimuli_matrix();
-            e = X' * signal(:);
+            [~, ~, spect, binned_repr] = self.generate_stimuli_matrix();
+            e = spect' * signal(:);
             y = double(e <= prctile(e, 50));
             y(y == 0) = -1;
         end % function
 
         function Fs = get_fs(self)
-            Fs = 2*self.max_freq;
+            Fs = self.Fs;
         end % function
 
         function nfft = get_nfft(self)
@@ -42,8 +46,35 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
-            % Generate matrix of stimuli.
-            % TODO: #19 documentation for this
+            %
+            %   [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            %
+            % Generates a matrix of stimuli.
+            % Explicitly calls the `generate_stimulus()`
+            % class method.
+            % 
+            % Returns:
+            %   stim: n x self.n_trials numerical vector
+            %       The stimulus waveform,
+            %       where n is self.get_nfft() + 1.
+            % 
+            %   Fs: 1x1 numerical scalar
+            %       The sample rate in Hz.
+            % 
+            %   spect: m x self.n_trials numerical vector
+            %       The half-spectrum,
+            %       where m is self.get_nfft() / 2,
+            %       in dB.
+            % 
+            %   binned_repr: self.n_bins x self.n_trials numerical vector
+            %       The binned representation.
+            % 
+            %   frequency_vector: m x self.n_trials numerical vector
+            %       The frequencies associated with the spectrum,
+            %       where m is self.get_nfft() / 2,
+            %       in Hz.
+            % 
+            % See Also: generate_stimulus
 
             if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
@@ -93,6 +124,23 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                     is_in = strcmp(options_fields{ii}, self_fields);
                     if any(is_in)
                         self.(self_fields{is_in}) = options.(options_fields{ii});
+                    end
+                end
+                % Create distribution file and rebuild self if Power Distribution protocol
+                if strcmp(options.stimuli_type, 'PowerDistribution')
+                    % If file exists, try to load directly
+                    if exist(options.distribution_filepath, 'file') == 2
+                        [~, ~, ext] = fileparts(options.distribution_filepath);
+                        if strcmp(ext, '.mat')
+                            self.distribution = struct2array(load(options.distribution_filepath, 'distribution'));
+                        elseif strcmp(ext, '.csv')
+                            self.distribution = readmatrix(options.distribution_filepath);
+                        else
+                            warn('unknown file extension for distribution filepath')
+                            self.distribution = self.build_distribution(options.distribution_filepath);
+                        end
+                    else
+                        self.distribution = self.build_distribution(options.distribution_filepath);
                     end
                 end
             else

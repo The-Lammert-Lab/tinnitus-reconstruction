@@ -1,17 +1,23 @@
 function [responses, stimuli] = collect_data(options)
 
     arguments
-        options.config (1,:) {mustBeFile} = []
+        options.config_file (1,:) = ''
+        options.config = []
         options.verbose (1,1) logical = true
     end
 
     % If no config file path is provided,
     % open a UI to load the config
-    if isempty(options.config)
+    if isempty(options.config) && isempty(options.config_file)
         [file, abs_path] = uigetfile();
-        config = ReadYaml(pathlib.join(abs_path, file));
+        config = parse_config(pathlib.join(abs_path, file), options.verbose);
+        corelib.verb(options.verbose, 'INFO: collect_data', ['config file [', file, '] loaded from GUI'])
+    elseif isempty(options.config)
+        config = parse_config(options.config_file, options.verbose);
+        corelib.verb(options.verbose, 'INFO: collect_data', 'config object loaded from provided file [', options.config_file, ']')
     else
-        config = ReadYaml(options.config);
+        config = options.config;
+        corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')
     end
 
     % Find the files containing the data

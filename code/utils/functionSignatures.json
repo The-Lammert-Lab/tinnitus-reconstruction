@@ -1,0 +1,72 @@
+{
+    "parse_config": {
+        "inputs": [
+            {
+                "name": "config_file",
+                "kind": "ordered",
+                "repeating": false,
+                "type": [
+                    "file=*.yaml"
+                ],
+                "purpose": "File path to configuration file"
+            },
+            {
+                "name": "verbose",
+                "kind": "ordered",
+                "repeating": false,
+                "type": [
+                    "logical"
+                ],
+                "purpose": "If true, print more informational text."
+            }
+        ]
+    },
+    "get_reconstruction": {
+        "inputs": [
+            {
+                "name": "config_file",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": [
+                    "file=*.yaml"
+                ],
+                "purpose": "File path to configuration file"
+            },
+            {
+                "name": "config",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "struct",
+                "purpose": "Struct containing configuration information"
+            },
+            {
+                "name": "preprocessing",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": ["cell"],
+                "purpose": "Cell array of preprocessing directives"
+            },
+            {
+                "name": "method",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "choices={'cs','cs_nb','linear'}",
+                "purpose": "Character array of which method to use to reconstruct the signal"
+            },
+            {
+                "name": "verbose",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": ["logical", "scalar"],
+                "purpose":"If true, print more informational text."
+            },
+            {
+                "name": "fraction",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": ["numeric", "scalar", "real", "positive", "<=1"],
+                "purpose": "What fraction of the data to use"
+            }
+        ]
+    }
+}

@@ -1,4 +1,4 @@
-function [stim, Fs, X, binned_repr] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
     % 
     %   [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % 
@@ -13,10 +13,8 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     %   bin_prob
 
     % Define Frequency Bin Indices 1 through self.n_bins
-    [binnum, Fs, nfft] = self.get_freq_bins();
-
-    % fill the bins
-    X = zeros(nfft/2, 1);
+    [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
+    spect = self.get_empty_spectrum();
     binned_repr = zeros(self.n_bins, 1);
     
     % get the amplitude values
@@ -25,10 +23,10 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
 
     for ii = 1:self.n_bins
         binned_repr(ii) = amplitude_values(ii);
-        X(binnum==ii) = amplitude_values(ii);
+        spect(binnum==ii) = amplitude_values(ii);
     end
 
     % Synthesize Audio
-    stim = self.synthesize_audio(X, nfft);
+    stim = self.synthesize_audio(spect, nfft);
 
 end % function

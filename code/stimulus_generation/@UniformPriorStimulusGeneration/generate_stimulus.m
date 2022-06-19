@@ -1,14 +1,36 @@
-function [stim, Fs, X, binned_repr] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+    %
+    %   [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+    % 
+    % 
     % Generates stimuli by generating a frequency spectrum with -20 dB and 0 dB
     % amplitudes based on a tonotopic map of audible frequency perception.
-    %
+    % 
+    % Returns:
+    %   stim: n x 1 numerical vector
+    %       The stimulus waveform,
+    %       where n is self.get_nfft() + 1.
+    %   Fs: 1x1 numerical scalar
+    %       The sample rate in Hz.
+    %   spect: m x 1 numerical vector
+    %       The half-spectrum,
+    %       where m is self.get_nfft() / 2,
+    %       in dB.
+    %   binned_repr: self.n_bins x 1 numerical vector
+    %       The binned representation.
+    %   frequency_vector: m x 1 numerical vector
+    %       The frequencies associated with the spectrum,
+    %       where m is self.get_nfft() / 2,
+    %       in Hz.
+    % 
     % Class Properties Used:
     %   n_bins
     %   n_bins_filled_mean
     %   n_bins_filled_var
 
     % Define Frequency Bin Indices 1 through self.n_bins
-    [binnum, Fs, nfft] = self.get_freq_bins();
+    [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
+    spect = self.get_empty_spectrum();
 
     % Generate Random Freq Spec in dB Acccording to Frequency Bin Index
     
@@ -16,7 +38,7 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     frequency_bin_list = 1:self.n_bins;
 
     % sample from uniform distribution to get the number of bins to fill
-    n_bins_to_fill = round(self.n_bins * rand());
+    n_bins_to_fill = randi([self.min_bins, self.max_bins], 1);
 
     if n_bins_to_fill < 1
         n_bins_to_fill = 1;
@@ -25,7 +47,6 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     filled_bins = zeros(length(n_bins_to_fill), 1);
 
     % fill the bins
-    X = -20 * ones(nfft/2, 1);
     for ii = 1:n_bins_to_fill
         % select a bin at random from the list
         random_bin_index = 0;
@@ -35,20 +56,17 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
         bin_to_fill = frequency_bin_list(random_bin_index);
         filled_bins(ii) = bin_to_fill;
         % fill that bin
-        X(binnum==bin_to_fill) = 0;
+        spect(binnum==bin_to_fill) = 0;
         % remove that bin from the master list
         frequency_bin_list(frequency_bin_list==bin_to_fill) = [];
     end
-    % X = zeros(nfft/2,1);
-    % for itor = 1:self.n_bins
-    %     X(binnum==itor) = -20 * floor(2 * rand(1,1) .^ self.prob_f);
-    % end
-    % filled_bins = sort(filled_bins);
+
 
     % Synthesize Audio
-    stim = self.synthesize_audio(X, nfft);
+    stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
     binned_repr = -20 * ones(self.n_bins, 1);
+    binned_repr(filled_bins) = 0;
 
 end
