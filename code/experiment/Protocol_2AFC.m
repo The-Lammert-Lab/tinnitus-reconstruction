@@ -11,7 +11,7 @@
 %   Protocol()
 %   Protocol('config', 'path2config')
 
-function Protocol(options)
+function Protocol_2AFC(options)
 
     arguments
         options.config_file char = []
@@ -86,7 +86,7 @@ function Protocol(options)
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
-    [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
+    [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time);
     fid_responses = fopen(filename_responses, 'w');
 
     %% Intro Screen & Start
@@ -108,16 +108,8 @@ function Protocol(options)
         % Reminder Screen
         imshow(Screen2);
 
-        % Present Target (if A-X protocol)
-        if ~isempty(target_sound)
-            soundsc(target_sound, target_fs)
-            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
-        end
-
-
-        % Present Stimulus
-        soundsc(stimuli_matrix(:, counter), Fs)
-        pause(length(stimuli_matrix(:, counter)) / Fs)
+        %% Play the stimuli
+        play_stimuli(stimuli_matrix_1, stimuli_matrix_2, Fs, counter, target_sound, target_fs, 0.3)
             
         % Obtain Response
         k = waitforbuttonpress;
@@ -142,10 +134,14 @@ function Protocol(options)
         % Update the number of trials done in this block
         total_trials_done = total_trials_done + 1;
 
-        % Write the meta file
-        meta = {expID, this_hash, this_datetime, total_trials_done};
+        % Write the meta files
+        meta = {expID, this_hash_1, this_datetime, total_trials_done};
         meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
-        writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
+        writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta_1);
+
+        meta = {expID, this_hash_2, this_datetime, total_trials_done};
+        meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
+        writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta_2);
             
         % Decide How To Continue
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
@@ -167,7 +163,7 @@ function Protocol(options)
             end
 
             % Generate new stimuli and files
-            [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
+            [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time);
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
@@ -179,3 +175,52 @@ function Protocol(options)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %eof
 end
+
+
+function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta_1, filename_meta_2, file_hash_1, file_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time)
+    % Create files for the stimuli, responses, and metadata
+    % and create the stimuli.
+    % Write the stimuli into the stimuli file.
+
+
+    % Hash the config struct to get a unique string representation
+    config_hash = DataHash(config);
+    config_hash = config_hash(1:8);
+
+    % Generate the stimuli
+    [stimuli_matrix_1, ~, spect_matrix_1, binned_repr_matrix_1] = stimuli_object.generate_stimuli_matrix();
+    [stimuli_matrix_2, Fs, spect_matrix_2, binned_repr_matrix_2] = stimuli_object.generate_stimuli_matrix();
+    
+    % Hash the stimuli
+    stimuli_hash_1 = DataHash(spect_matrix_1);
+    stimuli_hash_1 = stimuli_hash_1(1:8);
+    
+    stimuli_hash_2 = DataHash(spect_matrix_2);
+    stimuli_hash_2 = stimuli_hash_2(1:8);
+
+    % Create the files needed for saving the data
+    file_hash_1 = [posix_time, '_', config_hash, '_', stimuli_hash_1];
+    file_hash_2 = [posix_time, '_', config_hash, '_', stimuli_hash_2];
+
+    filename_responses    = pathlib.join(config.data_dir, ['responses_', file_hash_1, '.csv']);
+    filename_stimuli_1    = pathlib.join(config.data_dir, ['stimuli_1_', file_hash_1, '.csv']);
+    filename_stimuli_2    = pathlib.join(config.data_dir, ['stimuli_2_', file_hash_2, '.csv']);
+    filename_meta_1       = pathlib.join(config.data_dir, ['meta_1_', file_hash_1, '.csv']);
+    filename_meta_2       = pathlib.join(config.data_dir, ['meta_2_', file_hash_2, '.csv']);
+
+    % Write the stimuli to file
+    switch config.stimuli_save_type
+    case 'waveform'
+        writematrix(stimuli_matrix_1, filename_stimuli_1);
+        writematrix(stimuli_matrix_2, filename_stimuli_2);
+    case 'spectrum'
+        writematrix(spect_matrix_1, filename_stimuli_1);
+        writematrix(spect_matrix_2, filename_stimuli_2);
+    case 'bins'
+        writematrix(binned_repr_matrix_1, filename_stimuli_1);
+        writematrix(binned_repr_matrix_2, filename_stimuli_2);
+    otherwise
+        error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
+    end
+
+end % create_files_and_stimuli
