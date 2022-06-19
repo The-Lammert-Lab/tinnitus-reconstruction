@@ -14,7 +14,7 @@
 function Protocol_2AFC(options)
 
     arguments
-        options.config char = []
+        options.config_file char = []
     end
 
     this_datetime = datetime();
@@ -22,7 +22,7 @@ function Protocol_2AFC(options)
     % Is a config file provided?
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
-    config = parse_config(options.config);
+    config = parse_config(options.config_file);
     config.n_trials = config.n_trials_per_block;
 
     % Try to create the data directory if it doesn't exist
@@ -65,9 +65,13 @@ function Protocol_2AFC(options)
     % Create files needed for saving the data
     uuid = char(java.util.UUID.randomUUID);
     filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
-    filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
     filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
-
+    
+    % Stimuli file for stimuli batch #1
+    filename_stimuli_1 = pathlib.join(config.data_dir, [expID, '_', 'stimuli_1', '_', uuid, '.csv']);
+    % Stimuli file for stimuli batch #2
+    filename_stimuli_2 = pathlib.join(config.data_dir, [expID, '_', 'stimuli_2', '_', uuid, '.csv']);
+    
     fid_responses = fopen(filename_responses, 'w');
 
     % Is this an A-X experiment protocol?
@@ -91,21 +95,25 @@ function Protocol_2AFC(options)
     Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2B.png'));
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3B.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
-
+    
     %% Generate stimuli
 
     % Generate a block of stimuli
-    % [stimuli_matrix, Fs, nfft] = stimuli_object.custom_generate_stimuli_matrix();
-    [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
+    % Each corresponds to the first (left) and second (right) stimuli.
+    [stimuli_matrix_1, ~, spect_matrix_1, binned_repr_matrix_1] = stimuli_object.generate_stimuli_matrix();
+    [stimuli_matrix_2, Fs, spect_matrix_2, binned_repr_matrix_2] = stimuli_object.generate_stimuli_matrix();
 
     % Write the stimuli to file
     switch config.stimuli_save_type
     case 'waveform'
-        writematrix(stimuli_matrix, filename_stimuli);
+        writematrix(stimuli_matrix_1, filename_stimuli_1);
+        writematrix(stimuli_matrix_2, filename_stimuli_2);
     case 'spectrum'
-        writematrix(spect_matrix, filename_stimuli);
+        writematrix(spect_matrix_1, filename_stimuli_1);
+        writematrix(spect_matrix_2, filename_stimuli_2);
     case 'bins'
-        writematrix(binned_repr_matrix, filename_stimuli);
+        writematrix(binned_repr_matrix_1, filename_stimuli_1);
+        writematrix(binned_repr_matrix_2, filename_stimuli_2);
     otherwise
         error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
     end
@@ -129,16 +137,8 @@ function Protocol_2AFC(options)
         % Reminder Screen
         imshow(Screen2);
 
-        % Present Target (if A-X protocol)
-        if ~isempty(target_sound)
-            soundsc(target_sound, target_fs)
-            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
-        end
-
-
-        % Present Stimulus
-        soundsc(stimuli_matrix(:, counter), Fs)
-        pause(length(stimuli_matrix(:, counter)) / Fs)
+        % Play the stimuli in sequence
+        play_stimuli(stimuli_matrix_1, stimuli_matrix_2, Fs, counter, target_sound, target_fs, pause_duration)
             
         % Obtain Response
         k = waitforbuttonpress;
@@ -165,7 +165,7 @@ function Protocol_2AFC(options)
 
         % Write the meta file
         meta = {expID, uuid, this_datetime, total_trials_done};
-        meta_labels = {'subjectID', 'uuid', 'datetime', 'total_trials_done'};
+        meta_labels = {'expID', 'uuid', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
         % Decide How To Continue
@@ -187,27 +187,33 @@ function Protocol_2AFC(options)
                 value = double(get(gcf,'CurrentCharacter'));
             end
 
-            % Generate new UUID
+            % Create files needed for saving the data
             uuid = char(java.util.UUID.randomUUID);
-
-            % Generate new files
             filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
-            filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
             filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
-
+            
+            % Stimuli file for stimuli batch #1
+            filename_stimuli_1 = pathlib.join(config.data_dir, [expID, '_', 'stimuli_1', '_', uuid, '.csv']);
+            % Stimuli file for stimuli batch #2
+            filename_stimuli_2 = pathlib.join(config.data_dir, [expID, '_', 'stimuli_2', '_', uuid, '.csv']);
             fid_responses = fopen(filename_responses, 'w');
 
             % Generate stimuli for next block
-            [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
+            % Each corresponds to the first (left) and second (right) stimuli.
+            [stimuli_matrix_1, ~, spect_matrix_1, binned_repr_matrix_1] = stimuli_object.generate_stimuli_matrix();
+            [stimuli_matrix_2, Fs, spect_matrix_2, binned_repr_matrix_2] = stimuli_object.generate_stimuli_matrix();
 
-            % Save stimuli to file
+            % Write the stimuli to file
             switch config.stimuli_save_type
             case 'waveform'
-                writematrix(stimuli_matrix, filename_stimuli);
+                writematrix(stimuli_matrix_1, filename_stimuli_1);
+                writematrix(stimuli_matrix_2, filename_stimuli_2);
             case 'spectrum'
-                writematrix(spect_matrix, filename_stimuli);
+                writematrix(spect_matrix_1, filename_stimuli_1);
+                writematrix(spect_matrix_2, filename_stimuli_2);
             case 'bins'
-                writematrix(binned_repr_matrix, filename_stimuli);
+                writematrix(binned_repr_matrix_1, filename_stimuli_1);
+                writematrix(binned_repr_matrix_2, filename_stimuli_2);
             otherwise
                 error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
             end
@@ -222,3 +228,38 @@ function Protocol_2AFC(options)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %eof
 end
+
+function play_stimuli(stimuli_matrix_1, stimuli_matrix_2, Fs, counter, target_sound, target_fs, pause_duration)
+
+        arguments
+            stimuli_matrix_1 {mustBeReal}
+            stimuli_matrix_2 {mustBeReal}
+            Fs (1,1) {mustBePositive, mustBeReal}
+            counter (1,1) {mustBePositive, mustBeReal, mustBeInteger}
+            target_sound (:,1) {mustBeReal} = []
+            target_fs (1,1) {mustBePositive, mustBeReal} = []
+            pause_duration (1,1) {mustBePositive, mustBeReal} = 0.3
+        end
+
+        % Present Target (if A-X protocol)
+        if ~isempty(target_sound)
+            assert(target_fs > 0, 'target_fs must be real and positive')
+            soundsc(target_sound, target_fs)
+            pause(length(target_sound) / target_fs + pause_duration) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
+        end
+
+        % Present Stimulus #1
+        soundsc(stimuli_matrix_1(:, counter), Fs)
+        pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration)
+
+        % Present Target (if A-X protocol)
+        if ~isempty(target_sound)
+            assert(target_fs > 0, 'target_fs must be real and positive')
+            soundsc(target_sound, target_fs)
+            pause(length(target_sound) / target_fs + pause_duration) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
+        end
+
+        % Present Stimulus #2
+        soundsc(stimuli_matrix_2(:, counter), Fs)
+        pause(length(stimuli_matrix_2(:, counter)) / Fs)
+end % play_stimuli

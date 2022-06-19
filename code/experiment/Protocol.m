@@ -14,7 +14,7 @@
 function Protocol(options)
 
     arguments
-        options.config char = []
+        options.config_file char = []
     end
 
     this_datetime = datetime();
@@ -22,7 +22,7 @@ function Protocol(options)
     % Is a config file provided?
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
-    config = parse_config(options.config);
+    config = parse_config(options.config_file);
     config.n_trials = config.n_trials_per_block;
 
     % Try to create the data directory if it doesn't exist
@@ -165,7 +165,7 @@ function Protocol(options)
 
         % Write the meta file
         meta = {expID, uuid, this_datetime, total_trials_done};
-        meta_labels = {'subjectID', 'uuid', 'datetime', 'total_trials_done'};
+        meta_labels = {'expID', 'uuid', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
         % Decide How To Continue
