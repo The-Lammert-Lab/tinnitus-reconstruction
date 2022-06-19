@@ -29,7 +29,7 @@ function Protocol_2AFC(options)
     mkdir(config.data_dir);
 
     %% Setup
-
+    
     % Useful variables
     project_dir = pathlib.strip(mfilename('fullpath'), 2);
     
@@ -44,14 +44,17 @@ function Protocol_2AFC(options)
         % Default to 'custom' stimulus generation
         config.stimuli_type = 'GaussianPrior';
     end
-
+    
+    % Generate the experiment ID
+    expID = get_experiment_ID(config);
+    
     % Instantiate the stimulus generation object
     stimuli_object = eval([config.stimuli_type, 'StimulusGeneration()']);
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
     total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, [config.subjectID '_responses*.csv']));
+    d = dir(pathlib.join(config.data_dir, [expID '_responses*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
@@ -61,9 +64,9 @@ function Protocol_2AFC(options)
 
     % Create files needed for saving the data
     uuid = char(java.util.UUID.randomUUID);
-    filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-    filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-    filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+    filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
+    filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
+    filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
 
     fid_responses = fopen(filename_responses, 'w');
 
@@ -121,7 +124,7 @@ function Protocol_2AFC(options)
 
     counter = 0;
     while (1)
-        counter = counter + 2;
+        counter = counter + 1;
 
         % Reminder Screen
         imshow(Screen2);
@@ -133,22 +136,10 @@ function Protocol_2AFC(options)
         end
 
 
-        % Present First Stimulus
+        % Present Stimulus
         soundsc(stimuli_matrix(:, counter), Fs)
         pause(length(stimuli_matrix(:, counter)) / Fs)
-       
-      
-        pause(0.25)
-        % Present Target Again (if A-X protocol)
-        if ~isempty(target_sound)
-            soundsc(target_sound, target_fs)
-            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
-        end
-
-        % Present Second Stimulus
-        soundsc(stimuli_matrix(:, counter+1), Fs)
-        pause(length(stimuli_matrix(:, counter+1)) / Fs)
-        
+            
         % Obtain Response
         k = waitforbuttonpress;
         value = double(get(gcf,'CurrentCharacter')); % f - 102, j - 106
@@ -157,23 +148,23 @@ function Protocol_2AFC(options)
             value = double(get(gcf,'CurrentCharacter'));
         end
         
-        % Save Response to File (1 for first stim, 2 for second)
+        % Save Response to File
         respnum = 0;
         switch value
             case 106
                 respnum = 1;
             case 102
-                respnum = 2;
+                respnum = -1;
         end
 
         % Write the response to file
         fprintf(fid_responses, [num2str(respnum) '\n']);
 
         % Update the number of trials done in this block
-        total_trials_done = total_trials_done + 2;
+        total_trials_done = total_trials_done + 1;
 
         % Write the meta file
-        meta = {config.subjectID, uuid, this_datetime, total_trials_done};
+        meta = {expID, uuid, this_datetime, total_trials_done};
         meta_labels = {'subjectID', 'uuid', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
@@ -200,9 +191,9 @@ function Protocol_2AFC(options)
             uuid = char(java.util.UUID.randomUUID);
 
             % Generate new files
-            filename_responses = pathlib.join(config.data_dir, [config.subjectID, '_', 'responses', '_', uuid, '.csv']);
-            filename_stimuli = pathlib.join(config.data_dir, [config.subjectID, '_', 'stimuli', '_', uuid, '.csv']);
-            filename_meta = pathlib.join(config.data_dir, [config.subjectID, '_', 'meta', '_', uuid, '.csv']);
+            filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
+            filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
+            filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
 
             fid_responses = fopen(filename_responses, 'w');
 
