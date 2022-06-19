@@ -17,7 +17,8 @@ function Protocol(options)
         options.config_file char = []
     end
 
-    this_datetime = datetime();
+    this_datetime = datetime('now', 'Timezone', 'local');
+    posix_time = num2str(floor(posixtime(this_datetime)));
 
     % Is a config file provided?
     %   If so, read it.
@@ -62,14 +63,6 @@ function Protocol(options)
     end
     fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
 
-    % Create files needed for saving the data
-    uuid = char(java.util.UUID.randomUUID);
-    filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
-    filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
-    filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
-
-    fid_responses = fopen(filename_responses, 'w');
-
     % Is this an A-X experiment protocol?
     %   If it's an A-X experiment protocol,
     %   then we should play a target sound before each stimulus
@@ -91,24 +84,10 @@ function Protocol(options)
     Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2B.png'));
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3B.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
-
-    %% Generate stimuli
-
-    % Generate a block of stimuli
-    % [stimuli_matrix, Fs, nfft] = stimuli_object.custom_generate_stimuli_matrix();
-    [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
-
-    % Write the stimuli to file
-    switch config.stimuli_save_type
-    case 'waveform'
-        writematrix(stimuli_matrix, filename_stimuli);
-    case 'spectrum'
-        writematrix(spect_matrix, filename_stimuli);
-    case 'bins'
-        writematrix(binned_repr_matrix, filename_stimuli);
-    otherwise
-        error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
-    end
+    
+    %% Generate initial files and stimuli
+    [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
+    fid_responses = fopen(filename_responses, 'w');
 
     %% Intro Screen & Start
 
@@ -164,8 +143,8 @@ function Protocol(options)
         total_trials_done = total_trials_done + 1;
 
         % Write the meta file
-        meta = {expID, uuid, this_datetime, total_trials_done};
-        meta_labels = {'expID', 'uuid', 'datetime', 'total_trials_done'};
+        meta = {expID, this_hash, this_datetime, total_trials_done};
+        meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
             
         % Decide How To Continue
@@ -187,31 +166,9 @@ function Protocol(options)
                 value = double(get(gcf,'CurrentCharacter'));
             end
 
-            % Generate new UUID
-            uuid = char(java.util.UUID.randomUUID);
-
-            % Generate new files
-            filename_responses = pathlib.join(config.data_dir, [expID, '_', 'responses', '_', uuid, '.csv']);
-            filename_stimuli = pathlib.join(config.data_dir, [expID, '_', 'stimuli', '_', uuid, '.csv']);
-            filename_meta = pathlib.join(config.data_dir, [expID, '_', 'meta', '_', uuid, '.csv']);
-
+            % Generate new stimuli and files
+            [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
             fid_responses = fopen(filename_responses, 'w');
-
-            % Generate stimuli for next block
-            [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
-
-            % Save stimuli to file
-            switch config.stimuli_save_type
-            case 'waveform'
-                writematrix(stimuli_matrix, filename_stimuli);
-            case 'spectrum'
-                writematrix(spect_matrix, filename_stimuli);
-            case 'bins'
-                writematrix(binned_repr_matrix, filename_stimuli);
-            otherwise
-                error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
-            end
-            fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
 
         else % continue with block
             % pause(1)
