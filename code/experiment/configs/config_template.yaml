@@ -61,7 +61,7 @@ n_bins_filled_var: 3
 # (i.e., for pilot subjects)
 # this field describes the full filepath
 # to the target signal audio file.
-target_audio_filepath: /Users/alammert/Documents/0000-Tinnitus/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
 
 # This is the path where the output files are saved.
 # This is not a required field.
