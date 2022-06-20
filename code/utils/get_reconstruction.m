@@ -39,7 +39,7 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
     [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose);
 
     % bin preprocessing
-    if strcmp(config.stimuli_save_type, 'bins') && any(contains(options.preprocessing, 'bins'))
+    if strcmp(config.stimuli_save_type, 'bins') || any(contains(options.preprocessing, 'bins'))
         if size(stimuli_matrix, 1) > config.n_bins
             % stimuli are probably saved as waveforms
             % but should be in bins
