@@ -1,22 +1,26 @@
-function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_meta, file_hash] = create_files_and_stimuli(config, stimuli_object, posix_time)
+function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_meta, file_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix)
     % Create files for the stimuli, responses, and metadata
     % and create the stimuli.
     % Write the stimuli into the stimuli file.
 
+    arguments
+        config (1,1) struct
+        stimuli_object (1,1) AbstractStimulusGenerationMethod
+        hash_prefix (1,:) char = ''
+    end
 
-    % Hash the config struct to get a unique string representation
-    config_hash = DataHash(config);
-    config_hash = config_hash(1:8);
+    if isempty(hash_prefix)
+        hash_prefix = get_hash(config);
+    end
 
     % Generate the stimuli
     [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = stimuli_object.generate_stimuli_matrix();
     
     % Hash the stimuli
-    stimuli_hash = DataHash(spect_matrix);
-    stimuli_hash = stimuli_hash(1:8);
+    stimuli_hash = get_hash(spect_matrix);
 
     % Create the files needed for saving the data
-    file_hash = [posix_time, '_', config_hash, '_', stimuli_hash];
+    file_hash = [hash_prefix '_',  stimuli_hash];
 
     filename_responses  = pathlib.join(config.data_dir, ['responses_', file_hash, '.csv']);
     filename_stimuli    = pathlib.join(config.data_dir, ['stimuli_', file_hash, '.csv']);

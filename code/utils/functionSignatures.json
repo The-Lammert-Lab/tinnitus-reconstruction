@@ -43,7 +43,9 @@
                 "name": "preprocessing",
                 "kind": "namevalue",
                 "repeating": false,
-                "type": ["cell"],
+                "type": [
+                    "cell"
+                ],
                 "purpose": "Cell array of preprocessing directives"
             },
             {
@@ -57,15 +59,79 @@
                 "name": "verbose",
                 "kind": "namevalue",
                 "repeating": false,
-                "type": ["logical", "scalar"],
-                "purpose":"If true, print more informational text."
+                "type": [
+                    "logical",
+                    "scalar"
+                ],
+                "purpose": "If true, print more informational text."
             },
             {
                 "name": "fraction",
                 "kind": "namevalue",
                 "repeating": false,
-                "type": ["numeric", "scalar", "real", "positive", "<=1"],
+                "type": [
+                    "numeric",
+                    "scalar",
+                    "real",
+                    "positive",
+                    "<=1"
+                ],
                 "purpose": "What fraction of the data to use"
+            }
+        ]
+    },
+    "collect_data": {
+        "inputs": [
+            {
+                "name": "config_file",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": [
+                    "file=*.yaml"
+                ],
+                "purpose": "File path to configuration file"
+            },
+            {
+                "name": "config",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "struct",
+                "purpose": "Struct containing configuration information"
+            },
+            {
+                "name": "verbose",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": [
+                    "logical",
+                    "scalar"
+                ],
+                "purpose": "If true, print more informational text."
+            }
+        ]
+    },
+    "create_files_and_stimuli": {
+        "inputs": [
+            {
+                "name": "config",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "struct",
+                "purpose": "Struct containing configuration information"
+            },
+            {
+                "name": "stimuli_object",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "AbstractStimulusGenerationMethod",
+                "purpose": "Object defining stimulus generation method"
+            },
+            {
+                "name": "hash_prefix",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "char",
+                "purpose": "8-element MD5 hash of config"
             }
         ]
     }

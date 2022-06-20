@@ -20,9 +20,11 @@ function [responses, stimuli] = collect_data(options)
         corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')
     end
 
+    config_hash = get_hash(config);
+
     % Find the files containing the data
-    glob_responses = pathlib.join(config.data_dir, [config.subjectID '_responses*.csv']);
-    glob_stimuli = pathlib.join(config.data_dir, [config.subjectID '_stimuli*.csv']);
+    glob_responses = pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']);
+    glob_stimuli = pathlib.join(config.data_dir, ['stimuli_', config_hash, '*.csv']);
     files_responses = dir(glob_responses);
     files_stimuli = dir(glob_stimuli);
 

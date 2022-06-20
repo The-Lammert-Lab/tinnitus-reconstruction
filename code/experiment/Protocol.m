@@ -17,6 +17,8 @@ function Protocol(options)
         options.config_file char = []
     end
 
+    % Get the datetime and posix time
+    % for the start of the experiment
     this_datetime = datetime('now', 'Timezone', 'local');
     posix_time = num2str(floor(posixtime(this_datetime)));
 
@@ -24,6 +26,15 @@ function Protocol(options)
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
     config = parse_config(options.config_file);
+
+    % Hash the config struct to get a unique string representation
+    % Get the hash before modifying the config at all
+    config_hash = get_hash(config);
+
+    % Get the hash prefix for file naming
+    hash_prefix = [config_hash, '_', posix_time];
+
+    % Add additional config fields here
     config.n_trials = config.n_trials_per_block;
 
     % Try to create the data directory if it doesn't exist
@@ -86,7 +97,7 @@ function Protocol(options)
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
-    [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
+    [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
     fid_responses = fopen(filename_responses, 'w');
 
     %% Intro Screen & Start
@@ -167,7 +178,7 @@ function Protocol(options)
             end
 
             % Generate new stimuli and files
-            [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, posix_time);
+            [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block

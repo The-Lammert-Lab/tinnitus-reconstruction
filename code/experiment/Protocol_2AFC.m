@@ -17,6 +17,8 @@ function Protocol_2AFC(options)
         options.config_file char = []
     end
 
+    % Get the datetime and posix time
+    % for the start of the experiment
     this_datetime = datetime('now', 'Timezone', 'local');
     posix_time = num2str(floor(posixtime(this_datetime)));
 
@@ -24,6 +26,15 @@ function Protocol_2AFC(options)
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
     config = parse_config(options.config_file);
+
+    % Hash the config struct to get a unique string representation
+    % Get the hash before modifying the config at all
+    config_hash = get_hash(config);
+
+    % Get the hash prefix for file naming
+    hash_prefix = [config_hash, '_', posix_time];
+
+    % Add additional config fields here
     config.n_trials = config.n_trials_per_block;
 
     % Try to create the data directory if it doesn't exist
@@ -86,7 +97,7 @@ function Protocol_2AFC(options)
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
-    [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time);
+    [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, hash_prefix);
     fid_responses = fopen(filename_responses, 'w');
 
     %% Intro Screen & Start
@@ -163,7 +174,7 @@ function Protocol_2AFC(options)
             end
 
             % Generate new stimuli and files
-            [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time);
+            [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta_1, filename_meta_2, this_hash_1, this_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, hash_prefix);
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
@@ -177,15 +188,16 @@ function Protocol_2AFC(options)
 end
 
 
-function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta_1, filename_meta_2, file_hash_1, file_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, posix_time)
+function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta_1, filename_meta_2, file_hash_1, file_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, hash_prefix)
     % Create files for the stimuli, responses, and metadata
     % and create the stimuli.
     % Write the stimuli into the stimuli file.
 
-
-    % Hash the config struct to get a unique string representation
-    config_hash = DataHash(config);
-    config_hash = config_hash(1:8);
+    arguments
+        config (1,1) struct
+        stimuli_object (1,1) AbstractStimulusGenerationMethod
+        hash_prefix (1,:) char
+    end
 
     % Generate the stimuli
     [stimuli_matrix_1, ~, spect_matrix_1, binned_repr_matrix_1] = stimuli_object.generate_stimuli_matrix();
@@ -199,8 +211,8 @@ function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_s
     stimuli_hash_2 = stimuli_hash_2(1:8);
 
     % Create the files needed for saving the data
-    file_hash_1 = [posix_time, '_', config_hash, '_', stimuli_hash_1];
-    file_hash_2 = [posix_time, '_', config_hash, '_', stimuli_hash_2];
+    file_hash_1 = [hash_prefix, '_', stimuli_hash_1];
+    file_hash_2 = [hash_prefix, '_', stimuli_hash_2];
 
     filename_responses    = pathlib.join(config.data_dir, ['responses_', file_hash_1, '.csv']);
     filename_stimuli_1    = pathlib.join(config.data_dir, ['stimuli_1_', file_hash_1, '.csv']);
