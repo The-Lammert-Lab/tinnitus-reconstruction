@@ -66,7 +66,7 @@ function Protocol(options)
     
     % Compute the total trials done
     total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, [expID '_responses*.csv']));
+    d = dir(pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
