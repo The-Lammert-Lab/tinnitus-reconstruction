@@ -39,16 +39,15 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
     [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose);
 
     % bin preprocessing
-    if strcmp(config.stimuli_save_type, 'bins') && any(contains(options.preprocessing, 'bins'))
-        if size(stimuli_matrix, 1) > config.n_bins
-            % stimuli are probably saved as waveforms
-            % but should be in bins
-            corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bin preprocessing')
-            stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
-            stimgen.from_config(config);
-            stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
-            stimuli_matrix = stimgen.spect2binnedrepr(stimuli_matrix); % spectrum => bin repr
-        end
+    if any(contains(options.preprocessing, 'bins')) || strcmp(config.stimuli_save_type, 'bins') && ...
+            size(stimuli_matrix, 1) > config.n_bins
+        % stimuli are probably saved as waveforms
+        % but should be in bins
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bin preprocessing')
+        stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
+        stimgen.from_config(config);
+        stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
+        stimuli_matrix = stimgen.spect2binnedrepr(stimuli_matrix); % spectrum => bin repr
     end
 
     % bit flip preprocessing

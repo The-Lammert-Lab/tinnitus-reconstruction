@@ -3,7 +3,8 @@
 % number of bins and that the reconstructions
 % should be done over the bin representation.
 
-DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data_pilot';
+% DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data_pilot';
+DATA_DIR = '/Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/experiment/data_pilot/';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 
 %% Compute the bin representations of the target signals
@@ -11,7 +12,7 @@ PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 % Create output directory
 
 % Target signals
-sound_dir = pathlib.join(PROJECT_DIR, 'data', 'sounds');
+sound_dir = pathlib.join(PROJECT_DIR, 'code', 'experiment', 'ATA');
 data_files = {
     'ATA_Tinnitus_Buzzing_Tone_1sec.wav', ...
     'ATA_Tinnitus_Electric_Tone_1sec.wav', ...
@@ -48,11 +49,15 @@ config_filenames = {this_dir.name};
 config_ids = cell(length(this_dir), 1);
 
 % Get the binned representation for the target signals
+% NB: I think this will need to be adjusted for multiple stimulus types at once
 config = parse_config(pathlib.join(this_dir(1).folder, this_dir(1).name));
 stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
 stimgen = stimgen.from_config(config);
 stimgen.duration = size(target_signal, 1) / stimgen.max_freq;
 binned_target_signal = stimgen.spect2binnedrepr(target_signal);
+
+% Define correlation type
+correlation = @(X,Y) corr(X,Y,'Type','Spearman');
 
 %% Convert subject IDs into a data table
 
@@ -64,6 +69,15 @@ end
 
 T = collect_parameters(config_ids);
 T.config_filename = config_filenames';
+
+% Patch for some configs having "target_audio" and some "target_signal"
+% This method used b/c ID is numeric, so direct comparison is not possible.
+for i = 1:width(T)
+    if any(strcmp(table2cell(T(1,i)),data_names))
+        T = renamevars(T,T.Properties.VariableNames{i},"target_audio");
+        break
+    end
+end
 
 %% Compute the reconstructions
 
@@ -114,8 +128,8 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
         
                                     
         % Compute the r^2 values
-        r2_cs_bins(ii, qq) = corr(reconstructions_cs{ii, qq}, this_target_signal);
-        r2_lr_bins(ii, qq) = corr(reconstructions_lr{ii, qq}, this_target_signal);
+        r2_cs_bins(ii, qq) = correlation(reconstructions_cs{ii, qq}, this_target_signal);
+        r2_lr_bins(ii, qq) = correlation(reconstructions_lr{ii, qq}, this_target_signal);
     end
 
     % Outside the inner loop,
@@ -125,13 +139,13 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using random responses')
     responses_rand = sign(0.5 - rand(size(stimuli_matrix, 2), 1));
     reconstructions_rand{ii} = gs(responses_rand, stimuli_matrix');
-    r2_rand(ii) = corr(reconstructions_rand{ii}, this_target_signal);
+    r2_rand(ii) = correlation(reconstructions_rand{ii}, this_target_signal);
     
     % Compute reconstructions from the in-silico process
     corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using synthetic responses')
     responses_synth = subject_selection_process(this_target_signal, stimuli_matrix');
     reconstructions_synth{ii} = cs(responses_synth, stimuli_matrix');
-    r2_synth(ii) = corr(reconstructions_synth{ii}, this_target_signal);
+    r2_synth(ii) = correlation(reconstructions_synth{ii}, this_target_signal);
 
     % Count number of 'yes' results and normalize
     yesses(ii) = sum(responses > 0) / length(responses);
