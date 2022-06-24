@@ -87,6 +87,12 @@ function Protocol(options)
         target_sound = [];
     end
 
+    if isfield(config, 'bin_target_signal') && config.bin_target_signal
+        % Convert the target signal to bin-representation and back
+        assert(isa(stimuli_object, 'AbstractBinnedStimulusGenerationMethod'), 'If bin_target_signal is true, then stimuli_object must be an AbstractBinnedStimulusGenerationMethod')
+        target_sound = stimuli_object.bin_signal(target_sound, target_fs);
+    end
+
     target_sound = target_sound(1:floor(target_fs*0.5)); %ACL added (5MAY2022) to shorten target sound to 500ms
 
     %% Load Presentations Screens

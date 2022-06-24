@@ -28,8 +28,10 @@ function [val] = var2str(val)
     elseif ischar(val)
         % assume everything is fine but replace whitespace
         val = regexprep(val(:)', '\s*', ',');
+    elseif islogical(val)
+        val = regexprep(num2str(val(:)'), '\s*', ',');
     else
-        error(['the class of this varible is: ', class(val), '. I don''t know what to do with this.'])
+        error(['the class of this variable is: ', class(val), '. I don''t know what to do with this.'])
     end
 
 end

@@ -118,6 +118,48 @@ methods
         end
     end
 
+    function W = bin_signal(self, W, Fs)
+        % 
+        %   W = self.bin_signal(W);
+        % 
+        % Inputs a waveform
+        % converts to a spectrum
+        % bins the spectrum
+        % and then converts back to a waveform.
+        % 
+        % ARGUMENTS:
+        %   W: n x 1 numerical vector
+        %       the waveform
+        %   Fs: 1x1 numerical scalar
+        %       the sample rate
+        % 
+        % See Also: binnedrepr2spect, spect2binnedrepr, signal2spect
+
+        arguments
+            self (1,1) AbstractBinnedStimulusGenerationMethod
+            W {mustBeReal}
+            Fs = []
+        end
+
+        if isempty(Fs)
+            Fs = self.get_fs();
+        end
+
+        nfft = length(W);
+        dur = self.duration;
+
+        self.duration = nfft / Fs;
+
+        W = signal2spect(W);
+        W = self.spect2binnedrepr(W);
+        W = self.binnedrepr2spect(W);
+        W = self.synthesize_audio(W, nfft);
+
+        self.duration = dur;
+
+    end
+        
+
 end % methods
 
 end % classdef

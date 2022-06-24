@@ -3,7 +3,7 @@
 # but includes additional comments to help explain what the different
 # fields mean. 
 
-experiment_name: pilot
+experiment_name: paper1-buzzing-AH
 subject_ID: AH
 
 # These fields describe the number of trials in the experiment.
@@ -13,12 +13,12 @@ subject_ID: AH
 # Subjects get a break between blocks.
 # These are both required fields.
 n_trials_per_block: 100
-n_blocks: 10
+n_blocks: 20
 
 # The total trials should be the number of trials per block
 # times the number of blocks.
 # This is not a required field.
-total_trials: 1000
+total_trials: 2000
 
 # These "freq" fields describe the frequency range of the stimuli,
 # including the minimum frequency and maximum frequency,
@@ -42,7 +42,7 @@ n_bins: 100
 # This required parameter gives the stimuli type.
 # The name is the class that defines the stimuli type
 # without "StimulusGeneration".
-stimuli_type: GaussianPrior
+stimuli_type: UniformPrior
 
 # Some stimulus generation methods have other parameters
 # associated with them.
@@ -54,14 +54,15 @@ stimuli_type: GaussianPrior
 # If you do not overwrite values in the config,
 # default values are used, which are described
 # in the class definition.
-n_bins_filled_mean: 30
-n_bins_filled_var: 3
+min_bins: 30
+max_bins: 30
 
 # For an experiment with a target signal
 # (i.e., for pilot subjects)
 # this field describes the full filepath
 # to the target signal audio file.
 target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+bin_target_signal: true
 
 # This is the path where the output files are saved.
 # This is not a required field.
