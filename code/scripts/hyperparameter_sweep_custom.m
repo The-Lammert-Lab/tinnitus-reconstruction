@@ -474,7 +474,7 @@ T6 = sortrows(T6, 'mean_r2_cs', 'descend');
 for ii = 1:length(r2_column_names)
     T6.(['sem_', r2_column_names{ii}]) = T6.(['std_', r2_column_names{ii}]) ./ T6.(['mean_' r2_column_names{ii}]);
 end
-T6_skinny = T6(:, {'stimuli_type', 'n_bins_filled_mean', 'n_bins_filled_var', 'min_bins', 'max_bins', 'mean_r2_cs', 'mean_r2_diff', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
+T6_skinny = T6(:, {'stimuli_type', 'n_bins_filled_mean', 'n_bins_filled_var', 'bin_prob', 'min_bins', 'max_bins', 'mean_r2_cs', 'mean_r2_diff', 'sem_r2_cs', 'mean_r2_linear', 'sem_r2_linear'});
 
 
 function [stimuli, property_struct] = stimuli_data_from_filename(options, filename, stimulus_generation_methods, stimulus_generation_names, numeric_columns)
