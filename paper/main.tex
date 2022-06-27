@@ -616,9 +616,10 @@ of the PTS can inform individualized tinnitus treatment with enhanced habituatio
 
 \subsection{Stimulus Generation}
 
-To generate stimuli, we partition the frequency space $f \in [100,~22,000]$ Hz into 100 mel-spaced frequency bins
-so that each bin is perceptually different to a listener.
-For each stimulus, we randomly select ${round}(\mathcal{N}(30, \sqrt{0.3}))$ bins
+To generate stimuli, we partition the frequency space $f \in [100,~13,000]$ Hz
+into 100 mel-spaced frequency bins
+so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}.
+For each stimulus, we randomly select $30$ bins
 with equal probability to be ``filled'' with power $0$ dB.
 Unfilled bins are set to $-20$ dB.
 The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
@@ -633,7 +634,8 @@ A subject performing $n$ trials with $b$ frequency bins produces
 a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
 and a response column vector $y \in {1,-1}^n$,
 where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
-We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$.
+We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
+(\cf Supplementary Information).
 The one-bit compressed sensing reconstruction problem is then:
 
 \begin{equation}
@@ -654,6 +656,34 @@ with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
 
+$N=4$ subjects performed an AX paradigm binary choice task
+in $20$ blocks of $100$ trials, with breaks in between,
+for a total of $2,000$ trials per experimental condition.
+For each trial in the experiment,
+the subject listened to an auditory target signal
+followed by one of the randomly generated stimuli.
+The subject was instructed to press the J key if the stimulus sounded similar to the target signal
+and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
+
+The target signals were drawn from online examples
+from the American Tinnitus Association,
+representing the range of tinnitus experiences.
+We selected three examples named: buzzing, roaring, and \hl{whatever the third one was}.
+In this way, the AX experiment mimicked
+comparing a randomly-generated stimulus to an internal perception of tinnitus,
+however the known target signals
+unify across subjects and provide a gold-standard to benchmark against.
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{fig1}
+	\caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
+  then a stimulus. They compare the mental model of the stimulus to the mental model of the target signal,
+  before making a binary choice about the two signals' similarity.}
+	\label{fig:experimentdiagram}
+\end{figure}
+
+
 % \subsection{Abbreviations and Acronyms}
 % Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IEEE, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IEEE” in the title of this article).
 
@@ -662,6 +692,7 @@ with tunable scalar parameter $\lambda$.
 
 
 \section{Results}
+
 % If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
 % \cite{ahumadaStimulusFeaturesSignal1971}
 % \subsection{Equations}
