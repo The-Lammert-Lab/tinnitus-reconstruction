@@ -106,6 +106,9 @@ function Protocol(options)
     [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
     fid_responses = fopen(filename_responses, 'w');
 
+    %% Adjust target audio volume
+    scalar = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+
     %% Intro Screen & Start
 
     imshow(Screen1);
@@ -127,7 +130,7 @@ function Protocol(options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            soundsc(target_sound, target_fs)
+            sound(target_sound*scalar, target_fs)
             pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
         end
 
