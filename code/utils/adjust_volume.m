@@ -12,7 +12,7 @@ function scalar = adjust_volume(target_sound, target_fs, stimuli, Fs, scalar)
     end
     
     % Allowable range within which to scale target audio
-    sld_max = 2;
+    sld_max = 3;
     sld_min = 0.1;
 
     %% GUI
