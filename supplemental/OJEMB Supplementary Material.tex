@@ -32,7 +32,12 @@
 
 \usepackage{lipsum}
 
-
+\usepackage{soul}
+\newcommand{\etal}{\textit{et al}., }
+\newcommand{\ie}{\textit{i}.\textit{e}., }
+\newcommand{\eg}{\textit{e}.\textit{g}.\ }
+\newcommand{\cf}{\textit{cf}.\ }
+\usepackage{hyperref}
 
 
 % Some very useful LaTeX packages include:
@@ -131,7 +136,7 @@
 
 % *** MATH PACKAGES ***
 %
-%\usepackage{amsmath}
+\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
 %
@@ -149,7 +154,7 @@
 
 % *** SPECIALIZED LIST PACKAGES ***
 %
-%\usepackage{algorithmic}
+\usepackage{algorithmic}
 % algorithmic.sty was written by Peter Williams and Rogerio Brito.
 % This package provides an algorithmic environment fo describing algorithms.
 % You can use the algorithmic environment in-text or within a figure
@@ -169,7 +174,7 @@
 
 % *** ALIGNMENT PACKAGES ***
 %
-%\usepackage{array}
+\usepackage{array}
 % Frank Mittelbach's and David Carlisle's array.sty patches and improves
 % the standard LaTeX2e array and tabular environments to provide better
 % appearance and additional user controls. As the default LaTeX2e table
@@ -304,7 +309,7 @@
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
 %
-%\usepackage{url}
+\usepackage{url}
 % url.sty was written by Donald Arseneau. It provides better support for
 % handling and breaking URLs. url.sty is already installed on most LaTeX
 % systems. The latest version and documentation can be obtained at:
@@ -347,9 +352,9 @@
 \vspace*{0.5cm}
 \textbf{\LARGE{Supplementary Materials}}\\
 \\
-\medskip\Large{Title of the Manuscript}\\
-\normalsize{ First A. Author,~\IEEEmembership{Fellow, IEEE,}
-	Second B. Author,and Third C. Author*, Jr.,~\IEEEmembership{Member,~IEEE}}\\
+\medskip\Large{Compressed Sensing for Characterization of Tinnitus}\\
+\normalsize{ Alec Hoyland,
+	Nelson Barnett, Benjamin W. Roop, Adam C. Lammert}\\
 	\vspace*{0.5cm}
 \end{@twocolumnfalse}
 ]	
@@ -363,10 +368,50 @@
 
 
 
-\IEEEPARstart{T}{he}  Supplementary Materials should either be organized in sections as per the main manuscript body (using up to 4,000 words) or it should be used to provide readers with a set of up to 10 additional display items (i.e. figures and tables).
-Figures and tables should be prepared using the same format and guidelines as per the main body of the manuscript. References should be included using the same format utilized in the main body of the manuscript. 
+\IEEEPARstart{T}his document contains a description of additional experiments to find a performant
+stimulus generation method and a discussion of sparsity in tinnitus signals.
+The code for all experiments is freely available at \url{https://github.com/alec-hoyland/tinnitus-project}
+and the data are available upon request.
 
+\section{Stimulus Generation}
 
+In the context of this paper, a stimulus generation method
+is a process that generates a random waveform that is:
+
+\begin{enumerate}
+  \item auditorally-distinguishable
+  \item statistically uncorrelated, and
+  \item similar to tinnitus percepts.
+\end{enumerate}
+
+Additionally, compressed sensing requires that the matrix of stimuli
+should satisfy the restricted isometry property,
+which many random matrices do with high probability (\eg Gaussian random matrices)
+\cite{candesRestrictedIsometryProperty2008,candesIntroductionCompressiveSampling2008}.
+
+\subsection{Auditorally-Distinguishable Stimuli}
+
+We used mel-frequency binning to ensure that our stimuli were auditorally-distinguishable.
+The mel scale is a perceptual scale of pitches judged by listeners to be equal in distance
+from one to another (Fig. \ref{fig:hz2mel}) \cite{hamiltonTopographySpeechrelatedAcoustic2020}.
+
+The formula
+
+\begin{equation}
+  m = 2595 \log_10 \bigg( 1 + \frac{f}{700} \big)
+\end{equation}
+
+converts $f$ Hz to $m$ mels.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{gfx/hz2mel.eps}
+	\caption{The relationship between Hz and mels is logarithmic.}
+	\label{fig:hz2mel}
+\end{figure}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,../paper/mybib}
 
 % that's all folks
 \end{document}
