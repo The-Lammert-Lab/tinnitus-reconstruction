@@ -398,7 +398,7 @@ from one to another (Fig. \ref{fig:hz2mel}) \cite{hamiltonTopographySpeechrelate
 The formula
 
 \begin{equation}
-  m = 2595 \log_10 \bigg( 1 + \frac{f}{700} \big)
+  m = 2595 \log_10 \bigg( 1 + \frac{f}{700} \bigg)
 \end{equation}
 
 converts $f$ Hz to $m$ mels.
@@ -409,6 +409,17 @@ converts $f$ Hz to $m$ mels.
 	\caption{The relationship between Hz and mels is logarithmic.}
 	\label{fig:hz2mel}
 \end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{gfx/example_stimulus.eps}
+	\caption{The relationship between Hz and mels is logarithmic.}
+	\label{fig:examplestimulus}
+\end{figure}
+
+Furthermore, to reduce the system complexity by more than 80x,
+we implement tonotopic binning, where the frequency scale is binned
+along $100$ equally mel-spaced bins.
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,../paper/mybib}
