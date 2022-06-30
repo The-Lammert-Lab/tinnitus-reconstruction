@@ -65,7 +65,7 @@ for ii = 1:length(this_dir)
 end
 
 T = config2table(this_dir);
-T.config_filename = config_filenames'; 
+T.config_filename = config_filenames(:); 
 
 
 %% Compute the reconstructions
@@ -97,20 +97,13 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     for qq = 1:length(trial_fractions)
         corelib.verb(true, 'INFO: pilot_reconstructions', ['trial fractions: ', num2str(trial_fractions(qq))])
         % Compute the reconstructions
-        if strcmp(T.subject_ID(ii,:), 'AL')
-            preprocessing = {'bins', 'bit flip'};
-        else
-            preprocessing = {};
-        end
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing CS reconstruction')
         [reconstructions_cs{ii, qq}, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-                                    'preprocessing', preprocessing, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
                                     'verbose', true);
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing linear reconstruction')
         reconstructions_lr{ii, qq} = get_reconstruction('config', config, ...
-                                    'preprocessing', preprocessing, ...
                                     'method', 'linear', ...
                                     'fraction', trial_fractions(qq), ...
                                     'verbose', true);
