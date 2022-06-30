@@ -636,7 +636,25 @@ and a response column vector $y \in {1,-1}^n$,
 where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
 We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
 (\cf Supplementary Information).
-The one-bit compressed sensing reconstruction problem is then:
+
+\subsubsection{Linear Regression}
+
+The linear regression solution is given by
+the normalized inner product of the stimulus matrix
+and the responses (Eq. \ref{eq:linreg}).
+Intuitively, this implies that the reconstruction, $x$,
+is a linear combination of the randomly-generated stimuli
+that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+
+\begin{equation}
+  x = \frac{1}{n} \Phi y
+  \label{eq:linreg}
+\end{equation}
+
+\subsubsection{Compressed Sensing}
+
+The one-bit compressed sensing reconstruction problem is:
 
 \begin{equation}
 	y = \mathrm{sgn}(\Psi \Phi x)
@@ -644,7 +662,10 @@ The one-bit compressed sensing reconstruction problem is then:
 
 which is an underdetermined system with infinite solutions.
 Compressed sensing says that when $\Theta = \Psi \Phi$
-is sufficiently well-behaved \cite{candesIntroductionCompressiveSampling2008}
+is sufficiently well-behaved
+(\eg satisfies the restricted isometry property,
+which Gaussian and Bernoulli random matrices do with high probability,
+\cf \cite{candesIntroductionCompressiveSampling2008})
 that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
 We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
 
@@ -656,8 +677,15 @@ with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
 
-$N=4$ subjects performed an AX paradigm binary choice task
-in $20$ blocks of $100$ trials, with breaks in between,
+We recruited $N=4$ subjects for the experiment
+with healthy hearing from $[100,~13,000]$ Hz.
+Subjects used Sennheiser PXC 550 over-the-ear headphones
+and manually adjusted loudness
+using sample stimuli before performing the task
+(Sennheiser GmbH \& Co. KG, Wedemark, Germany).
+
+The subjects performed an AX paradigm binary choice task
+in $20$ blocks of $100$ with breaks between blocks,
 for a total of $2,000$ trials per experimental condition.
 For each trial in the experiment,
 the subject listened to an auditory target signal
@@ -667,8 +695,9 @@ and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
 
 The target signals were drawn from online examples
 from the American Tinnitus Association,
-representing the range of tinnitus experiences.
-We selected three examples named: buzzing, roaring, and \hl{whatever the third one was}.
+representing the range of tinnitus experiences
+(American Tinnitus Association, Vienna, Virginia).
+We selected two example tinnitus waveforms from their website: ``buzzing'' and ``roaring''.
 In this way, the AX experiment mimicked
 comparing a randomly-generated stimulus to an internal perception of tinnitus,
 however the known target signals
