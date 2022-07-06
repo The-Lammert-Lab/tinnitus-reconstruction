@@ -251,6 +251,8 @@ for ii = 1:length(n_bins)
     write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, false, VERBOSE, {'distribution', 'distribution_filepath'}, {'bins'});
 end
 
+return
+
 if RUN
 
     %% Reconstruction across the Bin Representation
