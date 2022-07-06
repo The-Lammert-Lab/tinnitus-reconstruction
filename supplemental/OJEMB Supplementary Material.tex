@@ -436,16 +436,16 @@ The methods are as follows:
 
 \begin{enumerate}
   \item \textit{Bernoulli}: A binned method in which each tonotopic bin
-  has a probability $p$ of being set to $0$ dB otherwise it is set to $-20$ dB.
+  has a probability $bin \_ prob$ of being set to $0$ dB otherwise it is set to $-20$ dB.
   \item \textit{Brimijoin}: A binned method inspired by \cite{brimijoinInternalRepresentationVowel2013}.
   Each bin is assigned an amplitude value chosen from a uniform distribution of discrete values
   on the interval $[-20, 0]$. We used $6$ steps, which is consistent with the original paper.
   \item \textit{Gaussian Noise No Bins}: The amplitude of each frequency was determined by
-  Gaussian noise with known mean and variance, which are hyperparameters $\mu$ and $\sigma$.
+  Gaussian noise with known mean and variance, which are hyperparameters $amplitude \_ mean$ and $amplitude \_ var$.
   \item \textit{Gaussian Noise}: A binned method where the bin amplitudes were
-  determined by a Gaussian random variable with known mean and variance, \eg $\mathcal{N}(\mu, \sigma)$.
+  determined by a Gaussian random variable with known mean and variance, \eg $\mathcal{N}(amplitude \_ mean$ and $amplitude \_ var)$.
   \item \textit{Gaussian Prior}: A binned method where the number of filled bins
-  was set by $\mathrm{round}(\mathcal{N}(\mu, \sigma))$,
+  was set by $\mathrm{round}(\mathcal{N}(n \_ bins \_ filled \_ mean, n \_ bins \_ filled \_ var))$,
   and that many bins were filled randomly at $0$ dB (unfilled bins were set to $-20$ dB).
   \item \textit{Power Distribution}: A binned method where the amplitude of each bin
   is drawn from a distribution matching the histogram of amplitudes
@@ -455,11 +455,11 @@ The methods are as follows:
   \item \textit{Uniform Noise}: The amplitude associated with each tonotopic bin
   is determined by a uniform random variable on the interval $[-20, 0]$ dB.
   \item \textit{Uniform Prior}: The number of filled bins is determined by drawing an integer
-  from the discrete interval $[x_1, x_2] \in \mathbb{Z}^+$. Then, that many bins are set to $0$ dB,
-  and all other bins are set to $-20$ dB. $x_1$ and $x_2$ are hyperparameters.
+  from the discrete interval $[min \_ bins, max \_ bins] \in \mathbb{Z}^+$. Then, that many bins are set to $0$ dB,
+  and all other bins are set to $-20$ dB. $min \_ bins$ and $max \_ bins$ are hyperparameters.
 \end{enumerate}
 
-9 methods and 8 hyperparameters were varied in the hyperparameter sweep grid search.
+9 methods and 8 hyperparameters were varied in the hyperparameter sweep grid search (Table \ref{tbl:hyperparameters}).
 Methods were evaluated \textit{in-silico} using the model:
 
 \begin{equation}
@@ -477,16 +477,35 @@ was evaluated for target signals: buzzing, electric, roaring, screeching, static
 	\begin{center}	
 		\small
 		\resizebox{1\columnwidth}{!}{
-			\begin{tabular}{ m{0.35\columnwidth} m{0.65\columnwidth} }	
-				\multicolumn{2}{c}{\textsc{Units for Magnetic Properties}} \\
+			\begin{tabular}{ m{0.35\columnwidth} m{0.5\columnwidth} b{0.15\columnwidth}}	
+				\multicolumn{3}{c}{\textsc{Hyperparameters}} \\
 				\hhline{===}
-				{Symbol} & {Quantity} \\
+				{Name} & {Values} & Unit \\ 
+				\hline
+				n\textunderscore bins & 10, 30, 100, 200, 300 & n.d. \\
+				bin\textunderscore prob & 0.1, 0.3, 0.5, 0.8 & n.d. \\
+                amplitude\textunderscore mean & -35 & dB \\
+                amplitude\textunderscore var & 5, 10, 20 & $\sqrt{\mathrm{dB}}$ \\
+                n\textunderscore bins\textunderscore filled \textunderscore mean & 1, 3, 10, 20, 30 & n.d. \\
+                n\textunderscore bins\textunderscore filled\textunderscore var & 0.01, 1, 3, 10 & n.d. \\
+                min\textunderscore bins & 1, 3, 10, 20, 30 & n.d. \\
+                max\textunderscore bins & 10, 20, 30, 50 & n.d. \\
 				\hhline{===}
-				
 			\end{tabular}
 		}
 	\end{center}
+%\normalsize
+	\caption{Hyperparameter values tested in the parameter sweep. Not all methods use all hyperparameters,
+    and some combinations of hyperparameters are invalid (\eg when $min\_ bins > max \_ bins$).
+    n.d. means ``non-dimensional'' and refers to a unitless number.
+    }
+	\label{tbl:hyperparameters}
 \end{table}
+
+Reconstructions were computed using linear regression and compressed sensing
+and reconstruction accuracy was measured using Pearson's $r^2$ vs. the target signal.
+
+
 
 
 % n_bins: [10 30 100 200 300]
