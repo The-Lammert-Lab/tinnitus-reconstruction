@@ -198,6 +198,10 @@ sympy-plots-for-*.tex/
 *.pytxcode
 pythontex-files-*/
 
+# python
+__pycache__/
+venv/
+
 # tcolorbox
 *.listing
 
@@ -284,3 +288,6 @@ figures/*
 
 # MacOS nonsense
 .DS_Store
+
+# Matlab autosave
+*.asv
