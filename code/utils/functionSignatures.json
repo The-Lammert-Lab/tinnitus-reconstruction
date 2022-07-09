@@ -107,6 +107,13 @@
                     "scalar"
                 ],
                 "purpose": "If true, print more informational text."
+            },
+            {
+                "name": "data_dir",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": ["file=*.yaml"],
+                "purpose": "File path to data directory"
             }
         ]
     },
