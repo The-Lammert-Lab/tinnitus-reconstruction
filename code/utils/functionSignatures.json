@@ -77,6 +77,15 @@
                     "<=1"
                 ],
                 "purpose": "What fraction of the data to use"
+            },
+            {
+                "name": "data_dir",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": [
+                    "file=*.yaml"
+                ],
+                "purpose": "File path to data directory"
             }
         ]
     },
@@ -112,7 +121,9 @@
                 "name": "data_dir",
                 "kind": "namevalue",
                 "repeating": false,
-                "type": ["file=*.yaml"],
+                "type": [
+                    "file=*.yaml"
+                ],
                 "purpose": "File path to data directory"
             }
         ]
