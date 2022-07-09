@@ -107,8 +107,10 @@ function Protocol(options)
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
-    scalar = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
-
+    if ~isempty(target_sound)
+        scalar = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+    end
+    
     %% Intro Screen & Start
 
     imshow(Screen1);
