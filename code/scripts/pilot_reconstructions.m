@@ -3,7 +3,7 @@
 % number of bins and that the reconstructions
 % should be done over the bin representation.
 
-DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data_pilot';
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 
 %% Compute the bin representations of the target signals
@@ -51,7 +51,7 @@ config_ids = cell(length(this_dir), 1);
 config = parse_config(pathlib.join(this_dir(1).folder, this_dir(1).name));
 stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
 stimgen = stimgen.from_config(config);
-stimgen.duration = size(target_signal, 1) / stimgen.max_freq;
+stimgen.duration = 2 * size(target_signal, 1) / stimgen.Fs;
 binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 
 %% Convert subject IDs into a data table
@@ -59,7 +59,7 @@ binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 for ii = 1:length(this_dir)
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
-    config_ids{ii} = config.subjectID;
+    config_ids{ii} = config.experiment_name;
 end
 
 T = collect_parameters(config_ids);
