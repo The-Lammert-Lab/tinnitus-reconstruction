@@ -1,16 +1,18 @@
+% ### generate_stimulus
+% 
+% [stim, Fs, X, binned_repr] = generate_stimulus(self)
+% 
+% Generate a matrix of stimuli
+% where the matrix is of size nfft x n_trials.
+% Bins are filled with an an amplitude of -20 or 0.
+% Each bin is randomly filled with a change of being filled
+% (amplitude = 0) with a probability of `self.bin_prob`.
+%
+% Class Properties Used:
+%   `n_bins`
+%   `bin_prob`
+
 function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
-    % 
-    %   [stim, Fs, X, binned_repr] = generate_stimulus(self)
-    % 
-    % Generate a matrix of stimuli
-    % where the matrix is of size nfft x n_trials.
-    % Bins are filled with an an amplitude of -20 or 0.
-    % Each bin is randomly filled with a change of being filled
-    % (amplitude = 0) with a probability of `self.bin_prob`.
-    %
-    % Class Properties Used
-    %   n_bins
-    %   bin_prob
 
     % Define Frequency Bin Indices 1 through self.n_bins
     [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();

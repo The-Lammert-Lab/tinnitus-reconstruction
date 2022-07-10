@@ -1,13 +1,16 @@
+% ### generate_stimulus
+% 
+% Generate a matrix of stimuli
+% where the matrix is of size nfft x n_trials.
+% Bins are filled with an amplitude value chosen randomly.
+% from a Gaussian distribution.
+%
+% Class Properties Used
+%   n_bins
+%   amplitude_mean
+%   amplitude_var
+
 function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
-    % Generate a matrix of stimuli
-    % where the matrix is of size nfft x n_trials.
-    % Bins are filled with an amplitude value chosen randomly.
-    % from a Gaussian distribution.
-    %
-    % Class Properties Used
-    %   n_bins
-    %   amplitude_mean
-    %   amplitude_var
 
     [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
     spect = self.get_empty_spectrum();

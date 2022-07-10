@@ -1,27 +1,29 @@
-function data_table = collect_parameters(filenames)
-    % Read parameters out from character vectors of text contained in
-    % a character vector or cell array.
-    % 
-    % Arguments:
-    % 
-    %   filenames: cell array of character vectors or character vector
-    %       Contains the filenames (or text strings)
-    %       to read parameters out of.
-    %       If `filenames` is a cell array, parameters are read from each
-    %       character vector contained in the cell array.
-    %       Filenames should not have file endings like '.csv'.
-    %       The regular expressions are not sophisticated enough to skip them.
-    % 
-    % Outputs:
-    % 
-    %   data_table: table
-    % 
-    % Example:
-    % 
-    %   data_table = collect_parameters(filenames)
-    % 
-    % See Also: collect_reconstructions, collect_data
+% ### collect_parameters
+% 
+%  Read parameters out from character vectors of text contained in
+% a character vector or cell array.
+% 
+% Arguments:
+%   filenames: cell array of character vectors or character vector
+%       Contains the filenames (or text strings)
+%       to read parameters out of.
+%       If `filenames` is a cell array, parameters are read from each
+%       character vector contained in the cell array.
+%       Filenames should not have file endings like '.csv'.
+%       The regular expressions are not sophisticated enough to skip them.
+% 
+% Outputs:
+%   data_table: table
+% 
+% Example:
+%   data_table = collect_parameters(filenames)
+% 
+% See Also: 
+% * [collect_reconstructions](./collect_reconstructions) 
+% * [collect_data](./collect_data)
+% * [config2table](./config2table)
 
+function data_table = collect_parameters(filenames)
 
     arguments
         filenames (1,:)

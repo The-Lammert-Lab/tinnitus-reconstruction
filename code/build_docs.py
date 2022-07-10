@@ -22,9 +22,12 @@ for folder in sorted(glob("./*/")):
             # Extra loop for classes b/c MATLAB classes contained in separate folders.
             for j, file in enumerate(sorted(glob(f"{item}/*.m"))):
 
+                first = False
+
                 doc_file = f"../docs/{classname}.md"
 
                 if j == 0:
+                    first = True
                     copyfile(header_file, doc_file)
                     print(f"[OK] Generating docs for class: {classname}")
 
@@ -33,9 +36,12 @@ for folder in sorted(glob("./*/")):
                 filename = file.replace(f"{item}/",'')
                 filename = filename.replace(".m",'')
 
-                comment2docs(filename, file, out_file)
+                comment2docs(filename, file, out_file, first)
 
         else:
+
+            first = False
+
             foldername = folder[:-1].replace('./','')
             header_file =  f"../docs/{foldername}-head.md"
 
@@ -46,6 +52,7 @@ for folder in sorted(glob("./*/")):
             doc_file = f"../docs/{foldername}.md"
 
             if i == 0:
+                first = True
                 copyfile(header_file, doc_file)
                 print(f"[OK] Generating docs for folder: {foldername}")
 
@@ -54,4 +61,4 @@ for folder in sorted(glob("./*/")):
             filename = item.replace(f"{folder}",'')
             filename = filename.replace(".m",'')
             
-            comment2docs(filename, item, out_file)
+            comment2docs(filename, item, out_file, first)

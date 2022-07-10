@@ -1,14 +1,17 @@
-function scalar = adjust_volume(target_sound, target_fs, stimuli, Fs, scalar)
-    
-%%% Utility to dynamically adjust the target sound volume via a scaling
-%%% factor.
+% ### adjust_volume
+% 
+% For use in A-X experimental protocols.
+% adjust_volume is a utility to dynamically adjust the target sound volume via a scaling factor.
+% Opens a GUI using a standard MATLAB figure window with a slider for scaling the target sound audio and a button for replaying the sound compared to an unchanged stimulus noise.  
+
+function scale_factor = adjust_volume(target_sound, target_fs, stimuli, Fs, scale_factor)
 
     arguments
         target_sound (:,1) {mustBeNumeric}
         target_fs (1,1) {mustBeNumeric}
         stimuli (:,1) {mustBeNumeric}
         Fs (1,1) {mustBeNumeric}
-        scalar double {mustBeNumeric} = 1.0
+        scale_factor double {mustBeNumeric} = 1.0
     end
     
     % Allowable range within which to scale target audio
@@ -22,7 +25,7 @@ function scalar = adjust_volume(target_sound, target_fs, stimuli, Fs, scalar)
     sld = uicontrol(fig, 'Style', 'slider', ...
         'Position', [120 100 300 100], ...
         'min', sld_min, 'max', sld_max, ...
-        'Value', scalar, 'Callback', @getValue);
+        'Value', scale_factor, 'Callback', @getValue);
     
     play_btn = uicontrol(fig,'Style','pushbutton', ...
         'position', [130 150 80 20], ...
@@ -48,14 +51,14 @@ function scalar = adjust_volume(target_sound, target_fs, stimuli, Fs, scalar)
 
     %% Callback Functions
     function getValue(~,~)
-        scalar = sld.Value;
-    end
+        scale_factor = sld.Value;
+    end % getValue
 
     function playSounds(~, ~)
-        sound(target_sound*scalar, target_fs)
+        sound(target_sound*scale_factor, target_fs)
         pause(length(target_sound) / target_fs + 0.3)
         soundsc(stimuli, Fs)
-    end
+    end % playSounds
 
     function closeRequest(~,~,fig)
         ButtonName = questdlg('Confirm volume setting and continue protocol?',...
@@ -67,8 +70,6 @@ function scalar = adjust_volume(target_sound, target_fs, stimuli, Fs, scalar)
             case 'No'
                 return
         end
-    end
+    end % closeRequest
 
-end
-    
-
+end % adjust_volume 

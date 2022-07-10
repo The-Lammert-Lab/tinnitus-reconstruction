@@ -2,7 +2,7 @@
 # Generates documentation based on the comments within each file. 
 # Intended to be used in conjunction with build_docs.py
 
-def comment2docs(filename, file, out_file, a = -1):
+def comment2docs(filename, file, out_file, first, a = -1):
 
     lines = tuple(open(file, 'r'))
 
@@ -78,14 +78,16 @@ def comment2docs(filename, file, out_file, a = -1):
     # Write the documentation to out_file.
     if a > -1 and z > a:
         out_file.write('\n\n')
-        out_file.write('-------\n\n')
+
+        if not first:
+            out_file.write('-------\n\n')
 
         format_link = False
 
         for i in range(a, z):
             thisline = lines[i]
             thisline = thisline.replace('%}', '')
-            thisline = thisline.strip('%')
+            thisline = thisline.strip(' %')
             thisline = thisline.lstrip()
             thisline = thisline.replace('XXXX', '    ')
 
@@ -121,7 +123,7 @@ def comment2docs(filename, file, out_file, a = -1):
 
     # Recursion for multiple functions within abstract classes.
     if abstract and a < fns[-1][0]:
-        comment2docs(filename, file, out_file, a)
+        comment2docs(filename, file, out_file, first, a)
 
     out_file.close()
 

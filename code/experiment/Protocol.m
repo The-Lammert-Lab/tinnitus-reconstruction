@@ -1,15 +1,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Title: Reverse Correlation Protocol for 
-%        Cognitive Representations of Speech
+% ### Protocol
+% 
+% Reverse Correlation Protocol for Cognitive Representations of Speech
 %
+% This function runs the experimental procedure of this project.
+% 
+% It can be called in two ways:
+% ```matlab
+% Protocol() or Protocol('config', 'path2config')
+% ```
+% Where 'path2config' is the file path to the desired config file.
+% 
+% If `Protocol()` is invoked, a GUI is automatically opened for the user to select the proper config file.
+% 
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
-% 
-% 
-%   Protocol()
-%   Protocol('config', 'path2config')
 
 function Protocol(options)
 
@@ -108,7 +115,7 @@ function Protocol(options)
 
     %% Adjust target audio volume
     if ~isempty(target_sound)
-        scalar = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+        scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
     end
     
     %% Intro Screen & Start
@@ -132,7 +139,7 @@ function Protocol(options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            sound(target_sound*scalar, target_fs)
+            sound(target_sound*scale_factor, target_fs)
             pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
         end
 
@@ -197,7 +204,5 @@ function Protocol(options)
         end
         
     end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %eof
-end
+    
+end % function

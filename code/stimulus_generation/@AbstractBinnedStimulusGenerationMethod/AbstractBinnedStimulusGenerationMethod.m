@@ -9,6 +9,7 @@ end % abstract properties
 methods
 
     function [binnum, Fs, nfft, frequency_vector] = get_freq_bins(self)
+        % ### get_freq_bins
         % 
         %   [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins()  
         % 
@@ -31,8 +32,9 @@ methods
         % which frequencies belong to the same bin,
         % following a tonotopic map of audible frequency perception.
         % 
-        % See Also: get_fs, get_nfft
-
+        % See Also: 
+        % * [get_fs](../AbstractStimulusGenerationMethod/AbstractStimulusGenerationMethod.get_fs)
+        % * [get_nfft](../AbstractStimulusGenerationMethod/AbstractStimulusGenerationMethod.get_nfft)
 
         Fs = self.get_fs(); % sampling rate of waveform
         nfft = self.get_nfft(); % number of samples for Fourier transform
@@ -52,6 +54,7 @@ methods
     end % function
 
     function spect = get_empty_spectrum(self)
+        % ### get_empty_spectrum
         % 
         %   [spect] = self.get_empty_spectrum();
         % 
@@ -62,7 +65,8 @@ methods
         %   Returns a spectrum vector of the correct size
         %   with all values set to -100 dB.
         % 
-        % See Also: get_freq_bins
+        % See Also: 
+        % AbstractBinnedStimulusGenerationMethod.get_freq_bins
 
         spect = -100 * ones(self.get_nfft() / 2, 1);
 
@@ -70,6 +74,8 @@ methods
 
 
     function binned_repr = spect2binnedrepr(self, T)
+        % ### spect2binnedrepr
+        % 
         % Get the binned representation
         % which is a vector containing the amplitude
         % of the spectrum in each frequency bin.
@@ -85,7 +91,9 @@ methods
         %       representing the amplitude for each frequency bin
         %       for each trial
         % 
-        % See Also: binnedrepr2spect, spect2binnedrepr
+        % See Also: 
+        % * [binnedrepr2spect](../../utils/binnedrepr2spect)
+        % * [spect2binnedrepr](../../utils/spect2binnedrepr)
 
         binned_repr = zeros(self.n_bins, size(T, 2));
         B = self.get_freq_bins();
@@ -97,7 +105,8 @@ methods
     end % function
 
     function T = binnedrepr2spect(self, binned_repr)
-        %
+        % ### binnedrepr2spect
+        % 
         % Get the stimuli spectra from a binned representation.
         %
         % ARGUMENTS:
@@ -109,7 +118,9 @@ methods
         % T: n_frequencies x n_trials
         %   representing the stimulus spectra
         % 
-        % See Also: binnedrepr2spect, spect2binnedrepr
+        % See also:
+        % * [binnedrepr2spect](../../utils/binnedrepr2spect)
+        % * [spect2binnedrepr](../../utils/spect2binnedrepr)
 
         B = self.get_freq_bins();
         T = zeros(length(B), size(binned_repr, 2));
@@ -119,6 +130,7 @@ methods
     end
 
     function W = bin_signal(self, W, Fs)
+        % ### bin_signal
         % 
         %   W = self.bin_signal(W);
         % 
@@ -133,7 +145,10 @@ methods
         %   Fs: 1x1 numerical scalar
         %       the sample rate
         % 
-        % See Also: binnedrepr2spect, spect2binnedrepr, signal2spect
+        % See Also: 
+        % AbstractBinnedStimulusGenerationMethod.binnedrepr2spect 
+        % AbstractBinnedStimulusGenerationMethod.spect2binnedrepr 
+        % * [signal2spect](../../utils/signal2spect)
 
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod

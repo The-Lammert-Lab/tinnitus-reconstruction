@@ -1,8 +1,11 @@
-%% Hyperparameter Sweep Custom Stimulus
-% Evaluate hyperparameters of stimulus generation
-% using the 'custom' stimulus paradigm.
-% Evaluate hyperparameters over different
-% target signals.
+% ### hyperparameter_sweep_custom
+% 
+% Hyperparameter Sweep Custom Stimulus
+% 
+% Evaluate hyperparameters of stimulus generation using the 'custom' stimulus paradigm.
+% Evaluate hyperparameters over different target signals.
+% 
+% End of documentation
 
 %% Preamble
 

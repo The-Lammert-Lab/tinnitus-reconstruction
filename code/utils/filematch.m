@@ -1,20 +1,27 @@
+% ### filematch
+% Match files by terminal UUID or other identifier.
+% This function expects filenames in the form
+% 
+%   foo_bar_UUID.baz
+% 
+% Where foo_bar can be anything,
+% so long as the UUID or other identifier comes last
+% before the 'dot filetype'.
+% The functions returns indices of unmatched files.
+% 
+% USAGE:
+%   
+%   filematch(files1, files2)
+% 
+% See Also: 
+% * [collect_data](./#collect_data)
+
+
+
+
+
+
 function [not_matched_files1, not_matched_files2] = filematch(files1, files2, options)
-    % Match files by terminal UUID or other identifier.
-    % This function expects filenames in the form
-    % 
-    %   foo_bar_UUID.baz
-    % 
-    % Where foo_bar can be anything,
-    % so long as the UUID or other identifier comes last
-    % before the 'dot filetype'.
-    % The functions returns indices of unmatched files.
-    % 
-    % USAGE:
-    %   
-    %   filematch(files1, files2)
-    % 
-    % See Also: collect_data
-    % 
 
     arguments
         files1 (:,1) cell

@@ -22,8 +22,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         % Concrete methods that are inherited by subclasses.
 
         function [y, spect, binned_repr] = subject_selection_process(self, signal)
-
-            %   [y, spect, binned_repr] = subject_selection_process(self, signal)
+            % ### subject_selection_process
+            % 
+            % [y, spect, binned_repr] = subject_selection_process(self, signal)
             % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
@@ -46,8 +47,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
-            %
-            %   [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            % ### generate_stimuli_matrix
+            % 
+            % [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
             %
             % Generates a matrix of stimuli.
             % Explicitly calls the `generate_stimulus()`
@@ -74,7 +76,16 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             %       where m is self.get_nfft() / 2,
             %       in Hz.
             % 
-            % See Also: generate_stimulus
+            % See Also: 
+            % BernoulliStimulusGeneration.generate_stimulus
+            % BrimijoinStimulusGeneration.generate_stimulus
+            % GaussianNoiseNoBinsStimulusGeneration.generate_stimulus
+            % GaussianNoiseStimulusGeneration.generate_stimulus
+            % GaussianPriorStimulusGeneration.generate_stimulus
+            % PowerDistributionStimulusGeneration.generate_stimulus
+            % UniformNoiseNoBinsStimulusGeneration.generate_stimulus
+            % UniformNoiseStimulusGeneration.generate_stimulus
+            % UniformPriorStimulusGeneration.generate_stimulus
 
             if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus
@@ -111,7 +122,12 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         end % function
 
         function self = from_config(self, options)
+            % ### from_config
+            % 
             % Set properties from a struct holding config options.
+            % 
+            % See also: 
+            % * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
 
             if isa(options, 'char')
                 options = ReadYaml(options);
@@ -152,6 +168,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
 
     methods (Static)
         function stim = synthesize_audio(X, nfft)
+            % ### synthesize_audio
             % Synthesize audio from spectrum, X.
             phase = 2*pi*(rand(nfft/2,1)-0.5); % assign random phase to freq spec
             s = (10.^(X./10)).*exp(1i*phase); % convert dB to amplitudes
