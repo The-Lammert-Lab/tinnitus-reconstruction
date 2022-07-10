@@ -1,32 +1,34 @@
-function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
-    %
-    %   [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
-    % 
-    % 
-    % Generates stimuli by assigning the power in each bin
-    % by sampling from a power distribution
-    % learned from ATA tinnitus examples.
-    % 
-    % Returns:
-    %   stim: n x 1 numerical vector
-    %       The stimulus waveform,
-    %       where n is self.get_nfft() + 1.
-    %   Fs: 1x1 numerical scalar
-    %       The sample rate in Hz.
-    %   spect: m x 1 numerical vector
-    %       The half-spectrum,
-    %       where m is self.get_nfft() / 2,
-    %       in dB.
-    %   binned_repr: self.n_bins x 1 numerical vector
-    %       The binned representation.
-    %   frequency_vector: m x 1 numerical vector
-    %       The frequencies associated with the spectrum,
-    %       where m is self.get_nfft() / 2,
-    %       in Hz.
-    % 
-    % Class Properties Used:
-    %   n_bins
+% ### generate_stimulus
+% 
+% [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+% 
+% 
+% Generates stimuli by assigning the power in each bin
+% by sampling from a power distribution
+% learned from ATA tinnitus examples.
+% 
+% Returns:
+%   stim: n x 1 numerical vector
+%       The stimulus waveform,
+%       where n is self.get_nfft() + 1.
+%   Fs: 1x1 numerical scalar
+%       The sample rate in Hz.
+%   spect: m x 1 numerical vector
+%       The half-spectrum,
+%       where m is self.get_nfft() / 2,
+%       in dB.
+%   binned_repr: self.n_bins x 1 numerical vector
+%       The binned representation.
+%   frequency_vector: m x 1 numerical vector
+%       The frequencies associated with the spectrum,
+%       where m is self.get_nfft() / 2,
+%       in Hz.
+% 
+% Class Properties Used:
+%   n_bins
 
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+ 
     if isempty(self.distribution)
         error("self.distribution must not be empty!")
     end

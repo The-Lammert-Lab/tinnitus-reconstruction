@@ -1,9 +1,12 @@
+% ### generate_stimulus
+% 
+% Generate stimuli using a binless white-noise process.
+% 
+% Class Properties Used:
+%   amplitude_mean
+%   amplitude_var
+
 function [stim, Fs, X, binned_repr] = generate_stimulus(self)
-    % Generate stimuli using a binless white-noise process.
-    % 
-    % Class Properties Used:
-    %   amplitude_mean
-    %   amplitude_var
 
     Fs = self.get_fs();
     nfft = self.get_nfft();

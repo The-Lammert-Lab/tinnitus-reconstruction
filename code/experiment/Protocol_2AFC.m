@@ -1,15 +1,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Title: Reverse Correlation Protocol for 
-%        Cognitive Representations of Speech
+% ### Protocol_2AFC
+% 
+% Reverse Correlation Protocol for Cognitive Representations of Speech
 %
+% This function runs the "Two Alternative Forced Choice" experimental procedure of this project.
+% 
+% It can be called in two ways:
+% ```matlab
+% Protocol_2AFC() or Protocol_2AFC('config', 'path2config')
+% ```
+% Where 'path2config' is the file path to the desired config file.
+% 
+% If `Protocol_2AFC()` is invoked, a GUI is automatically opened for the user to select the proper config file.
+% 
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
-% 
-% 
-%   Protocol()
-%   Protocol('config', 'path2config')
 
 function Protocol_2AFC(options)
 
@@ -183,9 +190,7 @@ function Protocol_2AFC(options)
         
     end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %eof
-end
+end % Protocol_2AFC
 
 
 function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta_1, filename_meta_2, file_hash_1, file_hash_2] = create_files_and_stimuli_2AFC(config, stimuli_object, hash_prefix)

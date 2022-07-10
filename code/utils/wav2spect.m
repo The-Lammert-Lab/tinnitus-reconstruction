@@ -1,7 +1,9 @@
+% ### wav2spect 
+% 
+% Reads an audio file (e.g., a .wav file) and returns a spectrum
+% in terms of magnitudes, s, and frequencies, f, in Hz.
+
 function [s, f] = wav2spect(audio_file)
-    % Reads an audio file (e.g., a .wav file)
-    % and returns a spectrum
-    % in terms of magnitudes, s, and frequencies, f, in Hz.
 
     % read the audio file
     [audio, fs] = audioread(audio_file);

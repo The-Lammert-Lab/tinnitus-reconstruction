@@ -1,16 +1,17 @@
-function [x, responses_output, stimuli_matrix_output] = get_reconstruction(options)
+% ### get_reconstructions
+% 
+% [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
+% 
+% x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+% 
+% Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
+% 
+% See Also: 
+% * [collect_reconstructions](./collect_reconstructions) 
+% * [collect_data](./collect_data)
+% * [config2table](./config2table)
 
-    %
-    %   [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-    % 
-    %   x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
-    % 
-    % Compute the reconstruction, given the response vector
-    % and the stimuli matrix
-    % with a preprocessing step
-    % and a method chosen from {'cs', 'cs_nb', 'linear'}
-    % 
-    % See Also: collect_reconstructions, collect_data
+function [x, responses_output, stimuli_matrix_output] = get_reconstruction(options)
 
     arguments
         options.config_file (1,:) = ''

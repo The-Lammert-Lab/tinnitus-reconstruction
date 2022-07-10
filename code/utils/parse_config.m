@@ -1,18 +1,19 @@
+% ### parse_config 
+% 
+% Read a config file and perform any special parsing that is required.
+% 
+% Arguments:
+%     config_file: character vector, default: []
+%         Path to the config file to be used.
+%         If empty, opens a GUI to find the file using a file browser.
+% 
+% Outputs:
+%     config: struct
+% 
+% See Also: 
+% * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
+
 function config = parse_config(config_file, verbose)
-    % Read a config file and perform any special parsing that is required.
-    %
-    % Arguments:
-    % 
-    %   config_file: character vector, default: []
-    %       Path to the config file to be used.
-    %       If empty, opens a GUI to find the file using a file browser.
-    % 
-    % Outputs:
-    %
-    %   config: struct
-    % 
-    % See Also: ReadYaml
-    % 
 
     arguments
         config_file (1,:) = []

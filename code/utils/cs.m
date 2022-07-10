@@ -1,11 +1,14 @@
-function x = cs(responses, Phi, Gamma)
+% ### cs  
+% 
+% [x] = cs(responses, Phi)
+%
+% ARGUMENTS:
+%   responses: n x 1 vector
+%   Phi: n x m matrix
+%       where n is the number of trials/samples
+%       and m is the dimensionality of the stimuli/spectrum/bins
 
-    %   [x] = cs(responses, Phi)
-    %
-    % responses is an n x 1 vector
-    % Phi is an n x m matrix
-    % where n is the number of trials/samples
-    % and m is the dimensionality of the stimuli/spectrum/bins
+function x = cs(responses, Phi, Gamma)
 
     if nargin < 3
         Gamma = 32;

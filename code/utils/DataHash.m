@@ -1,4 +1,5 @@
-function Hash = DataHash(Data, varargin)
+% ### DataHash
+% 
 % DATAHASH - Checksum for Matlab array of any type
 % This function creates a hash value for an input of any type. The type and
 % dimensions of the input are considered as default, such that UINT8([0,0]) and
@@ -90,8 +91,6 @@ function Hash = DataHash(Data, varargin)
 % Tested: Matlab 2009a, 2015b(32/64), 2016b, 2018b, Win7/10
 % Author: Jan Simon, Heidelberg, (C) 2011-2019 matlab.2010(a)n(MINUS)simon.de
 %
-% See also: TYPECAST, CAST.
-%
 % Michael Kleder, "Compute Hash", no structs and cells:
 %   http://www.mathworks.com/matlabcentral/fileexchange/8944
 % Tim, "Serialize/Deserialize", converts structs and cells to a byte stream:
@@ -145,6 +144,13 @@ function Hash = DataHash(Data, varargin)
 % This is caught with an error message concerning the recursion limit now.
 %#ok<*CHARTEN>
 % Reply current version if called without inputs: ------------------------------
+
+% % See also:
+% * [TYPECAST](https://www.mathworks.com/help/matlab/ref/typecast.html)
+% * [CAST](https://www.mathworks.com/help/matlab/ref/cast.html)
+
+function Hash = DataHash(Data, varargin)
+
 if nargin == 0
    R = Version_L;
    

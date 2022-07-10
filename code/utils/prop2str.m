@@ -1,32 +1,36 @@
+% ### prop2str
+% 
+% Converts the property names and values of a struct or object
+% into a character vector.
+% For example, a struct, s, with the properties, s.a = 1, s.b = 2,
+% would become 'a=1-b=2'.
+% If some of the property values are cell arrays,
+% they should be character vectors or numerical vectors
+% and of the same type within each cell array.
+% 
+% Arguments:
+%
+%   obj: 1x1 struct or object
+%       Object with properties to be stringified
+% 
+%   properties_to_skip: character vector or cell array
+%       Properties to not include in the output character vector.
+% 
+%   property_separator: character vector
+%       What separator to use between parameter statements.
+% 
+% Returns:
+% 
+%   stringified_properties: character vector
+% 
+% Example:
+%
+%   stringified_properties = prop2str(obj, [], '&&')
+% 
+% See Also: 
+% * [collect_parameters](./collect_parameters)
+
 function [stringified_properties] = prop2str(obj, properties_to_skip, property_separator)
-    % Converts the property names and values of a struct or object
-    % into a character vector.
-    % For example, a struct, s, with the properties, s.a = 1, s.b = 2,
-    % would become 'a=1-b=2'.
-    % If some of the property values are cell arrays,
-    % they should be character vectors or numerical vectors
-    % and of the same type within each cell array.
-    % 
-    % Arguments:
-    %
-    %   obj: 1x1 struct or object
-    %       Object with properties to be stringified
-    % 
-    %   properties_to_skip: character vector or cell array
-    %       Properties to not include in the output character vector.
-    % 
-    %   property_separator: character vector
-    %       What separator to use between parameter statements.
-    % 
-    % Returns:
-    % 
-    %   stringified_properties: character vector
-    % 
-    % Example:
-    %
-    %   stringified_properties = prop2str(obj, [], '&&')
-    % 
-    % See Also: collect_parameters
 
     stringified_properties = [];
     props = fieldnames(obj);

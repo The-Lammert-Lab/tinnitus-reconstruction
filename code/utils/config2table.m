@@ -1,17 +1,20 @@
+% ### config2table
+% 
+% Take information from directory containing config files and return
+% a table with all relevant information for each config.
+% 
+% Arguments: 
+%   curr_dir: struct
+%   Directory information containing config file name, path, and other
+%   returns from dir() function.
+% 
+% Outputs: 
+%   data_table: table
+% 
+% See also:
+% * [parse_config](./parse_config)
+
 function data_table = config2table(curr_dir)
-    
-    % Take information from directory containing config files and return
-    % a table with all relevant information for each config.
-    %
-    % Arguments: 
-    %
-    %   curr_dir: struct
-    %   Directory information containing config file name, path, and other
-    %   returns from dir() function.
-    %
-    % Outputs: 
-    %
-    %   data_table: table
 
     arguments
         curr_dir (:,1)
