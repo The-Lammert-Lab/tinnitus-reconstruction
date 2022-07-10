@@ -3,8 +3,9 @@
 % Compute reconstructions for the pilot data experiment.
 % This code assumes that each each experiment uses the same number of bins and that the reconstructions should be done over the bin representation.
 
-DATA_DIR = '/Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/experiment/Data_Paper1/';
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
+PUBLISH = true;
 
 %% Compute the bin representations of the target signals
 
@@ -101,12 +102,14 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
         [reconstructions_cs{ii, qq}, responses, stimuli_matrix] = get_reconstruction('config', config, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
-                                    'verbose', true);
+                                    'verbose', true, ...
+                                    'data_dir', DATA_DIR);
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing linear reconstruction')
         reconstructions_lr{ii, qq} = get_reconstruction('config', config, ...
                                     'method', 'linear', ...
                                     'fraction', trial_fractions(qq), ...
-                                    'verbose', true);
+                                    'verbose', true, ...
+                                    'data_dir', DATA_DIR);
         
                                     
         % Compute the r^2 values
@@ -160,42 +163,97 @@ end
 %% Visualization
 
 T.reconstructions_cs_1 = reconstructions_cs(:, end);
+T.reconstructions_lr_1 = reconstructions_lr(:, end);
 T.reconstructions_rand = reconstructions_rand;
 T.reconstructions_synth = reconstructions_synth;
 
 % Plotting the bin-representation of the target signal vs. the reconstructions
 
 fig1 = new_figure();
-cmap = colormaps.linspecer(length(unique(T.subject_ID)) + 2);
+cmap = colormaps.linspecer(2 * length(unique(T.subject_ID)) + 2);
+alpha = 0.25;
 
-subplot_labels = T.target_audio';
+subplot_labels = unique(T.target_audio)';
 
-for ii = 2:-1:1
+for ii = length(subplot_labels):-1:1
     ax(ii) = subplot(2, 1, ii, 'Parent', fig1);
     hold on
 end
 
-for qq = 1:length(subplot_labels)
+for ii = 1:length(subplot_labels)
+    ylabel(ax(ii), 'norm. bin ampl. (a.u.)')
 
-    % True signal
-    plot(ax(qq), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{qq}))), '-ok');
-    ylabel(ax(qq), 'norm. bin ampl. (a.u.)')
-    
-    % Reconstructions
-    T2 = T(strcmp(T.target_audio, subplot_labels{qq}), :);
-    for ii = 1:height(T2)
-        plot(ax(qq), normalize(T2.reconstructions_cs_1{ii}), '-o', 'Color', cmap(ii, :))
+    % Target signal (ground truth)
+    p = plot(ax(ii), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{ii}))), '-ok');
+    % p.Color(4) = alpha;
+
+    % Reconstructions from subjects
+    T2 = T(strcmp(T.target_audio, subplot_labels{ii}), :);
+    legend_labels = cell(2 * height(T2), 1);
+    for qq = 1:height(T2)
+        if PUBLISH
+            this_subject_ID = ['subject #', num2str(qq)];
+        else
+            this_subject_ID = T2.subject_ID{qq};
+        end
+
+        p = plot(ax(ii), normalize(T2.reconstructions_cs_1{qq}), '-o', 'Color', cmap(qq, :));
+        legend_labels{2 * qq - 1} = [this_subject_ID, ' CS'];
+        p.Color(4) = alpha;
+        p = plot(ax(ii), normalize(T2.reconstructions_lr_1{qq}), '-o', 'Color', cmap(2 * qq, :));
+        legend_labels{2 * qq} = [this_subject_ID, ' LR'];
+        p.Color(4) = alpha;
     end
 
     % Random (baseline) reconstruction (using linear regression)
-    plot(ax(qq), normalize(T2.reconstructions_rand{1}), '-o', 'Color', cmap(ii + 1, :))
+    % p = plot(ax(ii), normalize(T2.reconstructions_rand{1}), '-o', 'Color', cmap(2 * qq + 1, :));
+    % p.Color(4) = alpha;
 
     % Synthetic reconstruction (using compressed sensing)
-    plot(ax(qq), normalize(T2.reconstructions_synth{1}), '-o', 'Color', cmap(ii + 2, :))
-    
-    title(ax(qq), ['bin reconstructions, ', subplot_labels{qq}])
+    p = plot(ax(ii), normalize(T2.reconstructions_synth{1}), '-o', 'Color', cmap(2 * qq + 2, :));
+    p.Color(4) = alpha;
+
+    % legend(ax(ii), [{'g.t.'}; legend_labels; {'baseline'}; {'synthetic'}], 'Location', 'eastoutside')
+    legend(ax(ii), [{'g.t.'}; legend_labels; {'synthetic'}], 'Location', 'eastoutside')
+
+    % return
+
+    % for qq = 1:length(subplot_labels)
+    %     % True signal
+    %     p = plot(ax(ww), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{qq}))), '-ok');
+    %     p.Color(4) = alpha;
+    %     ylabel(ax(ww), 'norm. bin ampl. (a.u.)')
+    % end
+        
+    %     % Reconstructions
+    %     T2 = T(strcmp(T.target_audio, subplot_labels{qq}), :);
+    %     for ww = 1:height(T2)
+    %         p = plot(ax(ww), normalize(T2.reconstructions_cs_1{ww}), '-o', 'Color', cmap(ww, :));
+    %         p.Color(4) = alpha;
+    %     end
+
+    %     % Random (baseline) reconstruction (using linear regression)
+    %     p = plot(ax(ww), normalize(T2.reconstructions_rand{1}), '-o', 'Color', cmap(ii + 1, :));
+    %     p.Color(4) = alpha;
+
+    %     % Synthetic reconstruction (using compressed sensing)
+    %     p = plot(ax(ww), normalize(T2.reconstructions_synth{1}), '-o', 'Color', cmap(ii + 2, :));
+    %     p.Color(4) = alpha;
+        
+        if ~PUBLISH
+            title(ax(ii), ['bin reconstructions, ', subplot_labels{ii}])
+        end
 end
 
-legend(ax(1), [{'g.c.'}; T2.subject_ID; {'baseline'}; {'synthetic'}])
 xlabel(ax(2), 'bins')
-figlib.pretty()
+
+if PUBLISH
+    figlib.pretty('PlotLineWidth', 3, 'EqualiseX', true, 'EqualiseY', true, 'FontSize', 36, 'PlotBuffer', 0.1)
+    figlib.tight();
+    figlib.label('XOffset', 0, 'YOffset', 0, 'FontSize', 36);
+    for ii = 1:length(ax)
+        axlib.separate(ax(ii), 'MaskX', true, 'MaskY', true, 'Offset', 0.02);
+    end
+else
+    figlib.pretty()
+end
