@@ -732,7 +732,18 @@ using both the $L_2$ linear regression and compressed sensing reconstruction alg
 Figure \ref{fig:reconstructions} shows the tonotopic bin representation
 of the reconstructions compared to the ground-truth target representation.
 
-
+\subsection*{\hl{Notes}}
+\begin{enumerate}
+  \item Ben is way better at the experiment than Nelson. Sorry, Nelson.
+  \item CS results are consistently better than LR.
+  Since this result doesn't necessarily hold for the synthetic experiment,
+  it implies that CS' main contribution is \textit{denoising}
+  by countering human error \cite{planRobust1bitCompressed2012, zhangEfficientAlgorithmsRobust2014}.
+  \item Is Pearson's $r$ really the best way to measure accuracy?
+  If you miss the big hump in either, I kind of think that we've failed.
+  So maybe KL divergence, but then we have to normalize each spectrum
+  to make probability distributions.
+\end{enumerate}
 
 \begin{figure}[h]
 	\centering
@@ -867,6 +878,44 @@ of the reconstructions compared to the ground-truth target representation.
 % For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
 
 \section{Conclusion}
+
+We applied reverse correlation to the novel domain of psychoacoustic tinnitus spectrum reconstruction
+and improved reconstruction performance (PTS) up to 2x using compressed sensing.
+Using our reconstruction algorithm, the experiment required only 2,000 trials
+for quality reconstruction results which is a 10x improvement over reverse correlation results in similar domains
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+Subjects finished the experiment within two hours,
+indicating that this procedure is feasible as an ``outpatient medical test''
+to characterize the PTS of a subject,
+a crucial step in diagnosis and treatment \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
+After fine-tuning, we will use this algorithm
+to characterize the PTSes of clinical tinnitus patients
+to help in the treatment of patients and to further understanding of tinnitus.
+
+Results from human subjects are far below the synthetic baseline,
+indicating that some improvements can be made to boost human performance.
+The simplicity of the mathematical model for the synthetic subject
+(and its favorability towards the problem)
+leads to a synthetic subject that accounts for each tonotopic bin
+with equal attentiveness, does not suffer fatigue, and never changes its
+threshold for positive vs. negative responses.
+The experiment asks subjects to rate each stimulus as 
+similar or dissimilar to the target tinnitus signal.
+This can lead to ``threshold drift,''
+where the decision threshold between positive and negative assignments to stimuli
+change as the experiment goes along.
+While the AX paradigm protects against this effect somewhat
+by playing the target sound before each decision stimulus,
+subjects self-reported feeling unsure that they were making consistent decisions.
+In future investigations,
+we will use a two alternate forced choice (2AFC) paradigm,
+where a subject is provided two stimuli after the cue,
+and chooses the more similar one.
+All chosen stimuli get positive responses assigned
+and non-chosen stimuli get negative responses assigned (\hl{CITE?}).
+Reconstructions can proceed normally, using both the positive and negative responses.
+
+\hl{mention closed-loop/ML?}
 
 % A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
 % \\

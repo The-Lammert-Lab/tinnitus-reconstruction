@@ -371,7 +371,7 @@
 
 
 
-\IEEEPARstart{T}his document contains a description of additional experiments to find a performant
+\IEEEPARstart{T}HIS document contains a description of additional experiments to find a performant
 stimulus generation method and a discussion of sparsity in tinnitus signals.
 The code for all experiments is freely available at \url{https://github.com/alec-hoyland/tinnitus-project}
 and the data are available upon request.
@@ -392,11 +392,10 @@ should satisfy the restricted isometry property,
 which many random matrices do with high probability (\eg Gaussian random matrices)
 \cite{candesRestrictedIsometryProperty2008,candesIntroductionCompressiveSampling2008}.
 
-\subsection{Auditorally-Distinguishable Stimuli}
-
 We used mel-frequency binning to ensure that our stimuli were auditorally-distinguishable.
 The mel scale is a perceptual scale of pitches judged by listeners to be equal in distance
 from one to another (Fig. \ref{fig:hz2mel}) \cite{hamiltonTopographySpeechrelatedAcoustic2020}.
+Figure \ref{fig:examplestimulus} shows an example generated stimulus. 
 
 The formula
 
@@ -414,17 +413,29 @@ converts $f$ Hz to $m$ mels.
 \end{figure}
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=\linewidth]{gfx/example_stimulus.eps}
-	\caption{Example stimulus. \textbf{(a)} shows the waveform of the stimulus,
+  \centering
+  \includegraphics[width=\linewidth]{gfx/example_stimulus.eps}
+  \caption{Example stimulus. \textbf{(a)} shows the waveform of the stimulus,
   \textbf{(b)} the frequency spectrum from which the waveform was generated,
   and \textbf{(c)} the $100$-dimensional bin representation.}
-	\label{fig:examplestimulus}
+  \label{fig:examplestimulus}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{gfx/binned_vs_unbinned_spect.eps}
+	\caption{Binned spectra capture the salient characteristics of unbinned spectra.
+  \textbf{(a)} shows the spectrum for the ``buzzing'' ATA tinnitus example
+  (black) and its binned version (red). \textbf{(b)} shows the same for the ``buzzing'' example.}
+	\label{fig:binned_vs_unbinned_spect}
 \end{figure}
 
 Furthermore, to reduce the system complexity by more than 80x,
 we implement tonotopic binning, where the frequency scale is binned
-along $100$ equally mel-spaced bins (Fig. \ref{fig:examplestimulus}).
+along $100$ equally mel-spaced bins (Fig. \ref{fig:binned_vs_unbinned_spect}).
+This has the effect of smoothing some peaks of the spectra
+as well as reducing the dimensionally by a factor of 80x.
+Despite the dimensionality reduction, less than 10\% of information is lost.
 
 \section{Hyperparameter Sweep}
 
@@ -472,6 +483,8 @@ Methods were evaluated \textit{in-silico} using the model:
 where $y \in \mathbb{R}^n$ is the binary response vector,
 $\Psi \in \mathbb{R}^{n \times d}$ is the stimulus matrix,
 and $\bar{x} \in \mathbb{R}^d$ is the true target signal (the spectrum of the ATA tinnitus example).
+
+\subsection{Hyperparameter Sweep Results}
 
 Each stimulus generation method, with different hyperparameters,
 was evaluated for target signals: buzzing, electric, roaring, screeching, static, and tea kettle.
@@ -543,6 +556,7 @@ the number of trials in the \textit{in-silico} experiment being set to $1000$.
 	\label{tbl:hparam_results}
 \end{table}
 
+
 %       stimuli_type       n_bins_filled_mean    n_bins_filled_var    min_bins    max_bins    mean_r2_cs    mean_r2_linear
 %     _________________    __________________    _________________    ________    ________    __________    ______________
 
@@ -567,6 +581,36 @@ is extremely low.
 Due to rounding to the nearest integer, a Gaussian Prior method with very low variance
 converges to a Uniform Prior method with equal min and max bin parameters.
 In the main paper, we used the Uniform Prior method with 30 filled bins ($min \_ bins = max \_ bins = 30$).
+
+\subsection{Human vs. Synthetic Performance}
+
+For the hyperparameter sweep, we relied heavily on a synthetic model subject
+who made the yes/no decisions.
+This model relies on an idealized process,
+in which the \textit{in-silico} subject compares
+the incoming stimuli to an internal representation in a purely linear process.
+The \textit{in-silico} subject is internally consistent over trials,
+something which subjects have self-reported as not necessarily being true.
+In the \textsc{Conclusion} of the paper, we discuss some of the reasons,
+namely, that the yes/no decision threshold may not be fixed for a human subject,
+but instead varies as the subject drifts and overcorrects during the trial.
+Figure \ref{fig:r2_vs_trials} shows
+reconstruction accuracy measured by Pearson $r^2$ as a function of the
+number of trials.
+Synthetic performance increases monotonically as a function of the number of trials,
+but human performance drops consistently after 1,600 trials.
+We hypothesis that decision drift and subject fatigue are the main causes.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{gfx/r2_vs_trials.eps}
+	\caption{Performance for human subjects on the task is non-monotonic,
+  contrasting with theoretical and synthetic results.
+  \textbf{(a)} shows synthetic and human subject reconstruction accuracy
+  as measured by Pearson's $r^2$ as a function of number of trials
+  for the ``buzzing'' condition. \textbf{(b)} shows results for the ``roaring'' condition.}
+	\label{fig:r2_vs_trials}
+\end{figure}
 
 \section{Sparsity of ATA Tinnitus Examples}
 
