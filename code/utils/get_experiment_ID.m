@@ -19,8 +19,8 @@
 %   expID: character vector
 % 
 % See Also: 
-% * [prop2str](./prop2str)
-% * [parse_config](./parse_config)
+% prop2str
+% parse_config
 
 function expID = get_experiment_ID(config, ignore_fields, property_separator)
 

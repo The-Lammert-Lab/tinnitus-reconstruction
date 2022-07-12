@@ -4,7 +4,7 @@
 % Write the stimuli into the stimuli file.
 % 
 % See also:
-% * [Protocol](../experiment/Protocol)
+% Protocol
 
 function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_meta, file_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix)
 

@@ -28,7 +28,7 @@
 %   stringified_properties = prop2str(obj, [], '&&')
 % 
 % See Also: 
-% * [collect_parameters](./collect_parameters)
+% collect_parameters
 
 function [stringified_properties] = prop2str(obj, properties_to_skip, property_separator)
 

@@ -7,9 +7,9 @@
 % Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
 % 
 % See Also: 
-% * [collect_reconstructions](./collect_reconstructions) 
-% * [collect_data](./collect_data)
-% * [config2table](./config2table)
+% collect_reconstructions
+% collect_data
+% config2table
 
 function [x, responses_output, stimuli_matrix_output] = get_reconstruction(options)
 

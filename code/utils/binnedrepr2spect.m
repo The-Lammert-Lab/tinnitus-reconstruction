@@ -22,9 +22,7 @@
 %       representing the stimulus spectra
 % 
 % See Also:
-% * [spect2binnedrepr](./spect2binnedrepr)
-% * [spect2bin](./spect2bin)
-% * [bin2spect](./bin2spect)
+% spect2binnedrepr
 
 function T = binnedrepr2spect(binned_repr, B, n_bins)
 

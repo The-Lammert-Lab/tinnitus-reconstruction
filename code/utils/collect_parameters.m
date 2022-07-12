@@ -19,9 +19,9 @@
 %   data_table = collect_parameters(filenames)
 % 
 % See Also: 
-% * [collect_reconstructions](./collect_reconstructions) 
-% * [collect_data](./collect_data)
-% * [config2table](./config2table)
+% collect_reconstructions
+% collect_data
+% config2table
 
 function data_table = collect_parameters(filenames)
 

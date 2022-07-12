@@ -12,7 +12,7 @@
 %   data_table: table
 % 
 % See also:
-% * [parse_config](./parse_config)
+% parse_config
 
 function data_table = config2table(curr_dir)
 
