@@ -82,19 +82,6 @@ for each trial
 
 
 
-binnedrepr2spect
-spect2binnedrepr
-
-
-
-
-
-spect2binnedrepr
-
-
-
-
-
 ### binnedrepr2spect
 
 Get the stimuli spectra from a binned representation.
@@ -113,19 +100,6 @@ representing the stimulus spectra
 !!! info "See Also"
     * [binnedrepr2spect](../../utils/#binnedrepr2spect)
     * [spect2binnedrepr](../../utils/#spect2binnedrepr)
-
-
-
-
-
-binnedrepr2spect
-spect2binnedrepr
-
-
-
-
-
-spect2binnedrepr
 
 
 

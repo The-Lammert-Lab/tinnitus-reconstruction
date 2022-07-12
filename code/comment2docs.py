@@ -13,6 +13,7 @@ def comment2docs(filename, file, out_file, first, a = -1):
     lastcomment = -1
     z_range_min = 0
     abstract = False
+    prev_comment = True
     fn_names = []
 
     # Abstract classes need to be handled differently because of multiple functions within the file.
@@ -31,12 +32,17 @@ def comment2docs(filename, file, out_file, first, a = -1):
         # Identify beginning of documentation. 
         # If function name is not in comment, no docs will be written.
         for i in range(a + 1, len(lines)):
+            
+            # Prevent 'see also' section matching value in fn_names and assigning 'a'.
+            if lines[i].lstrip() and lines[i].lstrip()[0] != '%':
+                prev_comment = False
+
             thisline = lines[i].replace('#', '')
             thisline = thisline.replace(' ', '')
             thisline = thisline.replace('%', '')
             thisline = thisline.strip()
 
-            if thisline.lower() in fn_names:
+            if thisline.lower() in fn_names and not prev_comment:
                 abstract = True
                 a = i
                 break
