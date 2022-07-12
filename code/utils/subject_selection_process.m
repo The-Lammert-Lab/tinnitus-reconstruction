@@ -32,7 +32,7 @@
 %       The stimuli.
 % 
 % See Also: 
-% AbstractStimulusGenerationMethod.subject_selection_process
+% * [AbstractStimulusGenerationMethod.subject_selection_process](../stimulus_generation/AbstractStimulusGenerationMethod/#subject_selection_process)
 
 function [y, X] = subject_selection_process(target_signal, stimuli, n_samples)
     if isempty(stimuli)

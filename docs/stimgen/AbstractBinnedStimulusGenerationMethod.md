@@ -75,8 +75,8 @@ for each trial
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](../../utils/binnedrepr2spect)
-    * [spect2binnedrepr](../../utils/spect2binnedrepr)
+    * [binnedrepr2spect](../../utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../utils/#spect2binnedrepr)
 
 
 
@@ -98,8 +98,8 @@ representing the stimulus spectra
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](../../utils/binnedrepr2spect)
-    * [spect2binnedrepr](../../utils/spect2binnedrepr)
+    * [binnedrepr2spect](../../utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../utils/#spect2binnedrepr)
 
 
 
@@ -125,7 +125,7 @@ the sample rate
 !!! info "See Also"
     * [AbstractBinnedStimulusGenerationMethod.binnedrepr2spect](../AbstractBinnedStimulusGenerationMethod/#binnedrepr2spect)
     * [AbstractBinnedStimulusGenerationMethod.spect2binnedrepr](../AbstractBinnedStimulusGenerationMethod/#spect2binnedrepr)
-    * [signal2spect](../../utils/signal2spect)
+    * [signal2spect](../../utils/#signal2spect)
 
 
 

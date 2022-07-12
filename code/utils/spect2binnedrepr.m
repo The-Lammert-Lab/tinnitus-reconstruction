@@ -26,9 +26,7 @@
 %       for each trial
 % 
 % See Also: 
-% * [binnedrepr2spect](./binnedrepr2spect)
-% * [spect2bin](./spect2bin)
-% * [bin2spect](./bin2spect)
+% binnedrepr2spect
 
 function binned_repr = spect2binnedrepr(T, B, n_bins)
 

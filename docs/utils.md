@@ -1,4 +1,4 @@
-# Utils
+# Utilities
 
 This folder stores many helpful, and in some cases critical, utilities. This folder as added to the path via `setup.m`. Some files are not original to this project, in which case documentation and credit is clearly maintained.
 
@@ -275,9 +275,7 @@ representing the stimulus spectra
 
 
 !!! info "See Also"
-    * [spect2binnedrepr](./spect2binnedrepr)
-    * [spect2bin](./spect2bin)
-    * [bin2spect](./bin2spect)
+    * [spect2binnedrepr](./#spect2binnedrepr)
 
 
 
@@ -308,9 +306,9 @@ data_table = collect_parameters(filenames)
 
 
 !!! info "See Also"
-    * [collect_reconstructions](./collect_reconstructions) 
-    * [collect_data](./collect_data)
-    * [config2table](./config2table)
+    * [collect_reconstructions](./#collect_reconstructions)
+    * [collect_data](./#collect_data)
+    * [config2table](./#config2table)
 
 
 
@@ -351,7 +349,7 @@ corresponding to the columns of `reconstructions`.
 
 
 !!! info "See Also"
-    * [collect_data](./collect_data) 
+    * [collect_data](./#collect_data)
     * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
 
@@ -376,7 +374,7 @@ data_table: table
 
 
 !!! info "See Also"
-    * [parse_config](./parse_config)
+    * [parse_config](./#parse_config)
 
 
 
@@ -392,7 +390,7 @@ Write the stimuli into the stimuli file.
 
 
 !!! info "See Also"
-    * [Protocol](../experiment/Protocol)
+    * [Protocol](../experiment/#protocol)
 
 
 
@@ -497,7 +495,7 @@ stringified_properties = prop2str(obj, [], '&&')
 
 
 !!! info "See Also"
-    * [collect_parameters](./collect_parameters)
+    * [collect_parameters](./#collect_parameters)
 
 
 
@@ -535,9 +533,43 @@ for each trial
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](./binnedrepr2spect)
-    * [spect2bin](./spect2bin)
-    * [bin2spect](./bin2spect)
+    * [binnedrepr2spect](./#binnedrepr2spect)
+
+
+
+
+
+-------
+
+### str2prop
+Converts a string of properties and values
+into a struct or cell array.
+TODO: more documentation, use property_separator
+
+Arguments:
+
+prop_string: character vector
+String containing property : value pairs
+
+properties_to_skip: character vector or cell array
+Properties to not incude in the output character vector
+
+property_separator: character vector
+What separator to use between parameter statements.
+
+Returns:
+
+obj: struct or cell array
+
+
+Example:
+
+obj = str2prop(prop_string, [], '&&')
+
+
+
+!!! info "See Also"
+    * [collect_parameters](./#collect_parameters)
 
 
 
@@ -581,7 +613,7 @@ The stimuli.
 
 
 !!! info "See Also"
-    * [AbstractStimulusGenerationMethod.subject_selection_process](../AbstractStimulusGenerationMethod/#subject_selection_process)
+    * [AbstractStimulusGenerationMethod.subject_selection_process](../stimulus_generation/AbstractStimulusGenerationMethod/#subject_selection_process)
 
 
 

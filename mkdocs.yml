@@ -1,0 +1,44 @@
+site_name: tinnitus-project
+repo_url: https://github.com/alec-hoyland/tinnitus-project
+site_author: Nelson Barnett
+docs_dir: "docs"
+theme:
+    name: "material"
+    logo: 'Midjourney_logo3.png'
+    palette:
+        primary: "deep-purple"
+        accent: "deep-purple"
+nav:
+    - Home: index.md
+    - Experiment:
+        - Configs and Protocols: experiment.md
+    - Stimulus Generation:
+        - Abstract classes:
+            - Abstract for all classes: stimgen/AbstractStimulusGenerationMethod.md
+            - Abstract for binned representations: stimgen/AbstractBinnedStimulusGenerationMethod.md
+        - Bernoulli: stimgen/BernoulliStimulusGeneration.md
+        - Brimijoin: stimgen/BrimijoinStimulusGeneration.md
+        - Gaussian Noise With No Bins: stimgen/GaussianNoiseNoBinsStimulusGeneration.md
+        - Gaussian Noise With Bins: stimgen/GaussianNoiseStimulusGeneration.md
+        - Gaussian Prior: stimgen/GaussianPriorStimulusGeneration.md
+        - Power Distribution: stimgen/PowerDistributionStimulusGeneration.md
+        - Uniform Noise With No Bins: stimgen/UniformNoiseNoBinsStimulusGeneration.md
+        - Uniform Noise With Bins: stimgen/UniformNoiseStimulusGeneration.md
+        - Uniform Prior: stimgen/UniformPriorStimulusGeneration.md
+    - Utilities:
+        - All utilities: utils.md
+    - Data Processing:
+        - Scripts: scripts.md
+    - Installation and Setup: install.md
+
+use_directory_urls: true
+
+markdown_extensions:
+    - admonition
+    # - mdx_math:
+    #       enable_dollar_delimiter: True #for use of inline $..$
+    - toc:
+          permalink: true
+    - codehilite
+# Required to load the MathJax javascript for the mdx_math.py
+# extra_javascript: ['https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML']

@@ -13,7 +13,7 @@ for folder in sorted(glob("./*/")):
 
         if item.find("@") > 0:
             classname = item.replace(f"{folder}@",'')
-            header_file =  f"../docs/{classname}-head.md"
+            header_file =  f"../docs/stimgen/{classname}-head.md"
 
             if not os.path.exists(header_file):
                 print(f"[ABORT] Can't find header {header_file}, skipping...")
@@ -24,7 +24,7 @@ for folder in sorted(glob("./*/")):
 
                 first = False
 
-                doc_file = f"../docs/{classname}.md"
+                doc_file = f"../docs/stimgen/{classname}.md"
 
                 if j == 0:
                     first = True

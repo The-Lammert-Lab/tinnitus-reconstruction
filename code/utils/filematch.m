@@ -14,12 +14,7 @@
 %   filematch(files1, files2)
 % 
 % See Also: 
-% * [collect_data](./#collect_data)
-
-
-
-
-
+% collect_data
 
 function [not_matched_files1, not_matched_files2] = filematch(files1, files2, options)
 

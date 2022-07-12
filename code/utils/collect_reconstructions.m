@@ -29,7 +29,7 @@
 %       corresponding to the columns of `reconstructions`.
 % 
 % See Also: 
-% * [collect_data](./collect_data) 
+% collect_data
 % * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
 function [reconstructions, reconstruction_files] = collect_reconstructions(data_struct)

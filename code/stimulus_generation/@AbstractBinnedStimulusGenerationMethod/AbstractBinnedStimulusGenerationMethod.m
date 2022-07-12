@@ -92,8 +92,8 @@ methods
         %       for each trial
         % 
         % See Also: 
-        % * [binnedrepr2spect](../../utils/binnedrepr2spect)
-        % * [spect2binnedrepr](../../utils/spect2binnedrepr)
+        % binnedrepr2spect
+        % spect2binnedrepr
 
         binned_repr = zeros(self.n_bins, size(T, 2));
         B = self.get_freq_bins();
@@ -119,8 +119,8 @@ methods
         %   representing the stimulus spectra
         % 
         % See also:
-        % * [binnedrepr2spect](../../utils/binnedrepr2spect)
-        % * [spect2binnedrepr](../../utils/spect2binnedrepr)
+        % binnedrepr2spect
+        % spect2binnedrepr
 
         B = self.get_freq_bins();
         T = zeros(length(B), size(binned_repr, 2));
@@ -148,7 +148,7 @@ methods
         % See Also: 
         % AbstractBinnedStimulusGenerationMethod.binnedrepr2spect 
         % AbstractBinnedStimulusGenerationMethod.spect2binnedrepr 
-        % * [signal2spect](../../utils/signal2spect)
+        % signal2spect
 
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod
