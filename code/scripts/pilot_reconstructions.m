@@ -71,7 +71,7 @@ T.config_filename = config_filenames(:);
 
 %% Compute the reconstructions
 
-trial_fractions = linspace(0.1, 1, 10);
+trial_fractions = 1; %linspace(0.1, 1, 10);
 
 % Container for r^2 values
 r2_cs_bins = zeros(height(T), length(trial_fractions));
