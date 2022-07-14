@@ -71,7 +71,7 @@ T.config_filename = config_filenames(:);
 
 %% Compute the reconstructions
 
-trial_fractions = linspace(0.1, 1, 10);
+trial_fractions = 1; %linspace(0.1, 1, 10);
 
 % Container for r^2 values
 r2_cs_bins = zeros(height(T), length(trial_fractions));
@@ -159,12 +159,25 @@ for ii = 1:length(numeric_columns)
     end
 end
 
-%% Visualization
+%% Saving Results
 
 T.reconstructions_cs_1 = reconstructions_cs(:, end);
 T.reconstructions_lr_1 = reconstructions_lr(:, end);
 T.reconstructions_rand = reconstructions_rand;
 T.reconstructions_synth = reconstructions_synth;
+
+% Save the reconstruction waveforms
+if PUBLISH
+    for ii = 1:height(T)
+        this_filepath = pathlib.join(DATA_DIR, [T.experiment_name{ii}, '.wav']);
+        this_spectrum = stimgen.binnedrepr2spect(T.reconstructions_cs_1{ii});
+        this_waveform = stimgen.synthesize_audio(this_spectrum, stimgen.get_nfft());
+        audiowrite(this_filepath, this_waveform, stimgen.Fs);
+    end
+end
+
+%% Visualization
+
 
 % Plotting the bin-representation of the target signal vs. the reconstructions
 
@@ -258,6 +271,8 @@ else
 end
 
 % return
+
+% Plotting the r^2 values vs. the trial numbers (using trial fractions)
 
 fig2 = new_figure();
 
