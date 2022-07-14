@@ -259,6 +259,8 @@ end
 
 % return
 
+% Plotting the r^2 values vs. the trial numbers (using trial fractions)
+
 fig2 = new_figure();
 
 cmap = colormaps.linspecer(length(unique(T.subject_ID)));
