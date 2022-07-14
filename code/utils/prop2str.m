@@ -8,24 +8,26 @@
 % they should be character vectors or numerical vectors
 % and of the same type within each cell array.
 % 
-% Arguments:
+% **ARGUMENTS:**
 %
-%   obj: 1x1 struct or object
-%       Object with properties to be stringified
+%   - obj: `1 x 1` struct or object,
+%       the object with properties to be stringified
 % 
-%   properties_to_skip: character vector or cell array
+%   - properties_to_skip: character vector or cell array
 %       Properties to not include in the output character vector.
 % 
-%   property_separator: character vector
+%   - property_separator: character vector
 %       What separator to use between parameter statements.
 % 
-% Returns:
+% **OUTPUTS:**
 % 
-%   stringified_properties: character vector
+%   - stringified_properties: character vector
 % 
 % Example:
 %
+% ```matlab
 %   stringified_properties = prop2str(obj, [], '&&')
+% ```
 % 
 % See Also: 
 % collect_parameters

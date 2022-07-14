@@ -2,16 +2,16 @@
 % Match files by terminal UUID or other identifier.
 % This function expects filenames in the form
 % 
-%   foo_bar_UUID.baz
+%   `foo_bar_UUID.baz`
 % 
 % Where foo_bar can be anything,
 % so long as the UUID or other identifier comes last
 % before the 'dot filetype'.
 % The functions returns indices of unmatched files.
 % 
-% USAGE:
+% Example:
 %   
-%   filematch(files1, files2)
+%   `filematch(files1, files2)`
 % 
 % See Also: 
 % collect_data

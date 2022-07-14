@@ -1,8 +1,9 @@
-% ### get_reconstructions
+% ### get_reconstruction
 % 
+% ```matlab
 % [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-% 
 % x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+% ```
 % 
 % Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
 % 

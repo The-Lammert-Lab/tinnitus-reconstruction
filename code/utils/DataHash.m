@@ -1,49 +1,63 @@
-% ### DataHash
+% DATAHASH - Checksum for Matlab array of any type.
 % 
-% DATAHASH - Checksum for Matlab array of any type
-% This function creates a hash value for an input of any type. The type and
-% dimensions of the input are considered as default, such that UINT8([0,0]) and
-% UINT16(0) have different hash values. Nested STRUCTs and CELLs are parsed
+% This function creates a hash value for an input of any type. The type and 
+% dimensions of the input are considered as default, such that UINT8([0,0]) and 
+% UINT16(0) have different hash values. Nested STRUCTs and CELLs are parsed 
 % recursively.
 %
-% Hash = DataHash(Data, Opts...)
+% Hash = DataHash(Data, Opts...) 
+% 
 % INPUT:
-%   Data: Array of these built-in types:
-%           (U)INT8/16/32/64, SINGLE, DOUBLE, (real/complex, full/sparse)
-%           CHAR, LOGICAL, CELL (nested), STRUCT (scalar or array, nested),
+% 
+%   Data: Array of these built-in types: 
+%           (U)INT8/16/32/64, SINGLE, DOUBLE, (real/complex, full/sparse) 
+%           CHAR, LOGICAL, CELL (nested), STRUCT (scalar or array, nested), 
 %           function_handle, string.
-%   Opts: Char strings to specify the method, the input and theoutput types:
-%         Input types:
-%            'array': The contents, type and size of the input [Data] are
-%                     considered  for the creation of the hash. Nested CELLs
-%                     and STRUCT arrays are parsed recursively. Empty arrays of
-%                     different type reply different hashs.
-%            'file':  [Data] is treated as file name and the hash is calculated
+% 
+%   Opts: Char strings to specify the method, the input and theoutput types: 
+%         Input types: 
+% 
+%            'array': The contents, type and size of the input [Data] are 
+%                     considered  for the creation of the hash. Nested CELLs 
+%                     and STRUCT arrays are parsed recursively. Empty arrays of 
+%                     different type reply different hashs. 
+% 
+%            'file':  [Data] is treated as file name and the hash is calculated 
 %                     for the files contents.
-%            'bin':   [Data] is a numerical, LOGICAL or CHAR array. Only the
-%                     binary contents of the array is considered, such that
-%                     e.g. empty arrays of different type reply the same hash.
-%            'ascii': Same as 'bin', but only the 8-bit ASCII part of the 16-bit
+% 
+%            'bin':   [Data] is a numerical, LOGICAL or CHAR array. Only the 
+%                     binary contents of the array is considered, such that 
+%                     e.g. empty arrays of different type reply the same hash. 
+% 
+%            'ascii': Same as 'bin', but only the 8-bit ASCII part of the 16-bit 
 %                     Matlab CHARs is considered.
+% 
 %         Output types:
+% 
 %            'hex', 'HEX':      Lower/uppercase hexadecimal string.
+% 
 %            'double', 'uint8': Numerical vector.
+% 
 %            'base64':          Base64.
+% 
 %            'short':           Base64 without padding.
+% 
 %         Hashing method:
+% 
 %            'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512', 'MD2', 'MD5'.
 %            Call DataHash without inputs to get a list of available methods.
 %
 %         Default: 'MD5', 'hex', 'array'
 %
 % OUTPUT:
-%   Hash: String, DOUBLE or UINT8 vector. The length depends on the hashing
-%         method.
-%         If DataHash is called without inputs, a struct is replied:
-%           .HashVersion: Version number of the hashing method of this tool. In
-%              case of bugs or additions, the output can change.
-%           .Date: Date of release of the current HashVersion.
-%           .HashMethod: Cell string of the recognized hash methods.
+% 
+%   Hash: String, DOUBLE or UINT8 vector. The length depends on the hashing method.
+% 
+%         If DataHash is called without inputs, a struct is replied: 
+%           .HashVersion: Version number of the hashing method of this tool. In 
+%              case of bugs or additions, the output can change. 
+%           .Date: Date of release of the current HashVersion. 
+%           .HashMethod: Cell string of the recognized hash methods. 
 %
 % EXAMPLES:
 % % Default: MD5, hex:
@@ -142,7 +156,7 @@
 %   d.f= @(varargin) struct2cell(d);
 %   DataHash(d.f) % infinite loop
 % This is caught with an error message concerning the recursion limit now.
-%#ok<*CHARTEN>
+% ok<*CHARTEN>
 % Reply current version if called without inputs: ------------------------------
 
 % % See also:

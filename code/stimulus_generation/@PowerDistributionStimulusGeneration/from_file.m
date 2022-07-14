@@ -1,6 +1,6 @@
 % ### from_file
 % 
-% Loads a power distribution from a .mat or .csv file into the object.
+% Loads a power distribution from a `.mat` or `.csv` file into the object.
 % 
 % See Also: 
 % PowerDistributionStimulusGeneration.build_distribution

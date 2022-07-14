@@ -9,7 +9,7 @@ from comment2docs import comment2docs
 
 # build_docs.py intended to be stored in `code` directory.
 for folder in sorted(glob("./*/")):
-    for i, item in enumerate(sorted(glob(folder + "*.m") + glob(folder + "@*"))):
+    for i, item in enumerate(sorted(glob(folder + "*.m") + glob(folder + "@*"), key = str.lower)):
 
         if item.find("@") > 0:
             classname = item.replace(f"{folder}@",'')

@@ -11,10 +11,11 @@
 % ```matlab
 % Protocol() or Protocol('config', 'path2config')
 % ```
-% Where 'path2config' is the file path to the desired config file.
+% Where `'path2config'` is the file path to the desired config file.
 % 
 % If `Protocol()` is invoked, a GUI is automatically opened for the user to select the proper config file.
 % 
+% End of documentation
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
 

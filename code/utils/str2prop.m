@@ -3,25 +3,26 @@
 % into a struct or cell array.
 % TODO: more documentation, use property_separator
 % 
-% Arguments:
+% **ARGUMENTS:**
 % 
-%   prop_string: character vector
+%   - prop_string: character vector
 %       String containing property : value pairs
 % 
-%   properties_to_skip: character vector or cell array
+%   - properties_to_skip: character vector or cell array
 %       Properties to not incude in the output character vector
 % 
-%   property_separator: character vector
+%   - property_separator: character vector
 %       What separator to use between parameter statements.
 % 
-% Returns:
+% **OUTPUTS:**
 % 
-%   obj: struct or cell array
+%   - obj: struct or cell array
 % 
 % 
 % Example:
-% 
+% ```matlab
 %   obj = str2prop(prop_string, [], '&&')
+% ```
 % 
 % See Also: 
 % collect_parameters
