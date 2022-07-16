@@ -170,7 +170,9 @@ T.reconstructions_synth = reconstructions_synth;
 if PUBLISH
     for ii = 1:height(T)
         this_filepath = pathlib.join(DATA_DIR, [T.experiment_name{ii}, '.wav']);
-        this_spectrum = stimgen.binnedrepr2spect(T.reconstructions_cs_1{ii});
+        this_binrep = rescale(T.reconstructions_cs_1{ii}, -20, 0);
+        this_spectrum = stimgen.binnedrepr2spect(this_binrep);
+        this_spectrum(f(:,1) > 13e3) = -20;
         this_waveform = stimgen.synthesize_audio(this_spectrum, stimgen.get_nfft());
         audiowrite(this_filepath, this_waveform, stimgen.Fs);
     end
