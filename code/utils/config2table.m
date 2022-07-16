@@ -27,7 +27,7 @@ function data_table = config2table(curr_dir)
     config_file = curr_dir(1);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
     
-    data_table = struct2table(config);
+    data_table = cellstr4tables(struct2table(config));
     data_table.ID = 1;
     
     % Create and outer join each new data table, keeping column names the same
@@ -36,7 +36,7 @@ function data_table = config2table(curr_dir)
             config_file = curr_dir(ii);
             config = parse_config(pathlib.join(config_file.folder, config_file.name));
     
-            new_data_table = struct2table(config);
+            new_data_table = cellstr4tables(struct2table(config));
             new_data_table.ID = ii;
             data_table = outerjoin(data_table, new_data_table, 'MergeKeys', true);
         end

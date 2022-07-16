@@ -10,7 +10,7 @@
 %% Preamble
 
 % Script-level parameters
-RUN         = false;
+RUN         = true;
 VERBOSE     = true;
 
 % Set random number seed
@@ -253,6 +253,8 @@ for ii = 1:length(n_bins)
     stimuli.n_bins = n_bins(ii);
     write_stimuli(data_dir, stimulus_generation_names{9}, stimuli, false, VERBOSE, {'distribution', 'distribution_filepath'}, {'bins'});
 end
+
+% return
 
 if RUN
 

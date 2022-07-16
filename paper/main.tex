@@ -380,6 +380,8 @@
 \newcommand{\eg}{\textit{e}.\textit{g}.\ }
 \newcommand{\cf}{\textit{cf}.\ }
 \usepackage{hyperref}
+\usepackage{siunitx}
+\sisetup{parse-numbers = false}
 
 % correct bad hyphenation here
 \hyphenation{com-press-ive sens-ing cor-rel-a-tion}
@@ -538,7 +540,7 @@ when the external sounds used in sound therapy are closely informed
 by the internal tinnitus experience of the patient
 \cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007},
 specifically, its component frequencies that constitute
-the \textit{psychoacoustic spectrum} (PTS).
+the \textit{psychoacoustic tinnitus spectrum} (PTS).
 However, existing methods for characterizing the PTS rely on reductionist assumptions
 concerning the nature of tinnitus sounds (\eg that they are pure tones or have small-width Gaussian spectra)
 and produce characterizations that are correspondingly bias and incomplete
@@ -616,9 +618,10 @@ of the PTS can inform individualized tinnitus treatment with enhanced habituatio
 
 \subsection{Stimulus Generation}
 
-To generate stimuli, we partition the frequency space $f \in [100,~22,000]$ Hz into 100 mel-spaced frequency bins
-so that each bin is perceptually different to a listener.
-For each stimulus, we randomly select ${round}(\mathcal{N}(30, \sqrt{0.3}))$ bins
+To generate stimuli, we partition the frequency space $f \in [100,~13,000]$ Hz
+into 100 mel-spaced frequency bins
+so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}.
+For each stimulus, we randomly select $30$ bins
 with equal probability to be ``filled'' with power $0$ dB.
 Unfilled bins are set to $-20$ dB.
 The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
@@ -633,8 +636,27 @@ A subject performing $n$ trials with $b$ frequency bins produces
 a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
 and a response column vector $y \in {1,-1}^n$,
 where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
-We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$.
-The one-bit compressed sensing reconstruction problem is then:
+We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
+(\cf Supplementary Information).
+
+\subsubsection{Linear Regression}
+
+The linear regression solution is given by
+the normalized inner product of the stimulus matrix
+and the responses (Eq. \ref{eq:linreg}).
+Intuitively, this implies that the reconstruction, $x$,
+is a linear combination of the randomly-generated stimuli
+that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+
+\begin{equation}
+  \hat{x} = \frac{1}{n} \Phi y
+  \label{eq:linreg}
+\end{equation}
+
+\subsubsection{Compressed Sensing}
+
+The one-bit compressed sensing reconstruction problem is:
 
 \begin{equation}
 	y = \mathrm{sgn}(\Psi \Phi x)
@@ -642,17 +664,57 @@ The one-bit compressed sensing reconstruction problem is then:
 
 which is an underdetermined system with infinite solutions.
 Compressed sensing says that when $\Theta = \Psi \Phi$
-is sufficiently well-behaved \cite{candesIntroductionCompressiveSampling2008}
+is sufficiently well-behaved
+(\eg satisfies the restricted isometry property,
+which Gaussian and Bernoulli random matrices do with high probability,
+\cf \cite{candesIntroductionCompressiveSampling2008})
 that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
 We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
 
 \begin{equation}
 	\hat{x} = \min_{||x||_2 \leq 1} - \frac{1}{n} (\Theta x)^{\mathrm{T}} y + \lambda ||x||_1
+  \label{eq:cs}
 \end{equation}
 
 with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
+
+We recruited $N=2$ subjects for the experiment
+with healthy hearing from $[100,~13,000]$ Hz.
+Subjects used Sennheiser PXC 550 over-the-ear headphones
+and manually adjusted loudness
+using sample stimuli before performing the task
+(Sennheiser GmbH \& Co. KG, Wedemark, Germany).
+
+The subjects performed an AX paradigm binary choice task
+in $20$ blocks of $100$ with breaks between blocks,
+for a total of $2,000$ trials per experimental condition.
+For each trial in the experiment,
+the subject listened to an auditory target signal
+followed by one of the randomly generated stimuli.
+The subject was instructed to press the J key if the stimulus sounded similar to the target signal
+and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
+
+The target signals were drawn from online examples
+from the American Tinnitus Association,
+representing the range of tinnitus experiences
+(American Tinnitus Association, Vienna, Virginia).
+We selected two example tinnitus waveforms from their website: ``buzzing'' and ``roaring''.
+In this way, the AX experiment mimicked
+comparing a randomly-generated stimulus to an internal perception of tinnitus,
+however the known target signals
+unify across subjects and provide a gold-standard to benchmark against.
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{template.eps}
+	\caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
+  then a stimulus. They compare the mental model of the stimulus to the mental model of the target signal,
+  before making a binary choice about the two signals' similarity.}
+	\label{fig:experimentdiagram}
+\end{figure}
+
 
 % \subsection{Abbreviations and Acronyms}
 % Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IEEE, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IEEE” in the title of this article).
@@ -662,6 +724,72 @@ with tunable scalar parameter $\lambda$.
 
 
 \section{Results}
+
+Subjects performed an AX-paradigm reverse correlation experiment
+using ATA tinnitus examples as the target sounds.
+We reconstructed the PTS using the responses and stimuli from the experiments
+using both the $L_2$ linear regression and compressed sensing reconstruction algorithms.
+Figure \ref{fig:reconstructions} shows the tonotopic bin representation
+of the reconstructions compared to the ground-truth target representation.
+
+\subsection*{\hl{Notes}}
+\begin{enumerate}
+  \item Ben is way better at the experiment than Nelson. Sorry, Nelson.
+  \item CS results are consistently better than LR.
+  Since this result doesn't necessarily hold for the synthetic experiment,
+  it implies that CS' main contribution is \textit{denoising}
+  by countering human error \cite{planRobust1bitCompressed2012, zhangEfficientAlgorithmsRobust2014}.
+  \item Is Pearson's $r$ really the best way to measure accuracy?
+  If you miss the big hump in either, I kind of think that we've failed.
+  So maybe KL divergence, but then we have to normalize each spectrum
+  to make probability distributions.
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{reconstructions.eps}
+	\caption{Compressed sensing improves tinnitus signal reconstruction
+  in human experiments.
+  \textbf{(a)} depicts the ground truth (g.t.) bin representation for the ``buzzing'' example tinnitus spectrum,
+  the reconstructions given the responses to stimuli in the AX experiment
+  using linear regression (LR) and compressed sensing (CS) reconstruction algorithms,
+  and the results of a synthetic subject (\cf Supplementary Information),
+  also using the CS algorithm.
+  \textbf{(b)} shows simular data for the ``roaring'' example tinnitus spectrum.
+  For both conditions, CS results in a less noisy reconstruction
+  that captures the salient spectral information of the target tinnitus signals.}
+	\label{fig:reconstructions}
+\end{figure}
+
+\begin{table}[ht]
+	\begin{center}	
+		\small
+		\resizebox{1\columnwidth}{!}{
+			\begin{tabular}{l c r r}	
+				\multicolumn{4}{c}{\textsc{Reconstruction Accuracy}} \\
+				\hhline{====}
+				Tinnitus Type & Subject \# & $r^2$ {LR} & $r^2$ {CS} \\
+        \hline
+        Buzzing & 1 & 0.062 & \textbf{0.138} \\
+        Roaring & 1 & 0.208 & \textbf{0.331} \\
+        Roaring & 2 & 0.625 & \textbf{0.839} \\
+				\hline
+				\hhline{====}
+			\end{tabular}
+		}
+	\end{center}
+%\normalsize
+	\caption{Compressed sensing produces higher quality reconstructions
+  than $L_2$ linear regression.
+  The table shows Pearson's $r^2$ values for linear regression-based (LR, \cf Eq. \ref{eq:linreg})
+  and compressed sensing-based (CS, \cf Eq. \ref{eq:cs}) reconstruction algorithms.
+  CS improves performance in all cases
+  and in the case of subject 2 in the ``roaring'' condition,
+  produces extremely high-fidelity reconstructions.
+  }
+	\label{tbl:hparam_results}
+\end{table}
+
 % If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
 % \cite{ahumadaStimulusFeaturesSignal1971}
 % \subsection{Equations}
@@ -750,6 +878,44 @@ with tunable scalar parameter $\lambda$.
 % For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
 
 \section{Conclusion}
+
+We applied reverse correlation to the novel domain of psychoacoustic tinnitus spectrum reconstruction
+and improved reconstruction performance (PTS) up to 2x using compressed sensing.
+Using our reconstruction algorithm, the experiment required only 2,000 trials
+for quality reconstruction results which is a 10x improvement over reverse correlation results in similar domains
+\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+Subjects finished the experiment within two hours,
+indicating that this procedure is feasible as an ``outpatient medical test''
+to characterize the PTS of a subject,
+a crucial step in diagnosis and treatment \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
+After fine-tuning, we will use this algorithm
+to characterize the PTSes of clinical tinnitus patients
+to help in the treatment of patients and to further understanding of tinnitus.
+
+Results from human subjects are far below the synthetic baseline,
+indicating that some improvements can be made to boost human performance.
+The simplicity of the mathematical model for the synthetic subject
+(and its favorability towards the problem)
+leads to a synthetic subject that accounts for each tonotopic bin
+with equal attentiveness, does not suffer fatigue, and never changes its
+threshold for positive vs. negative responses.
+The experiment asks subjects to rate each stimulus as 
+similar or dissimilar to the target tinnitus signal.
+This can lead to ``threshold drift,''
+where the decision threshold between positive and negative assignments to stimuli
+change as the experiment goes along.
+While the AX paradigm protects against this effect somewhat
+by playing the target sound before each decision stimulus,
+subjects self-reported feeling unsure that they were making consistent decisions.
+In future investigations,
+we will use a two alternate forced choice (2AFC) paradigm,
+where a subject is provided two stimuli after the cue,
+and chooses the more similar one.
+All chosen stimuli get positive responses assigned
+and non-chosen stimuli get negative responses assigned (\hl{CITE?}).
+Reconstructions can proceed normally, using both the positive and negative responses.
+
+\hl{mention closed-loop/ML?}
 
 % A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
 % \\

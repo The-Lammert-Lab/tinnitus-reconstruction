@@ -4,6 +4,7 @@ function [responses, stimuli] = collect_data(options)
         options.config_file (1,:) = ''
         options.config = []
         options.verbose (1,1) logical = true
+        options.data_dir (1, :) char = ''
     end
 
     % If no config file path is provided,
@@ -22,9 +23,14 @@ function [responses, stimuli] = collect_data(options)
 
     config_hash = get_hash(config);
 
+    % If no data directory is provided, use the one from the config file
+    if isempty(options.data_dir)
+        options.data_dir = config.data_dir;
+    end
+
     % Find the files containing the data
-    glob_responses = pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']);
-    glob_stimuli = pathlib.join(config.data_dir, ['stimuli_', config_hash, '*.csv']);
+    glob_responses = pathlib.join(options.data_dir, ['responses_', config_hash, '*.csv']);
+    glob_stimuli = pathlib.join(options.data_dir, ['stimuli_', config_hash, '*.csv']);
     files_responses = dir(glob_responses);
     files_stimuli = dir(glob_stimuli);
 
@@ -34,11 +40,11 @@ function [responses, stimuli] = collect_data(options)
     files_stimuli(mismatched_stimuli_files) = [];
     
     if isempty(files_responses)
-        error(['No response files found at:  ', glob_responses, ' . Check that your config.data_dir and config.subjectID are correct'])
+        error(['No response files found at:  ', glob_responses, ' . Check that your options.data_dir and config.subjectID are correct'])
     end
 
     if isempty(files_stimuli)
-        error(['No stimuli files found at:  ', glob_stimuli, ' . Check that your config.data_dir and config.subjectID are correct'])
+        error(['No stimuli files found at:  ', glob_stimuli, ' . Check that your options.data_dir and config.subjectID are correct'])
     end
 
     % Checks for data validity
