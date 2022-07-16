@@ -4,16 +4,22 @@
 % Saves the distribution as a vector in dB
 % and the corresponding frequency vector.
 % 
-% Arguments:
-%   save_path : character vector, default: pathlib.join(fileparts(mfilename('fullpath')), 'distribution.mat');
-%       Path to .mat file where distribution should be saved.
+% **ARGUMENTS:**
 % 
-% Returns:
-%   distribution : numeric vector
-%       Power distribution in dB.
+% - save_path: character vector, 
+% the path to `.mat` file where distribution should be saved. 
+% Default:
+% ```matlab
+% pathlib.join(fileparts(mfilename('fullpath')), 'distribution.mat');
+% ```  
+% 
+% **OUTPUTS:**
+% 
+%   - distribution: numeric vector,
+%       the power distribution in dB.
 % 
 % See Also: 
-% PowerDistributionStimulusGeneration.from_file, 
+% PowerDistributionStimulusGeneration.from_file
 % PowerDistributionStimulusGeneration.generate_stimulus
 
 function [distribution] = build_distribution(self, save_path)

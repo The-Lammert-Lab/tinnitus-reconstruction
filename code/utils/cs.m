@@ -1,12 +1,20 @@
 % ### cs  
 % 
+% ```matlab
+% [x] = cs(responses, Phi, Gamma)
 % [x] = cs(responses, Phi)
-%
-% ARGUMENTS:
-%   responses: n x 1 vector
-%   Phi: n x m matrix
-%       where n is the number of trials/samples
-%       and m is the dimensionality of the stimuli/spectrum/bins
+%```
+% 
+% **ARGUMENTS:**
+% 
+%   - responses: `n x 1` vector
+% 
+%   - Phi: `n x m` matrix,
+%       where `n` is the number of trials/samples
+%       and `m` is the dimensionality of the stimuli/spectrum/bins
+% 
+% **OUTPUTS:*
+%   - x: compressed sensing reconstruction of the signal.
 
 function x = cs(responses, Phi, Gamma)
 

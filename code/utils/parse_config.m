@@ -2,13 +2,15 @@
 % 
 % Read a config file and perform any special parsing that is required.
 % 
-% Arguments:
+% **ARGUMENTS:**
+% 
 %     config_file: character vector, default: []
 %         Path to the config file to be used.
 %         If empty, opens a GUI to find the file using a file browser.
 % 
-% Outputs:
-%     config: struct
+% **OUTPUTS:**
+% 
+%     config: `struct`
 % 
 % See Also: 
 % * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)

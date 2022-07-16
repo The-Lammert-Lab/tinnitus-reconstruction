@@ -3,16 +3,20 @@
 % Take information from directory containing config files and return
 % a table with all relevant information for each config.
 % 
-% Arguments: 
-%   curr_dir: struct
-%   Directory information containing config file name, path, and other
-%   returns from dir() function.
+% **ARGUMENTS:** 
 % 
-% Outputs: 
-%   data_table: table
+%   - curr_dir: `struct`, 
+%   which is the directory information 
+%   containing config file name, path, and other
+%   returns from `dir()` function.
+% 
+% **OUTPUTS:** 
+% 
+%   - data_table: `table`
 % 
 % See also:
 % parse_config
+% * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
 function data_table = config2table(curr_dir)
 

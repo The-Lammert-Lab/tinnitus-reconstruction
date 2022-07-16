@@ -1,7 +1,9 @@
 % Compute reconstructions for the pilot data experiment.
-% This code assumes that each each experiment uses the same
-% number of bins and that the reconstructions
-% should be done over the bin representation.
+% This code assumes that each each experiment uses the same number of bins and that the reconstructions should be done over the bin representation.
+% 
+% **OUTPUTS:**
+% 
+%  - A figure of reconstructions plotted against the target signal and simulated answers.
 
 DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);

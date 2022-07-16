@@ -1,22 +1,28 @@
 % ### collect_parameters
 % 
-%  Read parameters out from character vectors of text contained in
+% Read parameters out from character vectors of text contained in
 % a character vector or cell array.
 % 
-% Arguments:
-%   filenames: cell array of character vectors or character vector
-%       Contains the filenames (or text strings)
-%       to read parameters out of.
+% **ARGUMENTS:**
+% 
+%   - filenames: `cell array` of character vectors or `character vector`
+%       that contains the filenames (or text strings)
+%       out of which to read parameters.
+% 
 %       If `filenames` is a cell array, parameters are read from each
 %       character vector contained in the cell array.
-%       Filenames should not have file endings like '.csv'.
+%       Filenames should not have file endings like `'.csv'`.
 %       The regular expressions are not sophisticated enough to skip them.
 % 
-% Outputs:
-%   data_table: table
+% **OUTPUTS:**
+% 
+%   - data_table: `table`
 % 
 % Example:
+% 
+% ```matlab
 %   data_table = collect_parameters(filenames)
+% ```
 % 
 % See Also: 
 % collect_reconstructions

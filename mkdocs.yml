@@ -6,12 +6,14 @@ theme:
     name: "material"
     logo: 'Midjourney_logo3.png'
     palette:
-        primary: "deep-purple"
-        accent: "deep-purple"
+        primary: 'blue grey'
+
 nav:
     - Home: index.md
+    - Installation and Setup: install.md
     - Experiment:
         - Configs and Protocols: experiment.md
+        - Target Sounds: ata.md
     - Stimulus Generation:
         - Abstract classes:
             - Abstract for all classes: stimgen/AbstractStimulusGenerationMethod.md
@@ -29,16 +31,23 @@ nav:
         - All utilities: utils.md
     - Data Processing:
         - Scripts: scripts.md
-    - Installation and Setup: install.md
+    - Documentation Styleguide: docs_styleguide.md
 
 use_directory_urls: true
 
 markdown_extensions:
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
     - admonition
-    # - mdx_math:
-    #       enable_dollar_delimiter: True #for use of inline $..$
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.arithmatex:
+        generic: true
     - toc:
           permalink: true
     - codehilite
-# Required to load the MathJax javascript for the mdx_math.py
-# extra_javascript: ['https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML']
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

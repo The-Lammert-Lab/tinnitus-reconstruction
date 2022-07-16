@@ -122,8 +122,14 @@ def comment2docs(filename, file, out_file, first, a = -1):
                 link_class = words[0]
                 link_method = words[1]
 
-                out_file.write('    * [' + thisline.strip() + '](../' +
-                            link_class + '/#' + link_method.strip().lower() + ')\n')
+                if 'stimulus_generation' not in file:
+                    out_file.write(f'    * [{thisline.strip()}]' +
+                                f'(../stimgen/{link_class}/#' + 
+                                f'{link_method.strip().lower()})\n')
+              
+                else:
+                    out_file.write('    * [' + thisline.strip() + '](../' +
+                                link_class + '/#' + link_method.strip().lower() + ')\n')
 
             elif format_link:
                 # This is a reference to a standalone function or script

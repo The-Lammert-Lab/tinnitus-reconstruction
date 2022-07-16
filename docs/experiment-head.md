@@ -1,14 +1,6 @@
 # Experiment
 
-This folder contains the experimental protocols, ATA sounds, fixation screens, and config files, each of which is be detailed below: 
-
-### ATA
-
-The files within this folder are the same as those presented on the American Tinnitus Association website (* [here](https://www.ata.org/listen-sample-tinnitus-sounds)). They are representitive of the range of sounds experienced by those with tinnitus and function in this project as the target sound for A-X protocol experiments.
-
-### Fixation screens
-
-This folder holds the images displayed while running the protocol. Specifically, subject instructions for which keys to press at which times, notices for the completion of blocks and for the full completion 
+This folder contains the files necessary to run an experimental protocol. Most important for the majority of users is the config file and the `Protocol` function.
 
 ### Configs
 
@@ -34,7 +26,7 @@ The total trials should be the number of trials per block times the number of bl
 total_trials: 2000
 ```
 
-These "freq" fields describe the frequency range of the stimuli, including the minimum frequency and maximum frequency, both in Hz. The duration field describes the duration of the stimului in seconds. These are not required fields. Default values are set to `min_freq = 100, max_freq = 22000, and duration = 0.5`. These defaults are defined in * [@AbstractStimulusGenerationMethod](../code/stimulus_generation/%40AbstractBinnedStimulusGenerationMethod/).
+These "freq" fields describe the frequency range of the stimuli, including the minimum frequency and maximum frequency, both in Hz. The duration field describes the duration of the stimului in seconds. These are not required fields. Default values are set to `min_freq = 100, max_freq = 22000, and duration = 0.5`. These defaults are defined in the [Abstract Stimulus Generation Class](../stimgen/AbstractStimulusGenerationMethod).
 
 ```display
 min_freq: 100
@@ -54,7 +46,7 @@ This required parameter gives the stimuli type. The name is the class that defin
 stimuli_type: UniformPrior
 ```
 
-Some stimulus generation methods have other parameters associated with them. For example, the Gaussian Prior stimulus generation method requires an n_bins_filled_mean and n_bins_filled_var property. You can see what extra parameters are required for your method by inspecting the class definition for the method, e.g., at * [stimulus-generation/](../code/stimulus_generation/). If you do not overwrite values in the config, default values are used, which are described in the class definition.
+Some stimulus generation methods have other parameters associated with them. For example, the Gaussian Prior stimulus generation method requires an n_bins_filled_mean and n_bins_filled_var property. You can see what extra parameters are required for your method by inspecting the class definition for the method (see "Stimulus Generation" section). If you do not overwrite values in the config, default values are used, which are described in the class definition.
 
 ```display
 min_bins: 30

@@ -1,8 +1,25 @@
 % ### adjust_volume
 % 
 % For use in A-X experimental protocols.
-% adjust_volume is a utility to dynamically adjust the target sound volume via a scaling factor.
-% Opens a GUI using a standard MATLAB figure window with a slider for scaling the target sound audio and a button for replaying the sound compared to an unchanged stimulus noise.  
+% `adjust_volume` is a utility to dynamically adjust the target sound volume via a scaling factor.
+% Opens a GUI using a standard MATLAB figure window 
+% with a slider for scaling the target sound audio 
+% and a button for replaying the sound compared to an unchanged stimulus noise.  
+% 
+% **ARGUMENTS:**
+% 
+%   - target_sound: `n x 1` vector, the target sound.
+%   - target_fs: `1 x 1` scalar, the frequency of target_sound.
+%   - stimuli: `n x 1` vector, a sample stimulus sound.
+%   - Fs: `1 x 1` scalar, the frequency of the sample stimuli.
+%   - scale_factor: `1 x 1` scalar, the scalar by which to multipy the target sound.
+%   default: `1.0`.
+% 
+% **OUTPUTS:**
+% 
+%   - scale_factor: `1 x 1` scalar, 
+%       the scalar by which the target signal is multipled 
+%       that results in the preferred volume chosen by the user.
 
 function scale_factor = adjust_volume(target_sound, target_fs, stimuli, Fs, scale_factor)
 

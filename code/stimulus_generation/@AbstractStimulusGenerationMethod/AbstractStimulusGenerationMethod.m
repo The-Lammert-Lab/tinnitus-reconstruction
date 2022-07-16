@@ -24,13 +24,15 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         function [y, spect, binned_repr] = subject_selection_process(self, signal)
             % ### subject_selection_process
             % 
+            % ```matlab
             % [y, spect, binned_repr] = subject_selection_process(self, signal)
+            % ```
             % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
-            % and returns an n_samples x 1 vector
-            % of -1 for "no"
-            % and 1 for "yes"
+            % and returns an `n_samples x 1` vector
+            % of `-1` for "no"
+            % and `1` for "yes".
             [~, ~, spect, binned_repr] = self.generate_stimuli_matrix();
             e = spect' * signal(:);
             y = double(e <= prctile(e, 50));
@@ -49,31 +51,34 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
             % ### generate_stimuli_matrix
             % 
+            % ```matlab
             % [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            % ```
             %
             % Generates a matrix of stimuli.
             % Explicitly calls the `generate_stimulus()`
             % class method.
             % 
-            % Returns:
-            %   stim: n x self.n_trials numerical vector
-            %       The stimulus waveform,
-            %       where n is self.get_nfft() + 1.
+            % **OUTPUTS:**
             % 
-            %   Fs: 1x1 numerical scalar
-            %       The sample rate in Hz.
+            %   - stim: `n x self.n_trials` numerical vector,
+            %       the stimulus waveform,
+            %       where `n` is `self.get_nfft() + 1`.
             % 
-            %   spect: m x self.n_trials numerical vector
-            %       The half-spectrum,
-            %       where m is self.get_nfft() / 2,
+            %   - Fs: `1x1` numerical scalar,
+            %       the sample rate in Hz.
+            % 
+            %   - spect: `m x self.n_trials` numerical vector,
+            %       the half-spectrum,
+            %       where `m` is `self.get_nfft() / 2`,
             %       in dB.
             % 
-            %   binned_repr: self.n_bins x self.n_trials numerical vector
-            %       The binned representation.
+            %   - binned_repr: `self.n_bins x self.n_trials` numerical vector,
+            %       the binned representation.
             % 
-            %   frequency_vector: m x self.n_trials numerical vector
-            %       The frequencies associated with the spectrum,
-            %       where m is self.get_nfft() / 2,
+            %   - frequency_vector: `m x self.n_trials` numerical vector,
+            %       the frequencies associated with the spectrum,
+            %       where `m` is `self.get_nfft() / 2`,
             %       in Hz.
             % 
             % See Also: 

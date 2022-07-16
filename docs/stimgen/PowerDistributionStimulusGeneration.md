@@ -2,6 +2,15 @@
 
 This is a stimulus generation method in which the frequencies in each bin are sampled from a power distribution learned from tinnitus examples. 
 
+### Unique Properties
+
+This stimulus generation method has two properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Defaults:
+
+```
+distribution = []
+distribution_filepath = ''
+```
+
 -------
 
 ### build_distribution
@@ -10,18 +19,24 @@ Builds the default power distribution from ATA tinnitus sample files.
 Saves the distribution as a vector in dB
 and the corresponding frequency vector.
 
-Arguments:
-save_path : character vector, default: pathlib.join(fileparts(mfilename('fullpath')), 'distribution.mat');
-Path to .mat file where distribution should be saved.
+**ARGUMENTS:**
 
-Returns:
-distribution : numeric vector
-Power distribution in dB.
+- save_path: character vector, 
+the path to `.mat` file where distribution should be saved. 
+Default:
+```matlab
+pathlib.join(fileparts(mfilename('fullpath')), 'distribution.mat');
+```  
+
+**OUTPUTS:**
+
+- distribution: numeric vector,
+the power distribution in dB.
 
 
 
 !!! info "See Also"
-    * [PowerDistributionStimulusGeneration.from_file,](../PowerDistributionStimulusGeneration/#from_file,)
+    * [PowerDistributionStimulusGeneration.from_file](../PowerDistributionStimulusGeneration/#from_file)
     * [PowerDistributionStimulusGeneration.generate_stimulus](../PowerDistributionStimulusGeneration/#generate_stimulus)
 
 
@@ -32,7 +47,7 @@ Power distribution in dB.
 
 ### from_file
 
-Loads a power distribution from a .mat or .csv file into the object.
+Loads a power distribution from a `.mat` or `.csv` file into the object.
 
 
 
@@ -47,32 +62,36 @@ Loads a power distribution from a .mat or .csv file into the object.
 
 ### generate_stimulus
 
+```matlab
 [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
-
+```
 
 Generates stimuli by assigning the power in each bin
 by sampling from a power distribution
 learned from ATA tinnitus examples.
 
-Returns:
-stim: n x 1 numerical vector
-The stimulus waveform,
-where n is self.get_nfft() + 1.
-Fs: 1x1 numerical scalar
-The sample rate in Hz.
-spect: m x 1 numerical vector
-The half-spectrum,
-where m is self.get_nfft() / 2,
+**OUTPUTS:**
+
+- stim: `n x 1` numerical vector,
+the stimulus waveform,
+where `n` is `self.get_nfft() + 1`.
+- Fs: `1x1` numerical scalar,
+the sample rate in Hz.
+- spect: `m x 1` numerical vector,
+the half-spectrum,
+where `m` is `self.get_nfft() / 2`,
 in dB.
-binned_repr: self.n_bins x 1 numerical vector
-The binned representation.
-frequency_vector: m x 1 numerical vector
+- binned_repr: `self.n_bins x 1` numerical vector,
+the binned representation.
+- frequency_vector: `m x 1` numerical vector
 The frequencies associated with the spectrum,
-where m is self.get_nfft() / 2,
+where `m` is `self.get_nfft() / 2`,
 in Hz.
 
-Class Properties Used:
-n_bins
+**Class Properties Used:**
+```
+- n_bins
+```
 
 
 
