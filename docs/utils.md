@@ -10,6 +10,8 @@ Opens a GUI using a standard MATLAB figure window
 with a slider for scaling the target sound audio 
 and a button for replaying the sound compared to an unchanged stimulus noise.  
 
+**pre-commit message test 2**
+
 **ARGUMENTS:**
 
 - target_sound: `n x 1` vector, the target sound.
@@ -284,7 +286,7 @@ Write the stimuli into the stimuli file.
 
 
 !!! info "See Also"
-    * [Protocol](../experiment/#protocol)
+    * [Protocol](./Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/experiment/#protocol)
 
 
 

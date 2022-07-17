@@ -7,7 +7,8 @@ cp .git/hooks/pre-commit git-hooks/pre-commit
 
 # make the docs 
 echo "Making the docs..."
-python3 code/build_docs.py
+rt = $(git rev-parse --show-toplevel)
+python3 rt/code/build_docs.py
 
 git add git-hooks/pre-commit
 git add docs/*
