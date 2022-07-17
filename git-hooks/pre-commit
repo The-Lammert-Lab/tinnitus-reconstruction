@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# This hook makes the docs
+
+# copy this file into the repository so that others can use it
+cp .git/hooks/pre-commit git-hooks/pre-commit
+
+# make the docs 
+echo "Making the docs..."
+python3 code/build_docs.py
+
+git add git-hooks/pre-commit
+git add docs/*
