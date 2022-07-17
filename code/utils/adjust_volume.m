@@ -6,7 +6,7 @@
 % with a slider for scaling the target sound audio 
 % and a button for replaying the sound compared to an unchanged stimulus noise.  
 % 
-% **here's a new pre-commit message. Did it work??????????**
+% **yet another pre-commit message to test**
 % 
 % **ARGUMENTS:**
 % 
