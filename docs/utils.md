@@ -10,7 +10,7 @@ Opens a GUI using a standard MATLAB figure window
 with a slider for scaling the target sound audio 
 and a button for replaying the sound compared to an unchanged stimulus noise.  
 
-**yet another pre-commit message to test**
+**another another another**
 
 **ARGUMENTS:**
 
