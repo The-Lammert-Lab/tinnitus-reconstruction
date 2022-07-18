@@ -1,19 +1,29 @@
 # Adapted from xolotl project for use in tinnitus project.
 # NB 6/3/22
-# Made to work with the layout of the tinnitus-project repository.
+# Only functional as written on macOS/Linux systems
 
 import os
 from glob import glob
 from shutil import copyfile
 from comment2docs import comment2docs
 
-# build_docs.py intended to be stored in `code` directory.
-for folder in sorted(glob("./*/")):
+# Identify path to git root (i.e., `.../tinnitus-project`)
+# Make sure initial glob begins at said root dir.
+curr_dir = os.getcwd()
+
+if curr_dir.endswith('tinnitus-project'):
+    root_pth = '.'
+else:
+    split_dir = curr_dir.split('/')
+    root_ind = [ind for ind, subdir in enumerate(split_dir) if subdir == 'tinnitus-project']
+    root_pth = '/'.join(split_dir[:root_ind[0]+1])
+
+for folder in sorted(glob(f"{root_pth}/code/*/")):
     for i, item in enumerate(sorted(glob(folder + "*.m") + glob(folder + "@*"), key = str.lower)):
 
         if item.find("@") > 0:
             classname = item.replace(f"{folder}@",'')
-            header_file =  f"../docs/stimgen/{classname}-head.md"
+            header_file =  f"{root_pth}/docs/stimgen/{classname}-head.md"
 
             if not os.path.exists(header_file):
                 print(f"[ABORT] Can't find header {header_file}, skipping...")
@@ -24,7 +34,7 @@ for folder in sorted(glob("./*/")):
 
                 first = False
 
-                doc_file = f"../docs/stimgen/{classname}.md"
+                doc_file = f"{root_pth}/docs/stimgen/{classname}.md"
 
                 if j == 0:
                     first = True
@@ -36,20 +46,21 @@ for folder in sorted(glob("./*/")):
                 filename = file.replace(f"{item}/",'')
                 filename = filename.replace(".m",'')
 
-                comment2docs(filename, file, out_file, first)
+                comment2docs(filename, file, out_file, first, root_pth)
 
         else:
 
             first = False
 
-            foldername = folder[:-1].replace('./','')
-            header_file =  f"../docs/{foldername}-head.md"
+            foldername = os.path.basename(folder[:-1]) 
+            header_file = f"{root_pth}/docs/{foldername}-head.md"
 
             if not os.path.exists(header_file):
-                print(f"[ABORT] Can't find header {header_file}, skipping...")
+                print(f"[ABORT] Can't find header for {foldername}, skipping...")
                 continue
 
-            doc_file = f"../docs/{foldername}.md"
+
+            doc_file = f"{root_pth}/docs/{foldername}.md"
 
             if i == 0:
                 first = True
@@ -61,4 +72,4 @@ for folder in sorted(glob("./*/")):
             filename = item.replace(f"{folder}",'')
             filename = filename.replace(".m",'')
             
-            comment2docs(filename, item, out_file, first)
+            comment2docs(filename, item, out_file, first, root_pth)

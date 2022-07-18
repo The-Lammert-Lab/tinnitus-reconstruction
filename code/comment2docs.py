@@ -5,7 +5,7 @@
 import os
 from glob import glob
 
-def comment2docs(filename, file, out_file, first, a = -1):
+def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
     lines = tuple(open(file, 'r'))
 
@@ -135,7 +135,7 @@ def comment2docs(filename, file, out_file, first, a = -1):
                 # This is a reference to a standalone function or script
 
                 # Find file being referred to. Not using 'in' to avoid finding multiple files.
-                ref = [item for item in glob('./*/*.m') if thisline.strip() == os.path.basename(item)[:-2]]
+                ref = [item for item in glob(f'{root_pth}/code/*/*.m') if thisline.strip() == os.path.basename(item)[:-2]]
 
                 if not ref:
                     print(f"[WARN]: 'See also' not formatted properly in {filename}.")
@@ -160,7 +160,7 @@ def comment2docs(filename, file, out_file, first, a = -1):
 
     # Recursion for multiple functions within abstract classes.
     if abstract and a < fns[-1][0]:
-        comment2docs(filename, file, out_file, first, a)
+        comment2docs(filename, file, out_file, first, root_pth, a)
 
     out_file.close()
 
