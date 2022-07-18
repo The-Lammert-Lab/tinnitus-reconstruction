@@ -137,9 +137,13 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
                 # Find file being referred to. 
                 # Some wrangling to always write proper path relative to current file.
                 # Path written as though `tinnitus-project/code` is current directory. 
-                ref = [item[item.find('tinnitus-project'):].replace('tinnitus-project/code/','') 
-                        for item in glob(f'{root_pth}/code/*/*.m') 
+                ref = [item for item in glob(f'{root_pth}/code/*/*.m') 
                         if thisline.strip() == os.path.basename(item)[:-2]]
+                
+                if root_pth == '.':
+                    ref = ref[0][7:]
+                else:
+                    ref = ref[0][ref[0].find('tinnitus-project'):].replace('tinnitus-project/code/','')
 
                 if not ref:
                     print(f"[WARN]: 'See also' not formatted properly in {filename}.")
