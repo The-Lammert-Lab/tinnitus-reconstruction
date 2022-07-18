@@ -149,17 +149,17 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
                     print(f"[WARN]: 'See also' not formatted properly in {filename}.")
                     continue
 
-                elif os.path.dirname(ref[0]) == os.path.dirname(file):
+                elif os.path.dirname(ref) == os.path.dirname(file):
                     out_file.write(f'    * [{thisline.strip()}]' + 
                                 f'(./#{thisline.strip().lower()})\n')
 
                 elif 'stimulus_generation' in file:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(../../{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
+                                f'(../../{os.path.dirname(ref)}/#{thisline.strip().lower()})\n')
 
                 else:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(../{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
+                                f'(../{os.path.dirname(ref)}/#{thisline.strip().lower()})\n')
 
             else:
                 out_file.write(thisline)

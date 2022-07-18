@@ -157,7 +157,7 @@ representing the stimulus spectra
 
 
 !!! info "See Also"
-    * [spect2binnedrepr](..//#spect2binnedrepr)
+    * [spect2binnedrepr](../utils/#spect2binnedrepr)
 
 
 
@@ -194,9 +194,9 @@ data_table = collect_parameters(filenames)
 
 
 !!! info "See Also"
-    * [collect_reconstructions](..//#collect_reconstructions)
-    * [collect_data](..//#collect_data)
-    * [config2table](..//#config2table)
+    * [collect_reconstructions](../utils/#collect_reconstructions)
+    * [collect_data](../utils/#collect_data)
+    * [config2table](../utils/#config2table)
 
 
 
@@ -239,7 +239,7 @@ corresponding to the columns of `reconstructions`.
 
 
 !!! info "See Also"
-    * [collect_data](..//#collect_data)
+    * [collect_data](../utils/#collect_data)
     * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
 
@@ -267,7 +267,7 @@ returns from `dir()` function.
 
 
 !!! info "See Also"
-    * [parse_config](..//#parse_config)
+    * [parse_config](../utils/#parse_config)
     * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
 
@@ -284,7 +284,7 @@ Write the stimuli into the stimuli file.
 
 
 !!! info "See Also"
-    * [Protocol](..//#protocol)
+    * [Protocol](../experiment/#protocol)
 
 
 
@@ -334,7 +334,7 @@ Example:
 
 
 !!! info "See Also"
-    * [collect_data](..//#collect_data)
+    * [collect_data](../utils/#collect_data)
 
 
 
@@ -354,9 +354,9 @@ Compute the reconstruction, given the response vector and the stimuli matrix wit
 
 
 !!! info "See Also"
-    * [collect_reconstructions](..//#collect_reconstructions)
-    * [collect_data](..//#collect_data)
-    * [config2table](..//#config2table)
+    * [collect_reconstructions](../utils/#collect_reconstructions)
+    * [collect_data](../utils/#collect_data)
+    * [config2table](../utils/#config2table)
 
 
 
@@ -423,7 +423,7 @@ stringified_properties = prop2str(obj, [], '&&')
 
 
 !!! info "See Also"
-    * [collect_parameters](..//#collect_parameters)
+    * [collect_parameters](../utils/#collect_parameters)
 
 
 
@@ -463,7 +463,7 @@ for each trial
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](..//#binnedrepr2spect)
+    * [binnedrepr2spect](../utils/#binnedrepr2spect)
 
 
 
@@ -500,7 +500,7 @@ obj = str2prop(prop_string, [], '&&')
 
 
 !!! info "See Also"
-    * [collect_parameters](..//#collect_parameters)
+    * [collect_parameters](../utils/#collect_parameters)
 
 
 
