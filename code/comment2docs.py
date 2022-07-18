@@ -141,9 +141,9 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
                         if thisline.strip() == os.path.basename(item)[:-2]]
                 
                 if root_pth == '.':
-                    ref = ref[0][7:]
+                    ref_pth = ref[0][7:]
                 else:
-                    ref = ref[0][ref[0].find('tinnitus-project'):].replace('tinnitus-project/code/','')
+                    ref_pth = ref[0][ref[0].find('tinnitus-project'):].replace('tinnitus-project/code/','')
 
                 if not ref:
                     print(f"[WARN]: 'See also' not formatted properly in {filename}.")
@@ -155,11 +155,11 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
                 elif 'stimulus_generation' in file:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(../../{os.path.dirname(ref)}/#{thisline.strip().lower()})\n')
+                                f'(../../{os.path.dirname(ref_pth)}/#{thisline.strip().lower()})\n')
 
                 else:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(../{os.path.dirname(ref)}/#{thisline.strip().lower()})\n')
+                                f'(../{os.path.dirname(ref_pth)}/#{thisline.strip().lower()})\n')
 
             else:
                 out_file.write(thisline)
