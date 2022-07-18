@@ -86,8 +86,8 @@ for each trial
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](.././Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/utils/#binnedrepr2spect)
-    * [spect2binnedrepr](.././Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/utils/#spect2binnedrepr)
+    * [binnedrepr2spect](../../code/utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../code/utils/#spect2binnedrepr)
 
 
 
@@ -111,8 +111,8 @@ representing the stimulus spectra
 
 
 !!! info "See Also"
-    * [binnedrepr2spect](.././Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/utils/#binnedrepr2spect)
-    * [spect2binnedrepr](.././Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/utils/#spect2binnedrepr)
+    * [binnedrepr2spect](../../code/utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../code/utils/#spect2binnedrepr)
 
 
 
@@ -141,7 +141,7 @@ the sample rate
 !!! info "See Also"
     * [AbstractBinnedStimulusGenerationMethod.binnedrepr2spect](../AbstractBinnedStimulusGenerationMethod/#binnedrepr2spect)
     * [AbstractBinnedStimulusGenerationMethod.spect2binnedrepr](../AbstractBinnedStimulusGenerationMethod/#spect2binnedrepr)
-    * [signal2spect](.././Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/utils/#signal2spect)
+    * [signal2spect](../../code/utils/#signal2spect)
 
 
 
