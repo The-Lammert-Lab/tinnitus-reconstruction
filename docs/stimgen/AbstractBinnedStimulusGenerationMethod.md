@@ -86,3 +86,62 @@ for each trial
 
 
 !!! info "See Also"
+    * [binnedrepr2spect](../../utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../utils/#spect2binnedrepr)
+
+
+
+
+
+### binnedrepr2spect
+
+Get the stimuli spectra from a binned representation.
+
+**ARGUMENTS:**
+
+- binned_repr: `n_bins x n_trials`
+representing the amplitude in each frequency bin
+for each trial
+
+**OUTPUTS:**
+
+- T: `n_frequencies x n_trials`
+representing the stimulus spectra
+
+
+
+!!! info "See Also"
+    * [binnedrepr2spect](../../utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../utils/#spect2binnedrepr)
+
+
+
+
+
+### bin_signal
+
+```matlab
+W = self.bin_signal(W)
+```
+
+Inputs a waveform,
+converts to a spectrum,
+bins the spectrum,
+and then converts back to a waveform.
+
+**ARGUMENTS:**
+
+W: `n x 1` numerical vector,
+the waveform
+Fs: `1x1` numerical scalar,
+the sample rate
+
+
+
+!!! info "See Also"
+    * [AbstractBinnedStimulusGenerationMethod.binnedrepr2spect](../AbstractBinnedStimulusGenerationMethod/#binnedrepr2spect)
+    * [AbstractBinnedStimulusGenerationMethod.spect2binnedrepr](../AbstractBinnedStimulusGenerationMethod/#spect2binnedrepr)
+    * [signal2spect](../../utils/#signal2spect)
+
+
+
