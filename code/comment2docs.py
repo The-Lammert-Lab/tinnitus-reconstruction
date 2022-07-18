@@ -134,8 +134,12 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
             elif format_link:
                 # This is a reference to a standalone function or script
 
-                # Find file being referred to. Not using 'in' to avoid finding multiple files.
-                ref = [item for item in glob(f'{root_pth}/code/*/*.m') if thisline.strip() == os.path.basename(item)[:-2]]
+                # Find file being referred to. 
+                # Some wrangling to always write proper path relative to current file.
+                # Path written as though `tinnitus-project/code` is current directory. 
+                ref = [item[item.find('tinnitus-project'):].replace('tinnitus-project/code/','') 
+                        for item in glob(f'{root_pth}/code/*/*.m') 
+                        if thisline.strip() == os.path.basename(item)[:-2]]
 
                 if not ref:
                     print(f"[WARN]: 'See also' not formatted properly in {filename}.")
@@ -147,11 +151,11 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
                 elif 'stimulus_generation' in file:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(../.{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
+                                f'(../../{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
 
                 else:
                     out_file.write(f'    * [{thisline.strip()}]' + 
-                                f'(.{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
+                                f'(../{os.path.dirname(ref[0])}/#{thisline.strip().lower()})\n')
 
             else:
                 out_file.write(thisline)
