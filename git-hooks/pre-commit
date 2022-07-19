@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# This hook makes the docs
+
+# Get root directory in case cd set elsewhere
+root=$(git rev-parse --show-toplevel)
+
+# copy this file into the repository so that others can use it
+cp "$root/.git/hooks/pre-commit" "$root/git-hooks/pre-commit"
+
+# make the docs 
+echo "Making the docs..."
+python3 "$root/code/build_docs.py"
+
+# Add
+git add "$root/git-hooks/pre-commit"
+git add "$root/docs/*"
