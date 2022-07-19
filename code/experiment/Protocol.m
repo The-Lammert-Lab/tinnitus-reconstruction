@@ -101,7 +101,10 @@ function Protocol(options)
         target_sound = stimuli_object.bin_signal(target_sound, target_fs);
     end
 
-    target_sound = target_sound(1:floor(target_fs*0.5)); %ACL added (5MAY2022) to shorten target sound to 500ms
+    % Truncate target sound to 500 ms if it's longer
+    if length(target_sound) > floor(0.5 * target_fs)
+        target_sound = target_sound(1:floor(0.5 * target_fs));
+    end
 
     %% Load Presentations Screens
 

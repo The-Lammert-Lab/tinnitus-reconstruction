@@ -61,14 +61,14 @@ max_bins: 30
 # (i.e., for pilot subjects)
 # this field describes the full filepath
 # to the target signal audio file.
-target_audio_filepath: /Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/experiment/resynth_wavs/paper1-roaring-NB-ATA-2nd.wav
-bin_target_signal: true
+target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/resynth_wavs/paper1-roaring-NB-ATA-2nd.wav
+bin_target_signal: false
 
 # This is the path where the output files are saved.
 # This is not a required field.
 # If it is is unset, it will default to
 # tinnitus-project/code/experiment/Data.
-data_dir: /Users/NelsonBarnett 1 2/Desktop/Prof. Lammert Research/Tinnitus/tinnitus-project/code/experiment/Data_Paper1_Resynth
+data_dir: /home/alec/code/tinnitus-project/code/experiment/Data_Paper1_Resynth
 
 # This field determines in what form the stimuli are saved.
 # The available options are 'bins', 'waveform', or 'spectrum'.
