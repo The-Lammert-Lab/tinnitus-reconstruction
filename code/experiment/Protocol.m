@@ -64,6 +64,13 @@ function Protocol(options)
         % Default to 'custom' stimulus generation
         config.stimuli_type = 'GaussianPrior';
     end
+
+    % Determine if the protocol should be 2-AFC
+    if isfield(config, 'two_afc') && ~isempty(config.two_afc)
+        is_two_afc = config.two_afc;
+    else
+        is_two_afc = false;
+    end
     
     % Generate the experiment ID
     expID = get_experiment_ID(config);
@@ -114,12 +121,22 @@ function Protocol(options)
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
-    [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+
+    if is_two_afc
+        [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+    else
+        [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+    end
+
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
     if ~isempty(target_sound)
-        scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+        if is_two_afc
+            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
+        else
+            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+        end
     end
     
     %% Intro Screen & Start
@@ -149,8 +166,11 @@ function Protocol(options)
 
 
         % Present Stimulus
-        soundsc(stimuli_matrix(:, counter), Fs)
-        pause(length(stimuli_matrix(:, counter)) / Fs)
+        if is_two_afc
+            present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs);
+        else
+            present_stimulus(stimuli_matrix, counter, Fs);
+        end
             
         % Obtain Response
         k = waitforbuttonpress;
@@ -200,7 +220,11 @@ function Protocol(options)
             end
 
             % Generate new stimuli and files
-            [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+            if is_two_afc
+                [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+            else
+                [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+            end
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
@@ -209,4 +233,23 @@ function Protocol(options)
         
     end
     
+end % function
+
+function present_stimulus(stimuli_matrix, counter, Fs)
+    % Play the correct stimulus to the subject.
+    soundsc(stimuli_matrix(:, counter), Fs)
+    pause(length(stimuli_matrix(:, counter)) / Fs)
+end % function
+
+function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, pause_duration)
+    % Play the correct (first) stimulus to the subject.
+    % Pause, then play the second stimulus.
+
+    if nargin < 5
+        pause_duration = 0.3;
+    end
+
+    soundsc(stimuli_matrix_1(:, counter), Fs);
+    pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
+    soundsc(stimuli_matrix_2(:, counter), Fs);
 end % function
