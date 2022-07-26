@@ -68,6 +68,7 @@ for ii = 1:length(this_dir)
 end
 
 T = config2table(this_dir);
+T = sortrows(T, 'ID');
 T.config_filename = config_filenames(:); 
 
 
