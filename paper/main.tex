@@ -525,7 +525,7 @@ Data are available upon request.}}
 
 \section{Introduction}
 
-\IEEEPARstart{T}{innitus}\textemdash{}the perception of sound (\eg ringing, buzzing)
+\IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
 in the absence of an external stimulus\textemdash{}affects over 50 million people in the U.S.,
 a third of which experience functional cognitive impairment and substantial reduction
 in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
@@ -680,7 +680,7 @@ with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
 
-We recruited $N=2$ subjects for the experiment
+We recruited $N=3$ subjects for the experiment
 with healthy hearing from $[100,~13,000]$ Hz.
 Subjects used Sennheiser PXC 550 over-the-ear headphones
 and manually adjusted loudness
@@ -708,7 +708,7 @@ unify across subjects and provide a gold-standard to benchmark against.
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=\linewidth]{template.eps}
+	\includegraphics[width=\linewidth]{experiment_overview.pdf}
 	\caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
   then a stimulus. They compare the mental model of the stimulus to the mental model of the target signal,
   before making a binary choice about the two signals' similarity.}
@@ -773,6 +773,7 @@ of the reconstructions compared to the ground-truth target representation.
         Buzzing & 1 & 0.062 & \textbf{0.138} \\
         Roaring & 1 & 0.208 & \textbf{0.331} \\
         Roaring & 2 & 0.625 & \textbf{0.839} \\
+        Buzzing & 2 & 0.311 & \textbf{0.508} \\
 				\hline
 				\hhline{====}
 			\end{tabular}
