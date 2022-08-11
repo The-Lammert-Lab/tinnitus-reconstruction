@@ -110,13 +110,37 @@ function [responses, stimuli] = collect_data(options)
             if isempty(responses{ii})
                 stimuli{ii} = [];
             else
-                % Fuse the stimuli together
-                % TODO: talk about this at lab meeting
-                stimulus_block_fused = NaN(size(stimulus_block_1, 1), length(responses{ii}));
-                stimulus_block_fused(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
-                stimulus_block_fused(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
+                % Combine the stimuli into a single tall matrix.
+                % Initially, a "1" response refers to a "yes" response for stimulus 1
+                % and a "-1" response refers to a "no" response for stimulus 2.
+                % We want to use both "yes" and "no" stimuli
+                % but change the response vector and stimulus matrix
+                % so that "1" refers to "good" stimuli
+                % and "-1" refers to "bad" stimuli.
+                m = size(stimulus_block_1);
+                n = length(responses{ii});
+
+                correct_stimuli = NaN(m, n);
+                incorrect_stimuli = NaN(m, n);
+
+                correct_stimuli(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
+                correct_stimuli(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
+                incorrect_stimuli(:, responses{ii} == 1) = stimulus_block_2(:, responses{ii} == 1);
+                incorrect_stimuli(:, responses{ii} == -1) = stimulus_block_1(:, responses{ii} == -1);
+
+                stimulus_block_fused = NaN(m, 2 * n);
+                stimulus_block_fused(:, 1:2:end) = correct_stimuli;
+                stimulus_block_fused(:, 2:2:end) = incorrect_stimuli;
+                
+                responses_fused = ones(2 * n, 1);
+                responses_fused(2:2:end) = -1;
 
                 assert(all(~isnan(stimulus_block_fused(:))), 'stimulus_block_fused contained NaN values')
+
+                % Reassign these vectors/matrices
+                responses{ii} = responses_fused;
+                stimuli{ii} = stimulus_block_fused;
+
             end
 
         end
