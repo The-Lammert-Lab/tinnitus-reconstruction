@@ -168,6 +168,11 @@ methods
             Fs = self.get_fs();
         end
 
+        if mod(length(W), 2) ~= 0
+            warning('W is not of even length, will zero-pad.')
+            W(end+1, :) = 0;
+        end
+
         nfft = length(W);
         dur = self.duration;
 
