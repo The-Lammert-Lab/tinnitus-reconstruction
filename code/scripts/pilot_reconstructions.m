@@ -54,7 +54,6 @@ config_ids = cell(length(this_dir), 1);
 config = parse_config(pathlib.join(this_dir(1).folder, this_dir(1).name));
 stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
 stimgen = stimgen.from_config(config);
-stimgen.duration = 2*(size(target_signal, 1) / stimgen.get_fs);
 binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 
 % Define correlation type
