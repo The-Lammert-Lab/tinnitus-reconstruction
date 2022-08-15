@@ -376,7 +376,11 @@ If empty, opens a GUI to find the file using a file browser.
 
 **OUTPUTS:**
 
-config: `struct`
+varargout: `1 x 2` cell array:
+varargout{1} = config: `struct`, the parsed config file.
+varargout{2} = config_file OR abs_path, `char`,
+if path provided, return the path, else return path chosen
+from GUI.
 
 
 

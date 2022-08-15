@@ -33,7 +33,7 @@ function Protocol(options)
     % Is a config file provided?
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
-    config = parse_config(options.config_file);
+    [config, config_path] = parse_config(options.config_file);
 
     % Hash the config struct to get a unique string representation
     % Get the hash before modifying the config at all
@@ -47,6 +47,9 @@ function Protocol(options)
 
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
+
+    % Add config file to data directory
+    copyfile(config_path, config.data_dir);
 
     %% Setup
     
