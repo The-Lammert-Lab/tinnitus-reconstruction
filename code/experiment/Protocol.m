@@ -33,7 +33,7 @@ function Protocol(options)
     % Is a config file provided?
     %   If so, read it.
     %   If not, open a GUI dialog window to find it.
-    config = parse_config(options.config_file);
+    [config, config_path] = parse_config(options.config_file);
 
     % Hash the config struct to get a unique string representation
     % Get the hash before modifying the config at all
@@ -47,6 +47,9 @@ function Protocol(options)
 
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
+
+    % Add config file to data directory
+    copyfile(config_path, config.data_dir);
 
     %% Setup
     
@@ -131,7 +134,7 @@ function Protocol(options)
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
-    if ~isempty(target_sound)
+    if ~isempty(target_sound) && ~contains(config.target_audio_filepath,'resynth_wavs')
         if is_two_afc
             scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
         else
@@ -160,7 +163,11 @@ function Protocol(options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            sound(target_sound*scale_factor, target_fs)
+            if ~contains(config.target_audio_filepath,'resynth_wavs')
+                sound(target_sound*scale_factor, target_fs)
+            else
+                soundsc(target_sound,target_fs)
+            end
             pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
         end
 

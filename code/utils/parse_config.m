@@ -10,12 +10,16 @@
 % 
 % **OUTPUTS:**
 % 
-%     config: `struct`
+%     varargout: `1 x 2` cell array:
+%         varargout{1} = config: `struct`, the parsed config file.
+%         varargout{2} = config_file OR abs_path, `char`,
+%             if path provided, return the path, else return path chosen
+%             from GUI.
 % 
 % See Also: 
 % * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
 
-function config = parse_config(config_file, verbose)
+function varargout = parse_config(config_file, verbose)
 
     arguments
         config_file (1,:) = []
@@ -26,8 +30,10 @@ function config = parse_config(config_file, verbose)
     if isempty(config_file)
         [file, abs_path] = uigetfile('*.yaml');
         config = ReadYaml(pathlib.join(abs_path, file));
+        varargout{2} = pathlib.join(abs_path, file);
     else
         config = ReadYaml(config_file);
+        varargout{2} = config_file;
     end
 
     % Check for required config options
@@ -61,6 +67,7 @@ function config = parse_config(config_file, verbose)
     assert(any(strcmp(config.stimuli_save_type, {'bins', 'waveform', 'spectrum'})), ...
         ['Unknown stimuli save type: ', config.stimuli_save_type, '. Allowed values are: [bins, waveform, spectrum].'])
 
+    varargout{1} = config;
 
 end % function
 
