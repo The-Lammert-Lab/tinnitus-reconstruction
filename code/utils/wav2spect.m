@@ -7,9 +7,14 @@ function [s, f] = wav2spect(audio_file)
 
     % read the audio file
     [audio, fs] = audioread(audio_file);
+    if mod(length(audio), 2) ~= 0
+        audio = audio(1:end-1,:);
+    end
 
     % compute the short-time Fourier transform
-    [s, f] = spectrogram(audio, [], [], [], fs);
+    % s is an nfft/2 vector or matrix. f should be the same size.
+    % nfft = length(audio).
+    [s, f] = spectrogram(audio, [], [], length(audio)-1, fs);
 
     % average out temporal information
     s = mean(abs(s), 2);
