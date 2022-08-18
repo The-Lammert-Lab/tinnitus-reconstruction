@@ -83,7 +83,7 @@
                 "kind": "namevalue",
                 "repeating": false,
                 "type": [
-                    "file=*.yaml"
+                    "folder"
                 ],
                 "purpose": "File path to data directory"
             }
@@ -150,6 +150,30 @@
                 "repeating": false,
                 "type": "char",
                 "purpose": "8-element MD5 hash of config"
+            }
+        ]
+    },
+    "update_hashes": {
+        "inputs": [
+            {
+                "name": "old_hash",
+                "kind": "required",
+                "repeating": false,
+                "type": "char",
+                "purpose": "The new hash to change old hashes to"
+            },
+            {
+                "name": "old_hash",
+                "kind": "required",
+                "type": "char",
+                "purpose": "The old hash to change to the new hash"
+            },
+            {
+                "name": "data_dir",
+                "kind": "required",
+                "repeating": false,
+                "type": "folder",
+                "purpose": "Directory to search for filenames to update"
             }
         ]
     }
