@@ -18,10 +18,11 @@
 % parse_config
 % * [dir](https://www.mathworks.com/help/matlab/ref/dir.html)
 
-function data_table = config2table(curr_dir)
+function data_table = config2table(curr_dir, variables_to_remove)
 
     arguments
         curr_dir (:,1)
+        variables_to_remove = {}
     end
     
     config_file = curr_dir(1);
@@ -51,12 +52,16 @@ function data_table = config2table(curr_dir)
             repelem(size(data_table.target_audio_filepath,2),1));
         data_table.target_audio = cellfun(@(x) extractBetween(x,'Tinnitus_','_Tone'), audPath_cell);
     end
-    
-    remove_fields = {'n_trials_per_block', 'n_blocks', ...
-        'min_freq', 'max_freq', 'duration', 'n_bins', ...
-        'target_audio_filepath', 'bin_target_signal', ...
-        'data_dir', 'stimuli_save_type'};
-    
+
+    if isempty(variables_to_remove)  
+        remove_fields = {'n_trials_per_block', 'n_blocks', ...
+            'min_freq', 'max_freq', 'duration', 'n_bins', ...
+            'target_audio_filepath', 'bin_target_signal', ...
+            'data_dir', 'stimuli_save_type'};
+    else
+        remove_fields = variables_to_remove;
+    end
+        
     data_table = removevars(data_table,remove_fields);
 
 end % function
