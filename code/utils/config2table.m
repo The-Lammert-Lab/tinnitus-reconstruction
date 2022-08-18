@@ -55,14 +55,6 @@ function data_table = config2table(curr_dir, variables_to_remove)
     end
     
     %% Remove unnecessary info from table / clean fields
-    
-    % Extract tone name from target .wav filepath
-    if ~isempty(data_table.target_audio_filepath)
-        audPath_cell = mat2cell(data_table.target_audio_filepath, ...
-            repelem(1,size(data_table.target_audio_filepath,1)), ...
-            repelem(size(data_table.target_audio_filepath,2),1));
-        data_table.target_audio = cellfun(@(x) extractBetween(x,'Tinnitus_','_Tone'), audPath_cell);
-    end
 
     if isempty(variables_to_remove)  
         remove_fields = {'n_trials_per_block', 'n_blocks', ...
