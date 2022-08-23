@@ -67,6 +67,15 @@ function varargout = parse_config(config_file, verbose)
     assert(any(strcmp(config.stimuli_save_type, {'bins', 'waveform', 'spectrum'})), ...
         ['Unknown stimuli save type: ', config.stimuli_save_type, '. Allowed values are: [bins, waveform, spectrum].'])
 
+    % target_signal
+    if isfield(config, 'target_signal')
+        assert(isfield(config, 'target_audio_filepath'), 'target_audio_filepath not defined but target_signal is.');
+    end
+    if isfield(config, 'target_audio_filepath')
+        assert(isfield(config, 'target_signal'), 'target_signal is not defined but target_audio_filepath is.')
+    end
+    
+
     varargout{1} = config;
 
 end % function

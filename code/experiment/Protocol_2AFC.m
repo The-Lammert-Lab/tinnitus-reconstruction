@@ -88,9 +88,9 @@ function Protocol_2AFC(options)
     %   for each trial.
     %   Whether we are doing an A-X protocol or an X protocol
     %   is determined by the config file.
-    if isfield(config, 'target_audio_filepath') && ~isempty(config.target_audio_filepath)
+    if isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath)
         % Load the sound file.
-        [target_sound, target_fs] = audioread(config.target_audio_filepath);
+        [target_sound, target_fs] = audioread(config.target_signal_filepath);
     else
         target_sound = [];
     end

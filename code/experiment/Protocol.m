@@ -98,9 +98,9 @@ function Protocol(options)
     %   for each trial.
     %   Whether we are doing an A-X protocol or an X protocol
     %   is determined by the config file.
-    if isfield(config, 'target_audio_filepath') && ~isempty(config.target_audio_filepath)
+    if isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath)
         % Load the sound file.
-        [target_sound, target_fs] = audioread(config.target_audio_filepath);
+        [target_sound, target_fs] = audioread(config.target_signal_filepath);
     else
         target_sound = [];
     end
@@ -134,7 +134,7 @@ function Protocol(options)
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
-    if ~isempty(target_sound) && ~contains(config.target_audio_filepath,'resynth_wavs')
+    if ~isempty(target_sound) && ~contains(config.target_signal_filepath,'resynth_wavs')
         if is_two_afc
             scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
         else
@@ -163,7 +163,7 @@ function Protocol(options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            if ~contains(config.target_audio_filepath,'resynth_wavs')
+            if ~contains(config.target_signal_filepath,'resynth_wavs')
                 sound(target_sound*scale_factor, target_fs)
             else
                 soundsc(target_sound,target_fs)
