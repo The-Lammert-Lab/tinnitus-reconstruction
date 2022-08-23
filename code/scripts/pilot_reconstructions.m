@@ -95,7 +95,7 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
     corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])
-    this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_audio{ii}));
+    this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_signal_name{ii}));
 
     for qq = 1:length(trial_fractions)
         corelib.verb(true, 'INFO: pilot_reconstructions', ['trial fractions: ', num2str(trial_fractions(qq))])
@@ -189,7 +189,7 @@ fig1 = new_figure();
 cmap = colormaps.linspecer(2 * length(unique(T.subject_ID)) + 2);
 alpha = 0.25;
 
-subplot_labels = unique(T.target_audio)';
+subplot_labels = unique(T.target_signal_name)';
 
 for ii = length(subplot_labels):-1:1
     ax(ii) = subplot(2, 1, ii, 'Parent', fig1);
@@ -204,7 +204,7 @@ for ii = 1:length(subplot_labels)
     % p.Color(4) = alpha;
 
     % Reconstructions from subjects
-    T2 = T(strcmp(T.target_audio, subplot_labels{ii}), :);
+    T2 = T(strcmp(T.target_signal_name, subplot_labels{ii}), :);
     legend_labels = cell(2 * height(T2), 1);
     for qq = 1:height(T2)
         if PUBLISH
@@ -242,7 +242,7 @@ for ii = 1:length(subplot_labels)
     % end
         
     %     % Reconstructions
-    %     T2 = T(strcmp(T.target_audio, subplot_labels{qq}), :);
+    %     T2 = T(strcmp(T.target_signal_name, subplot_labels{qq}), :);
     %     for ww = 1:height(T2)
     %         p = plot(ax(ww), normalize(T2.reconstructions_cs_1{ww}), '-o', 'Color', cmap(ww, :));
     %         p.Color(4) = alpha;
@@ -283,7 +283,7 @@ fig2 = new_figure();
 cmap = colormaps.linspecer(length(unique(T.subject_ID)));
 alpha = 1;
 
-subplot_labels = unique(T.target_audio)';
+subplot_labels = unique(T.target_signal_name)';
 
 for ii = length(subplot_labels):-1:1
     ax(ii) = subplot(2, 1, ii, 'Parent', fig2);
@@ -297,7 +297,7 @@ for ii = 1:length(subplot_labels)
     p.Color(4) = alpha;
 
     % Reconstructions from subjects
-    T2 = T(strcmp(T.target_audio, subplot_labels{ii}), :);
+    T2 = T(strcmp(T.target_signal_name, subplot_labels{ii}), :);
     legend_labels = cell(2 * height(T2), 1);
     for qq = 1:height(T2)
         if PUBLISH

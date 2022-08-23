@@ -63,12 +63,12 @@ max_bins: 30
 # (i.e., for pilot subjects)
 # this field describes the full filepath
 # to the target signal audio file.
-target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+target_signal_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
 
 # This field gives the short-form name of the target signal.
 # For resynth experiments, you should name it
 # "resynth-buzzing" for instance.
-target_signal: buzzing
+target_signal_name: buzzing
 
 # This field is a boolean flag
 # that indicates whether the target signal

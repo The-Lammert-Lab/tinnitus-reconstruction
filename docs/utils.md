@@ -260,6 +260,17 @@ which is the directory information
 containing config file name, path, and other
 returns from `dir()` function.
 
+- variables_to_remove: `cell`, default: `{}`,
+a cell array of character vectors,
+indicating which variables (columns) of
+the data table to remove.
+If empty, re-defaults to:
+`{'n_trials_per_block', 'n_blocks', ...
+'min_freq', 'max_freq', 'duration', 'n_bins', ...
+'target_signal_filepath', 'bin_target_signal', ...
+'data_dir', 'stimuli_save_type'}`.
+
+
 **OUTPUTS:** 
 
 - data_table: `table`
