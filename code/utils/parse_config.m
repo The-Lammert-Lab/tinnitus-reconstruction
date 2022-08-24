@@ -70,12 +70,12 @@ function varargout = parse_config(config_file, verbose)
     % target_signal
     if isfield(config, 'target_signal')
         if isfield(config, 'target_signal_filepath')
-            warn('target_signal_filepath not defined but target_signal is.');
+            corelib.verb(verbose, 'WARN: parse_config', 'target_signal_filepath not defined but target_signal is.');
         end
     end
     if isfield(config, 'target_signal_filepath')
         if isfield(config, 'target_signal')
-            warn('target_signal is not defined but target_signal_filepath is.');
+            corelib.verb(verbose, 'WARN: parse_config', 'target_signal is not defined but target_signal_filepath is.');
         end
     end
     
