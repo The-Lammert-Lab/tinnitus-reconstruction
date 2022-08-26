@@ -2,6 +2,34 @@
 
 Reconstructing high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
 
+## Installing
+
+For most users, it is best to install the MATLAB toolbox from the latest [Release](https://github.com/alec-hoyland/tinnitus-project/releases#latest).
+For development, clone the following projects:
+
+* [mtools](https://github.com/sg-s/srinivas.gs_mtools)
+* [tinnitus-project](https://github.com/alec-hoyland/tinnitus-project)
+* [ReadYAML](https://github.com/llerussell/ReadYAML)
+
+Then add the functions to your path. The commands should look similar to this:
+
+```matlab
+addpath ~/code/ReadYAML
+addpath ~/code/srinivas.gs_mtools/src
+savepath
+```
+
+Finally, in the `tinnitus-project/code` directory,
+run `setup.m` as a MATLAB script.
+
+## Quickstart
+
+Copy the template configuration file found
+[here](https://github.com/alec-hoyland/tinnitus-project/blob/main/code/experiment/configs/config_template.yaml)
+and modify it as you see fit.
+
+Then, run the `Protocol` function in your MATLAB prompt.
+
 ## Configuration files
 
 An experiment is specified by a configuration file.
@@ -41,10 +69,22 @@ stimgen = GaussianPriorStimulusGeneration();
 stimgen = stimgen.from_config('path/to/config_file.yaml');
 ```
 
+You can load a config file into memory:
+
+```matlab
+config = parse_config('path/to/config_file.yaml');
+```
+
 You can generate a serialized experiment ID via:
 
 ```matlab
 expID = get_experiment_ID(config);
+```
+
+Or a hash via:
+
+```matlab
+this_hash = get_hash(config);
 ```
 
 ## Stimulus generation methods
@@ -122,32 +162,9 @@ You can use the `collect_data` function to gather the data into output matrices.
 
 You can use compressed sensing (`cs`), compressed sensing without a basis (`cs_no_basis`) or linear regression (`gs`).
 
-Then do:
+Then do one of the following:
 
 ```matlab
-[x, responses_output, stimuli_matrix_output] = get_reconstruction(...
-    'config_file', 'path/to/config_file.yaml', ...
-    'preprocessing', {'bins'}, ...
-    'method', 'cs' ...
-)
+[x, responses_output, stimuli_matrix_output] = get_reconstruction('config', config);
+[x, responses_output, stimuli_matrix_output] = get_reconstruction('config_file', 'path/to/config/file.yaml');
 ```
-
-## Installing
-
-For most users, it is best to install the MATLAB toolbox from the latest [Release](https://github.com/alec-hoyland/tinnitus-project/releases#latest).
-For development, clone the following projects:
-
-* [mtools](https://github.com/sg-s/srinivas.gs_mtools)
-* [tinnitus-project](https://github.com/alec-hoyland/tinnitus-project)
-* [ReadYAML](https://github.com/llerussell/ReadYAML)
-
-Then add the functions to your path. The commands should look similar to this:
-
-```matlab
-addpath ~/code/ReadYAML
-addpath ~/code/srinivas.gs_mtools/src
-savepath
-```
-
-Finally, in the `tinnitus-project/code` directory,
-run `setup.m` as a MATLAB script.
