@@ -1,7 +1,7 @@
 %% Generate stimuli examples for different parameter values\
 %  and save them to data/.
 
-config = ReadYaml('configs/config.yaml');
+config = yaml.loadFile('configs/config.yaml');
 
 n_bins = [1000];
 bin_duration = [1];
