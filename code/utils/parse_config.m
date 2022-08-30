@@ -17,7 +17,7 @@
 %             from GUI.
 % 
 % See Also: 
-% * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
+% * yaml.loadFile
 
 function varargout = parse_config(config_file, verbose)
 
@@ -29,10 +29,10 @@ function varargout = parse_config(config_file, verbose)
     % Load the config file
     if isempty(config_file)
         [file, abs_path] = uigetfile('*.yaml');
-        config = ReadYaml(pathlib.join(abs_path, file));
+        config = yaml.loadFile(pathlib.join(abs_path, file));
         varargout{2} = pathlib.join(abs_path, file);
     else
-        config = ReadYaml(config_file);
+        config = yaml.loadFile(config_file);
         varargout{2} = config_file;
     end
 

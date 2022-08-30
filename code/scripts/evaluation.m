@@ -36,7 +36,7 @@ figlib.pretty()
 % Evaluate the reconstructions for the pilot data
 
 CONFIG_REL_PATH = 'experiment/configs/config.yaml';
-config = ReadYaml(CONFIG_REL_PATH);
+config = yaml.loadFile(CONFIG_REL_PATH);
 
 % Collect the data from the data files
 [responses, stimuli] = collect_data('config', CONFIG_REL_PATH);
