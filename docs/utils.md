@@ -568,10 +568,28 @@ the stimuli.
 
 -------
 
-### wav2spect 
+### update_hashes
 
-Reads an audio file (e.g., a .wav file) and returns a spectrum
-in terms of magnitudes, s, and frequencies, f, in Hz.
+Updates data files that match an old hash to a new hash.
+Ordinarily this is *not* something that you want to do.
+However, there are some situations where the config spec
+changed or something was mislabeled
+and so the config hash does not match
+the hashes in the data file names.
+This function re-aligns the data to the config
+by updating the hashes.
+
+
+**Arguments:**
+
+- new_hash: character vector
+- old_hash: character vector
+- data_dir: character vector
+pointing to the directory where the data files are stored.
+
+**Outputs:**
+- None
 
 
 
+!!! info "See Also"

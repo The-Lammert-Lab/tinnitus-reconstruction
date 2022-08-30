@@ -32,7 +32,7 @@ function update_hashes(new_hash, old_hash, data_dir, verbose)
         verbose (1,1) logical = true
     end
 
-    files = dir(pathib.join(data_dir), ['*', old_hash, '*']);
+    files = dir(pathlib.join(data_dir, ['*', old_hash, '*']));
 
     for ii = 1:length(files)
         new_filename = strrep(files(ii).name, old_hash, new_hash);

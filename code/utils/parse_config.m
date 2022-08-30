@@ -19,20 +19,27 @@
 % See Also: 
 % * yaml.loadFile
 
-function varargout = parse_config(config_file, verbose)
+function varargout = parse_config(config_file,legacy, verbose)
 
     arguments
         config_file (1,:) = []
+        legacy (1,1) {mustBeNumericOrLogical} = false
         verbose (1,1) {mustBeNumericOrLogical} = true
+    end
+
+    if legacy
+        read_yaml = @(x) ReadYaml(x);
+    else
+        read_yaml = @(x) yaml.loadFile(x);
     end
 
     % Load the config file
     if isempty(config_file)
         [file, abs_path] = uigetfile('*.yaml');
-        config = yaml.loadFile(pathlib.join(abs_path, file));
+        config = read_yaml(pathlib.join(abs_path, file));
         varargout{2} = pathlib.join(abs_path, file);
     else
-        config = yaml.loadFile(config_file);
+        config = read_yaml(config_file);
         varargout{2} = config_file;
     end
 
@@ -69,10 +76,14 @@ function varargout = parse_config(config_file, verbose)
 
     % target_signal
     if isfield(config, 'target_signal')
-        assert(isfield(config, 'target_audio_filepath'), 'target_audio_filepath not defined but target_signal is.');
+        if isfield(config, 'target_signal_filepath')
+            corelib.verb(verbose, 'WARN: parse_config', 'target_signal_filepath not defined but target_signal is.');
+        end
     end
-    if isfield(config, 'target_audio_filepath')
-        assert(isfield(config, 'target_signal'), 'target_signal is not defined but target_audio_filepath is.')
+    if isfield(config, 'target_signal_filepath')
+        if isfield(config, 'target_signal')
+            corelib.verb(verbose, 'WARN: parse_config', 'target_signal is not defined but target_signal_filepath is.');
+        end
     end
     
 
