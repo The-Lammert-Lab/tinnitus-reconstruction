@@ -1,2 +1,0 @@
-expID,hash,datetime,total_trials_done
-experiment_name=paper1-roaring-resynth-NB&&subject_ID=NB&&n_trials_per_block=100&&n_blocks=20&&total_trials=2000&&min_freq=100&&max_freq=13000&&duration=0.5&&n_bins=100&&stimuli_type=UniformPrior&&min_bins=30&&max_bins=30&&bin_target_signal=0&&stimuli_save_type=bins&&n_trials=100,38f20d6a_1658264251_14a31b23,19-Jul-2022 16:57:31,3
