@@ -9,7 +9,8 @@ For development, clone the following projects:
 
 * [mtools](https://github.com/sg-s/srinivas.gs_mtools)
 * [tinnitus-project](https://github.com/alec-hoyland/tinnitus-project)
-* [ReadYAML](https://github.com/llerussell/ReadYAML)
+* [ReadYAML](https://github.com/llerussell/ReadYAML) (only for legacy use)
+* [yaml](https://github.com/MartinKoch123/yaml)
 
 Then add the functions to your path. The commands should look similar to this:
 
