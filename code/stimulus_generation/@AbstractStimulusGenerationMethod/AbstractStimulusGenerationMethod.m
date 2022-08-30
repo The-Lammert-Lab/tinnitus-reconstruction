@@ -132,10 +132,10 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % Set properties from a struct holding config options.
             % 
             % See also: 
-            % * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
+            % * yaml.loadFile
 
             if isa(options, 'char')
-                options = ReadYaml(options);
+                options = yaml.loadFile(options);
             end
 
             self_fields = fieldnames(self);
