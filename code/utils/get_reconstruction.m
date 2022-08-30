@@ -22,17 +22,18 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         options.verbose (1,1) logical = true
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
         options.data_dir (1,:) char = ''
+        options.legacy (1,1) {mustBeNumericOrLogical} = false
     end
 
     % If no config file path is provided,
     % open a UI to load the config
     if isempty(options.config) && isempty(options.config_file)
         [file, abs_path] = uigetfile();
-        config = parse_config(pathlib.join(abs_path, file), options.verbose);
+        config = parse_config(pathlib.join(abs_path, file), options.legacy, options.verbose);
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['config file [', file, '] loaded from GUI'])
     elseif isempty(options.config)
-        config = parse_config(options.config_file, options.verbose);
-        corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object loaded from provided file [', options.config_file, ']')
+        config = parse_config(options.config_file, options.legacy, options.verbose);
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', ['config object loaded from provided file [', options.config_file, ']'])
     else
         config = options.config;
         corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object provided')

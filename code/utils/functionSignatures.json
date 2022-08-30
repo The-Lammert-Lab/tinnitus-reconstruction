@@ -11,6 +11,13 @@
                 "purpose": "File path to configuration file"
             },
             {
+                "name": "legacy",
+                "kind": "ordered",
+                "repeating": false,
+                "type": "logical",
+                "purpose": "If true, use ``ReadYaml`` to parse config, else ``yaml.loadFile``."
+            },
+            {
                 "name": "verbose",
                 "kind": "ordered",
                 "repeating": false,
@@ -86,6 +93,13 @@
                     "folder"
                 ],
                 "purpose": "File path to data directory"
+            },
+            {
+                "name": "legacy",
+                "kind": "namevalue",
+                "repeating": false,
+                "type": "logical",
+                "purpose": "If true, use ``ReadYaml`` to parse config, else ``yaml.loadFile``."
             }
         ]
     },
