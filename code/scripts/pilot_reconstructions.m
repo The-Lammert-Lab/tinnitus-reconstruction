@@ -24,12 +24,12 @@ data_files = {
     'ATA_Tinnitus_Screeching_Tone_1sec.wav' ...
 };
 data_names = {
-    'Buzzing', ...
-    'Electric', ...
-    'Roaring', ...
-    'Static', ...
-    'Teakettle', ...
-    'Screeching' ...
+    'buzzing', ...
+    'electric', ...
+    'roaring', ...
+    'static', ...
+    'teakettle', ...
+    'screeching' ...
 };
 s = cell(5, 1);
 f = cell(5, 1);
@@ -44,6 +44,16 @@ f = [f{:}];
 % Directory containing the data
 this_dir = dir(pathlib.join(DATA_DIR, '*.yaml'));
 
+% Remove resynth or 2afc (for now)
+% TODO: remove!!
+ii = 0;
+while ii < (length(this_dir) + 1)
+    ii = ii + 1;
+    if contains(this_dir(ii).name, '2afc') || contains(this_dir(ii).name, 'resynth')
+        this_dir(ii) = [];
+    end
+end
+
 % Get array of structs of config files
 config_filenames = {this_dir.name};
 
@@ -52,7 +62,7 @@ config_ids = cell(length(this_dir), 1);
 
 % Get the binned representation for the target signals
 config = parse_config(pathlib.join(this_dir(1).folder, this_dir(1).name));
-stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
+stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
 stimgen = stimgen.from_config(config);
 binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 
@@ -174,7 +184,7 @@ if PUBLISH
         this_filepath = pathlib.join(DATA_DIR, [T.experiment_name{ii}, '.wav']);
         this_binrep = rescale(T.reconstructions_cs_1{ii}, -20, 0);
         this_spectrum = stimgen.binnedrepr2spect(this_binrep);
-        this_spectrum(f(:,1) > 13e3) = -20;
+        this_spectrum(f(1:length(this_spectrum),1) > 13e3) = -20;
         this_waveform = stimgen.synthesize_audio(this_spectrum, stimgen.get_nfft());
         audiowrite(this_filepath, this_waveform, stimgen.Fs);
     end
