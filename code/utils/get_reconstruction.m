@@ -48,9 +48,14 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
             % stimuli are probably saved as waveforms
             % but should be in bins
             corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bin preprocessing')
-            stimgen = eval([config.stimuli_type, 'StimulusGeneration()']);
+            stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
             stimgen.from_config(config);
-            stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
+
+            if size(stimuli_matrix, 1) >= (config.duration * stimgen.Fs - 1)
+                % likely saved as waveforms
+                stimuli_matrix = signal2spect(stimuli_matrix); % waveform => spectrum
+            end
+
             stimuli_matrix = stimgen.spect2binnedrepr(stimuli_matrix); % spectrum => bin repr
         end
     end
