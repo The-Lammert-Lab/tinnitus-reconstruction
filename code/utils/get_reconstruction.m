@@ -33,14 +33,14 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['config file [', file, '] loaded from GUI'])
     elseif isempty(options.config)
         config = parse_config(options.config_file, options.legacy, options.verbose);
-        corelib.verb(options.verbose, 'INFO: get_reconstruction', ['config object loaded from provided file [', options.config_file, ']'])
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', ['config object loaded from provided file [', char(options.config_file), ']'])
     else
         config = options.config;
         corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object provided')
     end
 
     % collect the data from files
-    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', options.data_dir);
+    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', char(options.data_dir));
 
     % bin preprocessing
     if strcmp(config.stimuli_save_type, 'bins') || any(contains(options.preprocessing, 'bins'))
