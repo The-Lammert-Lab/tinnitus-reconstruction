@@ -355,9 +355,28 @@ Example:
 
 ### get_reconstruction
 
+Compute reconstructions using data specified
+by a configuration file.
+
+**ARGUMENTS:**
+
+- config_file: string or character array, name-value, default: ``''``
+A path to a YAML-spec configuration file.
+Either this argument or ``config`` is required.
+- config: struct, name-value, default: ``[]``
+A configuration file struct
+(e.g., one created by ``parse_config``).
+- preprocessing: cell array of character vectors, name-value, default: ``{}``
+A list of preprocessing steps to take.
+Currently, the only supported preprocessing step is ``'bit flip'``,
+which flips the sign on all responses before computing the reconstruction.
+- method: character vector, name-value, default: ``'cs'``
+Which reconstruction algorithm to use.
+
+
 ```matlab
 [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-x = get_reconstruction('config', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
 ```
 
 Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
@@ -396,7 +415,7 @@ from GUI.
 
 
 !!! info "See Also"
-    * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
+    * [* yaml.loadFile](../stimgen/* yaml/#loadfile)
 
 
 

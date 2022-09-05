@@ -187,14 +187,42 @@
                 "kind": "required",
                 "repeating": false,
                 "type": "folder",
-                "purpose": "Directory to search for filenames to update"
+                "purpose": "Path to directory where data files should be munged."
             },
             {
                 "name": "verbose",
-                "kind": "optional",
+                "kind": "ordered",
                 "repeating": false,
                 "type": "logical",
                 "purpose": "If true, print more informational text."
+            }
+        ]
+    },
+    "munge_hashes": {
+        "inputs": [
+            {
+                "name": "file_string",
+                "kind": "namevalue",
+                "type": ["char", "string"],
+                "purpose": "Pattern of config files to match and munge."
+            },
+            {
+                "name": "legacy_flag",
+                "kind": "namevalue",
+                "type": "logical",
+                "purpose": "If true, use ``ReadYaml`` to parse config, else ``yaml.loadFile``."
+            },
+            {
+                "name": "verbose",
+                "kind": "namevalue",
+                "type": "logical",
+                "purpose": "If true, print more informational text."
+            },
+            {
+                "name": "data_dir",
+                "kind": "namevalue",
+                "type": ["folder"],
+                "purpose": "Path to directory where data files should be munged."
             }
         ]
     }

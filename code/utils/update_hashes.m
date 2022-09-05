@@ -32,7 +32,17 @@ function update_hashes(new_hash, old_hash, data_dir, verbose)
         verbose (1,1) logical = true
     end
 
+    if strcmp(old_hash, new_hash)
+        % There is nothing to be done.
+        corelib.verb(verbose, 'update_hashes', 'hashes match, exiting...')
+        return
+    end
+
     files = dir(pathlib.join(data_dir, ['*', old_hash, '*']));
+
+    if numel(files) == 0
+        corelib.verb(verbose, 'update_hashes', 'no files were found to munge...')
+    end
 
     for ii = 1:length(files)
         new_filename = strrep(files(ii).name, old_hash, new_hash);
