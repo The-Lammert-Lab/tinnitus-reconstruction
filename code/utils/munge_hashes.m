@@ -6,22 +6,18 @@
 % 
 % **Arguments:**
 % 
-%   - file_string: ``string`` or ``character vector``, name-value, default: ``"config*.yaml"``
-% 
-%       A file pattern, optionally using globs that is passed to ``dir``
-%       to search for configuration files to munge.
+%   - file_string: ``string`` or ``character vector``, name-value, default: ``"config*.yaml"``  
+%   A file pattern, optionally using globs that is passed to ``dir``
+%   to search for configuration files to munge.
 
-%   - legacy_flag: ``logical scalar``, name-value, default: ``false``
-% 
+%   - legacy_flag: ``logical scalar``, name-value, default: ``false``  
 %   Whether to load config files in "legacy mode", e.g., with ``ReadYaml``
 %   instead of ``yaml.loadFile``.
 
-%   - verbose: ``logical scalar``, name-value, default: ``true``
-% 
+%   - verbose: ``logical scalar``, name-value, default: ``true``  
 %   Whether to print informative text.
 
-%   - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``
-% 
+%   - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``  
 %   Path to the directory where the data files to-be-munged are.
 % 
 % **Example:**
