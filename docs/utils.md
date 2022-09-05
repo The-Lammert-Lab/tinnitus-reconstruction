@@ -394,221 +394,30 @@ Compute the reconstruction, given the response vector and the stimuli matrix wit
 
 -------
 
-### parse_config 
-
-Read a config file and perform any special parsing that is required.
-
-**ARGUMENTS:**
-
-config_file: character vector, default: []
-Path to the config file to be used.
-If empty, opens a GUI to find the file using a file browser.
-
-**OUTPUTS:**
-
-varargout: `1 x 2` cell array:
-varargout{1} = config: `struct`, the parsed config file.
-varargout{2} = config_file OR abs_path, `char`,
-if path provided, return the path, else return path chosen
-from GUI.
-
-
-
-!!! info "See Also"
-    * [* yaml.loadFile](../stimgen/* yaml/#loadfile)
-
-
-
-
-
--------
-
-### prop2str
-
-Converts the property names and values of a struct or object
-into a character vector.
-For example, a struct, s, with the properties, s.a = 1, s.b = 2,
-would become 'a=1-b=2'.
-If some of the property values are cell arrays,
-they should be character vectors or numerical vectors
-and of the same type within each cell array.
-
-**ARGUMENTS:**
-
-- obj: `1 x 1` struct or object,
-the object with properties to be stringified
-
-- properties_to_skip: character vector or cell array
-Properties to not include in the output character vector.
-
-- property_separator: character vector
-What separator to use between parameter statements.
-
-**OUTPUTS:**
-
-- stringified_properties: character vector
-
-Example:
-
-```matlab
-stringified_properties = prop2str(obj, [], '&&')
-```
-
-
-
-!!! info "See Also"
-    * [collect_parameters](./#collect_parameters)
-
-
-
-
-
--------
-
-### spect2binnedrepr
-
-binned_repr = spect2binnedrepr(T, B)
-binned_repr = spect2binnedrepr(T, B, n_bins)
-
-Get the binned representation,
-which is a vector containing the amplitude
-of the spectrum in each frequency bin.
-
-**ARGUMENTS:**
-
-- T: `n_trials x n_frequencies` matrix
-representing the stimulus spectra
-
-- B: `1 x n_frequencies` vector
-representing the bin numbers
-(e.g., `[1, 1, 2, 2, 2, 3, 3, 3, 3, ...]`)
-
-- n_bins: `1x1` scalar
-representing the number of bins
-if not passed as an argument,
-it is computed from the maximum of B
-
-**OUTPUTS:**
-
-- binned_repr: `n_trials x n_bins` matrix
-representing the amplitude for each frequency bin
-for each trial
-
-
-
-!!! info "See Also"
-    * [binnedrepr2spect](./#binnedrepr2spect)
-
-
-
-
-
--------
-
-### str2prop
-Converts a string of properties and values
-into a struct or cell array.
-TODO: more documentation, use property_separator
-
-**ARGUMENTS:**
-
-- prop_string: character vector
-String containing property : value pairs
-
-- properties_to_skip: character vector or cell array
-Properties to not incude in the output character vector
-
-- property_separator: character vector
-What separator to use between parameter statements.
-
-**OUTPUTS:**
-
-- obj: struct or cell array
-
-
-Example:
-```matlab
-obj = str2prop(prop_string, [], '&&')
-```
-
-
-
-!!! info "See Also"
-    * [collect_parameters](./#collect_parameters)
-
-
-
-
-
--------
-
-### subject_selection_process
-
-Returns a response vector and the stimuli
-where the response vector is made of up -1 and 1 values
-corresponding to yes and no statements
-about how well the stimuli correspond to the target signal.
-
-```matlab
-y = subject_selection_process(target_signal, stimuli)
-[y, X] = subject_selection_process(target_signal, [], n_samples)
-```
-
-**ARGUMENTS:**
-
-- target_signal: `n x 1` numerical vector,
-the signal to compare against (e.g., the tinnitus signal).
-
-- stimuli: numerical matrix,
-an `m x n` matrix where m is the number of samples/trials
-and n is the same length as the target signal.
-If stimuli is empty, a random Bernoulli matrix (p = 0.5) is used.
-
-- n_samples: integer scalar
-representing how many samples are used when generating the Bernoulli matrix default
-for stimuli, if the stimuli argument is empty.
-
-**OUTPUTS:**
-
-- y: numerical vector,
-A vector of `-1` and `1` corresponding to negative and positive responses.
-
-- X: numerical matrix,
-the stimuli.
-
-
-
-!!! info "See Also"
-    * [AbstractStimulusGenerationMethod.subject_selection_process](../stimgen/AbstractStimulusGenerationMethod/#subject_selection_process)
-
-
-
-
-
--------
-
-### update_hashes
-
-Updates data files that match an old hash to a new hash.
-Ordinarily this is *not* something that you want to do.
-However, there are some situations where the config spec
-changed or something was mislabeled
-and so the config hash does not match
-the hashes in the data file names.
-This function re-aligns the data to the config
-by updating the hashes.
+### munge_hashes
+Processes config files, correcting errors.
+Then, fixes the hashes for saved data files
+associated with changed config files.
 
 
 **Arguments:**
 
-- new_hash: character vector
-- old_hash: character vector
-- data_dir: character vector
-pointing to the directory where the data files are stored.
+- file_string: ``string`` or ``character vector``, name-value, default: ``"config*.yaml"``
+A file pattern, optionally using globs that is passed to ``dir``
+to search for configuration files to munge.
+- legacy_flag: ``logical scalar``, name-value, default: ``false``
+Whether to load config files in "legacy mode", e.g., with ``ReadYaml``
+instead of ``yaml.loadFile``.
+- verbose: ``logical scalar``, name-value, default: ``true``
+Whether to print informative text.
+- data_dir: ``string`` or ``character vector``, name-value, default: ``"."``
+Path to the directory where the data files to-be-munged are.
 
-**Outputs:**
-- None
+**Example:**
 
+```matlab
+munge_hashes("file_string", "config*.yaml", "verbose", true)
+```
 
 
 !!! info "See Also"

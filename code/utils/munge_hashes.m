@@ -1,7 +1,30 @@
-%% munge_hashes.m 
+% ### munge_hashes
 % Processes config files, correcting errors.
 % Then, fixes the hashes for saved data files
 % associated with changed config files.
+% 
+% 
+% **Arguments:**
+% 
+%   - file_string: ``string`` or ``character vector``, name-value, default: ``"config*.yaml"``
+%       A file pattern, optionally using globs that is passed to ``dir``
+%       to search for configuration files to munge.
+%   - legacy_flag: ``logical scalar``, name-value, default: ``false``
+%       Whether to load config files in "legacy mode", e.g., with ``ReadYaml``
+%       instead of ``yaml.loadFile``.
+%   - verbose: ``logical scalar``, name-value, default: ``true``
+%       Whether to print informative text.
+%   - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``
+%       Path to the directory where the data files to-be-munged are.
+% 
+% **Example:**
+% 
+% ```matlab
+%   munge_hashes("file_string", "config*.yaml", "verbose", true)
+% ```
+% **See Also:**
+%   - update_hashes
+
 
 function munge_hashes(options)
 
