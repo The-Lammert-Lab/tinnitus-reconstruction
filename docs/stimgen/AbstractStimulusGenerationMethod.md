@@ -86,7 +86,7 @@ Set properties from a struct holding config options.
 
 
 !!! info "See Also"
-    * [ReadYaml](https://github.com/llerussell/ReadYAML/blob/master/ReadYaml.m)
+    * [* yaml.loadFile](../* yaml/#loadfile)
 
 
 
