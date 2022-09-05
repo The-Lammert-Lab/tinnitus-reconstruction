@@ -23,7 +23,7 @@
 %   munge_hashes("file_string", "config*.yaml", "verbose", true)
 % ```
 % **See Also:**
-%   - update_hashes
+% update_hashes
 
 
 function munge_hashes(options)
