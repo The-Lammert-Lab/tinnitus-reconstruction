@@ -20,11 +20,13 @@ Subjects performed 2000 trials in blocks of 100,
 in which they listened to 0.5-sec sample tinnitus percepts
 from the American Tinnitus Association (ATA),
 followed by a 0.5-sec random noise stimulus.
-Subjects responded, "yes" (1), if the random noise stimulus
-sounded like the target signal and "no" if not (-1).
-Responses were mapped to ones and negative ones
+The ATA target signals chosen were "buzzing" and "roaring"
+with strongly differing spectral content.
+Subjects responded, "yes", if the random noise stimulus
+sounded like the target signal and "no" if not.
+Responses were mapped to ones ("yes" -> 1) and negative ones ("no" -> -1)
 and the PTS was reconstructed using two algorithms:
-linear regression and compressed sensing.
+linear regression (LR) and compressed sensing (CS).
 Compressed sensing is a recent advance in signal processing
 which has gained broad recognition in medical imaging
 due to its ability to reduce scan times
@@ -33,7 +35,26 @@ The stimuli spectra were mapped to 100 mel-spaced frequency bins
 and used to reconstruct a PTS estimate of the target ATA signal.
 Pearson's correlation coefficient was used to evaluate
 reconstruction quality with respect to the ATA tinnitus example.
-[Report numerical results]
+For the "buzzing" ATA target signal,
+the r^2 value for linear regression reconstruction
+was 0.187 +/- 0.143, vs. compressed sensing reconstruction
+at 0.359 +/- 0.229
+and for the "roaring" ATA target signal,
+the r^2 value for linear regression reconstruction was
+0.300 +/- 0.090 vs. compressed sensing reconstruction at
+0.447 +/- 0.060.
+Additionally,
+we demonstrated the test-retest reliability of our method
+via a resynthesis experiment in which a subject
+who has performed the task once
+repeats it with their CS reconstruction being the target signal.
+High r^2 values here (REPORT THEM!) demonstrate the reliability of the method.
+In this work, we demonstrated the feasibility of reverse correlation
+for unbiased, detailed reconstructions spectrally-rich target signals
+representing unknown psychoacoustic tinnitus spectra
+and conclude that the robustness of 1-bit compressed sensing
+leads to an increase in reconstruction accuracy
+in the same number of trials.
 This work holds promise to improve outcomes for tinnitus patients
 by providing a validated clinical assay
 that can be used to accurately and efficiently characterize
