@@ -155,6 +155,33 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     yesses(ii) = sum(responses > 0) / length(responses);
 end
 
+%% Add reconstructions to data table
+
+T.reconstructions_cs_1 = reconstructions_cs(:, end);
+T.reconstructions_lr_1 = reconstructions_lr(:, end);
+T.reconstructions_rand = reconstructions_rand;
+T.reconstructions_synth = reconstructions_synth;
+
+%% Fix correlations for resynth experiments
+ix = find(contains(T.experiment_name, 'resynth'));
+T2 = T(ix, :);
+
+% Get binned resynth target signal
+% They are the reconstructions from the original signal
+experiment_names = cellfun(@(x) strrep(x, '-resynth', ''), T2.experiment_name, 'UniformOutput', false);
+T_filtered = T(contains(T.experiment_name, experiment_names), :);
+binned_resynth_target_signal = [T_filtered.reconstructions_cs_1{:}];
+
+for ii = 1:height(T2)
+    iii = ix(ii);
+    for qq = 1:length(trial_fractions)
+        r2_cs_bins(iii, qq) = correlation(reconstructions_cs{iii, qq}, binned_resynth_target_signal(:, ii));
+        r2_lr_bins(iii, qq) = correlation(reconstructions_lr{iii, qq}, binned_resynth_target_signal(:, ii));
+        r2_synth(iii, qq) = correlation(reconstructions_synth{iii, qq}, binned_resynth_target_signal(:, ii));
+        r2_rand(ii) = correlation(reconstructions_rand{iii}, binned_resynth_target_signal(:, ii));
+    end
+end
+
 r2_lr_bins = r2_lr_bins .^ 2;
 r2_cs_bins = r2_cs_bins .^ 2;
 r2_rand = r2_rand .^ 2;
@@ -169,7 +196,7 @@ T.r2_rand = r2_rand;
 T.r2_synth = r2_synth;
 T.yesses = yesses;
 
-% Clean up table
+%% Clean up table
 numeric_columns = {
     'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
     'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'bin_rep', 'gamma'};
@@ -180,11 +207,6 @@ for ii = 1:length(numeric_columns)
 end
 
 %% Saving Results
-
-T.reconstructions_cs_1 = reconstructions_cs(:, end);
-T.reconstructions_lr_1 = reconstructions_lr(:, end);
-T.reconstructions_rand = reconstructions_rand;
-T.reconstructions_synth = reconstructions_synth;
 
 % Save the reconstruction waveforms
 if PUBLISH
