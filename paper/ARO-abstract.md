@@ -1,62 +1,39 @@
-Tinnitus affects over 50 million people in the U.S.,
-a third of which experience functional cognitive impairment
-and a substantial reduction in quality of life.
-Primary treatments for tinnitus, e.g., sound therapy,
-involve targeted exposure to external sounds
-to attentuate the perception of the tinnitus percept.
-Prognosis improves when the external sounds
-are closely informed by the internal tinnitus experience
-of the patient (e.g., the constituent frequencies of
-the psychoacoustic tinnitus spectrum (PTS)).
-Current methods rely on reductionist assumptions
-concerning the nature of tinnitus percepts
-(e.g., that they are pure tones or have small-width Gaussian spectra),
-producing correspondingly biased or incomplete PTS representations.
-We utilize a novel reverse correlation approach
-to characterize the PTS more completely.
-n=4 healthy control subjects performed an audio-matching
-reverse correlation experiment.
-Subjects performed 2000 trials in blocks of 100,
-in which they listened to 0.5-sec sample tinnitus percepts
-from the American Tinnitus Association (ATA),
-followed by a 0.5-sec random noise stimulus.
-The ATA target signals chosen were "buzzing" and "roaring"
-with strongly differing spectral content.
-Subjects responded, "yes", if the random noise stimulus
-sounded like the target signal and "no" if not.
-Responses were mapped to ones ("yes" -> 1) and negative ones ("no" -> -1)
-and the PTS was reconstructed using two algorithms:
-linear regression (LR) and compressed sensing (CS).
-Compressed sensing is a recent advance in signal processing
-which has gained broad recognition in medical imaging
-due to its ability to reduce scan times
-without sacrificing image quality or introducing bias.
-The stimuli spectra were mapped to 100 mel-spaced frequency bins
-and used to reconstruct a PTS estimate of the target ATA signal.
-Pearson's correlation coefficient was used to evaluate
-reconstruction quality with respect to the ATA tinnitus example.
-For the "buzzing" ATA target signal,
-the r^2 value for linear regression reconstruction
-was 0.187 +/- 0.143, vs. compressed sensing reconstruction
-at 0.359 +/- 0.229
-and for the "roaring" ATA target signal,
-the r^2 value for linear regression reconstruction was
-0.300 +/- 0.090 vs. compressed sensing reconstruction at
-0.447 +/- 0.060.
-Additionally,
-we demonstrated the test-retest reliability of our method
-via a resynthesis experiment in which a subject
-who has performed the task once
-repeats it with their CS reconstruction being the target signal.
-High r^2 values here (REPORT THEM!) demonstrate the reliability of the method.
-In this work, we demonstrated the feasibility of reverse correlation
-for unbiased, detailed reconstructions spectrally-rich target signals
-representing unknown psychoacoustic tinnitus spectra
-and conclude that the robustness of 1-bit compressed sensing
-leads to an increase in reconstruction accuracy
-in the same number of trials.
-This work holds promise to improve outcomes for tinnitus patients
-by providing a validated clinical assay
-that can be used to accurately and efficiently characterize
-the individualized perceptual experience of tinnitus.
+# Characterizing Complex Tinnitus Sounds Using Reverse Correlation: A Feasibility Study
 
+### Background
+Tinnitus affects an estimated 25 million people in the U.S., a majority of whom experience associated functional cognitive impairment and reduction in quality of life.
+Clinical practice guidelines for treating tinnitus recommend Sound Therapy and Cognitive Behavioral Therapy, both of which may involve targeted exposure to external sounds.
+Critically, treatment outcomes have been shown to improve when the external sounds used in treatment are closely informed by the internal tinnitus experience of the patient – e.g., the constituent frequencies of the psychoacoustic tinnitus spectrum (PTS).
+Current methods for characterizing tinnitus percepts (e.g., pitch matching methods), assume that the PTS has a simple structure, as in a pure tone or narrow-band noise.
+However, evidence suggests that, for many patients, the PTS has a more intricate structure which cannot be characterized using existing methods.
+The present work represents a proof-of-concept study for characterizing the PTS using Reverse Correlation, a method widely used in psychophysics for unconstrained characterization of complex internal percepts.
+
+### Methods
+Four (n=4) normal hearing subjects participated in each of two (2) Reverse Correlation experiments.
+In each experiment, subjects performed 2000 trials (20 blocks x 100 trials/block), in which they listened to a target tinnitus-like sound followed by a random noise stimulus.
+Subjects were asked to decide (i.e., “yes” or “no”) whether the target sound was present in the stimulus.
+Target sounds included example tinnitus sounds maintained by the American Tinnitus Association (ATA), labeled as “roaring” (experiment 1) and “buzzing” (experiment 2) and chosen for their broad-band and sharply differing in spectral content.
+Stimuli were constructed by randomly assigning power levels (-20dB or 0dB) to each of 100 Mel-spaced frequency bins between 0.1 to 20 kHz, and generating waveforms using the inverse Fourier transform.
+The PTS was estimated using both a conventional linear regression (LR) approach and a recently-developed compressive sensing (CS) approach.
+Pearson's correlation coefficient was used to evaluate reconstruction quality with respect to the ATA tinnitus example.
+
+### Results
+For experiment 1 ("roaring"),
+the *r* values for LR reconstruction were:
+0.57, 0.45, 0.62 for each subject respectively
+(mean +/- st. dev., 0.54 +/- 0.09),
+and the *r* values for CS reconstruction were:
+0.64, 0.64, 0.72 (0.67 +/- 0.04).
+
+For experiment 2 ("buzzing"),
+the *r* values for LR reconstruction were:
+0.22, 0.58, 0.42 (0.41 + 0.18),
+and the *r* values for CS reconstruction were:
+0.32, 0.73, 0.67 (0.57 +/- 0.22).
+
+### Conclusions
+This work demonstrates the feasibility of using Reverse Correlation for characterizing spectrally-rich tinnitus-like sounds by accurate PTS estimation.
+Further, results indicate that the approach involving CS allows for substantial efficiency improvements over conventional approaches, allowing for fewer required trials and shorter protocols.
+The approach studied here holds promise as a behavioral assay that
+could be used clinically to characterize tinnitus in patients with a wider variety of tinnitus experience.
+Future work will focus on validating this approach directly in tinnitus patients.
