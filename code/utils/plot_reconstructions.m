@@ -49,7 +49,7 @@ function fig = plot_reconstructions(options)
         legend_labels = {};
 
         % Target signal (ground truth)
-        plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(data_names, subplot_labels{ii}))), '-ok');
+        plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(options.data_names, subplot_labels{ii}))), '-ok');
         legend_labels{end + 1} = 'ground truth';
 
         % Reconstructions from subjects
@@ -71,11 +71,11 @@ function fig = plot_reconstructions(options)
             if options.cs
                 % Line plot, CS
                 p = plot(ax(ii), normalize(filtered_table.reconstructions_cs_1{qq}), '-', 'Color', cmap(qq, :));
-                p.Color(4) = alpha; % set the alpha separately
+                p.Color(4) = options.alpha; % set the alpha separately
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, CS
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', alpha)
+                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot purely for the legend
@@ -86,11 +86,11 @@ function fig = plot_reconstructions(options)
             if options.lr
                 % Line plot, LR
                 p = plot(ax(ii), normalize(filtered_table.reconstructions_lr_1{qq}), '--', 'Color', cmap(qq, :), 'MarkerEdgeColor', cmap(qq, :));
-                p.Color(4) = alpha;
+                p.Color(4) = options.alpha;
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, LR
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', alpha)
+                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot for the legend
@@ -104,10 +104,10 @@ function fig = plot_reconstructions(options)
 
             % Line plot, CS
             p = plot(ax(ii), normalize(filtered_table.reconstructions_rand{1}), '-', 'Color', cmap(2 * qq + 1, :));
-            p.Color(4) = alpha;
+            p.Color(4) = options.alpha;
 
             % Scatter plot, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', alpha)
+            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', options.alpha)
 
             % Empty
             plot(ax(ii), NaN, NaN, '-o', 'Color', cmap(qq + 1, :))
@@ -117,11 +117,11 @@ function fig = plot_reconstructions(options)
         if options.synthetic
             % Line plot, synthetic reconstruction, CS
             p = plot(ax(ii), normalize(filtered_table.reconstructions_synth{1}), '-', 'Color', cmap(qq + 2, :), 'MarkerEdgeColor', cmap(qq + 2, :));
-            p.Color(4) = alpha;
+            p.Color(4) = options.alpha;
             legend_labels{end + 1} = '';
 
             % Scatter plot, synthetic, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', alpha);
+            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', options.alpha);
             legend_labels{end + 1} = '';
 
             % Empty
@@ -153,5 +153,5 @@ function fig = plot_reconstructions(options)
     end
 
     % Output
-    fig = output.figure;
+    fig = options.figure;
 end % function
