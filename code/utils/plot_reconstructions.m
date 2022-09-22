@@ -22,7 +22,7 @@ function fig = plot_reconstructions(options)
         options.figure = new_figure();
     end
 
-    if options.resynth || options.two_afc
+    if options.two_afc
         error("Not implemented")
     end
 
@@ -48,12 +48,20 @@ function fig = plot_reconstructions(options)
         ylabel(ax(ii), 'norm. bin ampl. (a.u.)')
         legend_labels = {};
 
-        % Target signal (ground truth)
-        plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(options.data_names, subplot_labels{ii}))), '-ok');
-        legend_labels{end + 1} = 'ground truth';
-
         % Reconstructions from subjects
         filtered_table = options.table(strcmp(options.table.target_signal_name, subplot_labels{ii}), :);
+
+        if options.resynth
+            % Filter the target signals to match the filtered table
+            target_signals_to_plot = options.binned_target_signal(:, strcmp(options.table.target_signal_name, subplot_labels{ii}));
+        end
+
+        % Target signal (ground truth)
+        if ~options.resynth
+            % Plot the single ground truth in black
+            plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(options.data_names, subplot_labels{ii}))), '-ok');
+            legend_labels{end + 1} = 'ground truth';
+        end
 
         % For each row in the data table, plot the reconstructions
         for qq = 1:height(filtered_table)
@@ -62,6 +70,12 @@ function fig = plot_reconstructions(options)
                 this_subject_ID = ['subject #', num2str(qq)];
             else
                 this_subject_ID = filtered_table.subject_ID{qq};
+            end
+
+            if options.resynth
+                % Plot the ground truth for *this* plot
+                plot(ax(ii), normalize(target_signals_to_plot(:, qq)), ':*', 'Color', cmap(qq, :));
+                legend_labels{end + 1} = [this_subject_ID, ' ground truth'];
             end
 
             % Plot the lines and markers separately because MATLAB doesn't let you change the opacity
