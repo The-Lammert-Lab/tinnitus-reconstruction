@@ -1,11 +1,11 @@
 
-function fig = plot_reconstructions(options)
+function fig = plot_reconstructions(T, binned_target_signal, data_names, options)
     % TODO: documentation
 
     arguments
-        options.table
-        options.binned_target_signal
-        options.data_names
+        T table
+        binned_target_signal {mustBeNumeric}
+        data_names {mustBeText}
         options.figure = []
         options.publish = false
         options.alpha = 0.5
@@ -30,10 +30,10 @@ function fig = plot_reconstructions(options)
     figure(options.figure);
 
     % Colormap for plotting
-    cmap = options.colormap(height(options.table) + 2);
+    cmap = options.colormap(height(T) + 2);
 
     % How many different target signals are there?
-    subplot_labels = unique(options.table.target_signal_name)';
+    subplot_labels = unique(T.target_signal_name)';
     assert(~isempty(subplot_labels), 'couldn''t find any data to plot')
 
     % Generate one subplot for each unique target signal
@@ -49,17 +49,17 @@ function fig = plot_reconstructions(options)
         legend_labels = {};
 
         % Reconstructions from subjects
-        filtered_table = options.table(strcmp(options.table.target_signal_name, subplot_labels{ii}), :);
+        filtered_table = T(strcmp(T.target_signal_name, subplot_labels{ii}), :);
 
         if options.resynth
             % Filter the target signals to match the filtered table
-            target_signals_to_plot = options.binned_target_signal(:, strcmp(options.table.target_signal_name, subplot_labels{ii}));
+            target_signals_to_plot = binned_target_signal(:, strcmp(T.target_signal_name, subplot_labels{ii}));
         end
 
         % Target signal (ground truth)
         if ~options.resynth
             % Plot the single ground truth in black
-            plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(options.data_names, subplot_labels{ii}))), '-ok');
+            plot(ax(ii), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{ii}))), '-ok');
             legend_labels{end + 1} = 'ground truth';
         end
 
