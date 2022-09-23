@@ -203,7 +203,10 @@
             {
                 "name": "file_string",
                 "kind": "namevalue",
-                "type": ["char", "string"],
+                "type": [
+                    "char",
+                    "string"
+                ],
                 "purpose": "Pattern of config files to match and munge."
             },
             {
@@ -221,8 +224,128 @@
             {
                 "name": "data_dir",
                 "kind": "namevalue",
-                "type": ["folder"],
+                "type": [
+                    "folder"
+                ],
                 "purpose": "Path to directory where data files should be munged."
+            }
+        ]
+    },
+    "plot_reconstructions": {
+        "inputs": [
+            {
+                "name": "T",
+                "kind": "required",
+                "type": "table",
+                "purpose": "Data table containing the reconstructions to plot."
+            },
+            {
+                "name": "binned_target_signal",
+                "kind": "required",
+                "type": [
+                    "numeric",
+                    "real",
+                    "2d"
+                ],
+                "purpose": "Matrix containing the target signals."
+            },
+            {
+                "name": "data_names",
+                "kind": "required",
+                "type": [
+                    "cell",
+                    "@() mustBeText"
+                ],
+                "purpose": "List of target signal names, e.g., 'buzzing'"
+            },
+            {
+                "name": "figure",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "matlab.ui.Figure"
+                ],
+                "purpose": "Figure handle, defaults to ``[]``."
+            },
+            {
+                "name": "publish",
+                "kind": "namevalue",
+                "type": [
+                    "logical",
+                    "scalar"
+                ],
+                "purpose": "Whether to perform post-processing to de-identify and make figure fonts larger."
+            },
+            {
+                "name": "alpha",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "real",
+                    ">=0",
+                    "<=1"
+                ],
+                "purpose": "Transparency value between 0 and 1."
+            },
+            {
+                "name": "resynth",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether this is plotting resynthesis data."
+            },
+            {
+                "name": "two_afc",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether this is plotting 2-afc data."
+            },
+            {
+                "name": "colormap",
+                "kind": "namevalue",
+                "type": "function_handle",
+                "purpose": "Function handle to a colormap."
+            },
+            {
+                "name": "cs",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether to plot compressed sensing reconstructions."
+            },
+            {
+                "name": "lr",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether to plot linear regression reconstructions."
+            },
+            {
+                "name": "baseline",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether to plot baseline (random) reconstructions."
+            },
+            {
+                "name": "synthetic",
+                "kind": "namevalue",
+                "type": [
+                    "scalar",
+                    "logical"
+                ],
+                "purpose": "Whether to plot synthetic reconstructions."
             }
         ]
     }

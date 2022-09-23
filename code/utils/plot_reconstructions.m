@@ -1,11 +1,11 @@
 
-function fig = plot_reconstructions(options)
+function fig = plot_reconstructions(T, binned_target_signal, data_names, options)
     % TODO: documentation
 
     arguments
-        options.table
-        options.binned_target_signal
-        options.data_names
+        T table
+        binned_target_signal {mustBeNumeric}
+        data_names {mustBeText}
         options.figure = []
         options.publish = false
         options.alpha = 0.5
@@ -22,7 +22,7 @@ function fig = plot_reconstructions(options)
         options.figure = new_figure();
     end
 
-    if options.resynth || options.two_afc
+    if options.two_afc
         error("Not implemented")
     end
 
@@ -30,10 +30,10 @@ function fig = plot_reconstructions(options)
     figure(options.figure);
 
     % Colormap for plotting
-    cmap = options.colormap(height(options.table) + 2);
+    cmap = options.colormap(height(T) + 2);
 
     % How many different target signals are there?
-    subplot_labels = unique(options.table.target_signal_name)';
+    subplot_labels = unique(T.target_signal_name)';
     assert(~isempty(subplot_labels), 'couldn''t find any data to plot')
 
     % Generate one subplot for each unique target signal
@@ -48,12 +48,20 @@ function fig = plot_reconstructions(options)
         ylabel(ax(ii), 'norm. bin ampl. (a.u.)')
         legend_labels = {};
 
-        % Target signal (ground truth)
-        plot(ax(ii), normalize(options.binned_target_signal(:, strcmp(data_names, subplot_labels{ii}))), '-ok');
-        legend_labels{end + 1} = 'ground truth';
-
         % Reconstructions from subjects
-        filtered_table = options.table(strcmp(options.table.target_signal_name, subplot_labels{ii}), :);
+        filtered_table = T(strcmp(T.target_signal_name, subplot_labels{ii}), :);
+
+        if options.resynth
+            % Filter the target signals to match the filtered table
+            target_signals_to_plot = binned_target_signal(:, strcmp(T.target_signal_name, subplot_labels{ii}));
+        end
+
+        % Target signal (ground truth)
+        if ~options.resynth
+            % Plot the single ground truth in black
+            plot(ax(ii), normalize(binned_target_signal(:, strcmp(data_names, subplot_labels{ii}))), '-ok');
+            legend_labels{end + 1} = 'ground truth';
+        end
 
         % For each row in the data table, plot the reconstructions
         for qq = 1:height(filtered_table)
@@ -64,6 +72,12 @@ function fig = plot_reconstructions(options)
                 this_subject_ID = filtered_table.subject_ID{qq};
             end
 
+            if options.resynth
+                % Plot the ground truth for *this* plot
+                plot(ax(ii), normalize(target_signals_to_plot(:, qq)), ':*', 'Color', cmap(qq, :));
+                legend_labels{end + 1} = [this_subject_ID, ' ground truth'];
+            end
+
             % Plot the lines and markers separately because MATLAB doesn't let you change the opacity
             % of markers created by the plot function for some unknown reason.
             % There's a workaround involving MarkerHandle objects, but that's not working for some reason.
@@ -71,11 +85,11 @@ function fig = plot_reconstructions(options)
             if options.cs
                 % Line plot, CS
                 p = plot(ax(ii), normalize(filtered_table.reconstructions_cs_1{qq}), '-', 'Color', cmap(qq, :));
-                p.Color(4) = alpha; % set the alpha separately
+                p.Color(4) = options.alpha; % set the alpha separately
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, CS
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', alpha)
+                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot purely for the legend
@@ -86,11 +100,11 @@ function fig = plot_reconstructions(options)
             if options.lr
                 % Line plot, LR
                 p = plot(ax(ii), normalize(filtered_table.reconstructions_lr_1{qq}), '--', 'Color', cmap(qq, :), 'MarkerEdgeColor', cmap(qq, :));
-                p.Color(4) = alpha;
+                p.Color(4) = options.alpha;
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, LR
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', alpha)
+                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot for the legend
@@ -104,10 +118,10 @@ function fig = plot_reconstructions(options)
 
             % Line plot, CS
             p = plot(ax(ii), normalize(filtered_table.reconstructions_rand{1}), '-', 'Color', cmap(2 * qq + 1, :));
-            p.Color(4) = alpha;
+            p.Color(4) = options.alpha;
 
             % Scatter plot, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', alpha)
+            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', options.alpha)
 
             % Empty
             plot(ax(ii), NaN, NaN, '-o', 'Color', cmap(qq + 1, :))
@@ -117,11 +131,11 @@ function fig = plot_reconstructions(options)
         if options.synthetic
             % Line plot, synthetic reconstruction, CS
             p = plot(ax(ii), normalize(filtered_table.reconstructions_synth{1}), '-', 'Color', cmap(qq + 2, :), 'MarkerEdgeColor', cmap(qq + 2, :));
-            p.Color(4) = alpha;
+            p.Color(4) = options.alpha;
             legend_labels{end + 1} = '';
 
             % Scatter plot, synthetic, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', alpha);
+            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', options.alpha);
             legend_labels{end + 1} = '';
 
             % Empty
@@ -153,5 +167,5 @@ function fig = plot_reconstructions(options)
     end
 
     % Output
-    fig = output.figure;
+    fig = options.figure;
 end % function
