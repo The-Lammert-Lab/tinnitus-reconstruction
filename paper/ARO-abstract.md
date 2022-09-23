@@ -9,7 +9,7 @@ However, evidence suggests that, for many patients, the PTS has a more intricate
 The present work represents a proof-of-concept study for characterizing the PTS using Reverse Correlation, a method widely used in psychophysics for unconstrained characterization of complex internal percepts.
 
 ### Methods
-Four (n=4) normal hearing subjects participated in each of two (2) Reverse Correlation experiments.
+Three (n=3) normal hearing subjects participated in each of two (2) Reverse Correlation experiments.
 In each experiment, subjects performed 2000 trials (20 blocks x 100 trials/block), in which they listened to a target tinnitus-like sound followed by a random noise stimulus.
 Subjects were asked to decide (i.e., “yes” or “no”) whether the target sound was present in the stimulus.
 Target sounds included example tinnitus sounds maintained by the American Tinnitus Association (ATA), labeled as “roaring” (experiment 1) and “buzzing” (experiment 2) and chosen for their broad-band and sharply differing in spectral content.
@@ -21,15 +21,17 @@ Pearson's correlation coefficient was used to evaluate reconstruction quality wi
 For experiment 1 ("roaring"),
 the *r* values for LR reconstruction were:
 0.57, 0.45, 0.62 for each subject respectively
-(mean +/- st. dev., 0.54 +/- 0.09),
+(mean +/- st. dev., 0.54 +/- 0.09) (one-tailed t-test, p = 0.0081),
 and the *r* values for CS reconstruction were:
-0.64, 0.64, 0.72 (0.67 +/- 0.04).
+0.64, 0.64, 0.72 (0.67 +/- 0.04) (one-tailed t-test, p = 0.0015).
 
 For experiment 2 ("buzzing"),
 the *r* values for LR reconstruction were:
-0.22, 0.58, 0.42 (0.41 + 0.18),
+0.22, 0.58, 0.42 (0.41 + 0.18) (one-tailed t-test, p = 0.0591),
 and the *r* values for CS reconstruction were:
-0.32, 0.73, 0.67 (0.57 +/- 0.22).
+0.32, 0.73, 0.67 (0.57 +/- 0.22) (one-tailed t-test, p = 0.0476)
+
+All *r* values were significant (p < 0.05).
 
 ### Conclusions
 This work demonstrates the feasibility of using Reverse Correlation for characterizing spectrally-rich tinnitus-like sounds by accurate PTS estimation.
