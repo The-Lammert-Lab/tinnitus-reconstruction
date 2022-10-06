@@ -30,6 +30,10 @@ function [val] = var2str(val)
         val = regexprep(val(:)', '\s*', ',');
     elseif islogical(val)
         val = regexprep(num2str(val(:)'), '\s*', ',');
+    elseif isstring(val)
+        % assume everything is fine but replace whitespace and cast as a character vector
+        val = char(val);
+        val = regexprep(val(:)', '\s*', ',');
     else
         error(['the class of this variable is: ', class(val), '. I don''t know what to do with this.'])
     end

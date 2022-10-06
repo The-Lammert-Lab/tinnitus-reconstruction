@@ -60,12 +60,12 @@ function Protocol(options)
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
         % There is a weird feature/bug where putting `stimuli_type: white`
         % in the config file returns a 256x3 matrix of ones.
-        if all(config.stimuli_type(:) == 1)
-            config.stimuli_type = 'UniformNoiseNoBins';
+        if ~isa(config.stimuli_type, 'string')
+            config.stimuli_type = "UniformNoiseNoBins";
         end
     else
         % Default to 'custom' stimulus generation
-        config.stimuli_type = 'GaussianPrior';
+        config.stimuli_type = "GaussianPrior";
     end
 
     % Determine if the protocol should be 2-AFC
@@ -79,7 +79,7 @@ function Protocol(options)
     expID = get_experiment_ID(config);
     
     % Instantiate the stimulus generation object
-    stimuli_object = eval([config.stimuli_type, 'StimulusGeneration()']);
+    stimuli_object = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
