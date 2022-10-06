@@ -26,25 +26,39 @@ function [responses, stimuli] = collect_data(options)
     % If no data directory is provided, use the one from the config file
     if isempty(options.data_dir)
         options.data_dir = config.data_dir;
+        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from config: ' char(config.data_dir)])
+    else
+        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from function arguments: ' options.data_dir])
     end
 
-    % Is the config file for a 2AFC experiment?
+    %% Is the config file for a 2AFC experiment?
+
     if isfield(config, 'two_afc') && config.two_afc
         is_two_afc = true;
+        corelib.verb(options.verbose, 'INFO: collect_data', 'operating in 2-afc mode')
     else
         is_two_afc = false;
     end
 
     %% Find the files containing the data
+
+    % These variables are the same size regardless of 2-afc status
     glob_meta = pathlib.join(options.data_dir, ['meta_', config_hash, '*.csv']);
+    files_meta = dir(glob_meta);
+    
+    % These variables are the same size regardless of 2-afc status
     glob_responses = pathlib.join(options.data_dir, ['responses_', config_hash, '*.csv']);
+    files_responses = dir(glob_responses);
+
+    % These variables are only for non-2-afc experiments
+    glob_stimuli = pathlib.join(options.data_dir, ['stimuli_', config_hash, '*.csv']);
+    files_stimuli = dir(glob_stimuli);
     
     % If in a 2AFC regime, there are two stimuli files for each meta file with file names of the form:
     % "stimuli_{config_hash}_{unix_timestamp}_{stimuli_hash}.csv".
     % The meta file has a file name of the form:
     % "meta_{config_hash}_{unix_timestamp}_{stimuli_hash_1}_{stimuli_hash_2}.csv".
     if is_two_afc
-        files_meta = dir(glob_meta);
         globs_stimuli_1s = cell(length(files_meta), 1);
         globs_stimuli_2s = cell(length(files_meta), 2);
         for ii = 1:length(files_meta)
@@ -55,42 +69,44 @@ function [responses, stimuli] = collect_data(options)
             globs_stimuli_2s{ii} = pathlib.join(options.data_dir, ['stimuli_', config_hash, '*', stimulus_hash_2,'.csv']);
         end
     end
-    
-    glob_stimuli = pathlib.join(options.data_dir, ['stimuli_', config_hash, '*.csv']);
-    files_responses = dir(glob_responses);
-    files_stimuli = dir(glob_stimuli);
-
-    %% Remove mismatched files
-    [mismatched_response_files, mismatched_stimuli_files] = filematch({files_responses.name}, {files_stimuli.name}, 'delimiter', '_');
-    files_responses(mismatched_response_files) = [];
-    files_stimuli(mismatched_stimuli_files) = [];
-    
-    if isempty(files_responses)
-        error(['No response files found at:  ', glob_responses, ' . Check that your options.data_dir and config.subjectID are correct'])
-    end
-
-    if isempty(files_stimuli)
-        error(['No stimuli files found at:  ', glob_stimuli, ' . Check that your options.data_dir and config.subjectID are correct'])
-    end
 
     %% Checks for data validity
+
     if ~is_two_afc
-        corelib.verb(length(files_responses) ~= length(files_stimuli), 'WARN', 'number of stimuli and response files do not match')
+        % Remove mismatched files
+        [mismatched_response_files, mismatched_stimuli_files] = filematch({files_responses.name}, {files_stimuli.name}, 'delimiter', '_');
+        files_responses(mismatched_response_files) = [];
+        files_stimuli(mismatched_stimuli_files) = [];
+        
+        corelib.verb(length(files_responses) ~= length(files_stimuli), 'WARN: collect_data', 'number of stimuli and response files do not match')
+        
+        % Are there any response files?
+        if isempty(files_responses)
+            error(['No response files found at:  ', glob_responses, ' . Check that your ``options.data_dir`` and ``config.subjectID`` are correct'])
+        end
+    
+        % Are there any stimulus files?
+        if isempty(files_stimuli)
+            error(['No stimuli files found at:  ', glob_stimuli, ' . Check that your ``options.data_dir`` and ``config.subjectID`` are correct'])
+        end
     else
         corelib.verb(true, 'WARN', 'you are in 2AFC mode, where data validity checking has been disabled')
-        % TODO: write data validity checks
+        % TODO: write data validity checks #77
     end
 
-    %% Instantiate cell arrays to hold the data
-    stimuli = cell(length(files_stimuli), 1);
-    responses = cell(length(files_responses), 1);
+    %% Construct the output matrices
+    
     if is_two_afc
-        %% Load the files and add to the cell arrays
+        % Instantiate cell arrays to hold the data
+        stimuli = cell(length(files_responses), 1);
+        responses = cell(length(files_responses), 1);
+
+        % Load the files and add to the cell arrays
         for ii = 1:length(files_responses)
             filepath_responses = pathlib.join(files_responses(ii).folder, files_responses(ii).name);
             splits = split(files_responses(ii).name, '_'); % split into a cell array at "_"
-            stimulus_hash_1 = splits{4};
-            stimulus_hash_2 = splits{5}(1:end-4); % remove ".csv" from end
+            stimulus_hash_1 = splits{3};
+            stimulus_hash_2 = splits{4}(1:end-4); % remove ".csv" from end
             files_stimuli_1 = dir(pathlib.join(options.data_dir, ['stimuli_', config_hash, '*', stimulus_hash_1,'.csv']));
             files_stimuli_2 = dir(pathlib.join(options.data_dir, ['stimuli_', config_hash, '*', stimulus_hash_2,'.csv']));
             filepath_stimuli_1 = pathlib.join(files_stimuli_1(1).folder, files_stimuli_1(1).name);
@@ -145,8 +161,11 @@ function [responses, stimuli] = collect_data(options)
 
         end
     else
+        % Instantiate cell arrays to hold the data
+        stimuli = cell(length(files_stimuli), 1);
+        responses = cell(length(files_responses), 1);
 
-        %% Load the files and add to the cell arrays
+        % Load the files and add to the cell arrays
         for ii = 1:length(files_responses)
             filepath_responses = pathlib.join(files_responses(ii).folder, files_responses(ii).name);
             filepath_stimuli = pathlib.join(files_stimuli(ii).folder, files_stimuli(ii).name);

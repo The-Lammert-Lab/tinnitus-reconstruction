@@ -46,13 +46,13 @@ this_dir = dir(pathlib.join(DATA_DIR, '*.yaml'));
 
 % Remove resynth or 2afc (for now)
 % TODO: remove!!
-ii = 0;
-while ii < (length(this_dir) + 1)
-    ii = ii + 1;
-    if contains(this_dir(ii).name, '2afc')
-        this_dir(ii) = [];
-    end
-end
+% ii = 0;
+% while ii < (length(this_dir) + 1)
+%     ii = ii + 1;
+%     if contains(this_dir(ii).name, '2afc')
+%         this_dir(ii) = [];
+%     end
+% end
 
 % Get array of structs of config files
 config_filenames = {this_dir.name};
