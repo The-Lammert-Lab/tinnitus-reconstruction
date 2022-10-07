@@ -103,6 +103,7 @@ function Protocol(options)
         [target_sound, target_fs] = audioread(config.target_signal_filepath);
     else
         target_sound = [];
+        target_fs = 0;
     end
 
     if isfield(config, 'bin_target_signal') && config.bin_target_signal
