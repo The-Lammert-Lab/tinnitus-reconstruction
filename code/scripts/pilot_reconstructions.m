@@ -111,7 +111,7 @@ for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions',
     corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])
     this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_signal_name{ii}));
 
-    if config.subject_ID == "AL"
+    if config.subject_ID == "GH"
         preprocessing = {'bit_flip'};
     else
         preprocessing = {};

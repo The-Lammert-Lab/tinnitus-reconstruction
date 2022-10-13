@@ -80,7 +80,7 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
     end
 
     % bit flip preprocessing
-    if contains(options.preprocessing, 'bit flip')
+    if contains(options.preprocessing, 'bit_flip')
         corelib.verb(options.verbose, 'INFO: get_reconstruction', 'bit flip preprocessing')
         responses = -1 * responses;
     end
