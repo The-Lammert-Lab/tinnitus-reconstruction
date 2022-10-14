@@ -100,6 +100,9 @@ methods
 
         binned_repr = zeros(self.n_bins, size(T, 2));
         B = self.get_freq_bins();
+        
+        assert(length(T) == length(B));
+
         for bin_num = 1:self.n_bins
             a = T(B == bin_num, :);
             binned_repr(bin_num, :) = a(1, :);
