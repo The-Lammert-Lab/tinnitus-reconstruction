@@ -60,7 +60,8 @@ function Protocol(options)
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
         % There is a weird feature/bug where putting `stimuli_type: white`
         % in the config file returns a 256x3 matrix of ones.
-        if ~isa(config.stimuli_type, 'string')
+%         if ~isa(config.stimuli_type, 'string')
+        if strcmpi(config.stimuli_type,'white')
             config.stimuli_type = "UniformNoiseNoBins";
         end
     else
@@ -135,7 +136,7 @@ function Protocol(options)
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
-    if ~isempty(target_sound) && ~contains(config.target_signal_filepath,'resynth_wavs')
+    if ~isempty(target_sound) && contains(config.target_signal_name,'resynth')
         if is_two_afc
             scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
         else
@@ -164,14 +165,13 @@ function Protocol(options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            if ~contains(config.target_signal_filepath,'resynth_wavs')
+            if contains(config.target_signal_name,'resynth')
                 sound(target_sound*scale_factor, target_fs)
             else
                 soundsc(target_sound,target_fs)
             end
             pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
         end
-
 
         % Present Stimulus
         if is_two_afc
