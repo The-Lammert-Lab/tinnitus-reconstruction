@@ -44,9 +44,10 @@ function varargout = parse_config(config_file,legacy, verbose)
     end
 
     % Convert strings to character vectors for compatibility
-    for ii = fieldnames(config)'
-        if isstring(config.(ii{1}))
-            config.(ii{1}) = char(config.(ii{1}));
+    fnames = fieldnames(config);
+    for ii = 1:length(fnames)
+        if isstring(config.(fnames{ii}))
+            config.(fnames{ii}) = char(config.(fnames{ii}));
         end
     end
 
