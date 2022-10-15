@@ -43,6 +43,13 @@ function varargout = parse_config(config_file,legacy, verbose)
         varargout{2} = config_file;
     end
 
+    % Convert strings to character vectors for compatibility
+    for ii = fieldnames(config)'
+        if isstring(config.(ii{1}))
+            config.(ii{1}) = char(config.(ii{1}));
+        end
+    end
+
     % Check for required config options
     required_fields = {'stimuli_type', 'n_trials_per_block', 'n_blocks', 'experiment_name', 'subject_ID'};
     for ii = 1:length(required_fields)
