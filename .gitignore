@@ -291,3 +291,7 @@ figures/*
 
 # Matlab autosave
 *.asv
+
+# Directories with standalone binaries
+code/deployment/tinnitus-project*/**/*
+code/deployment/tinnitus_project*/**/*
