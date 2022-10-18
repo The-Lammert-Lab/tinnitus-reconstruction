@@ -18,10 +18,17 @@ function res = create_standalone(this_version)
     disp(additional_files)
 
     %% Create the standalone
+
     res = compiler.build.standaloneApplication(...
         '../experiment/Protocol.m', ...
         'ExecutableName', 'tinnitus_project', ...
         'ExecutableVersion', this_version, ...
-        'AdditionalFiles', additional_files);
+        'AdditionalFiles', additional_files, ...
+        'Verbose', 'on');
+
+    %% Package standalone into docker image
+
+    opts = compiler.package.DockerOptions(res, 'ImageName', 'tinnitus-project-standalone');
+    compiler.package.docker(res, 'Options', opts);
 
 end
