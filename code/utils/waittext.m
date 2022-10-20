@@ -135,7 +135,7 @@ nargoutchk(0,1);
 % Check if spmd mode
 hasSPMD = (exist('spmd','builtin') == 5);
 if nargin > 2
-    isspmd = strcmpi(varargin{end-1},'spmd') && hasSPMD && numlabs > 1;
+    isspmd = strcmpi(varargin{end-1},'spmd') && hasSPMD && spmdSize > 1;
     if isspmd
         labtarget = varargin{end};
         if any(strcmpi(labtarget,{'all','true','on','yes'}))
@@ -147,7 +147,7 @@ if nargin > 2
             end
             if ~isnumeric(labtarget) || ~isreal(labtarget) ...
                     || ~isfinite(labtarget) || labtarget < 1 ...
-                    || labtarget > numlabs || labtarget ~= floor(labtarget)
+                    || labtarget > spmdSize || labtarget ~= floor(labtarget)
                 error('waittext:waittext:NonFiniteRealLabTarget',...
                      ['LABTARGET must be a finite real integer between one '...
                       'and NUMLABS.']);
@@ -186,12 +186,12 @@ if ischar(varargin{1})
     % Global concatenation for spmd mode
     if isspmd
         if isAllLabs
-            msg = gcat([msg ', '],2);
+            msg = spmdCat([msg ', '],2);
             if ~isempty(msg)
                 msg = msg(1:end-2);
             end
         else
-            msg = gop(@(x,y){x;y},msg,1);
+            msg = spmdReduce(@(x,y){x;y},msg,1);
             if ~isempty(msg) && iscell(msg)
                 msg = msg{labtarget,:};
             end
@@ -216,9 +216,9 @@ else
     % Global summation for spmd mode
     if isspmd
         if isAllLabs
-            x = gop(@plus,x/numlabs,1);
+            x = spmdReduce(@plus,x/spmdSize,1);
         else
-            x = gcat(x,1,1);
+            x = spmdCat(x,1,1);
             if ~isempty(x)
                 x = x(labtarget);
             end
@@ -230,7 +230,7 @@ end
 sp = ' ';
 spmdsp = double(isspmd)*2;
 
-if hasSPMD && labindex == 1 || ~hasSPMD && ~isspmd
+if hasSPMD && spmdIndex == 1 || ~hasSPMD && ~isspmd
     % Print message with carriage return in case of error or warning during wait
     if any(strcmp(msgtype,{'init','initial','initialize','first'}))
         if x ~= 0
