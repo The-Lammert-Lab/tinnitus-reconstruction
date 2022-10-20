@@ -23,6 +23,7 @@ function Protocol(options)
 
     arguments
         options.config_file char = []
+        options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
     % Get the datetime and posix time
@@ -84,14 +85,8 @@ function Protocol(options)
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
-    total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']));
-
-    for ii = 1:length(d)
-        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
-        total_trials_done = total_trials_done + length(responses);
-    end
-    fprintf(['# of trials completed: ', num2str(total_trials_done) '\n'])
+    total_trials_done = get_total_trials_done(config, config_hash);
+    corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
 
     % Is this an A-X experiment protocol?
     %   If it's an A-X experiment protocol,
@@ -146,11 +141,26 @@ function Protocol(options)
     
     %% Intro Screen & Start
 
+    % Show the startup screen
     imshow(Screen1);
-    k = waitforbuttonpress;
+
+    % Press "F" to start
+    k = waitforkeypress();
+    if k < 0
+        corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+        corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+        return
+    end
     value = double(get(gcf,'CurrentCharacter')); % f - 102
+
+    % Check the value, if "F" then continue
     while (value ~= 102)
-        k = waitforbuttonpress;
+        k = waitforkeypress();
+        if k < 0
+            corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            return
+        end
         value = double(get(gcf,'CurrentCharacter'));
     end
 
@@ -181,10 +191,20 @@ function Protocol(options)
         end
             
         % Obtain Response
-        k = waitforbuttonpress;
+        k = waitforkeypress();
+        if k < 0
+            corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            return
+        end
         value = double(get(gcf,'CurrentCharacter')); % f - 102, j - 106
         while isempty(value) || (value ~= 102) && (value ~= 106)
-            k = waitforbuttonpress;
+            k = waitforkeypress();
+            if k < 0
+                corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+                corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                return
+            end
             value = double(get(gcf,'CurrentCharacter'));
         end
         
@@ -213,6 +233,7 @@ function Protocol(options)
             fclose(fid_responses);
             % end, all trials complete
             imshow(Screen4)
+            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
             return
         elseif mod(total_trials_done, config.n_trials_per_block) == 0 % give rest before proceeding to next block
             fclose(fid_responses);
@@ -220,10 +241,21 @@ function Protocol(options)
             % reset counter
             counter = 0;
             imshow(Screen3)
-            k = waitforbuttonpress;
+            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            k = waitforkeypress();
+            if k < 0
+                corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+                corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                return
+            end
             value = double(get(gcf,'CurrentCharacter')); % f - 102
             while (value ~= 102)
-                k = waitforbuttonpress;
+                k = waitforkeypress();
+                if k < 0
+                    corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
+                    corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                    return
+                end
                 value = double(get(gcf,'CurrentCharacter'));
             end
 
@@ -261,3 +293,43 @@ function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, 
     pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
     soundsc(stimuli_matrix_2(:, counter), Fs);
 end % function
+
+function k = waitforkeypress(verbose)
+    % Wait for a keypress, ignoring mouse clicks.
+    % Returns 1 when a key is pressed.
+    % Returns -1 when the function encounters an error
+    % which usually happens when the figure is deleted.
+
+    arguments
+        verbose (1,1) {mustBeNumericOrLogical} = true
+    end
+
+    k = 0;
+    while k == 0
+        try
+            k = waitforbuttonpress;
+        catch
+            corelib.verb(verbose, 'INFO waitforkeypress', 'waitforkeypress exited unexpectedly.')
+            k = -1;
+            return
+        end
+    end
+end
+
+function total_trials_done = get_total_trials_done(config, config_hash)
+    % Compute the total trials completed.
+
+    arguments
+        config (1,1) struct
+        config_hash (1,:) char
+    end
+
+    total_trials_done = 0;
+    d = dir(pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']));
+
+    for ii = 1:length(d)
+        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
+        total_trials_done = total_trials_done + length(responses);
+    end
+
+end
