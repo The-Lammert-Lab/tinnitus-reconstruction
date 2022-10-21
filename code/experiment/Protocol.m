@@ -61,7 +61,6 @@ function Protocol(options)
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
         % There is a weird feature/bug where putting `stimuli_type: white`
         % in the config file returns a 256x3 matrix of ones.
-%         if ~isa(config.stimuli_type, 'string')
         if strcmpi(config.stimuli_type,'white')
             config.stimuli_type = "UniformNoiseNoBins";
         end

@@ -5,7 +5,8 @@
 % 
 %  - A figure of reconstructions plotted against the target signal and simulated answers.
 
-DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
+DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
+    'Tinnitus/tinnitus-project/code/experiment/Data/data-paper-bugfixes'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -71,15 +72,28 @@ correlation = @(X,Y) corr(X,Y,'Type','Pearson');
 
 %% Convert subject IDs into a data table
 
+config_hash = cell(length(this_dir),1);
+
 for ii = 1:length(this_dir)
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
+    config_hash{ii} = get_hash(config);
 end
 
 T = config2table(this_dir);
-T = sortrows(T, 'ID');
 T.config_filename = config_filenames(:); 
 
+% Overwrite config total trials with actual totals from data
+for i = 1:length(config_hash)
+    total_trials_done = 0;
+    d = dir(pathlib.join(DATA_DIR, ['responses_', config_hash{i}, '*.csv']));
+    for ii = 1:length(d)
+        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
+        total_trials_done = total_trials_done + length(responses);
+    end
+    row = ismember(T.config_hash, config_hash{i}, 'rows');
+    T.total_trials(row) = total_trials_done;
+end
 
 %% Compute the reconstructions
 
@@ -105,7 +119,7 @@ reconstructions_synth = cell(height(T), length(trial_fractions));
 yesses = zeros(height(T), 1);
 
 % Compute the reconstructions
-for ii = 1:height(T)%progress(1:height(T), 'Title', 'Computing reconstructions', 'UpdateRate', 1)
+for ii = 1:height(T)
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
     corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])

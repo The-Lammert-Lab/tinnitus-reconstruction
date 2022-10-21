@@ -40,6 +40,7 @@ function data_table = config2table(curr_dir, variables_to_remove)
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
     
     data_table = cellstr4tables(struct2table(config));
+    data_table.config_hash = get_hash(config);
     data_table.ID = 1;
     
     % Create and outer join each new data table, keeping column names the same
@@ -49,6 +50,7 @@ function data_table = config2table(curr_dir, variables_to_remove)
             config = parse_config(pathlib.join(config_file.folder, config_file.name));
     
             new_data_table = cellstr4tables(struct2table(config));
+            new_data_table.config_hash = get_hash(config);
             new_data_table.ID = ii;
             data_table = outerjoin(data_table, new_data_table, 'MergeKeys', true);
         end
@@ -66,6 +68,7 @@ function data_table = config2table(curr_dir, variables_to_remove)
     end
         
     data_table = removevars(data_table,remove_fields);
+    data_table = sortrows(data_table, 'ID');
 
 end % function
 
