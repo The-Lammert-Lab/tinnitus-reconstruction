@@ -15,7 +15,7 @@ For development, clone the following projects:
 Then add the functions to your path. The commands should look similar to this:
 
 ```matlab
-addpath ~/code/ReadYAML
+addpath ~/code/yaml
 addpath ~/code/srinivas.gs_mtools/src
 savepath
 ```
@@ -30,6 +30,10 @@ Copy the template configuration file found
 and modify it as you see fit.
 
 Then, run the `Protocol` function in your MATLAB prompt.
+
+```matlab
+Protocol
+```
 
 ## Configuration files
 
