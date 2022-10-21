@@ -25,6 +25,12 @@ run `setup.m` as a MATLAB script.
 
 ## Quickstart
 
+### Installing
+
+Install the latest [Release](https://github.com/alec-hoyland/tinnitus-project/releases#latest).
+
+### Running the experiment
+
 Copy the template configuration file found
 [here](https://github.com/alec-hoyland/tinnitus-project/blob/main/code/experiment/configs/config_template.yaml)
 and modify it as you see fit.
@@ -33,6 +39,15 @@ Then, run the `Protocol` function in your MATLAB prompt.
 
 ```matlab
 Protocol
+```
+
+### Results
+
+Run:
+
+```matlab
+pilot_reconstruction
+reconstruction_viz
 ```
 
 ## Configuration files
