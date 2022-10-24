@@ -83,6 +83,10 @@ classdef UniformPriorWeightedSamplingStimulusGeneration < AbstractBinnedStimulus
                 alpha_ (1,1) {mustBeGreaterThanOrEqual(alpha_, 0), mustBeReal} = self.alpha_
             end
 
+            if alpha_ ~= self.alpha_
+                self.alpha_ = alpha_;
+            end
+
             bin_occupancy = self.get_bin_occupancy();
             bin_occupancy = bin_occupancy .^ self.alpha_;
             self.bin_probs = normalize(bin_occupancy, 'norm');
