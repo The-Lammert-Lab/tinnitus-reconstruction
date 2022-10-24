@@ -91,6 +91,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % UniformNoiseNoBinsStimulusGeneration.generate_stimulus
             % UniformNoiseStimulusGeneration.generate_stimulus
             % UniformPriorStimulusGeneration.generate_stimulus
+            % WeightedPriorStimulusGeneration.generate_stimulus
 
             if any(strcmp('n_bins', properties(self)))
                 % generate first stimulus

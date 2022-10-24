@@ -74,6 +74,7 @@ in Hz.
     * [UniformNoiseNoBinsStimulusGeneration.generate_stimulus](../UniformNoiseNoBinsStimulusGeneration/#generate_stimulus)
     * [UniformNoiseStimulusGeneration.generate_stimulus](../UniformNoiseStimulusGeneration/#generate_stimulus)
     * [UniformPriorStimulusGeneration.generate_stimulus](../UniformPriorStimulusGeneration/#generate_stimulus)
+    * [WeightedPriorStimulusGeneration.generate_stimulus](../WeightedPriorStimulusGeneration/#generate_stimulus)
 
 
 

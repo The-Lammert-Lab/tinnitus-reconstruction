@@ -9,4 +9,11 @@ classdef UniformPriorStimulusGeneration < AbstractBinnedStimulusGenerationMethod
         % n_bins (1,1) {mustBePositive, mustBeInteger, mustBeReal} = 100
     end
 
+    methods 
+        function self = set.max_bins(self, value)
+            assert(value <= self.n_bins, 'self.max_bins cannot be set to a value greater than self.n_bins')
+            self.max_bins = value;
+        end
+    end
+
 end % classdef
