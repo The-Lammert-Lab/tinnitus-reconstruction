@@ -8,6 +8,7 @@ classdef UniformPriorWeightedSamplingStimulusGeneration < AbstractBinnedStimulus
         min_bins (1,1) {mustBePositive, mustBeInteger, mustBeReal} = 10
         max_bins (1,1) {mustBePositive, mustBeInteger, mustBeReal} = 50
         bin_probs (:,1) {mustBePositive, mustBeReal} = []
+        alpha_ (1,1) {mustBePositive, mustBeReal} = 1
     end
 
     methods
@@ -64,7 +65,10 @@ classdef UniformPriorWeightedSamplingStimulusGeneration < AbstractBinnedStimulus
             % ```
             % 
             % Sets ``self.bin_probs`` equal to
-            % the bin occupancy, exponentiated by ``alpha``.
+            % the bin occupancy, exponentiated by ``alpha_``.
+            % If ``alpha_`` is empty, uses the existing ``self.alpha_``
+            % value. Otherwise, ``self.alpha_`` is set as well,
+            % and that value is used.
             % 
             % **ARGUMENTS**
             %
@@ -76,11 +80,15 @@ classdef UniformPriorWeightedSamplingStimulusGeneration < AbstractBinnedStimulus
 
             arguments
                 self (1,1) UniformPriorWeightedSamplingStimulusGeneration
-                alpha_ (1,1) {mustBeGreaterThanOrEqual(alpha_, 0)} = 1
+                alpha_ (1,1) {mustBeGreaterThanOrEqual(alpha_, 0), mustBeReal} = []
+            end
+
+            if ~isempty(alpha_)
+                self.alpha_ = alpha_;
             end
 
             bin_occupancy = self.get_bin_occupancy();
-            bin_occupancy = bin_occupancy .^ alpha_;
+            bin_occupancy = bin_occupancy .^ self.alpha_;
             self.bin_probs = normalize(bin_occupancy, 'norm');
         end
 
