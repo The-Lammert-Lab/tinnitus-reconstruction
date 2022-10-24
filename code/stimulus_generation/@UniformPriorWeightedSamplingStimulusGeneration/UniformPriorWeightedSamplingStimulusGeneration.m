@@ -80,11 +80,7 @@ classdef UniformPriorWeightedSamplingStimulusGeneration < AbstractBinnedStimulus
 
             arguments
                 self (1,1) UniformPriorWeightedSamplingStimulusGeneration
-                alpha_ (1,1) {mustBeGreaterThanOrEqual(alpha_, 0), mustBeReal} = []
-            end
-
-            if ~isempty(alpha_)
-                self.alpha_ = alpha_;
+                alpha_ (1,1) {mustBeGreaterThanOrEqual(alpha_, 0), mustBeReal} = self.alpha_
             end
 
             bin_occupancy = self.get_bin_occupancy();
