@@ -6,7 +6,7 @@
 %  - A figure of reconstructions plotted against the target signal and simulated answers.
 
 DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
-    'Tinnitus/tinnitus-project/code/experiment/Data/data-paper-bugfixes'];
+    'Tinnitus/tinnitus-project/code/experiment/Data/data-weighted-test'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -97,7 +97,7 @@ end
 
 %% Compute the reconstructions
 
-trial_fractions = 1; %linspace(0.1, 1, 10);
+trial_fractions = 0.1:0.1:1;
 
 % Container for r^2 values
 r2_cs_bins = zeros(height(T), length(trial_fractions));
@@ -227,6 +227,9 @@ for ii = 1:length(numeric_columns)
         T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
     end
 end
+
+%% Plot results
+r2_bar(T)
 
 %% Saving Results
 

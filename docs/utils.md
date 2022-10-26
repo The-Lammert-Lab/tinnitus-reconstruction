@@ -318,7 +318,7 @@ Write the stimuli into the stimuli file.
 where `n` is the number of trials/samples
 and `m` is the dimensionality of the stimuli/spectrum/bins
 
-**OUTPUTS:*
+**OUTPUTS:**
 - x: compressed sensing reconstruction of the signal.
 
 
@@ -517,6 +517,30 @@ stringified_properties = prop2str(obj, [], '&&')
 
 !!! info "See Also"
     * [collect_parameters](./#collect_parameters)
+
+
+
+
+
+-------
+
+### r2_bar 
+
+Plots bar charts of r^2 values from table data. 
+A separate figure is made for each subject.
+
+**ARGUMENTS:**
+
+- T: `table` that includes r^2 values of interest
+
+**OUTPUTS:**
+- n figures, where n is the number of subjects included
+in the table.
+
+
+
+!!! info "See Also"
+    * [pilot_reconstructions](../scripts/#pilot_reconstructions)
 
 
 
