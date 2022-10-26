@@ -228,8 +228,10 @@ for ii = 1:length(numeric_columns)
     end
 end
 
-%% Plot results
-r2_bar(T)
+%% Visualize results if comparing trial fractions
+if length(trial_fractions) > 1
+    r2_bar(T)
+end
 
 %% Saving Results
 
