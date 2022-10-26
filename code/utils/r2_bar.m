@@ -47,12 +47,13 @@ function r2_bar(T)
         % Plot two tiles (lr & cs) for each experiment within subject
         for j = 1:length(exp_rows)
             target_signal_name = T.target_signal_name{exp_rows(j)};
+            total_trials = T.total_trials(exp_rows(j));
 
             nexttile
             bar(table2array(T(exp_rows(j), r2_lr_inds)))
             grid on
             set(gca, 'XTickLabel', frac_labels)
-            xlabel(['Fraction of ', num2str(T.total_trials(exp_rows(j))),...
+            xlabel(['Fraction of ', num2str(total_trials),...
                 ' trials'], 'FontSize', 14)    
             ylabel('r^2', 'FontSize',14)
             title(['Linear ', target_signal_name], ...
@@ -62,7 +63,7 @@ function r2_bar(T)
             bar(table2array(T(exp_rows(j), r2_cs_inds)))
             grid on
             set(gca, 'XTickLabel', frac_labels)
-            xlabel(['Fraction of ', num2str(T.total_trials(exp_rows(j))),...
+            xlabel(['Fraction of ', num2str(total_trials),...
                 ' trials'], 'FontSize', 14)
             ylabel('r^2', 'FontSize',14)
             title(['CS ', target_signal_name], ...
