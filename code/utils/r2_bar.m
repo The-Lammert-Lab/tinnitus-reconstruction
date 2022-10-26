@@ -28,7 +28,7 @@ function r2_bar(T)
     subjects = unique(T.subject_ID);
 
     % Get column names with trial fraction information
-    fracs = T.PropertiescVariableNames(r2_lr_inds);
+    fracs = T.Properties.VariableNames(r2_lr_inds);
 
     % Create nice x-labels from column name info
     frac_labels = cell(1, sum(r2_lr_inds));
