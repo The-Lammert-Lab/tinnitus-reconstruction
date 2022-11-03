@@ -1,0 +1,33 @@
+This document includes instructions for running the tinnitus-project standalone on macOS and Windows.
+
+1. Download and save the "tinnitus_projectstandaloneApplication" folder to your computer. 
+2. Download and save the provided configuration file to your computer. Be sure to check the "data_dir" field (see subject_instructions.txt).
+
+3. Go to https://www.mathworks.com/products/compiler/matlab-runtime.html and download the MATLAB Runtime R2022b (9.13) application for your operating system.
+
+4. Install MATLAB runtime following the instructions at https://www.mathworks.com/help/compiler_sdk/ml_code/install-the-matlab-runtime.html
+
+NOTE: On macOS, you may need to set the Path explicitly. The following instructions can be seen here: https://www.mathworks.com/help/compiler_sdk/ml_code/mcr-path-settings-for-run-time-deployment.html
+
+Open terminal and run:
+
+echo $DYLD_LIBRARY_PATH
+
+This displays the current path, which will be empty if this step needs to be completed. 
+Then, copy and paste the following lines into the terminal and hit enter.
+
+export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
+<MATLAB_RUNTIME_INSTALL_DIR>/runtime/maci64:\
+<MATLAB_RUNTIME_INSTALL_DIR>/bin/maci64:\
+<MATLAB_RUNTIME_INSTALL_DIR>/sys/os/maci64:\
+<MATLAB_RUNTIME_INSTALL_DIR>/extern/bin/maci64"
+
+You can run 
+
+echo $DYLD_LIBRARY_PATH
+
+again to confirm the path has been saved correctly.
+
+5. To run the experiment on macOS, call the run_tinnitus_project.sh script via the terminal with the MATLAB Runtime location as an argument. To find the path to the "run_tinnitus_project.sh" script, you can drag the file into the terminal after typing "sh ". This will look like:
+
+sh path/to/run_tinnitus_project.sh /Applications/MATLAB/MATLAB_Runtime/R2022b
