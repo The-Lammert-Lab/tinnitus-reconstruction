@@ -125,7 +125,7 @@ for ii = 1:height(T)
     this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_signal_name{ii}));
 
     if config.subject_ID == "GH"
-        preprocessing = {'bit_flip'};
+        preprocessing = {};
     else
         preprocessing = {};
     end
