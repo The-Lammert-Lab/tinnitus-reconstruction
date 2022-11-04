@@ -83,12 +83,12 @@ options.min_freq            = 100;
 options.max_freq            = 13e3;
 options.Fs                  = 44100;
 options.duration            = 2 * size(target_signal, 1) / options.Fs;
-options.n_trials            = 1e3;
+options.n_trials            = 10;
 
 % Hyperparameters
 options.n_bins_filled_mean  = 1;
 options.n_bins_filled_var   = 1;
-options.n_bins              = 100;
+options.n_bins              = 8;
 options.amplitude_values    = 1;
 options.amplitude_mean      = 1;
 options.amplitude_var       = 1;
@@ -121,7 +121,7 @@ hparams = struct;
 stimuli = stimulus_generation_methods{1};
 
 % Numerical parameters
-n_bins = 100;
+n_bins = 8;
 bin_prob = [0.1, 0.3, 0.5, 0.8];
 hparams.n_bins = n_bins;
 hparams.bin_prob = bin_prob;
@@ -226,8 +226,10 @@ end
 stimuli = stimulus_generation_methods{8};
 
 % Numerical parameters
-min_bins = [1, 3, 10, 20, 30];
-max_bins = [10, 20, 30, 50];
+% min_bins = [1, 3, 10, 20, 30];
+% max_bins = [10, 20, 30, 50];
+min_bins = [1, 2, 4];
+max_bins = [2, 4, 6, 8];
 hparams.min_bins = min_bins;
 hparams.max_bins = max_bins;
 
@@ -295,7 +297,7 @@ if RUN
             if contains(fieldnames(property_struct), 'n_bins')
                 g = get_gamma(property_struct.n_bins);
             else
-                g = get_gamma(100);
+                g = get_gamma(8);
             end
 
             % Create the response file if it doesn't exist
