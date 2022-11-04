@@ -42,6 +42,7 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
         options.data_dir (1,:) char = ''
         options.legacy (1,1) {mustBeNumericOrLogical} = false
+        options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
     end
 
     % If no config file path is provided,
@@ -57,7 +58,27 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         config = options.config;
         corelib.verb(options.verbose, 'INFO: get_reconstruction', 'config object provided')
     end
-
+    
+    % Set the gamma parameter if not set
+    if options.gamma == 0
+        % Try to set the gamma parameter from the config.
+        if any(strcmp(fieldnames(config), 'gamma'))
+            options.gamma = config.gamma;
+            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', based on config.']);
+        elseif any(strcmp(fieldnames(config), 'n_bins'))
+            % Try to set the gamma parameter based on the number of bins
+            options.gamma = get_gamma(config.n_bins);
+            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', based on the number of bins.']);
+        else
+            % Set gamma based on a guess
+            options.gamma = 32;
+            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', which is the default.']);
+        end
+    else
+        % Gamma set by user
+        corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', as specified by the user.']);
+    end
+    
     % collect the data from files
     [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', char(options.data_dir));
 
@@ -93,9 +114,9 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
 
     switch options.method
     case 'cs'
-        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
+        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
     case 'cs_nb'
-        x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
+        x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
     case 'linear'
         x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
     otherwise

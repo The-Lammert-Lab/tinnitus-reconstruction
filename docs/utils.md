@@ -353,6 +353,29 @@ Example:
 
 -------
 
+### get_highest_power_of_2
+Compute the highest power of two less than or equal
+to a number.
+For example, an input of 9 would return 8.
+
+**EXAMPLE:**
+
+```matlab
+n = get_highest_power_of_2(N);
+```
+
+**ARGUMENTS:**
+- N: a 1x1 scalar, positive, real integer
+
+**OUTPUTS:**
+- n: a 1x1 scalar, positive, real power of 2
+
+
+
+
+
+-------
+
 ### get_reconstruction
 
 Compute reconstructions using data specified
