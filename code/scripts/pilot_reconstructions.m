@@ -60,12 +60,6 @@ config_filenames = {this_dir.name};
 % Container for config IDs
 config_ids = cell(length(this_dir), 1);
 
-% Get the binned representation for the target signals
-config = parse_config(pathlib.join(this_dir(1).folder, this_dir(1).name));
-stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-stimgen = stimgen.from_config(config);
-binned_target_signal = stimgen.spect2binnedrepr(target_signal);
-
 % Define correlation type
 correlation = @(X,Y) corr(X,Y,'Type','Pearson');
 
@@ -121,14 +115,19 @@ yesses = zeros(height(T), 1);
 for ii = 1:height(T)
     config_file = this_dir(ii);
     config = parse_config(pathlib.join(config_file.folder, config_file.name));
+
+    % Compute the gamma parameter
+    this_gamma = get_gamma_from_config(config);
+
+    % Get the binned representation for the target signals
+    stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+    stimgen = stimgen.from_config(config);
+    binned_target_signal = stimgen.spect2binnedrepr(target_signal);
+
     corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])
     this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_signal_name{ii}));
 
-    if config.subject_ID == "GH"
-        preprocessing = {};
-    else
-        preprocessing = {};
-    end
+    preprocessing = {};
 
     for qq = 1:length(trial_fractions)
         corelib.verb(true, 'INFO: pilot_reconstructions', ['trial fractions: ', num2str(trial_fractions(qq))])
@@ -151,7 +150,7 @@ for ii = 1:height(T)
         % Compute reconstructions from the in-silico process
         corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using synthetic responses')
         responses_synth = subject_selection_process(this_target_signal, stimuli_matrix');
-        reconstructions_synth{ii, qq} = cs(responses_synth, stimuli_matrix');
+        reconstructions_synth{ii, qq} = cs(responses_synth, stimuli_matrix', this_gamma);
         
         % Compute the r^2 values
         [r2_cs_bins(ii, qq), p_cs_bins(ii, qq)] = correlation(reconstructions_cs{ii, qq}, this_target_signal);
