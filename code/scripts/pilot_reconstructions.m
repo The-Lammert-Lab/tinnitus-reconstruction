@@ -217,14 +217,14 @@ T.p_synth = p_synth;
 T.yesses = yesses;
 
 %% Clean up table
-numeric_columns = {
-    'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
-    'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'bin_rep', 'gamma'};
-for ii = 1:length(numeric_columns)
-    if any(strcmp(T.Properties.VariableNames, numeric_columns{ii}))
-        T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
-    end
-end
+% numeric_columns = {
+%     'min_freq', 'max_freq', 'n_bins', 'duration', 'n_trials', 'n_bins_filled_mean', ...
+%     'n_bins_filled_var', 'bin_prob', 'amplitude_mean', 'amplitude_var', 'bin_rep', 'gamma'};
+% for ii = 1:length(numeric_columns)
+%     if any(strcmp(T.Properties.VariableNames, numeric_columns{ii}))
+%         T.(numeric_columns{ii}) = str2double(T.(numeric_columns{ii}));
+%     end
+% end
 
 %% Visualize results if comparing trial fractions
 if length(trial_fractions) > 1

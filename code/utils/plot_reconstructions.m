@@ -1,11 +1,12 @@
 
-function fig = plot_reconstructions(T, binned_target_signal, data_names, options)
+function fig = plot_reconstructions(T, binned_target_signal, data_names, n_bins, options)
     % TODO: documentation
 
     arguments
         T table
         binned_target_signal {mustBeNumeric}
         data_names {mustBeText}
+        n_bins (1,1) {mustBeInteger, mustBeNonnegative, mustBeReal}
         options.figure = []
         options.publish = false
         options.alpha = 0.5
@@ -89,7 +90,7 @@ function fig = plot_reconstructions(T, binned_target_signal, data_names, options
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, CS
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
+                scatter(ax(ii), 1:n_bins, normalize(filtered_table.reconstructions_cs_1{qq}), 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot purely for the legend
@@ -104,7 +105,7 @@ function fig = plot_reconstructions(T, binned_target_signal, data_names, options
                 legend_labels{end + 1} = '';
 
                 % Scatter plot, LR
-                scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
+                scatter(ax(ii), 1:n_bins, normalize(filtered_table.reconstructions_cs_1{qq}), '+', 'MarkerEdgeColor', cmap(qq, :), 'MarkerEdgeAlpha', options.alpha)
                 legend_labels{end + 1} = '';
 
                 % Empty plot for the legend
@@ -121,7 +122,7 @@ function fig = plot_reconstructions(T, binned_target_signal, data_names, options
             p.Color(4) = options.alpha;
 
             % Scatter plot, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', options.alpha)
+            scatter(ax(ii), 1:n_bins, normalize(filtered_table.reconstructions_rand{1}), 'o', 'MarkerEdgeColor', cmap(qq + 1, :), 'MarkerEdgeAlpha', options.alpha)
 
             % Empty
             plot(ax(ii), NaN, NaN, '-o', 'Color', cmap(qq + 1, :))
@@ -135,7 +136,7 @@ function fig = plot_reconstructions(T, binned_target_signal, data_names, options
             legend_labels{end + 1} = '';
 
             % Scatter plot, synthetic, CS
-            scatter(ax(ii), 1:100, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', options.alpha);
+            scatter(ax(ii), 1:n_bins, normalize(filtered_table.reconstructions_synth{1}), 'o', 'MarkerEdgeColor', cmap(qq + 2, :), 'MarkerEdgeAlpha', options.alpha);
             legend_labels{end + 1} = '';
 
             % Empty
