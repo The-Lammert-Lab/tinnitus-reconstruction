@@ -61,19 +61,7 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
     
     % Set the gamma parameter if not set
     if options.gamma == 0
-        % Try to set the gamma parameter from the config.
-        if any(strcmp(fieldnames(config), 'gamma'))
-            options.gamma = config.gamma;
-            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', based on config.']);
-        elseif any(strcmp(fieldnames(config), 'n_bins'))
-            % Try to set the gamma parameter based on the number of bins
-            options.gamma = get_gamma(config.n_bins);
-            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', based on the number of bins.']);
-        else
-            % Set gamma based on a guess
-            options.gamma = 32;
-            corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', which is the default.']);
-        end
+        options.gamma = get_gamma_from_config(options.config, options.verbose);
     else
         % Gamma set by user
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', as specified by the user.']);
