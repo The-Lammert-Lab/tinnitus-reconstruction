@@ -5,7 +5,7 @@
 
 # A good syntax for this field is
 # {experiment_name}-{target_signal}-{subject_initials}-[resynth]
-experiment_name: paper1-roaring-AH-n_bins=8
+experiment_name: paper1-roaring-AH-n_bins=8-2
 subject_ID: AH
 
 # These fields describe the number of trials in the experiment.
@@ -14,13 +14,13 @@ subject_ID: AH
 # A block is a set of contiguous trials without a break a break.
 # Subjects get a break between blocks.
 # These are both required fields.
-n_trials_per_block: 100
-n_blocks: 1
+n_trials_per_block: 20
+n_blocks: 10
 
 # The total trials should be the number of trials per block
 # times the number of blocks.
 # This is not a required field.
-total_trials: 100
+total_trials: 200
 
 # These "freq" fields describe the frequency range of the stimuli,
 # including the minimum frequency and maximum frequency,
