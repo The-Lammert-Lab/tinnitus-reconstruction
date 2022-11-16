@@ -9,16 +9,17 @@ alpha = 0.5;
 % Regular experiments (no 2-AFC or resynth)
 
 % Subset the data table
-T2 = T(~(contains(T.experiment_name, 'resynth') | contains(T.experiment_name, '2afc')), :);
-n_bins = unique(T2.n_bins);
+index_normal = ~(contains(T.experiment_name, 'resynth') | contains(T.experiment_name, '2afc'));
+these_bins = table2array(unique(T(index_normal, "n_bins")));
 
-for ii = 1:length(n_bins)
+for ii = 1:length(these_bins)
+    this_T = T(index_normal & (T.n_bins == these_bins(ii, :)), :);
 
     plot_reconstructions(...
-        T2(T.n_bins == n_bins(ii), :), ...
-        binned_target_signal, ...
+        this_T, ...
+        binned_target_signal{this_T.ID(1)}, ...
         data_names, ...,
-        n_bins(ii), ...,
+        these_bins(ii), ...,
         "lr", true, ...
         "figure", new_figure(), ...
         "alpha", alpha);

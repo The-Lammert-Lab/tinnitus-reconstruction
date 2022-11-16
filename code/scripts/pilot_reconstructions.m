@@ -2,16 +2,16 @@
 % This code assumes that each each experiment uses the same number of bins and that the reconstructions should be done over the bin representation.
 % 
 % **OUTPUTS:**
-% 
-%  - A figure of reconstructions plotted against the target signal and simulated answers.
+%  - T: a data table that contains information about the experiments and their reconstructions
+
+%% Preamble
+% Change the DATA_DIR and PUBLISH flags as you need to.
 
 DATA_DIR = ['/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
-%% Compute the bin representations of the target signals
-
-% Create output directory
+%% Get the target signals
 
 % Target signals
 sound_dir = pathlib.join(PROJECT_DIR, 'code', 'experiment', 'ATA');
@@ -31,12 +31,14 @@ data_names = {
     'teakettle', ...
     'screeching' ...
 };
+
 s = cell(5, 1);
 f = cell(5, 1);
 for ii = 1:length(data_files)
     [s{ii}, f{ii}] = wav2spect(pathlib.join(sound_dir, data_files{ii}));
 end
 target_signal = [s{:}];
+
 % convert to dB
 target_signal = 10 * log10(target_signal);
 f = [f{:}];
@@ -54,6 +56,8 @@ this_dir = dir(pathlib.join(DATA_DIR, '*.yaml'));
 %     end
 % end
 
+%% Get the experiments, by configuration files
+
 % Get array of structs of config files
 config_filenames = {this_dir.name};
 
@@ -63,14 +67,22 @@ config_ids = cell(length(this_dir), 1);
 % Define correlation type
 correlation = @(X,Y) corr(X,Y,'Type','Pearson');
 
-%% Convert subject IDs into a data table
+%% Create a data table by reading the config files
 
 config_hash = cell(length(this_dir),1);
+binned_target_signal = cell(length(this_dir), 1);
 
 for ii = 1:length(this_dir)
+    % Read the config file
     config_file = this_dir(ii);
-    config = parse_config(pathlib.join(config_file.folder, config_file.name));
+    this_path = pathlib.join(config_file.folder, config_file.name);
+    corelib.verb(true, 'INFO: pilot_reconstructions', ['reading config file: ', this_path])
+    config = parse_config(this_path);
     config_hash{ii} = get_hash(config);
+    % Compute the binned target signals
+    stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+    stimgen = stimgen.from_config(config);
+    binned_target_signal{ii} = stimgen.spect2binnedrepr(target_signal);
 end
 
 T = config2table(this_dir);
@@ -119,13 +131,8 @@ for ii = 1:height(T)
     % Compute the gamma parameter
     this_gamma = get_gamma_from_config(config);
 
-    % Get the binned representation for the target signals
-    stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-    stimgen = stimgen.from_config(config);
-    binned_target_signal = stimgen.spect2binnedrepr(target_signal);
-
     corelib.verb(true, 'INFO: pilot_reconstructions', ['processing config file: [', config_file.name, ']'])
-    this_target_signal = binned_target_signal(:, strcmp(data_names, T.target_signal_name{ii}));
+    this_target_signal = binned_target_signal{ii}(:, strcmp(data_names, T.target_signal_name{ii}));
 
     preprocessing = {};
 
