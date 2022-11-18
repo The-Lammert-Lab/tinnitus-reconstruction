@@ -16,4 +16,4 @@ You are free to pause or stop the experiment at any time to take as long of a br
 You are not required to complete the experiment in one sitting.
 The program will automatically pause after you have completed 100 trials and wait for the "f" key to be pressed to begin again.
 
-Upon completion of 2000 trials, the experiment will conclude.
+Upon completion of 200 trials, the experiment will conclude.
