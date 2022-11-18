@@ -1,0 +1,19 @@
+Thank you for agreeing to participate in this research! 
+
+Below are a brief set of instructions to guide you to through the experiment. 
+
+Before starting, please fill in the "data_dir" field of the provided configuration file with an appropriate location to save your data. 
+For example, for macOS, this line may read:
+data_dir: /Users/USERNAME/Desktop/Tinnitus-Data
+Where USERNAME is the username of the current login.
+
+After initiating the experiment, you will be presented with a start screen with instructions to press the "f" key when ready to begin. 
+Once begun, the program will play a target sound followed by a noisy stimulus sound. 
+A fraction of the stimuli will have the target embedded inside. 
+Press "f" if you do NOT believe the stimuli was embedded and press "j" if you do.
+
+You are free to pause or stop the experiment at any time to take as long of a break as desired.
+You are not required to complete the experiment in one sitting.
+The program will automatically pause after you have completed 100 trials and wait for the "f" key to be pressed to begin again.
+
+Upon completion of 200 trials, the experiment will conclude.
