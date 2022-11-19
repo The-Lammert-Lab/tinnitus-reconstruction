@@ -1,6 +1,6 @@
 Thank you for agreeing to participate in this research! 
 
-Below are a brief set of instructions to guide you to through the experiment. 
+Below is a brief set of instructions to guide you to through the experiment. 
 
 Before starting, please fill in the "data_dir" field of the provided configuration file with an appropriate location to save your data. 
 For example, for macOS, this line may read:
