@@ -7,7 +7,8 @@ For example, for macOS, this line may read:
 data_dir: /Users/USERNAME/Desktop/Tinnitus-Data
 Where USERNAME is the username of the current login.
 
-After initiating the experiment, you will be presented with a start screen with instructions to press the "f" key when ready to begin. 
+After initiating the experiment, you will be asked to select a config file. Navigate to one of the provided files and select it. 
+You will then be presented with a start screen with instructions to press the "f" key when ready to begin. 
 Once begun, the program will play a target sound followed by a noisy stimulus sound. 
 A fraction of the stimuli will have the target embedded inside. 
 Press "f" if you do NOT believe the stimuli was embedded and press "j" if you do.
