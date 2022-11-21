@@ -40,6 +40,7 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         options.method = 'cs'
         options.verbose (1,1) logical = true
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
+        options.use_n_trials (1,1) {mustBeReal, mustBeNonnegative} = inf
         options.data_dir (1,:) char = ''
         options.legacy (1,1) {mustBeNumericOrLogical} = false
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
@@ -95,6 +96,11 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
     end
 
     %% Reconstruction Step
+    if ~isinf(options.use_n_trials) && options.use_n_trials <= length(stimuli_matrix) 
+        conv_factor = options.use_n_trials / length(stimuli_matrix);
+        options.fraction = conv_factor * options.fraction;
+    end
+
     n_trials = round(options.fraction * length(stimuli_matrix(1, :)));
 
     responses_output = responses(1:n_trials);
