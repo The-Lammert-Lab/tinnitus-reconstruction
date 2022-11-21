@@ -7,7 +7,8 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'];
+DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
+    'Tinnitus/tinnitus-project/code/experiment/Data/PAPER1-DATA-ALL-8BINS'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -102,7 +103,14 @@ end
 
 %% Compute the reconstructions
 
+n_trials = 200; % set to inf if using all available data
 trial_fractions = 1; %0.1:0.1:1;
+
+if ~isinf(n_trials)
+    T.total_trials_used = repmat(n_trials, height(T), 1);
+    fix_rows = T.total_trials < T.total_trials_used;
+    T.total_trials_used(fix_rows) = T.total_trials(fix_rows);
+end
 
 % Container for r^2 values
 r2_cs_bins = zeros(height(T), length(trial_fractions));
@@ -143,6 +151,7 @@ for ii = 1:height(T)
         [reconstructions_cs{ii, qq}, responses, stimuli_matrix] = get_reconstruction('config', config, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
+                                    'use_n_trials', n_trials, ...
                                     'verbose', true, ...
                                     'preprocessing', preprocessing, ...
                                     'data_dir', DATA_DIR);
@@ -150,6 +159,7 @@ for ii = 1:height(T)
         reconstructions_lr{ii, qq} = get_reconstruction('config', config, ...
                                     'method', 'linear', ...
                                     'fraction', trial_fractions(qq), ...
+                                    'use_n_trials', n_trials, ...
                                     'preprocessing', preprocessing, ...
                                     'verbose', true, ...
                                     'data_dir', DATA_DIR);
@@ -233,7 +243,12 @@ T.yesses = yesses;
 %     end
 % end
 
-%% Visualize results if comparing trial fractions
+%% Visualize results 
+
+% View table in a figure
+view_table(T)
+
+% if comparing trial fractions
 if length(trial_fractions) > 1
     r2_bar(T)
 end
