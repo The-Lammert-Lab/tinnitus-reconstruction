@@ -17,7 +17,7 @@
 function r2_bar(T)
 
     arguments
-        T (:,:) {mustBeUnderlyingType(T, "table")}
+        T table
     end
     
     % Get indices of r^2 data from table

@@ -7,7 +7,8 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'];
+DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
+    'Tinnitus/tinnitus-project/code/experiment/Data/PAPER1-DATA-ALL-8BINS'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -233,7 +234,12 @@ T.yesses = yesses;
 %     end
 % end
 
-%% Visualize results if comparing trial fractions
+%% Visualize results 
+
+% View table in a figure
+view_table(T)
+
+% if comparing trial fractions
 if length(trial_fractions) > 1
     r2_bar(T)
 end
