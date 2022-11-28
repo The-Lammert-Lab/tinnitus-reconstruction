@@ -7,8 +7,7 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
-    'Tinnitus/tinnitus-project/code/experiment/Data/PAPER1-DATA-ALL-8BINS'];
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -113,10 +112,10 @@ if ~isinf(n_trials)
 end
 
 % Container for r^2 values
-r2_cs_bins = zeros(height(T), length(trial_fractions));
-r2_lr_bins = zeros(height(T), length(trial_fractions));
-r2_rand = zeros(height(T), 1);
-r2_synth = zeros(height(T), length(trial_fractions));
+r_cs_bins = zeros(height(T), length(trial_fractions));
+r_lr_bins = zeros(height(T), length(trial_fractions));
+r_rand = zeros(height(T), 1);
+r_synth = zeros(height(T), length(trial_fractions));
 p_cs_bins = zeros(height(T), length(trial_fractions));
 p_lr_bins = zeros(height(T), length(trial_fractions));
 p_rand = zeros(height(T), 1);
@@ -170,9 +169,9 @@ for ii = 1:height(T)
         reconstructions_synth{ii, qq} = cs(responses_synth, stimuli_matrix', this_gamma);
         
         % Compute the r^2 values
-        [r2_cs_bins(ii, qq), p_cs_bins(ii, qq)] = correlation(reconstructions_cs{ii, qq}, this_target_signal);
-        [r2_lr_bins(ii, qq), p_lr_bins(ii, qq)] = correlation(reconstructions_lr{ii, qq}, this_target_signal);
-        [r2_synth(ii, qq), p_synth(ii, qq)] = correlation(reconstructions_synth{ii, qq}, this_target_signal);
+        [r_cs_bins(ii, qq), p_cs_bins(ii, qq)] = correlation(reconstructions_cs{ii, qq}, this_target_signal);
+        [r_lr_bins(ii, qq), p_lr_bins(ii, qq)] = correlation(reconstructions_lr{ii, qq}, this_target_signal);
+        [r_synth(ii, qq), p_synth(ii, qq)] = correlation(reconstructions_synth{ii, qq}, this_target_signal);
     end
 
     % Outside the inner loop,
@@ -182,7 +181,7 @@ for ii = 1:height(T)
     corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using random responses')
     responses_rand = sign(0.5 - rand(size(stimuli_matrix, 2), 1));
     reconstructions_rand{ii} = gs(responses_rand, stimuli_matrix');
-    [r2_rand(ii), p_rand(ii)] = correlation(reconstructions_rand{ii}, this_target_signal);
+    [r_rand(ii), p_rand(ii)] = correlation(reconstructions_rand{ii}, this_target_signal);
     
     % Count number of 'yes' results and normalize
     yesses(ii) = sum(responses > 0) / length(responses);
@@ -208,27 +207,31 @@ binned_resynth_target_signal = [T_filtered.reconstructions_cs_1{:}];
 for ii = 1:height(T2)
     iii = ix(ii);
     for qq = 1:length(trial_fractions)
-        [r2_cs_bins(iii, qq), p_cs_bins(iii, qq)] = correlation(reconstructions_cs{iii, qq}, binned_resynth_target_signal(:, ii));
-        [r2_lr_bins(iii, qq), p_lr_bins(iii, qq)] = correlation(reconstructions_lr{iii, qq}, binned_resynth_target_signal(:, ii));
-        [r2_synth(iii, qq), p_synth(iii, qq)] = correlation(reconstructions_synth{iii, qq}, binned_resynth_target_signal(:, ii));
+        [r_cs_bins(iii, qq), p_cs_bins(iii, qq)] = correlation(reconstructions_cs{iii, qq}, binned_resynth_target_signal(:, ii));
+        [r_lr_bins(iii, qq), p_lr_bins(iii, qq)] = correlation(reconstructions_lr{iii, qq}, binned_resynth_target_signal(:, ii));
+        [r_synth(iii, qq), p_synth(iii, qq)] = correlation(reconstructions_synth{iii, qq}, binned_resynth_target_signal(:, ii));
     end
-    [r2_rand(iii), p_cs_bins(iii)] = correlation(reconstructions_rand{iii}, binned_resynth_target_signal(:, ii));
+    [r_rand(iii), p_cs_bins(iii)] = correlation(reconstructions_rand{iii}, binned_resynth_target_signal(:, ii));
 end
 
-r2_lr_bins = r2_lr_bins .^ 2;
-r2_cs_bins = r2_cs_bins .^ 2;
-r2_rand = r2_rand .^ 2;
-r2_synth = r2_synth .^ 2;
+r2_lr_bins = r_lr_bins .^ 2;
+r2_cs_bins = r_cs_bins .^ 2;
+r2_rand = r_rand .^ 2;
+r2_synth = r_synth .^ 2;
 
 % Build the data table
 for ii = 1:length(trial_fractions)
     T.(['r2_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_lr_bins(:, ii);
+    T.(['r_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_lr_bins(:, ii);
     T.(['r2_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_cs_bins(:, ii);
+    T.(['r_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_cs_bins(:, ii);
     T.(['p_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_lr_bins(:, ii);
     T.(['p_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_cs_bins(:, ii);
 end
 T.r2_rand = r2_rand;
+T.r_rand = r_rand;
 T.r2_synth = r2_synth;
+T.r_synth = r_synth;
 T.p_rand = p_rand;
 T.p_synth = p_synth;
 T.yesses = yesses;
