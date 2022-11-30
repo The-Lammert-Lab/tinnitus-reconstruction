@@ -7,8 +7,7 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['/Users/nelsonbarnett/Desktop/Prof. Lammert Research/' ...
-    'Tinnitus/tinnitus-project/code/experiment/Data/PAPER1-DATA-ALL-8BINS'];
+DATA_DIR = ['~/Downloads/data-paper-8-bins'];
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 PUBLISH = false;
 
@@ -115,6 +114,8 @@ end
 % Container for r^2 values
 r2_cs_bins = zeros(height(T), length(trial_fractions));
 r2_lr_bins = zeros(height(T), length(trial_fractions));
+r2_bootstrap_cs_bins = zeros(height(T), length(trial_fractions));
+r2_bootstrap_lr_bins = zeros(height(T), length(trial_fractions));
 r2_rand = zeros(height(T), 1);
 r2_synth = zeros(height(T), length(trial_fractions));
 p_cs_bins = zeros(height(T), length(trial_fractions));
@@ -148,20 +149,25 @@ for ii = 1:height(T)
         corelib.verb(true, 'INFO: pilot_reconstructions', ['trial fractions: ', num2str(trial_fractions(qq))])
         % Compute the reconstructions
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing CS reconstruction')
-        [reconstructions_cs{ii, qq}, responses, stimuli_matrix] = get_reconstruction('config', config, ...
+
+        [reconstructions_cs{ii, qq}, r2_bootstrap_cs_bins(ii, qq), responses, stimuli_matrix] = get_reconstruction('config', config, ...
                                     'method', 'cs', ...
                                     'fraction', trial_fractions(qq), ...
                                     'use_n_trials', n_trials, ...
+                                    'bootstrap', true, ... 
                                     'verbose', true, ...
+                                    'target', this_target_signal, ...
                                     'preprocessing', preprocessing, ...
                                     'data_dir', DATA_DIR);
         corelib.verb(true, 'INFO: pilot_reconstructions', 'computing linear reconstruction')
-        reconstructions_lr{ii, qq} = get_reconstruction('config', config, ...
+        [reconstructions_lr{ii, qq}, r2_bootstrap_lr_bins(ii,qq), ~, ~] = get_reconstruction('config', config, ...
                                     'method', 'linear', ...
                                     'fraction', trial_fractions(qq), ...
                                     'use_n_trials', n_trials, ...
-                                    'preprocessing', preprocessing, ...
+                                    'bootstrap', true, ... 
                                     'verbose', true, ...
+                                    'target', this_target_signal, ...
+                                    'preprocessing', preprocessing, ...
                                     'data_dir', DATA_DIR);
         
         % Compute reconstructions from the in-silico process
@@ -217,6 +223,8 @@ end
 
 r2_lr_bins = r2_lr_bins .^ 2;
 r2_cs_bins = r2_cs_bins .^ 2;
+r2_bootstrap_cs_bins = r2_bootstrap_cs_bins .^ 2;
+r2_bootstrap_lr_bins = r2_bootstrap_lr_bins .^ 2;
 r2_rand = r2_rand .^ 2;
 r2_synth = r2_synth .^ 2;
 
@@ -224,6 +232,8 @@ r2_synth = r2_synth .^ 2;
 for ii = 1:length(trial_fractions)
     T.(['r2_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_lr_bins(:, ii);
     T.(['r2_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_cs_bins(:, ii);
+    T.(['r2_bootstrap_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_bootstrap_cs_bins(:, ii);
+    T.(['r2_bootstrap_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r2_bootstrap_lr_bins(:, ii);
     T.(['p_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_lr_bins(:, ii);
     T.(['p_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_cs_bins(:, ii);
 end
@@ -246,7 +256,7 @@ T.yesses = yesses;
 %% Visualize results 
 
 % View table in a figure
-view_table(T)
+view_table(sortrows(T, 'r2_lr_bins_1', 'descend'))
 
 % if comparing trial fractions
 if length(trial_fractions) > 1

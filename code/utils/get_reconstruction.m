@@ -31,7 +31,7 @@
 % collect_data
 % config2table
 
-function [x, responses_output, stimuli_matrix_output] = get_reconstruction(options)
+function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconstruction(options)
 
     arguments
         options.config_file (1,:) = ''
@@ -41,6 +41,8 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
         options.verbose (1,1) logical = true
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
         options.use_n_trials (1,1) {mustBeReal, mustBeNonnegative} = inf
+        options.bootstrap (1,1) {mustBeNumericOrLogical} = false
+        options.target (:,1) = []
         options.data_dir (1,:) char = ''
         options.legacy (1,1) {mustBeNumericOrLogical} = false
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
@@ -105,6 +107,40 @@ function [x, responses_output, stimuli_matrix_output] = get_reconstruction(optio
 
     responses_output = responses(1:n_trials);
     stimuli_matrix_output = stimuli_matrix(:, 1:n_trials);
+    
+    if options.bootstrap
+        % Truncate for readability
+        responses = responses(1:n_trials);
+        stimuli_matrix = stimuli_matrix(:, 1:n_trials);
+
+        % Relevant variables
+        n = 1000;
+        n_samples = round(0.9*length(responses));
+
+        % Container for r values
+        r = zeros(n, 1);
+
+        % Bootstrap
+        for i = 1:n
+            ind = round((length(responses)-1) * rand(n_samples, 1)) + 1;
+            switch options.method
+            case 'cs'
+                x = cs(responses(ind), stimuli_matrix(:, ind)', options.gamma);
+            case 'cs_nb'
+                x = cs_no_basis(responses(ind), stimuli_matrix(:, ind)', options.gamma);
+            case 'linear'
+                x = gs(responses(ind), stimuli_matrix(:, ind)');
+            otherwise
+                error('Unknown method')
+            end
+            r(i) = corr(x, options.target);
+        end
+        
+        % Set outputs
+        r_bootstrap = mean(r);
+    else
+        r_bootstrap = NaN;
+    end
 
     switch options.method
     case 'cs'

@@ -25,7 +25,7 @@ function x = cs(responses, Phi, Gamma)
     n_samples = length(responses);
     len_signal = size(Phi, 2);
 
-    f = waittext(0, 'init');
+    waittext(0, 'init');
 
     Theta = zeros(n_samples, len_signal);
     for ii = 1:len_signal
@@ -35,12 +35,10 @@ function x = cs(responses, Phi, Gamma)
         Psi = idct(ek)';
         Theta(:, ii) = Phi * Psi;
     end
-    
-    close(f)
-    
+        
     s = zhangpassivegamma(Theta, responses, Gamma);
 
-    f = waittext(0, 'init');
+    waittext(0, 'init');
 
     x = zeros(len_signal, 1);
     for ii = 1:len_signal
@@ -51,5 +49,4 @@ function x = cs(responses, Phi, Gamma)
         x = x + Psi * s(ii);
     end
 
-    close(f)
 end
