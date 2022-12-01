@@ -547,14 +547,14 @@ stringified_properties = prop2str(obj, [], '&&')
 
 -------
 
-### r2_bar 
+### r_viz
 
-Plots bar charts of r^2 values from table data. 
+Plots bar charts of r values from table data. 
 A separate figure is made for each subject.
 
 **ARGUMENTS:**
 
-- T: `table` that includes r^2 values of interest
+- T: `table` that includes r values of interest
 
 **OUTPUTS:**
 - n figures, where n is the number of subjects included

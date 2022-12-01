@@ -16,20 +16,27 @@
 % **OUTPUTS:**
 %   - x: compressed sensing reconstruction of the signal.
 
-function x = cs(responses, Phi, Gamma)
+function x = cs(responses, Phi, Gamma, options)
 
-    if nargin < 3
-        Gamma = 32;
+    arguments
+        responses (:,1) {mustBeNumeric}
+        Phi {mustBeNumeric}
+        Gamma (1,1) {mustBeInteger, mustBeNonnegative} = 32
+        options.verbose = true
     end
     
     n_samples = length(responses);
     len_signal = size(Phi, 2);
 
-    waittext(0, 'init');
+    if options.verbose
+        waittext(0, 'init');
+    end
 
     Theta = zeros(n_samples, len_signal);
     for ii = 1:len_signal
-        waittext(ii/len_signal, 'fraction');
+        if options.verbose
+            waittext(ii/len_signal, 'fraction');
+        end
         ek = zeros(1, len_signal);
         ek(ii) = 1;
         Psi = idct(ek)';
@@ -38,11 +45,15 @@ function x = cs(responses, Phi, Gamma)
         
     s = zhangpassivegamma(Theta, responses, Gamma);
 
-    waittext(0, 'init');
+    if options.verbose
+        waittext(0, 'init');
+    end
 
     x = zeros(len_signal, 1);
     for ii = 1:len_signal
-        waittext(ii/len_signal, 'fraction');
+        if options.verbose
+            waittext(ii/len_signal, 'fraction');
+        end
         ek = zeros(1, len_signal);
         ek(ii) = 1;
         Psi = idct(ek)';

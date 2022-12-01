@@ -41,7 +41,7 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
         options.verbose (1,1) logical = true
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
         options.use_n_trials (1,1) {mustBeReal, mustBeNonnegative} = inf
-        options.bootstrap (1,1) {mustBeNumericOrLogical} = false
+        options.bootstrap (1,1) {mustBeInteger, mustBeNonnegative} = 0
         options.target (:,1) = []
         options.data_dir (1,:) char = ''
         options.legacy (1,1) {mustBeNumericOrLogical} = false
@@ -114,18 +114,17 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
         stimuli_matrix = stimuli_matrix(:, 1:n_trials);
 
         % Relevant variables
-        n = 1000;
         n_samples = round(0.9*length(responses));
 
         % Container for r values
-        r = zeros(n, 1);
+        r_bootstrap = zeros(options.bootstrap, 1);
 
         % Bootstrap
-        for i = 1:n
+        for i = 1:options.bootstrap
             ind = round((length(responses)-1) * rand(n_samples, 1)) + 1;
             switch options.method
             case 'cs'
-                x = cs(responses(ind), stimuli_matrix(:, ind)', options.gamma);
+                x = cs(responses(ind), stimuli_matrix(:, ind)', options.gamma, 'verbose', options.verbose);
             case 'cs_nb'
                 x = cs_no_basis(responses(ind), stimuli_matrix(:, ind)', options.gamma);
             case 'linear'
@@ -133,18 +132,15 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
             otherwise
                 error('Unknown method')
             end
-            r(i) = corr(x, options.target);
-        end
-        
-        % Set outputs
-        r_bootstrap = mean(r);
+            r_bootstrap(i) = corr(x, options.target);
+        end        
     else
-        r_bootstrap = NaN;
+        r_bootstrap = [];
     end
 
     switch options.method
     case 'cs'
-        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
+        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma, 'verbose', options.verbose);
     case 'cs_nb'
         x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
     case 'linear'
