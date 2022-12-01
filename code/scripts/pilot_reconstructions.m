@@ -250,10 +250,12 @@ for ii = 1:length(trial_fractions)
     T.(['p_lr_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_lr_bins(:, ii);
     T.(['p_cs_bins_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = p_cs_bins(:, ii);
 
-    T.(['r_bootstrap_lr_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_mean(:, ii);
-    T.(['r_bootstrap_cs_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_mean(:, ii);
-    T.(['r_bootstrap_lr_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_RC(:, ii);
-    T.(['r_bootstrap_cs_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_RC(:, ii);
+    if BOOTSTRAP
+        T.(['r_bootstrap_lr_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_mean(:, ii);
+        T.(['r_bootstrap_cs_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_mean(:, ii);
+        T.(['r_bootstrap_lr_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_RC(:, ii);
+        T.(['r_bootstrap_cs_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_RC(:, ii);
+    end
 end
 T.r_rand = r_rand;
 T.r_synth = r_synth;
