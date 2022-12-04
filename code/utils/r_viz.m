@@ -1,11 +1,11 @@
-% ### r2_bar 
+% ### r_viz
 % 
-% Plots bar charts of r^2 values from table data. 
+% Plots bar charts of r values from table data. 
 % A separate figure is made for each subject.
 % 
 % **ARGUMENTS:**
 % 
-%   - T: `table` that includes r^2 values of interest
+%   - T: `table` that includes r values of interest
 % 
 % **OUTPUTS:**
 %   - n figures, where n is the number of subjects included
@@ -14,24 +14,24 @@
 % See Also:
 % pilot_reconstructions
 
-function r2_bar(T)
+function r_viz(T)
 
     arguments
         T table
     end
     
-    % Get indices of r^2 data from table
-    r2_lr_inds = contains(T.Properties.VariableNames,'r2_lr');
-    r2_cs_inds = contains(T.Properties.VariableNames,'r2_cs');
+    % Get indices of r data from table
+    r_lr_inds = contains(T.Properties.VariableNames,'r_lr');
+    r_cs_inds = contains(T.Properties.VariableNames,'r_cs');
 
     % Determine unique subjects
     subjects = unique(T.subject_ID);
 
     % Get column names with trial fraction information
-    fracs = T.Properties.VariableNames(r2_lr_inds);
+    fracs = T.Properties.VariableNames(r_lr_inds);
 
     % Create nice x-labels from column name info
-    frac_labels = cell(1, sum(r2_lr_inds));
+    frac_labels = cell(1, sum(r_lr_inds));
     for i = 1:length(fracs)
         temp = regexprep(fracs{i}, {'\D*([\d\.]+\d)[^\d]*', ...
             '[^\d\.]*'}, {'$1 ', ''}); % Parse for only numbers
@@ -50,7 +50,7 @@ function r2_bar(T)
             total_trials = T.total_trials(exp_rows(j));
 
             nexttile
-            bar(table2array(T(exp_rows(j), r2_lr_inds)))
+            bar(table2array(T(exp_rows(j), r_lr_inds)))
             grid on
             set(gca, 'XTickLabel', frac_labels)
             xlabel(['Fraction of ', num2str(total_trials),...
@@ -60,7 +60,7 @@ function r2_bar(T)
                 'FontSize', 14)
 
             nexttile
-            bar(table2array(T(exp_rows(j), r2_cs_inds)))
+            bar(table2array(T(exp_rows(j), r_cs_inds)))
             grid on
             set(gca, 'XTickLabel', frac_labels)
             xlabel(['Fraction of ', num2str(total_trials),...
