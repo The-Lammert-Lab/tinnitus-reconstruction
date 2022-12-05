@@ -231,8 +231,14 @@ function Protocol(options)
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
             fclose(fid_responses);
             % end, all trials complete
-            imshow(Screen4)
             corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            if isfield(config, 'follow_up') && config.follow_up
+                follow_up('config_file', config_path, 'data_dir', ...
+                    config.data_dir, 'this_hash', hash_prefix, ...
+                    'target_sound', target_sound, 'target_fs', target_fs)
+            else
+                imshow(Screen4)
+            end
             return
         elseif mod(total_trials_done, config.n_trials_per_block) == 0 % give rest before proceeding to next block
             fclose(fid_responses);

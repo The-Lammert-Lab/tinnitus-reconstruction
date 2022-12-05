@@ -86,3 +86,11 @@ data_dir: /home/alec/code/tinnitus-project/code/experiment/Data/data_pilot
 # The available options are 'bins', 'waveform', or 'spectrum'.
 # If not set, it will default to 'waveform'.
 stimuli_save_type: bins
+
+# This field indicates whether follow up questions should be asked.
+# If it is unset, it will default to 'false'.
+follow_up: true
+
+# This field indicates what version of follow up questions to use.
+# If it is unset, it will default to 1.
+follow_up_version: 1
