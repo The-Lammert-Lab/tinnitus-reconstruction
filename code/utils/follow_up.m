@@ -1,10 +1,43 @@
+% ### follow_up
+% 
+% Runs the follow up protocol to ask exit survey questions
+% Questions are included in code/experiment/fixationscreens/FollowUp_vX
+% Where X is the version number.
+% Also asks reconstruction quality assessment. Computes linear reconstruction
+% and generates config-informed white noise for comparison against target
+% sound. Responses are saved in the specified data directory. 
+% 
+% **ARGUMENTS:**
+%   - data_dir: character vector, name-value, default: empty
+%       Directory where data is stored. If blank, config.data_dir is used. 
+%   - project_dir: character vector, name-value, default: empty
+%       Set as an input to reduce tasks if running from `Protocol.m`.
+%   - this_hash: character vector, name-value, default: empty
+%       Hash to use for output file. Generates from config if blank.
+%   - target_sound: numeric vector, name-value, default: empty
+%       Target sound for comparison. Generates from config if blank.
+%   - target_fs: Positive scalar, name-value, default: empty
+%       Frequency associated with target_sound
+%   - n_trials: Positive number, name-value, default: inf
+%       Number of trials to use for reconstruction. Uses all data if `inf`.
+%   - version: Positive number, name-value, default: 1
+%       Question version number.
+%   - config_file: character vector, name-value, default: ``''``
+%       A path to a YAML-spec configuration file.
+%   - verbose: logical, name-value, default: `true`
+%       Flag to print information and warnings. 
+% 
+% **OUTPUTS:**
+%   - survey_XXX.csv: csv file, where XXX is the config hash.
+%       In the data directory. 
+
 function follow_up(options)
 
     arguments
         options.data_dir char = []
         options.project_dir char = []
         options.this_hash char = []
-        options.target_sound (1,:) {mustBeNumeric} = []
+        options.target_sound (:,1) {mustBeNumeric} = []
         options.target_fs {mustBePositive} = []
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
@@ -76,40 +109,38 @@ function follow_up(options)
 
     recon_binrep = rescale(reconstruction, -20, 0);
     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-    recon_spectrum(freqs(1:length(recon_spectrum),1) > 13e3) = -20;
+    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
     recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
 
     % (since using one stimgen, recon and noise share fs).
     Fs = stimgen.Fs;
 
     % Generate white noise
-    noise_waveform = white_noise('config', config, 'stimgen', stimgen);
+    noise_waveform = white_noise('config', config, 'stimgen', stimgen, 'freqs', freqs);
 
     %% Load Screens
     % Load Protocol completion/follow up intro screen
-    intro_screen = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp_intro.png'));
+    img_dir = pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
+        ['FollowUp_v', num2str(options.version)]);
 
-    final_screen = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp_end.png'));
+    intro_screen = imread(pathlib.join(img_dir, 'FollowUp_intro.png'));
+
+    final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
 
     % Question screens
-    q_screens = cell(3,1);
+    d = dir(pathlib.join(img_dir, '*Q*.png'));
 
-    q_screens{1} = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp1.png'));
-    q_screens{2} = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp2.png'));
-    q_screens{3} = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp3.png'));
+    static_qs = cell(length(d),1);
+
+    for i = 1:length(static_qs)
+        static_qs{i} = imread(pathlib.join(img_dir, d(i).name));
+    end
     
     % Sound screens
     sound_screens = cell(2,1);
 
-    sound_screen{1} = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp4.png'));
-    sound_screen{2} = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
-        ['FollowUp_v', num2str(options.version)], 'FollowUp5.png'));
+    sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
+    sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
 
     %% Response file
     % Set up response file
@@ -137,15 +168,17 @@ function follow_up(options)
     
     value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
     if value < 0
+        corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
         return
     end
 
     %% Ask questions
     % Static questions
-    for i = 1:length(q_screens)
-        imshow(q_screens{i})
+    for i = 1:length(static_qs)
+        imshow(static_qs{i})
         value = readkeypress('range', 49:53, 'verbose', options.verbose);
         if value < 0
+            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
         end
 
@@ -159,6 +192,7 @@ function follow_up(options)
         imshow(sound_screen{i});
         value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
         if value < 0
+            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
         end
 
@@ -176,6 +210,7 @@ function follow_up(options)
         end
 
         if value < 0
+            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
         end
 
@@ -228,7 +263,6 @@ function value = readkeypress(options)
 
     k = waitforkeypress();
     if k < 0
-        corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
         value = -1;
         return
     end
@@ -237,7 +271,6 @@ function value = readkeypress(options)
     while isempty(value) || ~any(ismember(options.range, value)) && (value ~= options.extra)
         k = waitforkeypress();
         if k < 0
-            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             value = -1;
             return
         end

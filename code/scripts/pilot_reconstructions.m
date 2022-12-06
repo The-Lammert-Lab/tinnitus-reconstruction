@@ -129,6 +129,8 @@ if BOOTSTRAP
     r_bootstrap_lr_mean = zeros(height(T), length(trial_fractions));
     r_bootstrap_cs_RC = zeros(height(T), length(trial_fractions));
     r_bootstrap_lr_RC = zeros(height(T), length(trial_fractions));
+    r_cs_std = zeros(height(T), length(trial_fractions));
+    r_lr_std = zeros(height(T), length(trial_fractions));
 end
 
 % Container for reconstructions
@@ -194,6 +196,9 @@ for ii = 1:height(T)
         if BOOTSTRAP
             r_bootstrap_cs_mean(ii, qq) = mean(r_bootstrap_cs);
             r_bootstrap_lr_mean(ii, qq) = mean(r_bootstrap_lr);
+
+            r_cs_std(ii, qq) = std(r_bootstrap_cs);
+            r_lr_std(ii, qq) = std(r_bootstrap_lr);
 
             r_trans_cs = 0.5*log((1+r_bootstrap_cs)./(1-r_bootstrap_cs));
             r_trans_lr = 0.5*log((1+r_bootstrap_lr)./(1-r_bootstrap_lr));
