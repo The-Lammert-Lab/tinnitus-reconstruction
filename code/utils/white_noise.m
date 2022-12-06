@@ -20,7 +20,7 @@ function [white_waveform, Fs] = white_noise(options)
         options.config = []
         options.stimgen = []
         options.target_filepath (1,:) char = ''
-        options.freqs (1,:) {mustBeNumeric} = []
+        options.freqs (:,1) {mustBeNumeric} = []
     end
 
     % Process config
@@ -45,7 +45,7 @@ function [white_waveform, Fs] = white_noise(options)
     % Generate noise
     whitenoise = zeros(config.n_bins,1);
     white_spect = stimgen.binnedrepr2spect(whitenoise);
-    white_spect(options.freqs(1:length(white_spect),1) > 13e3) = -20;
+    white_spect(options.freqs(1:length(white_spect),1) > config.max_freq) = -20;
     white_waveform = stimgen.synthesize_audio(white_spect, stimgen.get_nfft());
     Fs = stimgen.Fs;
 end

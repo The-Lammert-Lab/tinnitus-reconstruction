@@ -353,6 +353,45 @@ Example:
 
 -------
 
+### follow_up
+
+Runs the follow up protocol to ask exit survey questions
+Questions are included in code/experiment/fixationscreens/FollowUp_vX
+Where X is the version number.
+Also asks reconstruction quality assessment. Computes linear reconstruction
+and generates config-informed white noise for comparison against target
+sound. Responses are saved in the specified data directory. 
+
+**ARGUMENTS:**
+- data_dir: character vector, name-value, default: empty
+Directory where data is stored. If blank, config.data_dir is used. 
+- project_dir: character vector, name-value, default: empty
+Set as an input to reduce tasks if running from `Protocol.m`.
+- this_hash: character vector, name-value, default: empty
+Hash to use for output file. Generates from config if blank.
+- target_sound: numeric vector, name-value, default: empty
+Target sound for comparison. Generates from config if blank.
+- target_fs: Positive scalar, name-value, default: empty
+Frequency associated with target_sound
+- n_trials: Positive number, name-value, default: inf
+Number of trials to use for reconstruction. Uses all data if `inf`.
+- version: Positive number, name-value, default: 1
+Question version number.
+- config_file: character vector, name-value, default: ``''``
+A path to a YAML-spec configuration file.
+- verbose: logical, name-value, default: `true`
+Flag to print information and warnings. 
+
+**OUTPUTS:**
+- survey_XXX.csv: csv file, where XXX is the config hash.
+In the data directory. 
+
+
+
+
+
+-------
+
 ### get_highest_power_of_2
 Compute the highest power of two less than or equal
 to a number.
@@ -395,7 +434,10 @@ Currently, the only supported preprocessing step is ``'bit flip'``,
 which flips the sign on all responses before computing the reconstruction.
 - method: character vector, name-value, default: ``'cs'``
 Which reconstruction algorithm to use.
-
+- use_n_trials: Positive scalar, name-value, default: `inf`
+Indicates how many trials to use of data. `inf` uses all data.
+- bootstrap: Positive scalar, name-value, deafult: 0
+Number of bootstrap iterations to perform.
 
 ```matlab
 [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
