@@ -17,7 +17,10 @@
 %       which flips the sign on all responses before computing the reconstruction.
 %   - method: character vector, name-value, default: ``'cs'``
 %       Which reconstruction algorithm to use.
-%   
+%   - use_n_trials: Positive scalar, name-value, default: `inf`
+%       Indicates how many trials to use of data. `inf` uses all data.
+%   - bootstrap: Positive scalar, name-value, deafult: 0
+%       Number of bootstrap iterations to perform.
 % 
 % ```matlab
 % [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
@@ -40,7 +43,7 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
         options.method = 'cs'
         options.verbose (1,1) logical = true
         options.fraction (1,1) {mustBeReal, mustBeNonnegative} = 1.0
-        options.use_n_trials (1,1) {mustBeReal, mustBeNonnegative} = inf
+        options.use_n_trials (1,1) {mustBeReal, mustBePositive} = inf
         options.bootstrap (1,1) {mustBeInteger, mustBeNonnegative} = 0
         options.target (:,1) = []
         options.data_dir (1,:) char = ''
