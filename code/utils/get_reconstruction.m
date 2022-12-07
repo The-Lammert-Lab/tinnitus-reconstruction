@@ -113,25 +113,25 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
     
     if options.bootstrap
         % Truncate for readability
-        responses = responses(1:n_trials);
-        stimuli_matrix = stimuli_matrix(:, 1:n_trials);
+        responses_bs = responses(1:n_trials);
+        stimuli_matrix_bs = stimuli_matrix(:, 1:n_trials);
 
         % Relevant variables
-        n_samples = round(0.9*length(responses));
+        n_samples = round(0.9*length(responses_bs));
 
         % Container for r values
         r_bootstrap = zeros(options.bootstrap, 1);
 
         % Bootstrap
         for i = 1:options.bootstrap
-            ind = round((length(responses)-1) * rand(n_samples, 1)) + 1;
+            ind = round((length(responses_bs)-1) * rand(n_samples, 1)) + 1;
             switch options.method
             case 'cs'
-                x = cs(responses(ind), stimuli_matrix(:, ind)', options.gamma, 'verbose', options.verbose);
+                x = cs(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma, 'verbose', options.verbose);
             case 'cs_nb'
-                x = cs_no_basis(responses(ind), stimuli_matrix(:, ind)', options.gamma);
+                x = cs_no_basis(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma);
             case 'linear'
-                x = gs(responses(ind), stimuli_matrix(:, ind)');
+                x = gs(responses_bs(ind), stimuli_matrix_bs(:, ind)');
             otherwise
                 error('Unknown method')
             end
