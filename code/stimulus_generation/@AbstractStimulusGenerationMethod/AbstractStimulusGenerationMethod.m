@@ -35,7 +35,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % and `1` for "yes".
             [~, ~, spect, binned_repr] = self.generate_stimuli_matrix();
             e = spect' * signal(:);
-            y = double(e <= prctile(e, 50));
+            y = double(e >= prctile(e, 50));
             y(y == 0) = -1;
         end % function
 
