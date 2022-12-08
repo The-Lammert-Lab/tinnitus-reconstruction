@@ -127,8 +127,8 @@ p_synth = zeros(height(T), length(trial_fractions));
 if BOOTSTRAP
     r_bootstrap_cs_mean = zeros(height(T), length(trial_fractions));
     r_bootstrap_lr_mean = zeros(height(T), length(trial_fractions));
-    r_bootstrap_cs_RC = zeros(height(T), length(trial_fractions));
-    r_bootstrap_lr_RC = zeros(height(T), length(trial_fractions));
+    r_bootstrap_cs_std = zeros(height(T), length(trial_fractions));
+    r_bootstrap_lr_std = zeros(height(T), length(trial_fractions));
 end
 
 % Container for reconstructions
@@ -194,12 +194,8 @@ for ii = 1:height(T)
         if BOOTSTRAP
             r_bootstrap_cs_mean(ii, qq) = mean(r_bootstrap_cs);
             r_bootstrap_lr_mean(ii, qq) = mean(r_bootstrap_lr);
-
-            r_trans_cs = 0.5*log((1+r_bootstrap_cs)./(1-r_bootstrap_cs));
-            r_trans_lr = 0.5*log((1+r_bootstrap_lr)./(1-r_bootstrap_lr));
-
-            r_bootstrap_cs_RC(ii, qq) = 1.96*sqrt(2*std(r_trans_cs)^2);
-            r_bootstrap_lr_RC(ii, qq) = 1.96*sqrt(2*std(r_trans_lr)^2);
+            r_bootstrap_cs_std(ii, qq) = std(r_bootstrap_cs);
+            r_bootstrap_lr_std(ii, qq) = std(r_bootstrap_lr);
         end
     end
 
@@ -253,8 +249,8 @@ for ii = 1:length(trial_fractions)
     if BOOTSTRAP
         T.(['r_bootstrap_lr_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_mean(:, ii);
         T.(['r_bootstrap_cs_mean_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_mean(:, ii);
-        T.(['r_bootstrap_lr_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_RC(:, ii);
-        T.(['r_bootstrap_cs_RC_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_RC(:, ii);
+        T.(['r_bootstrap_lr_std_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_lr_std(:, ii);
+        T.(['r_bootstrap_cs_std_', strrep(num2str(trial_fractions(ii)), '.', '_')]) = r_bootstrap_cs_std(:, ii);
     end
 end
 T.r_rand = r_rand;

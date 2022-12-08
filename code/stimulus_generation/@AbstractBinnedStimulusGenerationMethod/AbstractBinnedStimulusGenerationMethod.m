@@ -8,7 +8,7 @@ end % abstract properties
 
 methods
 
-    function [binnum, Fs, nfft, frequency_vector] = get_freq_bins(self)
+    function [binnum, Fs, nfft, frequency_vector, bin_starts, bin_stops] = get_freq_bins(self)
         % ### get_freq_bins
         % 
         % ```matlab
@@ -44,13 +44,13 @@ methods
 
         % Define Frequency Bin Indices 1 through self.n_bins
         bintops = round(mels2hz(linspace(hz2mels(self.min_freq), hz2mels(self.max_freq), self.n_bins+1)));
-        binst = bintops(1:end-1);
-        binnd = bintops(2:end);
+        bin_starts = bintops(1:end-1);
+        bin_stops = bintops(2:end);
         binnum = zeros(nfft/2, 1);
         frequency_vector = linspace(0, Fs/2, nfft/2)';
 
         for itor = 1:self.n_bins
-            binnum(frequency_vector <= binnd(itor) & frequency_vector >= binst(itor)) = itor;
+            binnum(frequency_vector <= bin_stops(itor) & frequency_vector >= bin_starts(itor)) = itor;
         end
 
     end % function
