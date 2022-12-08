@@ -1,13 +1,12 @@
 % Runs the synthetic subject selection process N times
 % and reconstructs each time.
-function bootstrap_reconstruction_synth(options)
+function [r] = bootstrap_reconstruction_synth(options)
     
     arguments
         options.config_file (1,:) = ''
         options.config = []
         options.method = 'cs'
         options.verbose (1,1) logical = true
-        options.target (:,1) = []
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
         options.N (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 100
     end
@@ -38,19 +37,28 @@ function bootstrap_reconstruction_synth(options)
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
+    % Load and preprocess the target signal
+    [target_signal, ~] = wav2spect(config.target_signal_filepath);
+    target_signal = 10 * log10(target_signal);
+    binned_target_signal = stimgen.spect2binnedrepr(target_signal);
+
     % Run the synthetic subject selection process N times
-    r = zeros(N, 1);
-    for ii = 1:N
-        responses = stimgen.subject_selection_process(target_signal);
-        
-        switch options.method
-        case 'cs'
-            x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma, 'verbose', options.verbose);
-        case 'cs_nb'
-            x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
-        case 'linear'
-            x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
-        otherwise
-            error('Unknown method')
-        end 
+    r = zeros(options.N, 1);
+    for ii = 1:options.N
+        [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
+
+        % Compute the reconstruction
+        if strcmp(options.method, 'cs')
+            x = cs(responses, stimuli_binned_repr', options.gamma, 'verbose', true);
+        elseif strcmp(options.method, 'linear')
+            x = gs(responses, stimuli_binned_repr');
+        else
+            error('not implemented')
+        end
+
+        % Get the correlation for the reconstruction
+        r(ii) = corr(x, binned_target_signal, 'Type', 'Pearson');
+
     end
+
+end % function
