@@ -5,10 +5,11 @@ function [r] = bootstrap_reconstruction_synth(options)
     arguments
         options.config_file (1,:) = ''
         options.config = []
-        options.method = 'cs'
+        options.method = 'linear' % or 'cs'
         options.verbose (1,1) logical = true
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
         options.N (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 100
+        options.strategy (1,:) {mustBeText} = 'synth' % or 'rand'
     end
 
     % If no config file path is provided,
@@ -33,6 +34,11 @@ function [r] = bootstrap_reconstruction_synth(options)
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', as specified by the user.']);
     end
 
+    assert(any(strcmp(options.strategy, {'synth', 'rand'})), 'options.strategy must be synth or rand')
+    corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['strategy is ', options.strategy])
+    assert(any(strcmp(options.method, {'cs', 'linear'})), 'options.method must be cs or linear')
+    corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['method is ', options.method])
+
     % Create the stimulus generation object
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
@@ -45,7 +51,14 @@ function [r] = bootstrap_reconstruction_synth(options)
     % Run the synthetic subject selection process N times
     r = zeros(options.N, 1);
     for ii = 1:options.N
-        [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
+        if strcmp(options.strategy, 'synth')
+            [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
+        elseif strcmp(options.strategy, 'rand')
+            responses = sign(rand(options.N, 1) - 0.5);
+            [~, ~, ~, stimuli_binned_repr] = stimgen.generate_stimuli_matrix();
+        else
+            error('not implemented')
+        end
 
         % Compute the reconstruction
         if strcmp(options.method, 'cs')
@@ -58,6 +71,8 @@ function [r] = bootstrap_reconstruction_synth(options)
 
         % Get the correlation for the reconstruction
         r(ii) = corr(x, binned_target_signal, 'Type', 'Pearson');
+
+        corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['(', num2str(ii), '/', num2str(options.N), ') completed with r = ', num2str(r(ii))])
 
     end
 
