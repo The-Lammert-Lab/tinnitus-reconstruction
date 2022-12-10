@@ -10,6 +10,8 @@ function [r] = bootstrap_reconstruction_synth(options)
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
         options.N (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 100
         options.strategy (1,:) {mustBeText} = 'synth' % or 'rand'
+        options.legacy = false
+        options.parallel = true
     end
 
     % If no config file path is provided,
@@ -28,7 +30,7 @@ function [r] = bootstrap_reconstruction_synth(options)
     
     % Set the gamma parameter if not set
     if options.gamma == 0
-        options.gamma = get_gamma_from_config(options.config, options.verbose);
+        options.gamma = get_gamma_from_config(config, options.verbose);
     else
         % Gamma set by user
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', as specified by the user.']);
@@ -50,30 +52,54 @@ function [r] = bootstrap_reconstruction_synth(options)
 
     % Run the synthetic subject selection process N times
     r = zeros(options.N, 1);
-    for ii = 1:options.N
-        if strcmp(options.strategy, 'synth')
-            [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
-        elseif strcmp(options.strategy, 'rand')
-            responses = sign(rand(options.N, 1) - 0.5);
-            [~, ~, ~, stimuli_binned_repr] = stimgen.generate_stimuli_matrix();
-        else
-            error('not implemented')
+    if options.parallel
+        parfor ii = 1:options.N
+            if strcmp(options.strategy, 'synth')
+                [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
+            elseif strcmp(options.strategy, 'rand')
+                responses = sign(rand(options.N, 1) - 0.5);
+                [~, ~, ~, stimuli_binned_repr] = stimgen.generate_stimuli_matrix();
+            else
+                error('not implemented')
+            end
+
+            % Compute the reconstruction
+            if strcmp(options.method, 'cs')
+                x = cs(responses, stimuli_binned_repr', options.gamma, 'verbose', true);
+            elseif strcmp(options.method, 'linear')
+                x = gs(responses, stimuli_binned_repr');
+            else
+                error('not implemented')
+            end
+
+            % Get the correlation for the reconstruction
+            r(ii) = corr(x, binned_target_signal, 'Type', 'Pearson');
         end
+    else
+        for ii = 1:options.N
+            if strcmp(options.strategy, 'synth')
+                [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
+            elseif strcmp(options.strategy, 'rand')
+                responses = sign(rand(options.N, 1) - 0.5);
+                [~, ~, ~, stimuli_binned_repr] = stimgen.generate_stimuli_matrix();
+            else
+                error('not implemented')
+            end
 
-        % Compute the reconstruction
-        if strcmp(options.method, 'cs')
-            x = cs(responses, stimuli_binned_repr', options.gamma, 'verbose', true);
-        elseif strcmp(options.method, 'linear')
-            x = gs(responses, stimuli_binned_repr');
-        else
-            error('not implemented')
+            % Compute the reconstruction
+            if strcmp(options.method, 'cs')
+                x = cs(responses, stimuli_binned_repr', options.gamma, 'verbose', true);
+            elseif strcmp(options.method, 'linear')
+                x = gs(responses, stimuli_binned_repr');
+            else
+                error('not implemented')
+            end
+
+            % Get the correlation for the reconstruction
+            r(ii) = corr(x, binned_target_signal, 'Type', 'Pearson');
+
+            corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['(', num2str(ii), '/', num2str(options.N), ') completed with r = ', num2str(r(ii))])
         end
-
-        % Get the correlation for the reconstruction
-        r(ii) = corr(x, binned_target_signal, 'Type', 'Pearson');
-
-        corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['(', num2str(ii), '/', num2str(options.N), ') completed with r = ', num2str(r(ii))])
-
     end
 
 end % function
