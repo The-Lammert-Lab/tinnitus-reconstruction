@@ -1,15 +1,15 @@
-function plot_violin(T, options)
+function ax = plot_violin(T, options)
 
     arguments
         T table
         options.figure = []
         options.cs = false
         options.lr = true
-        options.colormap = @colormaps.linspecer
-        options.baseline = false
-        options.synthetic = false
+        % options.colormap = @colormaps.linspecer
         options.publish = false
         options.data_dir = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'
+        options.N = 100
+        options.parallel = true
     end
 
     if isempty(options.figure)
@@ -23,8 +23,8 @@ function plot_violin(T, options)
     % Set current figure
     figure(options.figure);
 
-    % Colormap for plotting
-    cmap = options.colormap();
+    % % Colormap for plotting
+    % cmap = options.colormap();
 
     % How many different target signals are there?
     subplot_labels = unique(T.target_signal_name);
@@ -49,12 +49,14 @@ function plot_violin(T, options)
             'config_file', pathlib.join(options.data_dir, config_filename), ...
             'method', 'linear', ...
             'strategy', 'synth', ...
-            'N', 100);
+            'N', options.N, ...
+            'parallel', options.parallel);
         data_to_plot{3} = bootstrap_reconstruction_synth(...
             'config_file', pathlib.join(options.data_dir, config_filename), ...
             'method', 'linear', ...
             'strategy', 'rand', ...
-            'N', 100);
+            'N', options.N, ...
+            'parallel', false);
 
         for qq = 1:n
             counter = counter + 1;
@@ -87,9 +89,5 @@ function plot_violin(T, options)
 
         title(ax(m, qq), 'combined');
     end
-    figlib.pretty('FontSize', 18, 'PlotBuffer', 0.2);
-    axlib.equalize(ax(:), 'x', 'y');
-    figlib.label();
-
 
 end % function
