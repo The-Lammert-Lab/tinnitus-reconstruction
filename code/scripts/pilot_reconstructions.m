@@ -7,7 +7,7 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['~/Downloads/data-paper-8-bins'];
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 BOOTSTRAP = 1000; % Set to 0 or false if not using.
 PUBLISH = false;
