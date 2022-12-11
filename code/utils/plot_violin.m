@@ -3,10 +3,6 @@ function ax = plot_violin(T, options)
     arguments
         T table
         options.figure = []
-        options.cs = false
-        options.lr = true
-        % options.colormap = @colormaps.linspecer
-        options.publish = false
         options.data_dir = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'
         options.N = 100
         options.parallel = true
@@ -14,10 +10,6 @@ function ax = plot_violin(T, options)
 
     if isempty(options.figure)
         options.figure = new_figure();
-    end
-
-    if options.cs
-        error('not currently supported')
     end
 
     % Set current figure
@@ -33,6 +25,8 @@ function ax = plot_violin(T, options)
     % Generate one subplot for each unique target signal
     m = length(subplot_labels) + 1;
     n = 3;
+
+    ax = figlib.tightSubplots(m, n, 'ShareX', false, 'ShareY', false);
 
     % Plot the 1 to m-1 subplots
     categories = {'subject', 'synthetic', 'random'};
@@ -60,14 +54,15 @@ function ax = plot_violin(T, options)
 
         for qq = 1:n
             counter = counter + 1;
-            ax(ii, qq) = subplot(m, n, counter);
+            % ax(ii, qq) = subplot(m, n, counter);
+            axes(ax(sub2ind([m, n], qq, ii)));
             violinplot(data_to_plot{qq}, categories(qq), 'ViolinAlpha', 0.3, 'ShowBox', true);
             
             if qq == 1
-                ylabel(ax(ii, qq), 'Pearson''s r');
+                ylabel(ax(sub2ind([m, n], qq, ii)), 'Pearson''s r');
             end
 
-            title(ax(ii, qq), subplot_labels{ii});
+            % title(ax(sub2ind([m, n], qq, ii)), subplot_labels{ii});
             
         end
         
@@ -76,7 +71,8 @@ function ax = plot_violin(T, options)
     
     for qq = 1:n
         counter = counter + 1;
-        ax(m, qq) = subplot(m, n, counter);
+        % ax(m, qq) = subplot(m, n, counter);
+        axes(ax(sub2ind([m, n], qq, m)));
         data_to_plot = [];
         for ii = 1:length(data_container)
             data_to_plot = [data_to_plot; data_container{ii}{qq}];
@@ -84,10 +80,10 @@ function ax = plot_violin(T, options)
         violinplot(data_to_plot, categories(qq), 'ViolinAlpha', 0.3, 'ShowBox', true);
         
         if qq == 1
-            ylabel(ax(m, qq), 'Pearson''s r');
+            ylabel(ax(sub2ind([m, n], qq, m)), 'Pearson''s r');
         end
 
-        title(ax(m, qq), 'combined');
+        % title(ax(sub2ind([m, n], qq, m)), 'combined');
     end
 
 end % function

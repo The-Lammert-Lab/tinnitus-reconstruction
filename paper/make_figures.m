@@ -15,9 +15,10 @@ summary(T2);
 
 %% Violin plots with buzzing and roaring 
 
-ax = plot_violin(T2, 'lr', true, 'publish', true, 'N', 1000);
+ax = plot_violin(T2, 'N', 10, 'parallel', false);
 
-figlib.pretty('FontSize', 18, 'PlotBuffer', 0.2);
+figlib.pretty('FontSize', 36, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
 axlib.equalize(ax(:), 'x', 'y');
-figlib.label();
+% figlib.tight();
+figlib.label('XOffset', 0.01, 'YOffset', -0.03, 'FontSize', 36);
 
