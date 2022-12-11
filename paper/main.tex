@@ -659,9 +659,13 @@ that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
   \label{eq:linreg}
 \end{equation}
 
+Reconstruction accuracy was quantified by Pearson's $r$
+between the binned target signal spectrum and the reconstructed binned spectrum.
+
 \subsection{Synthetic and Random Subjects}
 
 Two \textit{in-silico} experiments were run with synthetic and random subjects.
+Each experiment ran for $n=200$ trials and was repeated $1000$ times.
 
 The synthetic subject used a template-matching algorithm.
 Given the target signal spectrum (for either ``buzzing'' or ``roaring''), 
@@ -681,7 +685,11 @@ for $i \in 1, ..., n$, where $Q(x, y)$ is the quantile function for $x \in [0, 1
 of the simularity calculation $Psi^\mathrm{T} s$.
 Thus, the 50\% most-similar stimuli receive a ``yes'' response and the 50\% least-similar stimuli
 receive a ``no'' response.
-Due to the nature of this calculation, the synthetic subject has full-knowledge of all stimuli before making responses.
+Due to the nature of this calculation, the synthetic subject has full-knowledge of all
+unbinned stimuli spectra as well as the unbinned spectrum of the target signal before making responses.
+The synthetic subject represents a \textit{best-case} scenario,
+where the subject has precise knowledge of every stimulus and where the reconstruction algorithm
+mirrors the template-matching algorithm.
 
 The random subject chooses responses at random, with a 50\% probability of ``yes'':
 
@@ -694,6 +702,10 @@ The random subject chooses responses at random, with a 50\% probability of ``yes
 \end{equation}
 
 where $X \in [0, 1]$ is a uniform random variable.
+The random subject reflects choosing responses completely randomly \textemdash{}
+leading to low expected reconstruction accuracy.
+Theoretically, this should be the \textit{worst-case} scenario.
+Human and synthetic subjects are expected to perform better.
 
 % \subsubsection{Compressed Sensing}
 
@@ -766,26 +778,37 @@ unify across subjects and provide a gold-standard to benchmark against.
 
 \section{Results}
 
-Subjects performed an AX-paradigm reverse correlation experiment
-using ATA tinnitus examples as the target sounds.
+$n=10$ subjects performed an AX-paradigm reverse correlation experiment
+using two ATA tinnitus examples as the target sounds: 1``buzzing'' and ``roaring''.
 We reconstructed the PTS using the responses and stimuli from the experiments
 using $L_2$ linear regression.
-Figure \ref{fig:reconstructions} shows the tonotopic bin representation
-of the reconstructions compared to the ground-truth target representation.
+Additionally, we performed $n=1000$ \textit{in-silico} experiments
+using synthetic and random response algorithms.
 
-\begin{figure}[h]
+Figure \ref{fig:reconstructions} reports Pearson's $r$ scores
+for human, synthetic, and random subjects.
+Most human subjects perform significantly better than the random baseline
+and some approach the synthetic subject's empirical upper bound.
+The distributions of human subject $r$ are significantly different
+from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$).
+Table \ref{tbl:reconstruction} reports summary statistics for the human
+subject reconstruction accuracy.
+% $4$ subjects' results are statistically different from zero correlation
+% ($p < 0.05$).
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{reconstruction_violin_1.eps}
-    \caption{Compressed sensing improves tinnitus signal reconstruction
-  in human experiments.
-  \textbf{(a)} depicts the ground truth (g.t.) bin representation for the ``buzzing'' example tinnitus spectrum,
-  the reconstructions given the responses to stimuli in the AX experiment
-  using linear regression (LR) and compressed sensing (CS) reconstruction algorithms,
-  and the results of a synthetic subject (\cf Supplementary Information),
-  also using the CS algorithm.
-  \textbf{(b)} shows simular data for the ``roaring'' example tinnitus spectrum.
-  For both conditions, CS results in a less noisy reconstruction
-  that captures the salient spectral information of the target tinnitus signals.}
+    \caption{Reconstruction accuracy for human, synthetic, and random subjects,
+    shown as violin plots with box plots overlaid. The median is a white dot,
+    the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
+    the abscissa has no meaning.
+    \textbf{a-c} show violin plots for the buzzing target signal, 
+    \textbf{d-f} show results the roaring target signal,
+    and \textbf{g-i} show results for the all data combined.
+    Human subjects perform significantly better than random chance
+    and some approach the empirical maximum of the synthetic subject results
+    (Mann-Whitney $U$ test, $p < 0.001$).}
     \label{fig:reconstructions}
 \end{figure}
 
@@ -793,118 +816,42 @@ of the reconstructions compared to the ground-truth target representation.
     \begin{center}	
         \small
         \resizebox{1\columnwidth}{!}{
-            \begin{tabular}{l c r r}	
-                \multicolumn{4}{c}{\textsc{Reconstruction Accuracy}} \\
-                \hhline{====}
-                Tinnitus Type & Subject \# & $r^2$ {LR} & $r^2$ {CS} \\
-        \hline
-        Buzzing & 1 & 0.062 & \textbf{0.138} \\
-        Roaring & 1 & 0.208 & \textbf{0.331} \\
-        Roaring & 2 & 0.625 & \textbf{0.839} \\
-        Buzzing & 2 & 0.311 & \textbf{0.508} \\
+            \begin{tabular}{l c r r r}	
+                \multicolumn{5}{c}{\textsc{Human Subject Reconstruction Accuracy}} \\
+                \hhline{=====}
+                Tinnitus Type & $r$ {mean} & $r$ {median} & $r$ {st. dev.} & \# $p<0.05$ \\
                 \hline
-                \hhline{====}
+                Buzzing & 0.533 & 0.467 & 0.275 & 4 \\
+                Roaring & 0.566 & 0.677 & 0.296 & 4 \\
+                Combined & 0.549 & 0.614 & 0.279 & 8 \\
+                \hline
+                \hhline{=====}
             \end{tabular}
         }
     \end{center}
 %\normalsize
-    \caption{Compressed sensing produces higher quality reconstructions
-  than $L_2$ linear regression.
-  The table shows Pearson's $r^2$ values for linear regression-based (LR, \cf Eq. \ref{eq:linreg})
-  and compressed sensing-based (CS, \cf Eq. \ref{eq:cs}) reconstruction algorithms.
-  CS improves performance in all cases
-  and in the case of subject 2 in the ``roaring'' condition,
-  produces extremely high-fidelity reconstructions.
+    \caption{Reconstruction accuracy across human subjects.
+    \hl{not sure what to say here}.
   }
-    \label{tbl:hparam_results}
+    \label{tbl:reconstruction}
 \end{table}
 
-% If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
-% \cite{ahumadaStimulusFeaturesSignal1971}
-% \subsection{Equations}
-% Number equations consecutively with equation numbers in parentheses flush with the right margin, as in (1). First use the equation editor to create the equation. Then select the “Equation” markup style. Press the tab key and write the equation number in parentheses. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Use parentheses to avoid ambiguities in denominators. Punctuate equations when they are part of a sentence, as in
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{bootstrap_bar_errs.eps}
+    \caption{aaa}
+    \label{fig:bootstrapped}
+\end{figure}
 
-% \begin{equation}
-% \begin{multlined}
-% \int_{0}^{r_{2}} F(r,\varphi)dr d\varphi=[\sigma r_{2}/(2\mu_{0})]\\
-% \int_{0}^{+\infty}exp(-\lambda |z_{j}-z_{i} |)\lambda^{-1} J_{1}(\lambda r_{2}) J_{0}(\lambda r_{1})d\lambda 
-% \label{Eq:Example}
-% \end{multlined}
-% \end{equation}
+\section{To-Do}
 
-% Be sure that the symbols in your equation have been defined before the equation appears or immediately following. Italicize symbols (T might refer to temperature, but T is the unit tesla). Refer to “(1),” not “Eq. (1)” or “equation (1),” except at the beginning of a sentence: “Equation (1) is ... .”
-% A general IEEE styleguide is available at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}
-
-% \begin{figure}[t]
-% 	\centering
-% 	\includegraphics[width=\linewidth]{fig1}
-% 	\caption{Magnetization as a function of applied field. Note that “Fig.” is abbreviated. There is a period after the figure number, followed by two spaces. It is good practice to explain the significance of the figure in the caption.}
-% 	\label{fig:examplesinglefig}
-% \end{figure}
-
-
-% \section{Discussion }
-% Figure \ref{fig:examplesinglefig} shows a standard figure.
-
-% \subsection{Sizing of Graphics}
-% Most charts, graphs, and tables are one column wide (3.5 inches / 88 millimeters / 21 picas) or page wide (7.16 inches / 181 millimeters / 43 picas). The maximum depth a graphic can be is 8.5 inches (216 millimeters / 54 picas). When choosing the depth of a graphic, please allow space for a caption. Figures can be sized between column and page widths if the author chooses, however it is recommended that figures are not sized less than column width unless when necessary. 
-
-
-
-% \begin{table}[ht]
-% 	\begin{center}	
-% 		\small
-% 		\resizebox{1\columnwidth}{!}{
-% 			\begin{tabular}{ m{0.15\columnwidth} >{\raggedleft}m{0.35\columnwidth} m{0.5\columnwidth} }	
-% 				\multicolumn{3}{c}{\textsc{Units for Magnetic Properties}} \\
-% 				\hhline{===}
-% 				{Symbol} & {Quantity} & {Conversion from Gaussian and CGS EMU to SI$^{a}$} \\ 
-% 				\hline
-% 				$\Phi$ & magnetic flux & $1~Mx\rightarrow 10^{-8}~Wb= 10^{-8}~V\cdot~S$\\
-% 				B & magnetic flux density, magnetic induction & $1~G\rightarrow 10^{-4}~T= 10^{-4}~Wb/m^{2}$ \\
-% 				H & magnetic field strength & $1~Oe\rightarrow 10^{3}/(4\pi)~A/m$\\
-% 				m & magnetic moment & $1~erg/G=1~emu\rightarrow10^{-3}~A\cdot~m^{2}=10^{-3}A/m$\\
-% 				M & magnetization & $1~erg/(G\cdot~cm^{3})=1~emu/cm^{3}\rightarrow10^{3}~A/m$ \\
-% 				4$\pi$M & magnetization & $1~G \rightarrow10^{3}/(4\pi)~A/m$\\
-% 				$\sigma$ & specific magnetization & $1~erg/(G\dot~g)=1~emu/g \rightarrow1~A\cdot~m^{2}/kg$ \\
-% 				j & magnetic dipole moment & $1~erg/G=1~emu \rightarrow4\pi\times10^{-10}~Wb\cdot~m$\\
-% 				J & magnetic polarization & $1~erg/(G\cdot cm^{3})=1~emu/cm^{3} \rightarrow4\pi\times10^{-4}~T$\\
-% 				$\chi,\kappa$ & susceptibility & $1 \rightarrow4\pi$\\
-% 				$\chi_{\rho}$ & mass susceptibility & $1~cm^{3}/g\rightarrow4\pi\times10{-3}~m^{3}/kg$ \\
-% 				$\mu$ & permeability & $1\rightarrow4~\pi\times10^{-7}~H/m=4\pi\times10{-7}~Wb/(A\cdot~m)$\\
-% 				$\mu_{\rho}$ & relative permeability & $\mu\rightarrow\mu_{r}$ \\
-% 				w,W & energy density & $1~erg/cm^{3} \rightarrow10^{-1}~J/m^{3}$\\
-% 				N,D & demagnetizing factor & $1 \rightarrow1/(4\pi)$\\
-% 				\hhline{===}
-                
-% 			\end{tabular}
-% 		}
-% 	\end{center}
-% %\normalsize
-% 	\caption{Vertical lines are optional in tables. Statements that serve as captions for the entire table do not need footnote letters.\\
-% 	$^{a}$Gaussian units are the same as cg emu for magnetostatics; Mx = maxwell, G = gauss, Oe = oersted; Wb = weber, V = volt, s = second, T = tesla, m = meter, A = ampere, J = joule, kg = kilogram, H = henry.
-% 	}
-% 	\label{Exp}
-% \end{table}
-
-
-
-% \subsection{Using Labels Within Figures}
-% \subsubsection{Figure Axis labels}
-% Figure axis labels are often a source of confusion. Use words rather than symbols. As an example, write the quantity “Magnetization,” or “Magnetization M,” not just “M.” Put units in parentheses. Do not label axes only with units. As in Fig. 1, for example, write “Magnetization (A/m)” or “Magnetization (A$\cdot m^{-1}$),” not just “A/m.” Do not label axes with a ratio of quantities and units. For example, write “Temperature (K),” not “Temperature/K.” 
-% Figure labels should be legible, approximately 8 to 10 point type.
-
-% \subsubsection{Subfigure Labels in Multipart Figures and Tables}
-% Multipart figures should be combined and labeled before final submission. Labels should appear centered below each subfigure in 8 point Times New Roman font in the format of (a) (b) (c). 
-
-% \subsection{Referencing a Figure or Table Within Your Paper}
-% When referencing your figures and tables within your paper, use the abbreviation “Fig.” even at the beginning of a sentence. Do not abbreviate “Table.” Tables should be numbered with Roman Numerals.
-
-% \subsection{Checking Your Figures: The IEEE Graphics Checker}
-% The IEEE Graphics Checker Tool enables authors to pre-screen their graphics for compliance with IEEE Transactions and Journals standards before submission. The online tool is located at \underline{http://graphicsqc.ieee.org/}. 
-% For more information on using the Graphics Checker Tool 
-% or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{graphics@ieee.org}.
-% For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
+\begin{enumerate}
+    \item Follow-up results
+    \item Results
+    \item Conclusion
+    \item Supplementary Info
+    \item Abstract \& Visual Abstract
+\end{enumerate}
 
 \section{Conclusion}
 

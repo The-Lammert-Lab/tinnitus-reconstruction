@@ -1,4 +1,4 @@
-function ax = plot_violin(T, options)
+function [ax, data_container] = plot_violin(T, options)
 
     arguments
         T table
@@ -26,7 +26,10 @@ function ax = plot_violin(T, options)
     m = length(subplot_labels) + 1;
     n = 3;
 
-    ax = figlib.tightSubplots(m, n, 'ShareX', false, 'ShareY', false);
+    % ax = figlib.tightSubplots(m, n, 'ShareX', false, 'ShareY', false, 'padding', 0.05);
+    for ii = (m*n):-1:1
+        ax(ii) = subplot(m, n, ii);
+    end
 
     % Plot the 1 to m-1 subplots
     categories = {'subject', 'synthetic', 'random'};
@@ -56,7 +59,7 @@ function ax = plot_violin(T, options)
             counter = counter + 1;
             % ax(ii, qq) = subplot(m, n, counter);
             axes(ax(sub2ind([m, n], qq, ii)));
-            violinplot(data_to_plot{qq}, categories(qq), 'ViolinAlpha', 0.3, 'ShowBox', true);
+            violinplot(data_to_plot{qq}, {''}, 'ViolinAlpha', 0.3, 'ShowBox', true);
             
             if qq == 1
                 ylabel(ax(sub2ind([m, n], qq, ii)), 'Pearson''s r');
