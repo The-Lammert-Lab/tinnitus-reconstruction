@@ -406,7 +406,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{\textcolor{violet}{Reverse Correlation Uncovers Spectral Representations of Tinnitus \vspace{0.25cm}}}
+\title{\textcolor{violet}{Reverse Correlation Uncovers More Complete Tinnitus Spectra \vspace{0.25cm}}}
 
 %
 %
@@ -527,7 +527,8 @@ Data are available upon request.}}
 \section{Introduction}
 
 \IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
-in the absence of an external stimulus\textemdash{}affects over 50 million people in the U.S.,
+in the absence of an external stimulus\textemdash{}affects over 25 million people in the U.S.,
+with some estimates ranged up to 50 million,
 a third of which experience functional cognitive impairment and substantial reduction
 in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
 Primary treatment options for tinnitus are currently limited by a lack of methods
@@ -585,6 +586,15 @@ reverse correlation has never been used for tinnitus characterization.
 % introducing bias, and its promise for similarly improving reverse correlation has been recently demonstrated by
 % our group \textit{in-silico} \hl{[CITE]}.
 
+In the present study, we validate a reverse correlation-based PTS reconstruction assay
+on healthy hearing subjects via a template-matching experiment,
+in which subjects compare the reverse correlation stimuli to a target tinnitus sample sound.
+We benchmark the accuracy and reliability of the reconstructions,
+using the target tinnitus signal as a ground truth.
+High accuracy and reliablity measures relative to low numbers of trials per subject
+provide evidence for the feasibility of the reverse correlation paradigm for uncovering
+spectral representations of tinnitus.
+
 Our long-term goal is to improve outcomes for patients suffering from tinnitus by providing a validated
 clinical assay, based on the demonstrated capabilities of the reverse correlation approach, that clinicians can
 use to accurately and efficiently characterize the individualized perceptual experience of tinnitus. Our guiding
@@ -624,16 +634,18 @@ The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shand
 \subsection{Stimulus Generation}
 
 To generate stimuli, we partition the frequency space $f \in [100,~13,000]$ Hz
-into 8 mel-spaced frequency bins
-so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}.
+into $b=8$ mel-spaced frequency bins
+so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}
+(\cf Supplementary Information).
+All frequencies in the same bin have the same amplitude.
 For each stimulus, we randomly select $[2,7]$ bins
 with equal probability to be ``filled'' with power $0$ dB.
 Unfilled bins are set to $-100$ dB.
 The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
 
-Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
-nine stimulus generation methods and hundreds of hyperparameter values
-(\cf Supplementary Information).
+% Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
+% nine stimulus generation methods and hundreds of hyperparameter values
+% (\cf Supplementary Information).
 
 \subsection{Reconstruction Analysis}
 
@@ -649,6 +661,10 @@ where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
 The linear regression solution is given by
 the normalized inner product of the stimulus matrix
 and the responses (Eq. \ref{eq:linreg}).
+This is a restricted form of the normal equation,
+the least-squares solution to the linear regression problem,
+under the assumption that the stimulus dimensions are uncorrelated
+\cite{martinCombinabilityInformationUncorrelated1966}.
 Intuitively, this implies that the reconstruction, $x$,
 is a linear combination of the randomly-generated stimuli
 that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
@@ -733,19 +749,19 @@ Human and synthetic subjects are expected to perform better.
 
 \subsection{Experiment}
 
-We recruited $N=10$ subjects for the experiment
+We recruited $n=10$ subjects for the experiment
 with healthy hearing from $[100,~13,000]$ Hz.
-Subjects used Sennheiser PXC 550 over-the-ear headphones
+Subjects used over-the-ear headphones
 and manually adjusted loudness
-using sample stimuli before performing the task
-(Sennheiser GmbH \& Co. KG, Wedemark, Germany).
+using sample stimuli before performing the task.
 
 The subjects performed an AX paradigm binary choice task
 in $2$ blocks of $100$ trials with breaks between blocks,
 for a total of $200$ trials per experimental condition.
+The experiment typically took subjects 10-15 minutes to complete.
 For each trial in the experiment,
-the subject listened to an auditory target signal
-followed by one of the randomly generated stimuli.
+the subject listened to a $500$-ms auditory target signal
+followed by one of the $500$-ms randomly generated stimuli.
 The subject was instructed to press the J key if the stimulus sounded similar to the target signal
 and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
 
@@ -754,6 +770,9 @@ from the American Tinnitus Association,
 representing the range of tinnitus experiences
 (American Tinnitus Association, Vienna, Virginia).
 We selected two example tinnitus waveforms from their website: ``buzzing'' and ``roaring''.
+We represented the target spectra using the same $b=8$ frequency bins used in stimulus generation,
+where the power in each bin was taken to be the mean power level in the spectrum
+for frequencies contained within that bin.
 In this way, the AX experiment mimicked
 comparing a randomly-generated stimulus to an internal perception of tinnitus,
 however the known target signals
@@ -778,21 +797,19 @@ unify across subjects and provide a gold-standard to benchmark against.
 
 \section{Results}
 
-$n=10$ subjects performed an AX-paradigm reverse correlation experiment
-using two ATA tinnitus examples as the target sounds: 1``buzzing'' and ``roaring''.
-We reconstructed the PTS using the responses and stimuli from the experiments
-using $L_2$ linear regression.
-Additionally, we performed $n=1000$ \textit{in-silico} experiments
-using synthetic and random response algorithms.
+% $n=10$ subjects performed an AX-paradigm reverse correlation experiment
+% using two ATA tinnitus examples as the target sounds: 1``buzzing'' and ``roaring''.
+% We reconstructed the PTS using the responses and stimuli from the experiments
+% using $L_2$ linear regression.
+% Additionally, we performed $n=1000$ \textit{in-silico} experiments
+% using synthetic and random response algorithms.
 
 Figure \ref{fig:reconstructions} reports Pearson's $r$ scores
-for human, synthetic, and random subjects.
+for $n=10$ human, $n=1000$ synthetic, and $n=1000$ random subjects.
 Most human subjects perform significantly better than the random baseline
 and some approach the synthetic subject's empirical upper bound.
 The distributions of human subject $r$ are significantly different
 from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$).
-Table \ref{tbl:reconstruction} reports summary statistics for the human
-subject reconstruction accuracy.
 % $4$ subjects' results are statistically different from zero correlation
 % ($p < 0.05$).
 
@@ -811,30 +828,6 @@ subject reconstruction accuracy.
     (Mann-Whitney $U$ test, $p < 0.001$).}
     \label{fig:reconstructions}
 \end{figure}
-
-\begin{table}[ht]
-    \begin{center}	
-        \small
-        \resizebox{1\columnwidth}{!}{
-            \begin{tabular}{l c r r r}	
-                \multicolumn{5}{c}{\textsc{Human Subject Reconstruction Accuracy}} \\
-                \hhline{=====}
-                Tinnitus Type & $r$ {mean} & $r$ {median} & $r$ {st. dev.} & \# $p<0.05$ \\
-                \hline
-                Buzzing & 0.533 & 0.467 & 0.275 & 4 \\
-                Roaring & 0.566 & 0.677 & 0.296 & 4 \\
-                Combined & 0.549 & 0.614 & 0.279 & 8 \\
-                \hline
-                \hhline{=====}
-            \end{tabular}
-        }
-    \end{center}
-%\normalsize
-    \caption{Reconstruction accuracy across human subjects.
-    \hl{not sure what to say here}.
-  }
-    \label{tbl:reconstruction}
-\end{table}
 
 \begin{figure}[ht]
     \centering
