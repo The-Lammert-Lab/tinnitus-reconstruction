@@ -430,7 +430,7 @@
 % 	Samantha Peznola is a Research Assistant at WPI;
 % 	and Dr. Adam C. Lammert is Assistant Professor of Biomedical Engineering at WPI.
 % }}
-\author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, Adam C. Lammert\textsuperscript{\textdagger{}}%
+\author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, and Adam C. Lammert\textsuperscript{\textdagger{}}%
 \thanks{This work was supported in part by the University of Massachusetts
 Center for Clinical and Translation Science Pilot Project Program 2022,
 grant no. \hl{GRANT NUMBER}.}%
@@ -438,8 +438,8 @@ grant no. \hl{GRANT NUMBER}.}%
 at Worcester Polytechnic Institute (WPI) and a research scientist at Clarifai Inc.
 Mr. Nelson Barnett is a research assistant at WPI.
 Mr. Benjamin W. Roop is a research scientist at MIT Lincoln Laboratory.
-Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.}%
-The authors declare no competing interests.
+Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.
+The authors declare no competing interests.}%
 \thanks{\textsuperscript{\textdagger{}} Corresponding Author}%
 \thanks{Code is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
 Data are available upon request.}}
@@ -817,8 +817,10 @@ from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$).
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{reconstruction_violin_1.eps}
-    \caption{Reconstruction accuracy for human, synthetic, and random subjects,
-    shown as violin plots with box plots overlaid. The median is a white dot,
+    \caption{Reconstruction accuracy for human subjects
+    is significantly above baseline, but is not optimal.
+    The reconstruction accuracy of human, synthetic, and random subjects
+    are shown as violin plots with box plots overlaid. The median is a white dot,
     the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
     the abscissa has no meaning.
     \textbf{a-c} show violin plots for the buzzing target signal, 
@@ -832,20 +834,17 @@ from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$).
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{bootstrap_bar_errs.eps}
-    \caption{aaa}
-    \label{fig:bootstrapped}
+    \includegraphics[width=\linewidth]{reconstruction_spectra.eps}
+    \caption{Reconstructions of the PTS capture many salient features
+    of tinnitus spectra. \textbf{(a)} shows buzzing results and \textbf{(b)}
+    shows roaring results. In each, the black trace indicates the ground truth,
+    unbinned frequency spectrum of the ATA target signal. The colored traces
+    plot exemplar human subject results, as binned reconstructions mapped
+    from $8$-dimensional bin space to $11025$-dimensional frequency space.
+    Since the bins span from 100 to 13,000 Hz, 
+    in the reconstructions $(13000, 22000]$ Hz is always $0$.}
+    \label{fig:spectra}
 \end{figure}
-
-\section{To-Do}
-
-\begin{enumerate}
-    \item Follow-up results
-    \item Results
-    \item Conclusion
-    \item Supplementary Info
-    \item Abstract \& Visual Abstract
-\end{enumerate}
 
 \section{Conclusion}
 
