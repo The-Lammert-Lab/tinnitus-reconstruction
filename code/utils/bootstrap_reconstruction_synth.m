@@ -41,15 +41,24 @@ function [r] = bootstrap_reconstruction_synth(options)
     assert(any(strcmp(options.method, {'cs', 'linear'})), 'options.method must be cs or linear')
     corelib.verb(options.verbose, 'INFO: bootstrap_reconstruction_synth', ['method is ', options.method])
 
+    if options.verbose
+        corelib.verb(options.verbose, 'INFO: boostrap_reconstruction_synth', 'options are:')
+        disp(options);
+    end
+
     % Create the stimulus generation object
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
+
+    % Set the number of trials to be total number of trials,
+    % instead of the number of trials in a single block
+    stimgen.n_trials = config.total_trials;
 
     % Load and preprocess the target signal
     [target_signal, ~] = wav2spect(config.target_signal_filepath);
     target_signal = 10 * log10(target_signal);
     binned_target_signal = stimgen.spect2binnedrepr(target_signal);
-
+    
     % Run the synthetic subject selection process N times
     r = zeros(options.N, 1);
     if options.parallel
@@ -80,7 +89,7 @@ function [r] = bootstrap_reconstruction_synth(options)
             if strcmp(options.strategy, 'synth')
                 [responses, ~, stimuli_binned_repr] = stimgen.subject_selection_process(target_signal);
             elseif strcmp(options.strategy, 'rand')
-                responses = sign(rand(options.N, 1) - 0.5);
+                responses = sign(rand(stimgen.n_trials, 1) - 0.5);
                 [~, ~, ~, stimuli_binned_repr] = stimgen.generate_stimuli_matrix();
             else
                 error('not implemented')
