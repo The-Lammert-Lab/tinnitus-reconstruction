@@ -406,7 +406,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{\textcolor{violet}{Compressed Sensing for Characterization of Tinnitus\vspace{0.25cm}}}
+\title{\textcolor{violet}{Reverse Correlation Uncovers More Complete Tinnitus Spectra \vspace{0.25cm}}}
 
 %
 %
@@ -430,13 +430,16 @@
 % 	Samantha Peznola is a Research Assistant at WPI;
 % 	and Dr. Adam C. Lammert is Assistant Professor of Biomedical Engineering at WPI.
 % }}
-\author{Alec Hoyland, Adam C. Lammert\textsuperscript{\textdagger{}}%
+\author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, and Adam C. Lammert\textsuperscript{\textdagger{}}%
 \thanks{This work was supported in part by the University of Massachusetts
 Center for Clinical and Translation Science Pilot Project Program 2022,
 grant no. \hl{GRANT NUMBER}.}%
 \thanks{Mr. Hoyland is a graduate student in the Department of Biomedical Engineering
-at Worcester Polytechnic Institute (WPI).
-Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.}%
+at Worcester Polytechnic Institute (WPI) and a research scientist at Clarifai Inc.
+Mr. Nelson Barnett is a research assistant at WPI.
+Mr. Benjamin W. Roop is a research scientist at MIT Lincoln Laboratory.
+Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.
+The authors declare no competing interests.}%
 \thanks{\textsuperscript{\textdagger{}} Corresponding Author}%
 \thanks{Code is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
 Data are available upon request.}}
@@ -504,8 +507,7 @@ Data are available upon request.}}
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-	compressed sensing, reverse correlation, tinnitus, barging into other people's fields
-	and showing them up with MATH!
+    reverse correlation, tinnitus
 \end{IEEEkeywords}
 
 % For peer review papers, you can put extra information on the cover
@@ -526,7 +528,8 @@ Data are available upon request.}}
 \section{Introduction}
 
 \IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
-in the absence of an external stimulus\textemdash{}affects over 50 million people in the U.S.,
+in the absence of an external stimulus\textemdash{}affects over 25 million people in the U.S.,
+with some estimates ranged up to 50 million,
 a third of which experience functional cognitive impairment and substantial reduction
 in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
 Primary treatment options for tinnitus are currently limited by a lack of methods
@@ -569,20 +572,29 @@ Internal representations, such as the PTS, can be estimated
 by regressing subject responses against the stimuli over many trials.
 Despite widespread use in characterizing neural and cognitive representations,
 reverse correlation has never been used for tinnitus characterization.
-One limitation of reverse correlation is the sheer number of trials
-required to recover a good signal reconstruction.
-Classically, reverse correlation has required a large number of stimulus-response trials
-to yield accurate results (\eg 20,000 trials in \cite{gosselinSuperstitiousPerceptionsReveal2003}),
-a property that makes reverse correlation time-consuming in a clinical setting.
+% One limitation of reverse correlation is the sheer number of trials
+% required to recover a good signal reconstruction.
+% Classically, reverse correlation has required a large number of stimulus-response trials
+% to yield accurate results (\eg 20,000 trials in \cite{gosselinSuperstitiousPerceptionsReveal2003}),
+% a property that makes reverse correlation time-consuming in a clinical setting.
 
-We overcome this limitation of reverse correlation using \textit{compressed sensing} (CS)
-to reconstruct the PTS with high fidelity using far fewer trials.
-Compressive sensing can reduce the number of trials
-required an order of magnitude compared to conventional estimation, thereby allowing for efficient and
-accurate characterization of tinnitus within a single clinical visit. Compressive sensing has gained broad
-recognition in medical imaging \hl{[CITE]}, due to its ability to reduce scan times without sacrificing image quality or
-introducing bias, and its promise for similarly improving reverse correlation has been recently demonstrated by
-our group \textit{in-silico} \hl{[CITE]}.
+% We overcome this limitation of reverse correlation using \textit{compressed sensing} (CS)
+% to reconstruct the PTS with high fidelity using far fewer trials.
+% Compressive sensing can reduce the number of trials
+% required an order of magnitude compared to conventional estimation, thereby allowing for efficient and
+% accurate characterization of tinnitus within a single clinical visit. Compressive sensing has gained broad
+% recognition in medical imaging \hl{[CITE]}, due to its ability to reduce scan times without sacrificing image quality or
+% introducing bias, and its promise for similarly improving reverse correlation has been recently demonstrated by
+% our group \textit{in-silico} \hl{[CITE]}.
+
+In the present study, we validate a reverse correlation-based PTS reconstruction assay
+on healthy hearing subjects via a template-matching experiment,
+in which subjects compare the reverse correlation stimuli to a target tinnitus sample sound.
+We benchmark the accuracy and reliability of the reconstructions,
+using the target tinnitus signal as a ground truth.
+High accuracy and reliablity measures relative to low numbers of trials per subject
+provide evidence for the feasibility of the reverse correlation paradigm for uncovering
+spectral representations of tinnitus.
 
 Our long-term goal is to improve outcomes for patients suffering from tinnitus by providing a validated
 clinical assay, based on the demonstrated capabilities of the reverse correlation approach, that clinicians can
@@ -616,83 +628,141 @@ of the PTS can inform individualized tinnitus treatment with enhanced habituatio
 % To use this template, type over sections of the template or cut and paste from another document. Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline. 
 % IEEE will do the final formatting of your paper. However, you should format your manuscript for submission to IEEE OJEMB for review and also for preparing for preprint that will be e-published several days after you upload the final version of an accepted manuscript. 
 
+Software code used for the experiments and analysis was written in MATLAB (Mathworks, Inc., Natick, Massachusetts)
+and is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
+The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shandilyaSrinivasGsMtools2022}.
+
 \subsection{Stimulus Generation}
 
 To generate stimuli, we partition the frequency space $f \in [100,~13,000]$ Hz
-into 100 mel-spaced frequency bins
-so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}.
-For each stimulus, we randomly select $30$ bins
+into $b=8$ mel-spaced frequency bins
+so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}
+(\cf Supplementary Information).
+All frequencies in the same bin have the same amplitude.
+For each stimulus, we randomly select $[2,7]$ bins
 with equal probability to be ``filled'' with power $0$ dB.
-Unfilled bins are set to $-20$ dB.
+Unfilled bins are set to $-100$ dB.
 The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
 
-Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
-nine stimulus generation methods and hundreds of hyperparameter values
-(\cf Supplementary Information).
+% Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
+% nine stimulus generation methods and hundreds of hyperparameter values
+% (\cf Supplementary Information).
 
-\subsection{Theory}
+\subsection{Reconstruction Analysis}
 
 A subject performing $n$ trials with $b$ frequency bins produces
 a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
 and a response column vector $y \in {1,-1}^n$,
 where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
-We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
-(\cf Supplementary Information).
+% We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
+% (\cf Supplementary Information).
 
-\subsubsection{Linear Regression}
+% \subsubsection{Linear Regression}
 
 The linear regression solution is given by
 the normalized inner product of the stimulus matrix
 and the responses (Eq. \ref{eq:linreg}).
+This is a restricted form of the normal equation,
+the least-squares solution to the linear regression problem,
+under the assumption that the stimulus dimensions are uncorrelated
+\cite{martinCombinabilityInformationUncorrelated1966}.
 Intuitively, this implies that the reconstruction, $x$,
 is a linear combination of the randomly-generated stimuli
 that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
 \cite{gosselinSuperstitiousPerceptionsReveal2003}.
 
 \begin{equation}
-  \hat{x} = \frac{1}{n} \Phi y
+  \hat{x} = \frac{1}{n} \Psi y
   \label{eq:linreg}
 \end{equation}
 
-\subsubsection{Compressed Sensing}
+Reconstruction accuracy was quantified by Pearson's $r$
+between the binned target signal spectrum and the reconstructed binned spectrum.
 
-The one-bit compressed sensing reconstruction problem is:
+\subsection{Synthetic and Random Subjects}
 
-\begin{equation}
-	y = \mathrm{sgn}(\Psi \Phi x)
-\end{equation}
+Two \textit{in-silico} experiments were run with synthetic and random subjects.
+Each experiment ran for $n=200$ trials and was repeated $1000$ times.
 
-which is an underdetermined system with infinite solutions.
-Compressed sensing says that when $\Theta = \Psi \Phi$
-is sufficiently well-behaved
-(\eg satisfies the restricted isometry property,
-which Gaussian and Bernoulli random matrices do with high probability,
-\cf \cite{candesIntroductionCompressiveSampling2008})
-that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
-We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
+The synthetic subject used a template-matching algorithm.
+Given the target signal spectrum (for either ``buzzing'' or ``roaring''), 
+$s \in \mathbb{R}^t$,
+and the stimulus matrix in the spectral domain, $\Psi \in \mathbb{R}^{n \times t}$,
+each element of the synthetic response vector, $y_s \in {1,-1}^n$ is defined as:
 
 \begin{equation}
-	\hat{x} = \min_{||x||_2 \leq 1} - \frac{1}{n} (\Theta x)^{\mathrm{T}} y + \lambda ||x||_1
-  \label{eq:cs}
+    r_i =
+        \begin{cases}
+            1 & \text{if } \Psi_i^\mathrm{T} s \geq Q(0.5; \Psi_i^\mathrm{T} s) \\
+            -1 & \text{otherwise}
+        \end{cases}
 \end{equation}
 
-with tunable scalar parameter $\lambda$.
+for $i \in 1, ..., n$, where $Q(x, y)$ is the quantile function for $x \in [0, 1]$, given the empirical distribution
+of the simularity calculation $Psi^\mathrm{T} s$.
+Thus, the 50\% most-similar stimuli receive a ``yes'' response and the 50\% least-similar stimuli
+receive a ``no'' response.
+Due to the nature of this calculation, the synthetic subject has full-knowledge of all
+unbinned stimuli spectra as well as the unbinned spectrum of the target signal before making responses.
+The synthetic subject represents a \textit{best-case} scenario,
+where the subject has precise knowledge of every stimulus and where the reconstruction algorithm
+mirrors the template-matching algorithm.
+
+The random subject chooses responses at random, with a 50\% probability of ``yes'':
+
+\begin{equation}
+    r_i =
+    \begin{cases}
+        1 & \text{if  } X > 0.5 \\
+        -1 & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+where $X \in [0, 1]$ is a uniform random variable.
+The random subject reflects choosing responses completely randomly \textemdash{}
+leading to low expected reconstruction accuracy.
+Theoretically, this should be the \textit{worst-case} scenario.
+Human and synthetic subjects are expected to perform better.
+
+% \subsubsection{Compressed Sensing}
+
+% The one-bit compressed sensing reconstruction problem is:
+
+% \begin{equation}
+% 	y = \mathrm{sgn}(\Psi \Phi x)
+% \end{equation}
+
+% which is an underdetermined system with infinite solutions.
+% Compressed sensing says that when $\Theta = \Psi \Phi$
+% is sufficiently well-behaved
+% (\eg satisfies the restricted isometry property,
+% which Gaussian and Bernoulli random matrices do with high probability,
+% \cf \cite{candesIntroductionCompressiveSampling2008})
+% that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
+% We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
+
+% \begin{equation}
+% 	\hat{x} = \min_{||x||_2 \leq 1} - \frac{1}{n} (\Theta x)^{\mathrm{T}} y + \lambda ||x||_1
+%   \label{eq:cs}
+% \end{equation}
+
+% with tunable scalar parameter $\lambda$.
 
 \subsection{Experiment}
 
-We recruited $N=3$ subjects for the experiment
+We recruited $n=10$ subjects for the experiment
 with healthy hearing from $[100,~13,000]$ Hz.
-Subjects used Sennheiser PXC 550 over-the-ear headphones
+Subjects used over-the-ear headphones
 and manually adjusted loudness
-using sample stimuli before performing the task
-(Sennheiser GmbH \& Co. KG, Wedemark, Germany).
+using sample stimuli before performing the task.
 
 The subjects performed an AX paradigm binary choice task
-in $20$ blocks of $100$ with breaks between blocks,
-for a total of $2,000$ trials per experimental condition.
+in $2$ blocks of $100$ trials with breaks between blocks,
+for a total of $200$ trials per experimental condition.
+The experiment typically took subjects 10-15 minutes to complete.
 For each trial in the experiment,
-the subject listened to an auditory target signal
-followed by one of the randomly generated stimuli.
+the subject listened to a $500$-ms auditory target signal
+followed by one of the $500$-ms randomly generated stimuli.
 The subject was instructed to press the J key if the stimulus sounded similar to the target signal
 and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
 
@@ -701,18 +771,21 @@ from the American Tinnitus Association,
 representing the range of tinnitus experiences
 (American Tinnitus Association, Vienna, Virginia).
 We selected two example tinnitus waveforms from their website: ``buzzing'' and ``roaring''.
+We represented the target spectra using the same $b=8$ frequency bins used in stimulus generation,
+where the power in each bin was taken to be the mean power level in the spectrum
+for frequencies contained within that bin.
 In this way, the AX experiment mimicked
 comparing a randomly-generated stimulus to an internal perception of tinnitus,
 however the known target signals
 unify across subjects and provide a gold-standard to benchmark against.
 
 \begin{figure}[t]
-	\centering
-	\includegraphics[width=\linewidth]{experiment_overview.pdf}
-	\caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
-  then a stimulus. They compare the mental model of the stimulus to the mental model of the target signal,
-  before making a binary choice about the two signals' similarity.}
-	\label{fig:experimentdiagram}
+    \centering
+    \includegraphics[width=\linewidth]{experiment_overview.pdf}
+    \caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
+  then a stimulus. They compare their mental model of the stimulus to their mental model of the target signal,
+  before making a binary choice about the two signals' similarity (either ``yes'' it is similar or ``no'' it is not).}
+    \label{fig:experimentdiagram}
 \end{figure}
 
 
@@ -725,158 +798,62 @@ unify across subjects and provide a gold-standard to benchmark against.
 
 \section{Results}
 
-Subjects performed an AX-paradigm reverse correlation experiment
-using ATA tinnitus examples as the target sounds.
-We reconstructed the PTS using the responses and stimuli from the experiments
-using both the $L_2$ linear regression and compressed sensing reconstruction algorithms.
-Figure \ref{fig:reconstructions} shows the tonotopic bin representation
-of the reconstructions compared to the ground-truth target representation.
+% $n=10$ subjects performed an AX-paradigm reverse correlation experiment
+% using two ATA tinnitus examples as the target sounds: 1``buzzing'' and ``roaring''.
+% We reconstructed the PTS using the responses and stimuli from the experiments
+% using $L_2$ linear regression.
+% Additionally, we performed $n=1000$ \textit{in-silico} experiments
+% using synthetic and random response algorithms.
 
-\subsection*{\hl{Notes}}
-\begin{enumerate}
-  \item Ben is way better at the experiment than Nelson. Sorry, Nelson.
-  \item CS results are consistently better than LR.
-  Since this result doesn't necessarily hold for the synthetic experiment,
-  it implies that CS' main contribution is \textit{denoising}
-  by countering human error \cite{planRobust1bitCompressed2012, zhangEfficientAlgorithmsRobust2014}.
-  \item Is Pearson's $r$ really the best way to measure accuracy?
-  If you miss the big hump in either, I kind of think that we've failed.
-  So maybe KL divergence, but then we have to normalize each spectrum
-  to make probability distributions.
-\end{enumerate}
+Figure \ref{fig:reconstructions} reports Pearson's $r$ scores
+for $n=10$ human, $n=1000$ synthetic, and $n=1000$ random subjects.
+Most human subjects perform significantly better than the random baseline
+and some approach the synthetic subject's empirical upper bound.
+The distributions of human subject $r$ are significantly different
+from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$)
+and the mean values are statistically significant
+(buzzing: $p < 0.001$, $t = 5.766$; roaring: $p < 0.001$, $t = 5.76$;
+combined: $p < 0.001$, $t = 7.542$; one-tailed $t$-test with Fisher transform).
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\linewidth]{reconstructions.eps}
-	\caption{Compressed sensing improves tinnitus signal reconstruction
-  in human experiments.
-  \textbf{(a)} depicts the ground truth (g.t.) bin representation for the ``buzzing'' example tinnitus spectrum,
-  the reconstructions given the responses to stimuli in the AX experiment
-  using linear regression (LR) and compressed sensing (CS) reconstruction algorithms,
-  and the results of a synthetic subject (\cf Supplementary Information),
-  also using the CS algorithm.
-  \textbf{(b)} shows simular data for the ``roaring'' example tinnitus spectrum.
-  For both conditions, CS results in a less noisy reconstruction
-  that captures the salient spectral information of the target tinnitus signals.}
-	\label{fig:reconstructions}
+Figure \ref{fig:spectra} demonstrates that the human subject reconstructions
+capture many of the salient features of the the target signal spectra.
+The binning process introduces the sum-of-square-waves shape of the reconstructions
+but we find that these differences are unnoticed by subjects \dots
+
+\hl{Talk more about Fig 3 and use it to segue into the follow-up data,
+which hopefully shows that people think their reconstructions sound good.}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{reconstruction_violin_1.eps}
+    \caption{Reconstruction accuracy for human subjects
+    is significantly above baseline, but is not optimal.
+    The reconstruction accuracy of human, synthetic, and random subjects
+    are shown as violin plots with box plots overlaid. The median is a white dot,
+    the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
+    the abscissa has no meaning.
+    \textbf{a-c} show violin plots for the buzzing target signal, 
+    \textbf{d-f} show results the roaring target signal,
+    and \textbf{g-i} show results for the all data combined.
+    Human subjects perform significantly better than random chance
+    and some approach the empirical maximum of the synthetic subject results
+    (Mann-Whitney $U$ test, $p < 0.001$).}
+    \label{fig:reconstructions}
 \end{figure}
 
-\begin{table}[ht]
-	\begin{center}	
-		\small
-		\resizebox{1\columnwidth}{!}{
-			\begin{tabular}{l c r r}	
-				\multicolumn{4}{c}{\textsc{Reconstruction Accuracy}} \\
-				\hhline{====}
-				Tinnitus Type & Subject \# & $r^2$ {LR} & $r^2$ {CS} \\
-        \hline
-        Buzzing & 1 & 0.062 & \textbf{0.138} \\
-        Roaring & 1 & 0.208 & \textbf{0.331} \\
-        Roaring & 2 & 0.625 & \textbf{0.839} \\
-        Buzzing & 2 & 0.311 & \textbf{0.508} \\
-				\hline
-				\hhline{====}
-			\end{tabular}
-		}
-	\end{center}
-%\normalsize
-	\caption{Compressed sensing produces higher quality reconstructions
-  than $L_2$ linear regression.
-  The table shows Pearson's $r^2$ values for linear regression-based (LR, \cf Eq. \ref{eq:linreg})
-  and compressed sensing-based (CS, \cf Eq. \ref{eq:cs}) reconstruction algorithms.
-  CS improves performance in all cases
-  and in the case of subject 2 in the ``roaring'' condition,
-  produces extremely high-fidelity reconstructions.
-  }
-	\label{tbl:hparam_results}
-\end{table}
-
-% If you are using \textit{Word}, use either the Microsoft Equation Editor or the \textit{MathType} add-on (\textit{http://www.mathtype.com}) for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should \textit{not} be selected. 
-% \cite{ahumadaStimulusFeaturesSignal1971}
-% \subsection{Equations}
-% Number equations consecutively with equation numbers in parentheses flush with the right margin, as in (1). First use the equation editor to create the equation. Then select the “Equation” markup style. Press the tab key and write the equation number in parentheses. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Use parentheses to avoid ambiguities in denominators. Punctuate equations when they are part of a sentence, as in
-
-% \begin{equation}
-% \begin{multlined}
-% \int_{0}^{r_{2}} F(r,\varphi)dr d\varphi=[\sigma r_{2}/(2\mu_{0})]\\
-% \int_{0}^{+\infty}exp(-\lambda |z_{j}-z_{i} |)\lambda^{-1} J_{1}(\lambda r_{2}) J_{0}(\lambda r_{1})d\lambda 
-% \label{Eq:Example}
-% \end{multlined}
-% \end{equation}
-
-% Be sure that the symbols in your equation have been defined before the equation appears or immediately following. Italicize symbols (T might refer to temperature, but T is the unit tesla). Refer to “(1),” not “Eq. (1)” or “equation (1),” except at the beginning of a sentence: “Equation (1) is ... .”
-% A general IEEE styleguide is available at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}
-
-% \begin{figure}[t]
-% 	\centering
-% 	\includegraphics[width=\linewidth]{fig1}
-% 	\caption{Magnetization as a function of applied field. Note that “Fig.” is abbreviated. There is a period after the figure number, followed by two spaces. It is good practice to explain the significance of the figure in the caption.}
-% 	\label{fig:examplesinglefig}
-% \end{figure}
-
-
-% \section{Discussion }
-% Figure \ref{fig:examplesinglefig} shows a standard figure.
-
-% \subsection{Sizing of Graphics}
-% Most charts, graphs, and tables are one column wide (3.5 inches / 88 millimeters / 21 picas) or page wide (7.16 inches / 181 millimeters / 43 picas). The maximum depth a graphic can be is 8.5 inches (216 millimeters / 54 picas). When choosing the depth of a graphic, please allow space for a caption. Figures can be sized between column and page widths if the author chooses, however it is recommended that figures are not sized less than column width unless when necessary. 
-
-
-
-% \begin{table}[ht]
-% 	\begin{center}	
-% 		\small
-% 		\resizebox{1\columnwidth}{!}{
-% 			\begin{tabular}{ m{0.15\columnwidth} >{\raggedleft}m{0.35\columnwidth} m{0.5\columnwidth} }	
-% 				\multicolumn{3}{c}{\textsc{Units for Magnetic Properties}} \\
-% 				\hhline{===}
-% 				{Symbol} & {Quantity} & {Conversion from Gaussian and CGS EMU to SI$^{a}$} \\ 
-% 				\hline
-% 				$\Phi$ & magnetic flux & $1~Mx\rightarrow 10^{-8}~Wb= 10^{-8}~V\cdot~S$\\
-% 				B & magnetic flux density, magnetic induction & $1~G\rightarrow 10^{-4}~T= 10^{-4}~Wb/m^{2}$ \\
-% 				H & magnetic field strength & $1~Oe\rightarrow 10^{3}/(4\pi)~A/m$\\
-% 				m & magnetic moment & $1~erg/G=1~emu\rightarrow10^{-3}~A\cdot~m^{2}=10^{-3}A/m$\\
-% 				M & magnetization & $1~erg/(G\cdot~cm^{3})=1~emu/cm^{3}\rightarrow10^{3}~A/m$ \\
-% 				4$\pi$M & magnetization & $1~G \rightarrow10^{3}/(4\pi)~A/m$\\
-% 				$\sigma$ & specific magnetization & $1~erg/(G\dot~g)=1~emu/g \rightarrow1~A\cdot~m^{2}/kg$ \\
-% 				j & magnetic dipole moment & $1~erg/G=1~emu \rightarrow4\pi\times10^{-10}~Wb\cdot~m$\\
-% 				J & magnetic polarization & $1~erg/(G\cdot cm^{3})=1~emu/cm^{3} \rightarrow4\pi\times10^{-4}~T$\\
-% 				$\chi,\kappa$ & susceptibility & $1 \rightarrow4\pi$\\
-% 				$\chi_{\rho}$ & mass susceptibility & $1~cm^{3}/g\rightarrow4\pi\times10{-3}~m^{3}/kg$ \\
-% 				$\mu$ & permeability & $1\rightarrow4~\pi\times10^{-7}~H/m=4\pi\times10{-7}~Wb/(A\cdot~m)$\\
-% 				$\mu_{\rho}$ & relative permeability & $\mu\rightarrow\mu_{r}$ \\
-% 				w,W & energy density & $1~erg/cm^{3} \rightarrow10^{-1}~J/m^{3}$\\
-% 				N,D & demagnetizing factor & $1 \rightarrow1/(4\pi)$\\
-% 				\hhline{===}
-				
-% 			\end{tabular}
-% 		}
-% 	\end{center}
-% %\normalsize
-% 	\caption{Vertical lines are optional in tables. Statements that serve as captions for the entire table do not need footnote letters.\\
-% 	$^{a}$Gaussian units are the same as cg emu for magnetostatics; Mx = maxwell, G = gauss, Oe = oersted; Wb = weber, V = volt, s = second, T = tesla, m = meter, A = ampere, J = joule, kg = kilogram, H = henry.
-% 	}
-% 	\label{Exp}
-% \end{table}
-
-
-
-% \subsection{Using Labels Within Figures}
-% \subsubsection{Figure Axis labels}
-% Figure axis labels are often a source of confusion. Use words rather than symbols. As an example, write the quantity “Magnetization,” or “Magnetization M,” not just “M.” Put units in parentheses. Do not label axes only with units. As in Fig. 1, for example, write “Magnetization (A/m)” or “Magnetization (A$\cdot m^{-1}$),” not just “A/m.” Do not label axes with a ratio of quantities and units. For example, write “Temperature (K),” not “Temperature/K.” 
-% Figure labels should be legible, approximately 8 to 10 point type.
-
-% \subsubsection{Subfigure Labels in Multipart Figures and Tables}
-% Multipart figures should be combined and labeled before final submission. Labels should appear centered below each subfigure in 8 point Times New Roman font in the format of (a) (b) (c). 
-
-% \subsection{Referencing a Figure or Table Within Your Paper}
-% When referencing your figures and tables within your paper, use the abbreviation “Fig.” even at the beginning of a sentence. Do not abbreviate “Table.” Tables should be numbered with Roman Numerals.
-
-% \subsection{Checking Your Figures: The IEEE Graphics Checker}
-% The IEEE Graphics Checker Tool enables authors to pre-screen their graphics for compliance with IEEE Transactions and Journals standards before submission. The online tool is located at \underline{http://graphicsqc.ieee.org/}. 
-% For more information on using the Graphics Checker Tool 
-% or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{graphics@ieee.org}.
-% For more information on using the Graphics Checker Tool or any other graphics related topic, contact the IEEE Graphics Help Desk by e-mail at \underline{http://graphicsqc.ieee.org/}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{reconstruction_spectra.eps}
+    \caption{Reconstructions of the PTS capture many salient features
+    of tinnitus spectra. \textbf{(a)} shows buzzing results and \textbf{(b)}
+    shows roaring results. In each, the black trace indicates the ground truth,
+    unbinned frequency spectrum of the ATA target signal. The colored traces
+    plot exemplar human subject results, as binned reconstructions mapped
+    from $8$-dimensional bin space to $11025$-dimensional frequency space.
+    Since the bins span from 100 to 13,000 Hz, 
+    in the reconstructions $(13000, 22000]$ Hz is always $0$.}
+    \label{fig:spectra}
+\end{figure}
 
 \section{Conclusion}
 
@@ -923,8 +900,9 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % \textsc{Supplementary Materials}
 % \par Supplementary materials are encouraged. Please use the Supplementary Materials template. If you have Supplementary Materials, please use this section to direct readers to the Supplementary Materials and give them a brief overview of what they can expect to find in the Supplementary Materials. \\
 % \\
-% \textsc{Acknowledgment}
-% \par Write “F. A. Author thanks ... .” In most cases, sponsor and financial support acknowledgments are placed in the unnumbered footnote on the first page, not here.\\
+\textsc{Acknowledgment}
+\par A. H. thanks Drs. Srinivas Gorur-Shandilya and Mark Zielinski for informative discussions regardining data visualization.
+The authors thank Mr. Jacob Mills and Ms. Myah Caplan for their assistance in data collection. \\
 % \\
 % \textsc{REFERENCES AND FOOTNOTES}
 
@@ -942,11 +920,11 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % {
 % 	\subsection{Uploading the Document}
 % 	All submissions must be uploaded via ScholarOne Manuscripts. Include full mailing addresses and e-mail addresses of all authors when uploading a manuscript. In addition, designate one author as the “corresponding author.” This is the author to whom proofs of the paper will be sent. Proofs are sent to the corresponding author only.
-	
+    
 % 	\subsection{Review Stage Using ScholarOne$^{\tiny\textregistered}$ Manuscripts}
 % 	Contributions to IEEE OJEMB must be submitted electronically on IEEE’s on-line manuscript submission and peer-review system, ScholarOne$^{\tiny\textregistered}$ Manuscripts at \textit{http://mc.manuscriptcentral.com/embs-ieee}. First check if you have an existing account. If there is none, please create a new account. After logging in, go to your Author Center and click “Submit First Draft of a New Manuscript.” 
 % 	There are various steps to the submission process; you must complete all steps for a complete submission. At the end of each step you must click “Save and Continue”; just uploading the paper is not sufficient. After the last step, you should see a confirmation that the submission is complete. You should also receive an e-mail confirmation. For inquiries regarding the submission of your paper on ScholarOne Manuscripts, please contact oprs-support@ieee.org or call +1 732 465 5861.
-	
+    
 % 	\subsection{Final Stage Using ScholarOne Manuscripts}
 % 	Upon acceptance, you will receive an email with specific instructions regarding the submission of your final files.  To avoid any delays in publication, please be sure to follow these instructions.  Final submissions should include source files of your accepted manuscript, high quality graphic files, and a formatted pdf file.  If you have any questions regarding the final submission process, please contact the administrative contact for the journal. 
 % }
@@ -956,7 +934,7 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % {
 % 	Do not publish “preliminary” data or results. The submitting author is responsible for obtaining agreement of all coauthors and any consent required from sponsors before submitting a paper. IEEE OJEMB strongly discourages courtesy authorship. It is the obligation of the authors to cite relevant prior work. IEEE OJEMB expects the main source of references be archival journal articles or books or thesis. Conference proceeding papers should be minimized since many are not undergoing rigorous peer reviews. 
 % 	At least two reviews are required for every paper submitted. Indecipherable English is a valid reason for rejection. There is a service available that will help you improve your English for a fee, and the link to that service can be found at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}. 
-	
+    
 % }
 
 % \section{Publication Principles}
@@ -970,8 +948,8 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % 		\item Because replication is required for scientific progress, papers submitted for publication must provide sufficient information to allow readers to perform similar experiments or calculations and use the reported results. Although not everything need be disclosed, a paper must contain new, useable, and fully described information. For example, a specimen’s chemical composition need not be reported if the main purpose of a paper is to introduce a new measurement technique. Authors should expect to be challenged by reviewers if the results are not supported by adequate data and critical details.
 % 		\item Papers that describe ongoing work or announce the latest technical achievement, which are suitable for presentation at a professional conference, may not be appropriate for publication.
 % 	\end{enumerate}
-	
-	
+    
+    
 % }
 
 \bibliographystyle{IEEEtran}
@@ -981,51 +959,51 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % \begin{thebibliography}{1}
 % 	%\textit{Basic Format for Books:}\\
 % 	\bibitem{BasicBook} \textbf{Basic Format for Books:} J. K. Author, Title of chapter in the book, in \textit{Title of His Published Book}, xth ed. City of Publisher, Country if not USA: Abbrev. of Publisher, year, ch. x, sec. x, pp. xxx–xxx.
-	
+    
 % 	\bibitem{ExampleBook1} \textit{Example Book 1:} G. O. Young, “Synthetic structure of industrial plastics”, in \textit{Plastics},  2nd  ed.,  vol.  3,  J.  Peters,  Ed.  New  York: McGraw-Hill, 1964, pp. 15–64.
-	
+    
 % 	\bibitem{ExampleBook1} \textit{Example Book 2:} W.-K. Chen, \textit{Linear Networks and Systems}. Belmont, CA: Wadsworth, 1993, pp. 123–135.\\
-	
+    
 % 	\bibitem{BasicPeriodical} \textbf{Basic Format for Periodicals:} J. K. Author, “Name of paper”, \textit{Abbrev. Title of Periodical},  vol. x, no. x, pp. xxx-xxx, Abbrev. Month, year.
-	
+    
 % 	\bibitem{ExamplePeriodical1} \textit{Example Periodical 1:} J. U. Duncombe, “Infrared navigation—Part I: An assessment of feasibility”, \textit{IEEE Trans. Electron Devices}, vol. ED-11, no. 1, pp. 34–39, Jan. 1959.
-	
+    
 % 	\bibitem{ExamplePeriodical2} \textit{Example Periodical 2:} E. P. Wigner, “Theory of traveling-wave optical laser”, \textit{Phys. Rev.}, vol. 134, pp. A635–A646, Dec. 1965.
-	
+    
 % 	\bibitem{ExamplePeriodical3} \textit{Example Periodical 3:} E. H. Miller et al., “A note on reflector arrays”,\textit{ IEEE Trans. Antennas Propagat.}, to be published.\\
-	
+    
 % 	\bibitem{BasicHandbook} \textbf{Basic Format for Handbooks:} \textit{Name of Manual/Handbook}, x ed., Abbrev. Name of Co., City of Co., Abbrev. State, year, pp. xxx-xxx.
-	
+    
 % 	\bibitem{ExampleHandbook1} \textit{Example Handbook 1:} \textit{Transmission Systems for Communications}, 3rd ed., Western Electric Co., Winston-Salem, NC, 1985, pp. 44–60.
-	
+    
 % 	\bibitem{ExampleHandbook2} \textit{Example Handbook 2:} \textit{Motorola Semiconductor Data Manual}, Motorola Semiconductor Products Inc., Phoenix, AZ, 1989.\\
-	
+    
 % 	\bibitem{BasicBookOnline} \textbf{Basic Format for Books (when available online):} Author. (year, month day). \textit{Title}. (edition) [Type of medium]. volume (issue). Available: site/path/file
-	
+    
 % 	\bibitem{ExampleBookOnline} \textit{Example Book Available Online 1:} J. Jones. (1991, May 10). \textit{Networks}. (2nd ed.) [Online]. Available: http://www.atm.com\\
-	
+    
 % 	\bibitem{BasicJournalOnline} \textbf{Basic Format for Journals (when available online):} Author. (year, month). Title. \textit{Journal}. [Type of medium]. volume (issue), pages. Available: site/path/file 
-	
+    
 % 	\bibitem{ExampleJournalOnline} \textit{Example Journal Available Online 1:} R. J. Vidmar. (1992,  Aug.).  On  the  use  of  atmospheric plasmas as electromagnetic reflectors. \textit{IEEE Trans. Plasma Sci.} [Online]. 21(3), pp. 876–880. Available: http://www.halcyon.com/pub/journals/21ps03-vidmar\\
-	
+    
 % 	\bibitem{BasicConferenceOnline} \textbf{Basic Format for Papers Presented at Conferences(when available online):} Author. (year, month). Title. Presented at Conference title. [Type of Medium]. Available: site/path/file
-	
+    
 % 	\bibitem{ExampleConferenceOnline} \textit{Example Conference Paper Available Online 1:} PROCESS  Corp.,  MA.  Intranets:  Internet  technologies deployed behind the firewall for corporate productivity. Presented at 
 % 	INET96 Annual Meeting. [Online]. Available:  http://home.process.com/Intranets/wp2.htp\\
-	
+    
 % 	\bibitem{BasicReportsOnline} \textbf{Basic Format for Reports and Handbooks (when available online):} Author.   (year,   month).   Title. Company . City, State or Country. [Type of Medium]. Available: site/path/file
-	
+    
 % 	\bibitem{ExampleReportOnline} \textit{Example Report Available Online 1:}  S.L.Talleen. (1996, Apr.). The Intranet  Architecture:  Managing  information  in  the  new paradigm. Amdahl Corp., CA. [Online]. Available: http://www.amdahl.com/doc/products/bsg/intra/infra/html\\
-	
+    
 % 	 \textbf{Basic Format for Computer Programs and Electronic Documents (when available online):} ISO recommends that capitalization follow the accepted practice for the language or script in which the information is given.
-	
+    
 % 	\bibitem{ExampleProgramOnline}\textit{Example Program Available Online 1:} A. Harriman. (1993, June). Compendium of genealogical software. \textit{Humanist}. [Online]. Available e-mail: HUMANIST@NYVM.ORG Message: get GENEALOGY REPORT\\
-	
+    
 % 	\bibitem{BasicPatentsOnline} \textbf{Basic Format for Patents (when available online):} Name of the invention, by inventor’s name. (year, month day). \textit{Patent Number} [Type of medium]. Available: site/path/file\\
-	
+    
 % 	\bibitem{ExamplePatentOnline}\text{Example Patent Available Online 1:} Musical toothbrush with adjustable neck and mirror, by L.M.R. Brooks. (1992, May 19). \textit{Patent D326189} [Online]. Available: NEXIS Library: LEXPAT File: DESIGN
-	
-	
+    
+    
 % \end{thebibliography}
 
 % that's all folks

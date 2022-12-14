@@ -7,7 +7,7 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = ['~/Downloads/data-paper-8-bins'];
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 BOOTSTRAP = 1000; % Set to 0 or false if not using.
 PUBLISH = false;
@@ -184,7 +184,7 @@ for ii = 1:height(T)
         % Compute reconstructions from the in-silico process
         corelib.verb(true, 'INFO: pilot_reconstructions', 'Computing reconstructions using synthetic responses')
         responses_synth = subject_selection_process(this_target_signal, stimuli_matrix');
-        reconstructions_synth{ii, qq} = cs(responses_synth, stimuli_matrix', this_gamma);
+        reconstructions_synth{ii, qq} = gs(responses_synth, stimuli_matrix');
         
         % Compute the r values
         [r_cs_bins(ii, qq), p_cs_bins(ii, qq)] = correlation(reconstructions_cs{ii, qq}, this_target_signal);
