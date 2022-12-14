@@ -39,9 +39,9 @@
 % AbstractBinnedStimulusGenerationMethod.get_freq_bins
 % AbstractStimulusGenerationMethod.generate_stimuli_matrix
 
-function [stim, Fs, spect, binned_repr, frequency_vector, bin_starts, bin_stops] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
 
-    [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
+    [~, Fs, nfft, frequency_vector, bin_starts, bin_stops] = self.get_freq_bins();
     spect = self.get_empty_spectrum();
     binned_repr = zeros(self.n_bins, 1);
 
@@ -49,16 +49,18 @@ function [stim, Fs, spect, binned_repr, frequency_vector, bin_starts, bin_stops]
         this_amplitude_value = self.amplitude_values(randi(length(self.amplitude_values)));
         binned_repr(ii) = this_amplitude_value;
 
-        %% Find the two parameters of the gaussian (mu and sigma)
         % mu: the center of the bin
+        mu = ((bin_starts(ii) + bin_stops(ii)) / 2);
         % sigma: half the width of the bin
+        sigma = ((bin_stops(ii) - bin_starts(ii)) / 2);
 
-        %% Create a normal distribution with the correct number of points
-        % (same size as spect)
-        % with parameters mu and sigma.
-        % Normalize and add it to the spectrum.
+        % Create a normal distribution with the correct number of points
+        normal = normpdf(frequency_vector, mu, sigma);
+        % Rescale spectrum
+        normal = this_amplitude_value * normal ./ max(normal);
 
-        %% Rescale spectrum
+        % Adda to the spectrum
+        spect = spect + normal;
     end
 
     % Synthesize Audio
