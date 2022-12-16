@@ -832,9 +832,9 @@ which hopefully shows that people think their reconstructions sound good.}
     are shown as violin plots with box plots overlaid. The median is a white dot,
     the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
     the abscissa has no meaning.
-    \textbf{a-c} show violin plots for the buzzing target signal, 
-    \textbf{d-f} show results the roaring target signal,
-    and \textbf{g-i} show results for the all data combined.
+    \textbf{(a-c)} show violin plots for the buzzing target signal, 
+    \textbf{(d-f)} show results the roaring target signal,
+    and \textbf{(g-i)} show results for the all data combined.
     Human subjects perform significantly better than random chance
     and some approach the empirical maximum of the synthetic subject results
     (Mann-Whitney $U$ test, $p < 0.001$).}
@@ -843,15 +843,18 @@ which hopefully shows that people think their reconstructions sound good.}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{reconstruction_spectra.eps}
+    \includegraphics[width=\linewidth]{reconstructions.eps}
     \caption{Reconstructions of the PTS capture many salient features
-    of tinnitus spectra. \textbf{(a)} shows buzzing results and \textbf{(b)}
-    shows roaring results. In each, the black trace indicates the ground truth,
-    unbinned frequency spectrum of the ATA target signal. The colored traces
-    plot exemplar human subject results, as binned reconstructions mapped
-    from $8$-dimensional bin space to $11025$-dimensional frequency space.
-    Since the bins span from 100 to 13,000 Hz, 
-    in the reconstructions $(13000, 22000]$ Hz is always $0$.}
+    of tinnitus spectra.
+    \textbf{(a)} and \textbf{(b)} show binned representations
+    of the target signal representation (black) and exemplar
+    human subject reconstructions (colors) for the buzzing and roaring
+    target signals respectively.
+    \textbf{(c)} and \textbf{(d)} show the full, unmodified target signal spectra
+    (gray), binned-then-unbinned target signal spectra (black), which were used
+    as the priming signal for the experiment,
+    and unbinned human subject reconstructions (colors) for both the buzzing
+    and roaring target signals respectively.}
     \label{fig:spectra}
 \end{figure}
 
