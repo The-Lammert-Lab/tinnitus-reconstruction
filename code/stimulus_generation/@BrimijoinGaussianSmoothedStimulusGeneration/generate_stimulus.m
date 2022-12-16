@@ -62,6 +62,9 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
         % Adda to the spectrum
         spect = spect + normal;
     end
+    
+    spect = (spect-min(spect))/(max(spect)-min(spect));
+    spect = 20*(spect-1);
 
     % Synthesize Audio
     stim = self.synthesize_audio(spect, nfft);
