@@ -50,8 +50,8 @@ this_binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 % This normalization scheme normalizes the vectors to a length of 1
 % since we cannot capture magnitude information in the reconstruction.
 % Do we need to center the vectors afterwards?
-% my_normalize = @(x) normalize(normalize(x, 'norm'), 'center');
-my_normalize = @(x) normalize(x, 'norm');
+my_normalize = @(x) normalize(normalize(x, 'norm'), 'center');
+% my_normalize = @(x) normalize(x, 'norm');
 
 
 % Generate a figure and axes
@@ -79,7 +79,7 @@ for ii = 1:n_traces
 end
 xlabel(ax(1, 1), 'bins');
 ylabel(ax(1, 1), 'amplitude (a.u.)');
-title(ax(1, 1), 'buzzing, binned')
+% title(ax(1, 1), 'buzzing, binned')
 legend(ax(1, 1), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Roaring, binned representation
@@ -94,7 +94,7 @@ for ii = 1:n_traces
     p.Color(4) = 0.8;
 end
 xlabel(ax(1, 2), 'bins');
-title('roaring, binned')
+% title('roaring, binned')
 legend(ax(1, 2), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Buzzing, full spectra
@@ -119,7 +119,7 @@ for ii = 1:n_traces
 end
 xlabel(ax(2, 1), 'frequency (kHz)')
 ylabel(ax(2, 1), 'amplitude (a.u.)');
-title(ax(2, 1), 'buzzing, spectra')
+% title(ax(2, 1), 'buzzing, spectra')
 legend(ax(2, 1), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
 
 
@@ -143,7 +143,7 @@ for ii = 1:n_traces
 end
 xlabel(ax(2, 2), 'frequency (kHz)')
 ylabel(ax(2, 2), 'amplitude (a.u.)');
-title(ax(2, 2), 'roaring, spectra')
+% title(ax(2, 2), 'roaring, spectra')
 legend(ax(2, 2), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
 
 
