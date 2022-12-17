@@ -1,6 +1,6 @@
 %% Make figures for the main paper
 
-DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
+% DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 
 % Set rng seed
 rng(112358, 'twister');
@@ -33,7 +33,7 @@ n_traces = 3;
 cmap = colormaps.linspecer(n_traces);
 
 % Sort the dataset by r-value
-T3 = sortrows(T2, ["r_lr_bins_1", "subject_ID"]);
+T3 = sortrows(T2, ["r_lr_bins_1", "subject_ID"], "descend");
 T3_buzzing = T3(strcmp(T3.target_signal_name, 'buzzing'), :);
 T3_roaring = T3(strcmp(T3.target_signal_name, 'roaring'), :);
 
