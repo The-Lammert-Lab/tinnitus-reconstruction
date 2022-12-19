@@ -118,7 +118,7 @@
 % V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
 % \cite{} output to follow that of the IEEE. Loading the cite package will
 % result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
+% "compressed/ranged". \eg, [1], [9], [2], [7], [5], [6] without using
 % cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
 % \cite will automatically add leading space, if needed. Use cite.sty's
 % noadjust option (cite.sty V3.8 and later) if you want to turn this off
@@ -284,7 +284,7 @@
 %\usepackage{stfloats}
 % stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
 % the ability to do double column floats at the bottom of the page as well
-% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
+% as the top. (\eg, "\begin{figure*}[!b]" is not normally possible in
 % LaTeX2e). It also provides a command:
 %\fnbelowfloat
 % to enable the placement of footnotes below bottom floats (the standard
@@ -375,9 +375,9 @@
 % \addbibresource{mybib.bib}
 % \usepackage{csquotes}
 \usepackage{soul}
-\newcommand{\etal}{\textit{et al}., }
-\newcommand{\ie}{\textit{i}.\textit{e}., }
-\newcommand{\eg}{\textit{e}.\textit{g}.\ }
+\newcommand{\etal}{\textit{et al}.,\ }
+\newcommand{\ie}{\textit{i}.\textit{e}.,\ }
+\newcommand{\eg}{\textit{e}.\textit{g}.,\ }
 \newcommand{\cf}{\textit{cf}.\ }
 \usepackage{hyperref}
 \usepackage{siunitx}
@@ -430,14 +430,16 @@
 % 	Samantha Peznola is a Research Assistant at WPI;
 % 	and Dr. Adam C. Lammert is Assistant Professor of Biomedical Engineering at WPI.
 % }}
-\author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, and Adam C. Lammert\textsuperscript{\textdagger{}}%
+% \author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, and Adam C. Lammert\textsuperscript{\textdagger{}}%
+\author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, Myah Caplan, Jacob Mills, and Adam C. Lammert\textsuperscript{\textdagger{}}%
 \thanks{This work was supported in part by the University of Massachusetts
-Center for Clinical and Translation Science Pilot Project Program 2022,
-grant no. \hl{GRANT NUMBER}.}%
+Center for Clinical and Translation Science.}%
 \thanks{Mr. Hoyland is a graduate student in the Department of Biomedical Engineering
 at Worcester Polytechnic Institute (WPI) and a research scientist at Clarifai Inc.
-Mr. Nelson Barnett is a research assistant at WPI.
-Mr. Benjamin W. Roop is a research scientist at MIT Lincoln Laboratory.
+Mr. Barnett is a post-baccalaureate research associated at WPI.
+Mr. Roop is a research scientist at MIT Lincoln Laboratory.
+Ms. Caplan is a research assistant at WPI.
+Mr. Mills is a research assistant at WPI.
 Dr. Lammert is an Assistant Professor in the Department of Biomedical Engineering at WPI.
 The authors declare no competing interests.}%
 \thanks{\textsuperscript{\textdagger{}} Corresponding Author}%
@@ -526,82 +528,38 @@ Data are available upon request.}}
 \end{minipage}
 
 \section{Introduction}
-
+% INTRO PARAGRAPH 1/3
 \IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
-in the absence of an external stimulus\textemdash{}affects over 25 million people in the U.S.,
-with some estimates ranged up to 50 million,
-a third of which experience functional cognitive impairment and substantial reduction
-in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
-Primary treatment options for tinnitus are currently limited by a lack of methods
-for accurately characterizing the internal sounds experienced by patients.
-Tinnitus treatment typically involves \textit{sound therapy}, a form of habituation therapy,
-which involves target exposure to external sounds to attenuate the perception of tinnitus
-or to encourage patients to perceive their tinnitus as a neutral stimulus
-\cite{jastreboff25YearsTinnitus2015}.
-Critically, treatment outcomes have been repeatedly shown to improve
-when the external sounds used in sound therapy are closely informed
-by the internal tinnitus experience of the patient
-\cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007},
-specifically, its component frequencies that constitute
-the \textit{psychoacoustic tinnitus spectrum} (PTS).
-However, existing methods for characterizing the PTS rely on reductionist assumptions
-concerning the nature of tinnitus sounds (\eg that they are pure tones or have small-width Gaussian spectra)
-and produce characterizations that are correspondingly bias and incomplete
-when compared to the spectral variety of tinnitus percepts\textemdash{}less than
-50\% of tinnitus patients
-report their tinnitus sounding like ``ringing'' \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}.
-There is a pressing need for methods to more completely characterize the PTS
-\cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002},
-to further improve treatment outcomes for patients suffering from tinnitus.
+in the absence of any corresponding external stimulus\textemdash{}affects over 25 million people in the U.S., with some estimates ranging up to 50 million, a third of whom experience functional cognitive impairment and substantial reduction in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+Primary treatment options for tinnitus are currently limited by a lack of methods for accurately characterizing the full breadth of internal sounds experienced by patients.
+Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like external sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or in the context of Cognitive Behavioral Therapy, where patients are encouraged to perceive their tinnitus as a neutral stimulus \cite{jastreboff25YearsTinnitus2015}.
+Critically, treatment outcomes have been repeatedly shown to improve when the external sounds used in sound therapy are closely informed by the internal tinnitus experience of the patient
+\cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007}.
+However, existing methods for characterizing the tinnitus sounds\textemdash{}Pitch Matching (PM) methods\textemdash{}are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
+This group represents only half of all tinnitus patients \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}, with others experiencing nontonal (\eg buzzing, roaring) tinnitus sounds \hl{CITE}.
+Moreover, PM fails for up to 30\% of patients with tonal tinnitus \hl{CITE}.
+There is a pressing need for characterization methods targeting tinnitus patients for who are not served by current characterization methods \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
 
-We utilize \textit{reverse correlation} approach to characterize the PTS more completely,
-without the strong biases introduced by existing methods.
-Reverse correlation is a widely-accepted method for unconstrained and unbiased estimation
-of latent neural representations (\eg neural receptive fields)
-based on the white-noise method for black-box system identification
-\cite{ringachReverseCorrelationNeurophysiology2004,ljungMeasureLackFit1978}.
-This method has been used to characterize the psychophysical processes of perception
-in vision (\eg faces) and audition (\eg phonemes)
-\cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013}
-all on the basis of stimulus-response data
-\cite{marmarelisWhiteNoiseMethodSystem1978,neriReceptivePerceptiveFields2006}.
-In reverse correlation, subjects are presented with richly-varying random stimuli (\eg white noise)
-and make simple ``yes/no'' responses about whether they perceive a particular signal
-(\eg their tinnitus percept).
-Internal representations, such as the PTS, can be estimated
-by regressing subject responses against the stimuli over many trials.
-Despite widespread use in characterizing neural and cognitive representations,
-reverse correlation has never been used for tinnitus characterization.
-% One limitation of reverse correlation is the sheer number of trials
-% required to recover a good signal reconstruction.
-% Classically, reverse correlation has required a large number of stimulus-response trials
-% to yield accurate results (\eg 20,000 trials in \cite{gosselinSuperstitiousPerceptionsReveal2003}),
-% a property that makes reverse correlation time-consuming in a clinical setting.
+% INTRO PARAGRAPH 2/3
+Tinnitus sounds are presumed to be both complex and heterogeneous \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021, henryTinnitusEpidemiologicPerspective2020},
+although little has been firmly established about the specific characteristics.
+Therefore, we base our approach on the demonstrated capabilities of \textit{reverse correlation} (RC),
+an established behavioral method \cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013} for probing internal representations of visual and auditory percepts that is unconstrained by prior knowledge about the percepts themselves.
+RC asks subjects to render subjective judgments (\eg “does this sound like your tinnitus?”)
+over random stimuli that have no direct relation to the percepts of interest,
+from which correspondingly unbiased estimates of those objects can be produced.
+RC is closely related to Weiner theory \hl{CITE},
+which has also inspired so-called white-noise approaches to system characterization in physiology
+\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978,neriReceptivePerceptiveFields2006} and engineering more broadly \cite{ljungMeasureLackFit1978}.
 
-% We overcome this limitation of reverse correlation using \textit{compressed sensing} (CS)
-% to reconstruct the PTS with high fidelity using far fewer trials.
-% Compressive sensing can reduce the number of trials
-% required an order of magnitude compared to conventional estimation, thereby allowing for efficient and
-% accurate characterization of tinnitus within a single clinical visit. Compressive sensing has gained broad
-% recognition in medical imaging \hl{[CITE]}, due to its ability to reduce scan times without sacrificing image quality or
-% introducing bias, and its promise for similarly improving reverse correlation has been recently demonstrated by
-% our group \textit{in-silico} \hl{[CITE]}.
-
-In the present study, we validate a reverse correlation-based PTS reconstruction assay
-on healthy hearing subjects via a template-matching experiment,
-in which subjects compare the reverse correlation stimuli to a target tinnitus sample sound.
-We benchmark the accuracy and reliability of the reconstructions,
-using the target tinnitus signal as a ground truth.
-High accuracy and reliablity measures relative to low numbers of trials per subject
-provide evidence for the feasibility of the reverse correlation paradigm for uncovering
-spectral representations of tinnitus.
-
-Our long-term goal is to improve outcomes for patients suffering from tinnitus by providing a validated
-clinical assay, based on the demonstrated capabilities of the reverse correlation approach, that clinicians can
-use to accurately and efficiently characterize the individualized perceptual experience of tinnitus. Our guiding
-hypothesis is that reverse correlation will produce PTS estimates that patients will consistently report as being
-similar to their own tinnitus experience. The rationale for this work is that accurate and efficient characterization
-of the PTS can inform individualized tinnitus treatment with enhanced habituation therapies.
+% INTRO PARAGRAPH 3/3
+Here, we validate RC as a method for characterizing non-tonal tinnitus sounds,
+specifically for estimating the full psychoacoustic tinnitus spectrum (PTS),
+including all component frequencies of the tinnitus sound.
+To that end, we asked normal-hearing participants to complete an augmented RC experiment where they had to compare random stimuli to a target tinnitus-like sound.
+Target sounds were subsequently used as the basis for validating the quality of the estimated PTS.
+Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC,
+a result that may open the door the developing a clinical assay based on RC for characterizing the full range of sounds experienced by tinnitus patients.
 
 % document is a Latex  template for Technology Letters to be submitted to IEEE OJEMB \cite{ahumadaStimulusFeaturesSignal1971}. Submissions must have the sections listed in the following exactly in the order shown here: Introduction, Materials and Methods, Results, Discussion, Conclusions. Manuscripts to be submitted to IEEE OJEMB as a Science Letters must use a different template. For both types of manuscript, the authors can opt to add a Supplementary Materials section.
 
@@ -632,83 +590,112 @@ Software code used for the experiments and analysis was written in MATLAB (Mathw
 and is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
 The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shandilyaSrinivasGsMtools2022}.
 
-\subsection{Stimulus Generation}
+% ACL, DONE
+\subsection{Stimuli}
 
-To generate stimuli, we partition the frequency space $f \in [100,~13,000]$ Hz
-into $b=8$ mel-spaced frequency bins
-so that each bin is perceptually different to a listener \cite{polfremanSoundSpottingFrameBased2001}
-(\cf Supplementary Information).
-All frequencies in the same bin have the same amplitude.
-For each stimulus, we randomly select $[2,7]$ bins
-with equal probability to be ``filled'' with power $0$ dB.
-Unfilled bins are set to $-100$ dB.
-The inverse Fourier transform of the spectrum yields a $500$-ms stimulus waveform.
+Stimuli were composed of $b=8$ Mel-spaced frequency bins,
+which divide the frequency spectrum between $[100,~13,000]$
+Hz into continuous segments of equal amplitude (\ie "rectangular" bins).
+While, $b=8$ bins were found to provide a good approximation to the target sounds used here (see Figure \ref{fig:spectra}),
+the number of bins would need to be increased in proportion to the level of detail in the frequency spectrum.
 
-% Before arriving at this method, we ran an \textit{in-silico} hyperparameter sweep over
-% nine stimulus generation methods and hundreds of hyperparameter values
-% (\cf Supplementary Information).
+To generate a stimulus, we randomly select $[2,7]$ bins with uniform probability to be ``filled'' with power $0$ dB,
+while ``unfilled'' bins were assigned power of $-100$ dB. 
+Assigning random phase, we then take the inverse Fourier transform of the spectrum to yield a $500$-ms stimulus waveform.
 
-\subsection{Reconstruction Analysis}
+% ACL, DONE
+\subsection{Target Sounds}
 
-A subject performing $n$ trials with $b$ frequency bins produces
-a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
-and a response column vector $y \in {1,-1}^n$,
-where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.''
-% We assume that the PTS, $x \in \mathbb{R}^b$, is sparse in some basis $\Phi \in \mathbb{R}^{b \times b}$
-% (\cf Supplementary Information).
+Tinnitus-like target sounds were drawn from online examples maintained by the American Tinnitus Association \hl{CITE}.
+The two examples selected for this study corresponded to those described as ``buzzing'' and ``roaring''.
+These sounds were selected for the complexity and complementary nature of their frequency spectra.
+These examples were downloaded and truncated to $500$-ms in duration. 
 
-% \subsubsection{Linear Regression}
+% ACL, DONE
+\subsection{Experiment}
 
-The linear regression solution is given by
-the normalized inner product of the stimulus matrix
-and the responses (Eq. \ref{eq:linreg}).
-This is a restricted form of the normal equation,
-the least-squares solution to the linear regression problem,
-under the assumption that the stimulus dimensions are uncorrelated
-\cite{martinCombinabilityInformationUncorrelated1966}.
-Intuitively, this implies that the reconstruction, $x$,
-is a linear combination of the randomly-generated stimuli
-that lies closer in simularity to the ``yes'' stimuli than the ``no'' ones
-\cite{gosselinSuperstitiousPerceptionsReveal2003}.
+We recruited $n=10$ subjects with self-reported normal hearing to participate in the experiment.
+All procedures were approved by the UMass IRB.
+Subjects listened over earphones, and manually adjusted the loudness of presented sounds to a self-determined comfortable level.
+Trials followed an $A-X$ presentation paradigm (Figure \ref{fig:experimentdiagram}),
+where subject listened to a target sound ($A$) followed by a stimulus ($X$).
+$A$ remained the same for every trial within a given experimental condition,
+while $X$ was randomly generated for each trial.
+The task is designed to mimic the process by which a tinnitus patient might compare a random stimulus to their own tinnitus percept in the context of a RC experiment
+(Figure \ref{fig:experimentdiagram}).
+
+Subjects were told that some stimuli had the target sound embedded in them, and were instructed to respond ``yes'' to any such stimuli, and to response ``no'' otherwise.
+Subjects performed trials in blocks of $100$, with breaks between blocks.
+Subjects completed two ($2$) blocks of trials per experimental condition (\ie for a given target, $A$).
+The $400$ total trials took subjects about 10-20 minutes to complete.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{experiment_overview.pdf}
+  \caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
+then a stimulus. They compare their mental model of the stimulus to their mental model of the target signal,
+before making a binary choice about the two signals' similarity (either ``yes'' it is similar or ``no'' it is not).}
+  \label{fig:experimentdiagram}
+\end{figure}
+
+% ACL, DONE
+\subsection{Reconstruction}
+
+A subject performing $n$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
+and a response vector $y \in \{1,-1\}^n$,
+where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically assumes the subject response model:
+
+\begin{equation}
+  y = sign(\Psi^\mathrm{T} x), 
+\end{equation}
+
+where $x \in R^\mathrm{t}$ represents the subject's internal representation of interest (\eg their tinnitus percept).
+This model can be inverted, yielding the following commonly-used formula for reconstructing internal representations in RC experiments:
 
 \begin{equation}
   \hat{x} = \frac{1}{n} \Psi y
   \label{eq:linreg}
 \end{equation}
 
-Reconstruction accuracy was quantified by Pearson's $r$
-between the binned target signal spectrum and the reconstructed binned spectrum.
+This formula is a restricted form of the Normal equation\textemdash{}the least-squares solution to linear regression problem\textemdash{}under
+the assumption that the stimulus dimensions are uncorrelated \cite{martinCombinabilityInformationUncorrelated1966, gosselinSuperstitiousPerceptionsReveal2003}.
+Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all stimuli eliciting a ``yes'' response, after subtracting the sum of all stimuli eliciting a ``no''. 
 
+% ACL, DONE
+\subsection{Validation}
+
+By adopting the $A-X$ paradigm for the present experiments,
+we have the opportunity to directly compare the reconstructions
+$\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ for the experimental conditions to their corresponding target sound for the purposes of validation.
+To that end, we represent the power spectra of the target sounds as vectors $s_{buzzing} \in \mathbb{R}^\mathrm{8}$ and $s_{roaring} \in \mathbb{R}^\mathrm{8}$ using the same $b=8$ frequency bins used in stimulus generation,
+where the power in each bin is taken to be the mean power level for frequencies contained within that bin.
+The vectors $s_{buzzing}$ and $s_{roaring}$ can then be directly compared to their corresponding reconstructions
+$\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ using Pearson's $r$, with Pearson's $r$ representing a measure of reconstruction accuracy.
+One-sample t-tests were performed on the mean Fisher-transformed r values across subjects to assess significant differences from zero.
+
+% ACL, DONE
 \subsection{Synthetic and Random Subjects}
 
-Two \textit{in-silico} experiments were run with synthetic and random subjects.
+For the purposes of establishing upper and lower bounds on human performance in this experiment,
+additional experiments were run \textit{in-silico} with two simulated subjects,
+representing a participant who always gives \textit{ideal} responses and one who always gives \textit{random} responses.
 Each experiment ran for $n=200$ trials and was repeated $1000$ times.
 
-The synthetic subject used a template-matching algorithm.
-Given the target signal spectrum (for either ``buzzing'' or ``roaring''), 
-$s \in \mathbb{R}^t$,
-and the stimulus matrix in the spectral domain, $\Psi \in \mathbb{R}^{n \times t}$,
-each element of the synthetic response vector, $y_s \in {1,-1}^n$ is defined as:
+The \textit{ideal} subject gives responses following:
 
 \begin{equation}
-    r_i =
+    y_i =
         \begin{cases}
             1 & \text{if } \Psi_i^\mathrm{T} s \geq Q(0.5; \Psi_i^\mathrm{T} s) \\
             -1 & \text{otherwise}
         \end{cases}
 \end{equation}
 
-for $i \in 1, ..., n$, where $Q(x, y)$ is the quantile function for $x \in [0, 1]$, given the empirical distribution
-of the simularity calculation $Psi^\mathrm{T} s$.
-Thus, the 50\% most-similar stimuli receive a ``yes'' response and the 50\% least-similar stimuli
-receive a ``no'' response.
-Due to the nature of this calculation, the synthetic subject has full-knowledge of all
-unbinned stimuli spectra as well as the unbinned spectrum of the target signal before making responses.
-The synthetic subject represents a \textit{best-case} scenario,
-where the subject has precise knowledge of every stimulus and where the reconstruction algorithm
-mirrors the template-matching algorithm.
+where $Q(x, y)$ is the quantile function for $x \in [0, 1]$ of the simularity calculation $Psi^\mathrm{T} s$.
+The ideal subject represents a \textit{upper bound} on task performance,
+where the subject has precise knowledge of every stimulus and where the reconstruction algorithm mirrors the subject response model assumed by RC.
 
-The random subject chooses responses at random, with a 50\% probability of ``yes'':
+The \textit{random} subject chooses responses at random:
 
 \begin{equation}
     r_i =
@@ -719,109 +706,21 @@ The random subject chooses responses at random, with a 50\% probability of ``yes
 \end{equation}
 
 where $X \in [0, 1]$ is a uniform random variable.
-The random subject reflects choosing responses completely randomly \textemdash{}
-leading to low expected reconstruction accuracy.
-Theoretically, this should be the \textit{worst-case} scenario.
-Human and synthetic subjects are expected to perform better.
-
-% \subsubsection{Compressed Sensing}
-
-% The one-bit compressed sensing reconstruction problem is:
-
-% \begin{equation}
-% 	y = \mathrm{sgn}(\Psi \Phi x)
-% \end{equation}
-
-% which is an underdetermined system with infinite solutions.
-% Compressed sensing says that when $\Theta = \Psi \Phi$
-% is sufficiently well-behaved
-% (\eg satisfies the restricted isometry property,
-% which Gaussian and Bernoulli random matrices do with high probability,
-% \cf \cite{candesIntroductionCompressiveSampling2008})
-% that the sparsest solution $\hat{x}$ can be found by optimizing the $l_1$ norm of $\hat{x}$.
-% We solve the optimization problem originally described by \cite{zhangEfficientAlgorithmsRobust2014}:
-
-% \begin{equation}
-% 	\hat{x} = \min_{||x||_2 \leq 1} - \frac{1}{n} (\Theta x)^{\mathrm{T}} y + \lambda ||x||_1
-%   \label{eq:cs}
-% \end{equation}
-
-% with tunable scalar parameter $\lambda$.
-
-\subsection{Experiment}
-
-We recruited $n=10$ subjects for the experiment
-with healthy hearing from $[100,~13,000]$ Hz.
-Subjects used over-the-ear headphones
-and manually adjusted loudness
-using sample stimuli before performing the task.
-
-The subjects performed an AX paradigm binary choice task
-in $2$ blocks of $100$ trials with breaks between blocks,
-for a total of $200$ trials per experimental condition.
-The experiment typically took subjects 10-15 minutes to complete.
-For each trial in the experiment,
-the subject listened to a $500$-ms auditory target signal
-followed by one of the $500$-ms randomly generated stimuli.
-The subject was instructed to press the J key if the stimulus sounded similar to the target signal
-and the F key if the stimulus did not (Fig. \ref{fig:experimentdiagram}).
-
-The target signals were drawn from online examples
-from the American Tinnitus Association,
-representing the range of tinnitus experiences
-(American Tinnitus Association, Vienna, Virginia).
-We selected two example tinnitus waveforms from their website: ``buzzing'' and ``roaring''.
-We represented the target spectra using the same $b=8$ frequency bins used in stimulus generation,
-where the power in each bin was taken to be the mean power level in the spectrum
-for frequencies contained within that bin.
-In this way, the AX experiment mimicked
-comparing a randomly-generated stimulus to an internal perception of tinnitus,
-however the known target signals
-unify across subjects and provide a gold-standard to benchmark against.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{experiment_overview.pdf}
-    \caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
-  then a stimulus. They compare their mental model of the stimulus to their mental model of the target signal,
-  before making a binary choice about the two signals' similarity (either ``yes'' it is similar or ``no'' it is not).}
-    \label{fig:experimentdiagram}
-\end{figure}
-
-
-% \subsection{Abbreviations and Acronyms}
-% Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IEEE, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IEEE” in the title of this article).
-
-% needed in second column of first page if using \IEEEpubid
-%\IEEEpubidadjcol
-
+The random subject represents a \textit{lower bound} on task performance,
+where the subject ignores any knowledge of the stimulus, or indeed their own internal representation.
 
 \section{Results}
 
-% $n=10$ subjects performed an AX-paradigm reverse correlation experiment
-% using two ATA tinnitus examples as the target sounds: 1``buzzing'' and ``roaring''.
-% We reconstructed the PTS using the responses and stimuli from the experiments
-% using $L_2$ linear regression.
-% Additionally, we performed $n=1000$ \textit{in-silico} experiments
-% using synthetic and random response algorithms.
+% ACL, DONE
+\section{Results}
 
-Figure \ref{fig:reconstructions} reports Pearson's $r$ scores
-for $n=10$ human, $n=1000$ synthetic, and $n=1000$ random subjects.
-Most human subjects perform significantly better than the random baseline
-and some approach the synthetic subject's empirical upper bound.
-The distributions of human subject $r$ are significantly different
-from the baseline random results (Mann-Whitney $U$ test, $p < 0.001$)
-and the mean values are statistically significant
-(buzzing: $p < 0.001$, $t = 5.766$; roaring: $p < 0.001$, $t = 5.76$;
-combined: $p < 0.001$, $t = 7.542$; one-tailed $t$-test with Fisher transform).
-
-Figure \ref{fig:spectra} demonstrates that the human subject reconstructions
-capture many of the salient features of the the target signal spectra.
-The binning process introduces the sum-of-square-waves shape of the reconstructions
-but we find that these differences are unnoticed by subjects \dots
-
-\hl{Talk more about Fig 3 and use it to segue into the follow-up data,
-which hopefully shows that people think their reconstructions sound good.}
+Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (i.e., reconstruction accuracy) from human, ideal and random subject responses in the buzzing and roaring experiments conditions.
+Accuracies from human responses were generally higher than those from random subject responses,
+with some accuracies approaching those from ideal subject responses.
+Mean accuracy from the random subject responses was $~0$ in all conditions,
+while mean accuracy from human responses was significantly different from $0$ in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
+Figure \ref{fig:spectra} shows example reconstructions from human responses overlaid on the target sound spectra,
+showing that those reconstructions capture many of the salient features of the the target.
 
 \begin{figure}[ht]
     \centering
@@ -832,71 +731,48 @@ which hopefully shows that people think their reconstructions sound good.}
     are shown as violin plots with box plots overlaid. The median is a white dot,
     the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
     the abscissa has no meaning.
-    \textbf{(a-c)} show violin plots for the buzzing target signal, 
-    \textbf{(d-f)} show results the roaring target signal,
-    and \textbf{(g-i)} show results for the all data combined.
-    Human subjects perform significantly better than random chance
-    and some approach the empirical maximum of the synthetic subject results
-    (Mann-Whitney $U$ test, $p < 0.001$).}
+    \textbf{a-c} show violin plots for the buzzing target signal, 
+    \textbf{d-f} show results the roaring target signal,
+    and \textbf{g-i} show results for the all data combined.}
     \label{fig:reconstructions}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{reconstructions.eps}
+    \includegraphics[width=\linewidth]{reconstruction_spectra.eps}
     \caption{Reconstructions of the PTS capture many salient features
-    of tinnitus spectra.
-    \textbf{(a)} and \textbf{(b)} show binned representations
-    of the target signal representation (black) and exemplar
-    human subject reconstructions (colors) for the buzzing and roaring
-    target signals respectively.
-    \textbf{(c)} and \textbf{(d)} show the full, unmodified target signal spectra
-    (gray), binned-then-unbinned target signal spectra (black)\textemdash{}which were used
-    as the priming signals for the experiments,
-    and unbinned human subject reconstructions (colors) for both the buzzing
-    and roaring target signals respectively.}
+    of tinnitus spectra. \textbf{(a)} shows buzzing results and \textbf{(b)}
+    shows roaring results. In each, the black trace indicates the ground truth,
+    unbinned frequency spectrum of the ATA target signal. The colored traces
+    plot exemplar human subject results, as binned reconstructions mapped
+    from $8$-dimensional bin space to $11025$-dimensional frequency space.
+    Since the bins span from 100 to 13,000 Hz, 
+    in the reconstructions $(13000, 22000]$ Hz is always $0$.}
     \label{fig:spectra}
 \end{figure}
 
+% ACL, DONE
 \section{Conclusion}
 
-We applied reverse correlation to the novel domain of psychoacoustic tinnitus spectrum reconstruction
-and improved reconstruction performance (PTS) up to 2x using compressed sensing.
-Using our reconstruction algorithm, the experiment required only 2,000 trials
-for quality reconstruction results which is a 10x improvement over reverse correlation results in similar domains
-\cite{gosselinSuperstitiousPerceptionsReveal2003}.
-Subjects finished the experiment within two hours,
-indicating that this procedure is feasible as an ``outpatient medical test''
-to characterize the PTS of a subject,
-a crucial step in diagnosis and treatment \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
-After fine-tuning, we will use this algorithm
-to characterize the PTSes of clinical tinnitus patients
-to help in the treatment of patients and to further understanding of tinnitus.
+% Promise
+Our results show that RC can accurately reconstruct the frequency spectrum of complex, non-tonal tinnitus-like sounds,
+indicating that RC may also be useful for characterizing the sounds experienced by patients with non-tonal forms of tinnitus,
+for whom existing tinnitus characterization methods are ill-suited.
+As such, this study may represent the first step in the development of a clinical assay to characterize a wider variety of tinnitus percepts than currently possible.
+The clinical utility of RC is further reinforced by its practical advantages,
+as an approach that is purely behavioral, requires no specialized equipment and has a marginal setup time.
+Moreover, subjects in the present study were able to complete the required number of trials within 20 minutes,
+indicating that this procedure is feasible as an assay that could be conducted in a single clinical visit.
+Future work will focus on validating this approach in patients suffering from tinnitus.
 
-Results from human subjects are far below the synthetic baseline,
-indicating that some improvements can be made to boost human performance.
-The simplicity of the mathematical model for the synthetic subject
-(and its favorability towards the problem)
-leads to a synthetic subject that accounts for each tonotopic bin
-with equal attentiveness, does not suffer fatigue, and never changes its
-threshold for positive vs. negative responses.
-The experiment asks subjects to rate each stimulus as 
-similar or dissimilar to the target tinnitus signal.
-This can lead to ``threshold drift,''
-where the decision threshold between positive and negative assignments to stimuli
-change as the experiment goes along.
-While the AX paradigm protects against this effect somewhat
-by playing the target sound before each decision stimulus,
-subjects self-reported feeling unsure that they were making consistent decisions.
-In future investigations,
-we will use a two alternate forced choice (2AFC) paradigm,
-where a subject is provided two stimuli after the cue,
-and chooses the more similar one.
-All chosen stimuli get positive responses assigned
-and non-chosen stimuli get negative responses assigned (\hl{CITE?}).
-Reconstructions can proceed normally, using both the positive and negative responses.
-
-\hl{mention closed-loop/ML?}
+% Limitations & Future Work
+Reconstruction accuracies observed here are well below those provided by an ideal subject's responses,
+which may be attributed to noisy human response characteristics.
+Whereas noisy responses are universally observed in applications of RC,
+this situation may nonetheless be improved by optimizing the experimental protocol, stimulus generation, and reconstruction method,
+none of which are guaranteed optimal in this early-stage validation study.
+For example, recent approaches to improving RC reconstruction methods have been shown to boost the efficiency, noise robustness and overall accuracy of RC \hl{CITE: comptonLammert2022, roopLammertPreprint},
+and may also be applicable in the context of tinnitus.
 
 % A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
 % \\
@@ -905,7 +781,6 @@ Reconstructions can proceed normally, using both the positive and negative respo
 % \\
 \textsc{Acknowledgment}
 \par A. H. thanks Drs. Srinivas Gorur-Shandilya and Mark Zielinski for informative discussions regardining data visualization.
-The authors thank Mr. Jacob Mills and Ms. Myah Caplan for their assistance in data collection. \\
 % \\
 % \textsc{REFERENCES AND FOOTNOTES}
 
