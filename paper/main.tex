@@ -541,12 +541,11 @@ Primary treatment options for tinnitus are currently limited by a lack of method
 Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like external sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or in the context of Cognitive Behavioral Therapy, where patients are encouraged to perceive their tinnitus as a neutral stimulus \cite{jastreboff25YearsTinnitus2015}.
 Critically, treatment outcomes have been repeatedly shown to improve when the external sounds used in sound therapy are closely informed by the internal tinnitus experience of the patient
 \cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007}.
-% NB SUGGESTION: However, existing strategies for characterizing the tinnitus sounds, such as Pitch Matching (PM) methods, are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
-However, existing methods for characterizing the tinnitus sounds\textemdash{}Pitch Matching (PM) methods\textemdash{}are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
+However, existing strategies for characterizing the tinnitus sounds, such as Pitch Matching (PM) methods, are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
+% However, existing methods for characterizing the tinnitus sounds\textemdash{}Pitch Matching (PM) methods\textemdash{}are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
 This group represents only half of all tinnitus patients \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}, with others experiencing nontonal (\eg buzzing, roaring) tinnitus sounds \hl{CITE}.
 Moreover, PM fails for up to 30\% of patients with tonal tinnitus \hl{CITE}.
-% "for who" is incorrect. Suggested sentence: There is a pressing need for characterization methods targeting tinnitus patients who are not served by current procedures
-There is a pressing need for characterization methods targeting tinnitus patients for who are not served by current characterization methods \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
+There is a pressing need for characterization methods targeting tinnitus patients who are not served by current procedures \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
 
 % INTRO PARAGRAPH 2/3
 Tinnitus sounds are presumed to be both complex and heterogeneous \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021, henryTinnitusEpidemiologicPerspective2020},
@@ -561,18 +560,13 @@ which has also inspired so-called white-noise approaches to system characterizat
 \cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978,neriReceptivePerceptiveFields2006} and engineering more broadly \cite{ljungMeasureLackFit1978}.
 
 % INTRO PARAGRAPH 3/3
-% NB SUGGESTION: Here, we validate RC as a method for characterizing all component
-% frequencies of non-tonal tinnitus sounds, and
-% specifically for estimating the full psychoacoustic tinnitus spectrum (PTS).
-Here, we validate RC as a method for characterizing non-tonal tinnitus sounds,
-specifically for estimating the full psychoacoustic tinnitus spectrum (PTS),
-including all component frequencies of the tinnitus sound.
+Here, we validate RC as a method for characterizing all component
+frequencies of non-tonal tinnitus sounds, and
+specifically, for estimating the full psychoacoustic tinnitus spectrum (PTS).
 To that end, we asked normal-hearing participants to complete an augmented RC experiment where they had to compare random stimuli to a target tinnitus-like sound.
 Target sounds were subsequently used as the basis for validating the quality of the estimated PTS.
-% "The door the developing is a typo. NB SUGGESTION: Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC. 
-% This discovery may open the door to developing a clinical assay based on RC for characterizing the full range of sounds experienced by tinnitus patients.
-Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC,
-a result that may open the door the developing a clinical assay based on RC for characterizing the full range of sounds experienced by tinnitus patients.
+Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC. 
+This discovery may open the door to developing a clinical assay based on RC for characterizing the full range of sounds experienced by tinnitus patients.
 
 % document is a Latex  template for Technology Letters to be submitted to IEEE OJEMB \cite{ahumadaStimulusFeaturesSignal1971}. Submissions must have the sections listed in the following exactly in the order shown here: Introduction, Materials and Methods, Results, Discussion, Conclusions. Manuscripts to be submitted to IEEE OJEMB as a Science Letters must use a different template. For both types of manuscript, the authors can opt to add a Supplementary Materials section.
 
@@ -609,11 +603,8 @@ The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shand
 Stimuli were composed of $b=8$ Mel-spaced frequency bins,
 which divide the frequency spectrum between $[100,~13,000]$
 Hz into continuous segments of equal amplitude (\ie ``rectangular'' bins).
-% NB NOTE: I don't think b= is necessary. Can just be 8 bins.
-% SUGGESTION: "the number of bins should increase with the level of detail in the frequency spectrum." 
-% ALTERNATE: "the number of bins should increase with the level of detail desired in the reconstruction."
 While $b=8$ bins were found to provide a good approximation to the target sounds used here (see Fig. \ref{fig:spectra}),
-the number of bins would need to be increased in proportion to the level of detail in the frequency spectrum.
+more bins results in finer spectral details in the reconstruction as well as increased computational complexity.
 
 To generate a stimulus, we randomly select $[2,7]$ bins with uniform probability to be ``filled'' with power $0$ dB,
 while ``unfilled'' bins were assigned a power of $-100$ dB. 
@@ -637,9 +628,7 @@ Trials followed an $A-X$ presentation paradigm (Fig. \ref{fig:experimentdiagram}
 where subjects listened to a target sound ($A$) followed by a stimulus ($X$).
 $A$ remained the same for every trial within a given experimental condition,
 while $X$ was randomly generated for each trial.
-The task is designed to mimic the process by which a tinnitus patient might compare a random stimulus to their own tinnitus percept in the context of a RC experiment
-% NB NOTE: I'm not sure fig. 1 needs to be cited here, since it was above and it doesn't show tinnitus only exp.
-(Fig. \ref{fig:experimentdiagram}).
+The task is designed to mimic the process by which a tinnitus patient might compare a random stimulus to their own tinnitus percept in the context of a RC experiment.
 
 Subjects were told that some stimuli had the target sound embedded in them, and were instructed to respond ``yes'' to any such stimuli, and to respond ``no'' otherwise.
 Subjects performed trials in blocks of $100$, with breaks between blocks.
@@ -667,8 +656,7 @@ where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically
   y = sign(\Psi^\mathrm{T} x), 
 \end{equation}
 
-% NB COMMENT: Should this be $x \in \mathbb{R}^\mathrm{t}$
-where $x \in R^\mathrm{t}$ represents the subject's internal representation of interest (\eg their tinnitus percept).
+where $x \in \mathbb{R}^\mathrm{t}$ represents the subject's internal representation of interest (\eg their tinnitus percept).
 This model can be inverted, yielding the following commonly-used formula for reconstructing internal representations in RC experiments:
 
 \begin{equation}
@@ -683,12 +671,9 @@ Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all 
 % ACL, DONE
 \subsection{Validation}
 
-% NB SUGGESTION: By adopting the $A-X$ paradigm for the present experiments,
-% we have the opportunity to directly validate the reconstructions
-% $\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ against their corresponding target sound.
 By adopting the $A-X$ paradigm for the present experiments,
-we have the opportunity to directly compare the reconstructions
-$\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ for the experimental conditions to their corresponding target sound for the purposes of validation.
+we have the opportunity to directly validate the reconstructions
+$\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ against their corresponding target sounds.
 To that end, we represent the power spectra of the target sounds as vectors $s_{buzzing} \in \mathbb{R}^\mathrm{8}$ and $s_{roaring} \in \mathbb{R}^\mathrm{8}$ using the same $b=8$ frequency bins used in stimulus generation.
 The power in each bin is taken to be the mean power level for frequencies contained within that bin.
 The vectors $s_{buzzing}$ and $s_{roaring}$ can then be directly compared to their corresponding reconstructions
@@ -734,8 +719,7 @@ where the subject ignores any knowledge of the stimulus, or indeed their own int
 % ACL, DONE
 \section{Results}
 
-% NB NOTE: I think it should be either "buzzing and roaring experiments' conditions" or "... experiment conditions"
-Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (i.e., reconstruction accuracy) from human, ideal and random subject responses in the buzzing and roaring experiments conditions.
+Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (i.e., reconstruction accuracy) from human, ideal and random subject responses in the buzzing and roaring experimental conditions.
 Accuracies from human responses were generally higher than those from random subject responses,
 with some accuracies approaching those from ideal subject responses.
 Mean accuracy from the random subject responses was $~0$ in all conditions,
@@ -776,9 +760,8 @@ showing that those reconstructions capture many of the salient features of the t
 \section{Conclusion}
 
 % Promise
-Our results show that RC can accurately reconstruct the frequency spectrum of complex, non-tonal tinnitus-like sounds,
-% NB SUGGESTION: Break sentence here. Start with "This indicates..."
-indicating that RC may also be useful for characterizing the sounds experienced by patients with non-tonal forms of tinnitus,
+Our results show that RC can accurately reconstruct the frequency spectrum of complex, non-tonal tinnitus-like sounds.
+This indicates that RC may also be useful for characterizing the sounds experienced by patients with non-tonal forms of tinnitus,
 for whom existing tinnitus characterization methods are ill-suited.
 As such, this study may represent the first step in the development of a clinical assay to characterize a wider variety of tinnitus percepts than currently possible.
 The clinical utility of RC is further reinforced by its practical advantages,
