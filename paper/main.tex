@@ -648,7 +648,7 @@ before making a binary choice about the two signals' similarity (either ``yes'' 
 % ACL, DONE
 \subsection{Reconstruction}
 
-A subject performing $n$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{n \times b}$
+A subject performing $n$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{b \times n}$
 and a response vector $y \in \{1,-1\}^n$,
 where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically assumes the subject response model:
 
@@ -656,7 +656,7 @@ where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically
   y = sign(\Psi^\mathrm{T} x), 
 \end{equation}
 
-where $x \in \mathbb{R}^\mathrm{t}$ represents the subject's internal representation of interest (\eg their tinnitus percept).
+where $x \in \mathbb{R}^\mathrm{b}$ represents the subject's internal representation of interest (\eg their tinnitus percept).
 This model can be inverted, yielding the following commonly-used formula for reconstructing internal representations in RC experiments:
 
 \begin{equation}
@@ -674,7 +674,7 @@ Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all 
 By adopting the $A-X$ paradigm for the present experiments,
 we have the opportunity to directly validate the reconstructions
 $\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ against their corresponding target sounds.
-To that end, we represent the power spectra of the target sounds as vectors $s_{buzzing} \in \mathbb{R}^\mathrm{8}$ and $s_{roaring} \in \mathbb{R}^\mathrm{8}$ using the same $b=8$ frequency bins used in stimulus generation.
+To that end, we represent the power spectra of the target sounds as vectors $s_{buzzing} \in \mathbb{R}^\mathrm{b}$ and $s_{roaring} \in \mathbb{R}^\mathrm{b}$ using the same $b=8$ frequency bins used in stimulus generation.
 The power in each bin is taken to be the mean power level for frequencies contained within that bin.
 The vectors $s_{buzzing}$ and $s_{roaring}$ can then be directly compared to their corresponding reconstructions
 $\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$ using Pearson's $r$, representing a measure of reconstruction accuracy.
@@ -693,12 +693,13 @@ The \textit{ideal} subject gives responses following:
 \begin{equation}
     y_i =
         \begin{cases}
-            1 & \text{if } \Psi_i^\mathrm{T} s \geq Q(0.5; \Psi_i^\mathrm{T} s) \\
+            1 & \text{if } \Psi_i s \geq Q(0.5; \Psi s) \\
             -1 & \text{otherwise}
         \end{cases}
 \end{equation}
 
-where $Q(x, y)$ is the quantile function for $x \in [0, 1]$ of the similarity calculation $\Psi^\mathrm{T} s$.
+for $i \in 1, ..., n$, where $Q(x, y)$ is the quantile function for $x \in [0, 1]$ of the similarity calculation $\Psi s$, and
+$\Psi_i$ is the $i^\mathrm{th}$ column of $\Psi$.
 The ideal subject represents an \textit{upper bound} on task performance,
 where the subject has precise knowledge of every stimulus and where the reconstruction algorithm mirrors the subject response model assumed by RC.
 
