@@ -393,8 +393,8 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\flogo}
-\fancyhead[L,RO]{\hl{PAPER ID NUMBER}}
+% \lhead{\flogo}
+% \fancyhead[L,RO]{\hl{PAPER ID NUMBER}}
 \rhead{\textcolor{violet}{\Large\textbf{Technology Letter         }} \thepage}
 \pagestyle{fancyplain}
 
@@ -431,7 +431,7 @@
 % 	and Dr. Adam C. Lammert is Assistant Professor of Biomedical Engineering at WPI.
 % }}
 % \author{Alec Hoyland, Nelson Barnett, Benjamin W. Roop, and Adam C. Lammert\textsuperscript{\textdagger{}}%
-\author{Alec Hoyland, Nelson V. Barnett, Benjamin W. Roop, Danae Alexandrou, Myah Caplan, Jacob Mills, Ben Parell, Divya A. Chari, and Adam C. Lammert\textsuperscript{\textdagger{}}%
+\author{Alec Hoyland, Nelson V. Barnett, Benjamin W. Roop, Danae Alexandrou, Myah Caplan, Jacob Mills, Benjamin Parell, Divya A. Chari, and Adam C. Lammert\textsuperscript{\textdagger{}}%
 \thanks{This work was supported in part by the University of Massachusetts
 Center for Clinical and Translation Science.}%
 % NB NOTE: Add Danae, Divya, and Ben P.
@@ -536,28 +536,33 @@ Data are available upon request.}}
 \section{Introduction}
 % INTRO PARAGRAPH 1/3
 \IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
-in the absence of any corresponding external stimulus\textemdash{}affects over 25 million people in the U.S., with some estimates ranging up to 50 million, a third of whom experience functional cognitive impairment and substantial reduction in quality of life \cite{henryTinnitusEpidemiologicPerspective2020,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
+in the absence of any corresponding external stimulus\textemdash{}affects over 25 million people in the U.S., with some estimates ranging up to 50 million \cite{QuickStatisticsHearing,bhattPrevalenceSeverityExposures2016}, a third of whom experience functional cognitive impairment and substantial reduction in quality of life
+\cite{ahmedImpactTinnitusPerception2017,nondahlImpactTinnitusQuality2007,tegg-quinnImpactTinnitusCognition2016}.
 Primary treatment options for tinnitus are currently limited by a lack of methods for accurately characterizing the full breadth of internal sounds experienced by patients.
-Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like external sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or in the context of Cognitive Behavioral Therapy, where patients are encouraged to perceive their tinnitus as a neutral stimulus \cite{jastreboff25YearsTinnitus2015}.
+Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like external sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or in the context of Cognitive Behavioral Therapy, where patients are encouraged to perceive their tinnitus as a neutral stimulus \cite{tunkelClinicalPracticeGuideline2014}.
 Critically, treatment outcomes have been repeatedly shown to improve when the external sounds used in sound therapy are closely informed by the internal tinnitus experience of the patient
-\cite{steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,okamotoListeningTailormadeNotched2010,davisNeuromonicsTinnitusTreatment2007}.
+\cite{davisNeuromonicsTinnitusTreatment2007,landgrebeMethodologicalAspectsClinical2012,nickelOutcomeResearchMusic2005,okamotoListeningTailormadeNotched2010,schaetteAcousticStimulationTreatments2010,steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,wangStateArtSound2020}.
 However, existing strategies for characterizing the tinnitus sounds, such as Pitch Matching (PM) methods, are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
 % However, existing methods for characterizing the tinnitus sounds\textemdash{}Pitch Matching (PM) methods\textemdash{}are best suited for patients with tonal tinnitus, who experience sounds resembling pure tones (\eg ringing).
-This group represents only half of all tinnitus patients \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021}, with others experiencing nontonal (\eg buzzing, roaring) tinnitus sounds \hl{CITE}.
-Moreover, PM fails for up to 30\% of patients with tonal tinnitus \hl{CITE}.
-There is a pressing need for characterization methods targeting tinnitus patients who are not served by current procedures \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
+This group may represent only between 20-50\% of all tinnitus patients \cite{turnerjrAuditoryDysfunctionTinnitus1990,henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017}, with others experiencing nontonal (\eg buzzing, roaring) tinnitus sounds.
+There is a pressing need for characterization methods targeting tinnitus patients who are not served by current procedures
+\cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002,robertsResidualInhibitionFunctions2006}.
 
 % INTRO PARAGRAPH 2/3
-Tinnitus sounds are presumed to be both complex and heterogeneous \cite{vajsakovicPrinciplesMethodsPsychoacoustic2021, henryTinnitusEpidemiologicPerspective2020},
+Tinnitus sounds are presumed to be both complex and heterogeneous
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryTinnitusEpidemiologicPerspective2020,meikleTinnitusArchiveArchive2004}.
 although little has been firmly established about the specific characteristics.
 Therefore, we base our approach on the demonstrated capabilities of \textit{reverse correlation} (RC),
-an established behavioral method \cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013} for probing internal representations of visual and auditory percepts that is unconstrained by prior knowledge about the percepts themselves.
+an established behavioral method
+\cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013}
+for probing internal representations of visual and auditory percepts that is unconstrained by prior knowledge about the percepts themselves.
 RC asks subjects to render subjective judgments (\eg “does this sound like your tinnitus?”)
 over random stimuli that have no direct relation to the percepts of interest,
 from which correspondingly unbiased estimates of those objects can be produced.
-RC is closely related to Weiner theory \hl{CITE},
+RC is closely related to Wiener theory \cite{wienerNonlinearProblemsRandom1966},
 which has also inspired so-called white-noise approaches to system characterization in physiology
-\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978,neriReceptivePerceptiveFields2006} and engineering more broadly \cite{ljungMeasureLackFit1978}.
+\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978} and engineering more broadly
+\cite{ljungMeasureLackFit1978}.
 
 % INTRO PARAGRAPH 3/3
 Here, we validate RC as a method for characterizing all component
@@ -595,7 +600,7 @@ This discovery may open the door to developing a clinical assay based on RC for 
 
 Software code used for the experiments and analysis was written in MATLAB (Mathworks, Inc., Natick, Massachusetts)
 and is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-project/}.
-The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shandilyaSrinivasGsMtools2022}.
+% The code depends on \cite{bechtoldViolinPlotsMatlab2022,kochYaml2022,gorur-shandilyaSrinivasGsMtools2022}.
 
 % ACL, DONE
 \subsection{Stimuli}
@@ -613,7 +618,8 @@ Assigning random phase, we then take the inverse Fourier transform of the spectr
 % ACL, DONE
 \subsection{Target Sounds}
 
-Tinnitus-like target sounds were drawn from online examples maintained by the American Tinnitus Association \hl{CITE}.
+Tinnitus-like target sounds were drawn from online examples maintained by the American Tinnitus Association
+\cite{MeasuringTinnitusAmerican2022}.
 The two examples selected for this study corresponded to those described as ``buzzing'' and ``roaring''.
 These sounds were selected for the complexity and complementary nature of their frequency spectra.
 These examples were downloaded and truncated to $500$-ms in duration. 
@@ -665,7 +671,7 @@ This model can be inverted, yielding the following commonly-used formula for rec
 \end{equation}
 
 This formula is a restricted form of the Normal equation\textemdash{}the least-squares solution to a linear regression problem\textemdash{}under
-the assumption that the stimulus dimensions are uncorrelated \cite{martinCombinabilityInformationUncorrelated1966, gosselinSuperstitiousPerceptionsReveal2003}.
+the assumption that the stimulus dimensions are uncorrelated \cite{gosselinSuperstitiousPerceptionsReveal2003}.
 Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all stimuli eliciting a ``yes'' response, after subtracting the sum of all stimuli eliciting a ``no''. 
 
 % ACL, DONE
@@ -777,7 +783,8 @@ which may be attributed to noisy human response characteristics.
 Whereas noisy responses are universally observed in applications of RC,
 this situation may nonetheless be improved by optimizing the experimental protocol, stimulus generation, and reconstruction method,
 none of which are guaranteed optimal in this early-stage validation study.
-For example, recent approaches to improving RC reconstruction methods have been shown to boost the efficiency, noise robustness and overall accuracy of RC \hl{CITE: comptonLammert2022, roopLammertPreprint},
+For example, recent approaches to improving RC reconstruction methods have been shown to boost the efficiency, noise robustness and overall accuracy of RC
+\cite{comptonStimulusWhiteningImproves2022,roopCompressiveSensingApproach2021},
 and may also be applicable in the context of tinnitus.
 
 % A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
