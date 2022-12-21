@@ -17,12 +17,19 @@ summary(T2);
 
 %% Violin plots with buzzing and roaring 
 
-% [ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false);
+if ~exist('data_container', 'var')
+    load('data_container.mat', 'data_container');
+end
+[ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false, 'data_container', data_container);
 
-% figlib.pretty('FontSize', 36, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
-% axlib.equalize(ax(:), 'x', 'y');
-% % figlib.tight();
-% figlib.label('XOffset', -0.01, 'YOffset', 0.03, 'FontSize', 36);
+figlib.pretty('FontSize', 48, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
+axlib.equalize(ax(:), 'x', 'y');
+% figlib.tight();
+% figlib.label('XOffset', 0.15, 'YOffset', -0.25, 'FontSize', 48);
+for ii = 1:length(ax)
+    axes(ax(ii));
+    box off
+end
 
 %% Reconstructions
 
@@ -46,13 +53,7 @@ stimgen = stimgen.from_config(config);
 % this_binned_target_signal is the binned representation of the target signals
 this_binned_target_signal = stimgen.spect2binnedrepr(target_signal);
 
-% my_normalize = @(x) normalize(x, 'zscore', 'std');
-% This normalization scheme normalizes the vectors to a length of 1
-% since we cannot capture magnitude information in the reconstruction.
-% Do we need to center the vectors afterwards?
-my_normalize = @(x) normalize(normalize(x, 'norm'), 'center');
-% my_normalize = @(x) normalize(x, 'norm');
-
+my_normalize = @(x) normalize(x, 'zscore', 'std');
 
 % Generate a figure and axes
 fig2 = new_figure();
@@ -78,9 +79,9 @@ for ii = 1:n_traces
     p.Color(4) = 0.8;
 end
 xlabel(ax(1, 1), 'bins');
-ylabel(ax(1, 1), 'amplitude (a.u.)');
-% title(ax(1, 1), 'buzzing, binned')
-legend(ax(1, 1), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
+ylabel(ax(1, 1), {'Standardized'; 'Amplitude'});
+title(ax(1, 1), 'Buzzing')
+% legend(ax(1, 1), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Roaring, binned representation
 axes(ax(1, 2));
@@ -93,9 +94,9 @@ for ii = 1:n_traces
     p = plot(ax(1, 2), my_normalize(this_reconstruction), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
-xlabel(ax(1, 2), 'bins');
-% title('roaring, binned')
-legend(ax(1, 2), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
+xlabel(ax(1, 2), 'Bin #');
+title('Roaring')
+% legend(ax(1, 2), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Buzzing, full spectra
 % "unbinned" means it was binned and then unbinned.
@@ -117,10 +118,11 @@ for ii = 1:n_traces
     p = plot(ax(2, 1), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
-xlabel(ax(2, 1), 'frequency (kHz)')
-ylabel(ax(2, 1), 'amplitude (a.u.)');
+xlabel(ax(2, 1), 'Frequency (kHz)')
+ylabel(ax(2, 1), {'Standardized'; 'Amplitude'});
+ylim(ax(2, 1), [-2.1, 2.1])
 % title(ax(2, 1), 'buzzing, spectra')
-legend(ax(2, 1), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
+% legend(ax(2, 1), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
 
 
 %% Roaring, full spectra
@@ -141,16 +143,17 @@ for ii = 1:n_traces
     p = plot(ax(2, 2), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
-xlabel(ax(2, 2), 'frequency (kHz)')
-ylabel(ax(2, 2), 'amplitude (a.u.)');
+xlabel(ax(2, 2), 'Frequency (kHz)')
+ylim(ax(2, 2), [-2.1, 2.1])
 % title(ax(2, 2), 'roaring, spectra')
-legend(ax(2, 2), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
+% legend(ax(2, 2), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
 
 
-figlib.pretty('FontSize', 36, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
+figlib.pretty('FontSize', 48, 'PlotBuffer', 0.05, 'AxisBox', 'off', 'YMinorTicks', 'on');
 axlib.equalize(ax(1, 1:2), 'x', 'y');
+axlib.equalize(ax(2, 1:2), 'x', 'y');
 % axlib.equalize(ax(2, 1:2), 'x', 'y');
-figlib.label('XOffset', -0.01, 'YOffset', 0.03, 'FontSize', 36);
+% figlib.label('XOffset', -0.01, 'YOffset', 0.03, 'FontSize', 36);
 
 
 % ylabel(ax(1, 2), 'amplitude (a.u.)');
