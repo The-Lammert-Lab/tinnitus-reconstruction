@@ -1,9 +1,10 @@
 # Tinnitus Project
 
+This project works to develop a method for characterizing the sounds 
+experienced by tinnitus patients with potential for characterizing a 
+wider range of sounds than currently possible. 
+The approach is based on reverse correlation, an established behavioral 
+method widely used in psychophysics for unconstrained 
+characterization of internal perceptual representations.
+
 ![](Midjourney_logo3.png)
-
-This project works to reconstruct high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
-
-# Why?
-
-Tinnitus is painful and bad and so are current methods of identifying the sounds. 

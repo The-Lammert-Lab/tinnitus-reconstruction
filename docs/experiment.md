@@ -72,6 +72,22 @@ This field determines in what form the stimuli are saved. The available options 
 stimuli_save_type: bins
 ```
 
+This field indicates whether follow up questions should be asked.
+If it is unset, it will default to `false`.
+
+```display
+follow_up: true
+```
+
+This field indicates what version of follow up questions to use.
+If it is unset, it will default to `1`. Follow up questions can be found in 
+`tinnitus-project/code/experiment/fixationscreen/FollowUp_vX`, where `X` is
+the version number. 
+
+```display
+follow_up_version: 1
+```
+
 ### Protocol
 
 Reverse Correlation Protocol for Cognitive Representations of Speech
