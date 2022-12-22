@@ -644,9 +644,13 @@ The $400$ total trials took subjects about 10-20 minutes to complete.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{experiment_overview.pdf}
-  \caption{Diagram of the experimental paradigm. The subject listens to a priming target signal,
-then a stimulus. They compare their mental model of the stimulus to their mental model of the target signal
-before making a binary choice about the two signals' similarity (either ``yes'' it is similar or ``no'' it is not).}
+  \caption{Diagram of the experimental protocol.
+  Subjects listen to a series of random stimuli,
+  each preceded by a target sound.
+  Subjects compare the stimulus to the target, and respond either "yes" or "no"
+  depending on their perceived similarity.
+  The recorded stimulus-response pairs are used to form an estimate of the target
+  using a restricted regression procedure.}
   \label{fig:experimentdiagram}
 \end{figure}
 
@@ -736,29 +740,28 @@ showing that those reconstructions capture many of the salient features of the t
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{reconstruction_violin_1.eps}
-    \caption{Reconstruction accuracy for human subjects
-    is significantly above baseline, but is not optimal.
-    The reconstruction accuracy of human, synthetic, and random subjects
-    are shown as violin plots with box plots overlaid. The median is a white dot,
-    the ordinate of the blue points are the true Pearson's $r$ values \textemdash{}
-    the abscissa has no meaning.
-    \textbf{a-c} show violin plots for the buzzing target signal, 
-    \textbf{d-f} show results the roaring target signal,
-    and \textbf{g-i} show results for the all data combined.}
+    \caption{Reconstruction accuracy for human subjects is significantly above baseline,
+    but is not optimal. Reconstruction accuracies of random, human, and ideal subjects
+    are shown as violin plots with box plots overlaid.
+    The median is a white dot, the ordinate of the blue points are the Pearson's $r$ values.
+    The top row shows accuracies for the buzzing target, the middle row shows accuracies
+    for the roaring target signal, and the bottom row shows results for both buzzing and roaring combined.}
     \label{fig:reconstructions}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{reconstruction_spectra.eps}
-    \caption{Reconstructions of the PTS capture many salient features
-    of tinnitus spectra. \textbf{(a)} shows buzzing results and \textbf{(b)}
-    shows roaring results. In each, the black trace indicates the ground truth,
-    unbinned frequency spectrum of the ATA target signal. The colored traces
-    plot exemplar human subject results, as binned reconstructions mapped
-    from $8$-dimensional bin space to $11025$-dimensional frequency space.
-    Since the bins span from 100 to 13,000 Hz, 
-    in the reconstructions $(13000, 22000]$ Hz is always $0$.}
+    \caption{Reconstructions of the PTS capture many salient features of tinnitus spectra.
+    The left-hand column shows reconstructions for the buzzing target,
+    while the right-hand column shows reconstructions for the roaring target.
+    On each set of axes, the black trace indicates the target,
+    while colored traces plot exemplar reconstructions from human subjects data.
+    In the top row, the target and reconstructions are shown as
+    standardized power levels within each frequency bin.
+    In the bottom row, those standardized power levels are mapped from the $8$-dimensional bin domain
+    to a $11025$-dimensional frequency domain.
+    The unbinned power spectral density of the targets is also shown in gray.}
     \label{fig:spectra}
 \end{figure}
 
