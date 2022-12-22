@@ -78,9 +78,10 @@ for ii = 1:n_traces
     p = plot(ax(1, 1), my_normalize(this_reconstruction), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
-xlabel(ax(1, 1), 'bins');
+xlabel(ax(1, 1), 'Bin #');
 ylabel(ax(1, 1), {'Standardized'; 'Amplitude'});
 title(ax(1, 1), 'Buzzing')
+xticklabels(ax(1, 1), 1:size(this_binned_target_signal, 1));
 % legend(ax(1, 1), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Roaring, binned representation
@@ -96,6 +97,7 @@ for ii = 1:n_traces
 end
 xlabel(ax(1, 2), 'Bin #');
 title('Roaring')
+xticklabels(ax(1, 2), 1:size(this_binned_target_signal, 1));
 % legend(ax(1, 2), {'ground truth', 'subject #1', 'subject #2', 'subject #3'})
 
 %% Buzzing, full spectra
@@ -115,6 +117,7 @@ plot(ax(2, 1), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_buzzing(indic
 for ii = 1:n_traces
     this_reconstruction = T3_buzzing.reconstructions_lr_1{ii};
     unbinned_this_reconstruction = stimgen.binnedrepr2spect(this_reconstruction);
+    unbinned_this_reconstruction(unbinned_this_reconstruction == 0) = NaN;
     p = plot(ax(2, 1), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
@@ -140,6 +143,7 @@ plot(ax(2, 2), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_roaring(indic
 for ii = 1:n_traces
     this_reconstruction = T3_roaring.reconstructions_lr_1{ii};
     unbinned_this_reconstruction = stimgen.binnedrepr2spect(this_reconstruction);
+    unbinned_this_reconstruction(unbinned_this_reconstruction == 0) = NaN;
     p = plot(ax(2, 2), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end

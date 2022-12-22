@@ -51,6 +51,7 @@ function [ax, data_container] = plot_violin(T, options)
     % Plot the 1 to m-1 subplots
     % categories = {'subject', 'synthetic', 'random'};
     categories = {{'Random'; 'Subject'}, {'Human'; 'Subject'}, {'Ideal'; 'Subject'}};
+    order = [3, 1, 2]; %[1, 2, 3];
     counter = 0;
 
     for ii = 1:(m-1)
@@ -82,7 +83,7 @@ function [ax, data_container] = plot_violin(T, options)
             counter = counter + 1;
             % ax(ii, qq) = subplot(m, n, counter);
             axes(ax(sub2ind([m, n], qq, ii)));
-            violinplot(data_to_plot{qq}, {''}, 'ViolinAlpha', 0.3, 'ShowBox', true);
+            violinplot(data_to_plot{order(qq)}, {''}, 'ViolinAlpha', 0.3, 'ShowBox', true);
             hold on
             p = plot(xlim, [1, 1], '--k');
             p.Color(4) = 0.3;
@@ -108,7 +109,7 @@ function [ax, data_container] = plot_violin(T, options)
         axes(ax(sub2ind([m, n], qq, m)));
         data_to_plot = [];
         for ii = 1:length(data_container)
-            data_to_plot = [data_to_plot; data_container{ii}{qq}];
+            data_to_plot = [data_to_plot; data_container{ii}{order(qq)}];
         end
         violinplot(data_to_plot, {''}, 'ViolinAlpha', 0.3, 'ShowBox', true);
         hold on
