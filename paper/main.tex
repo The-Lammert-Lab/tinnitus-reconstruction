@@ -526,7 +526,7 @@ The authors declare no competing interests.}%
 % creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
-\begin{minipage}[t]{1\columnwidth}
+\begin{minipage}[t]{0.9\columnwidth}
   \textbf{\textit{Impact Statement}\textemdash{}Characterization of tinnitus can inform tinnitus treatment by allowing for individualized sound therapies, leading to better outcomes for patients suffering from the cognitive and psychological effects of tinnitus.}\\
 \\
 \end{minipage}
@@ -618,7 +618,7 @@ Assigning random phase, we then take the inverse Fourier transform of the spectr
 
 Tinnitus-like target sounds were drawn from online examples maintained by the American Tinnitus Association
 \cite{MeasuringTinnitusAmerican2022}.
-The two examples selected for this study corresponded to those described as ``buzzing'' and ``roaring''.
+The two examples selected for this study corresponded to those described as ``buzzing'' and ``roaring.''
 These sounds were selected for the complexity and complementary nature of their frequency spectra.
 These examples were downloaded and truncated to $500$-ms in duration. 
 
@@ -674,7 +674,7 @@ This model can be inverted, yielding the following commonly-used formula for rec
 
 This formula is a restricted form of the Normal equation\textemdash{}the least-squares solution to a linear regression problem\textemdash{}under
 the assumption that the stimulus dimensions are uncorrelated \cite{gosselinSuperstitiousPerceptionsReveal2003}.
-Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all stimuli eliciting a ``yes'' response, after subtracting the sum of all stimuli eliciting a ``no''. 
+Intuitively, this implies that the reconstruction, $\hat{x}$, is the sum of all stimuli eliciting a ``yes'' response, after subtracting the sum of all stimuli eliciting a ``no.'' 
 
 % ACL, DONE
 \subsection{Validation}
@@ -728,12 +728,14 @@ where the subject ignores any knowledge of the stimulus, or indeed their own int
 % ACL, DONE
 \section{Results}
 
-Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (i.e., reconstruction accuracy) from human, ideal and random subject responses in the buzzing and roaring experimental conditions.
+Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (\ie reconstruction accuracy) from human, ideal, and random subject responses in the buzzing and roaring experimental conditions.
 Accuracies from human responses were generally higher than those from random subject responses,
 with some accuracies approaching those from ideal subject responses.
 Mean accuracy from the random subject responses was $~0$ in all conditions,
 while mean accuracy from human responses was significantly different from $0$ in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
-Figure \ref{fig:spectra} shows example reconstructions from human responses overlaid on the target sound spectra,
+The roaring results vary more than the buzzing results for human subjects. The roaring ground truth spectrum contains significant high-frequency content,
+suggesting that the task may vary in difficulty for subjects with different audiograms (\ie for subjects with minor high-frequency hearing loss).
+Figure \ref{fig:spectra} shows example reconstructions from top human responses (as quantified by reconstruction accuracy) overlaid on the target sound spectra,
 showing that those reconstructions capture many of the salient features of the target.
 
 \begin{figure}[ht]
