@@ -1,4 +1,4 @@
-# Tinnitus Project
+# Tinnitus reconstruction via reverse correlation
 
 This project works to develop a method for characterizing the sounds 
 experienced by tinnitus patients with potential for characterizing a 
