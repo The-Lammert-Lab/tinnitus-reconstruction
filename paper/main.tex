@@ -438,8 +438,11 @@ Center for Clinical and Translation Science.}%
 at Worcester Polytechnic Institute (WPI), Worcester, MA and with Clarifai, Inc., Wilmington, DE.
 N.V. Barnett, M. Caplan, J. Mills and A.C. Lammert are also with BME at WPI.
 B.W. Roop is formerly of the Neuroscience Program at WPI, now with  MIT Lincoln Laboratory, Lexington, MA.
-D. Alexandrou is with the Stritch School of Medicine at Loyola University Chicago.
-B. Parrell is with the Department of Communication Sciences and Disorders at University of Wisconsin, Madison, WI. D.A. Chari is with the University of Massachusetts Chan Medical School and the Massachusetts Eye and Ear Infirmary.
+D. Alexandrou is with the Stritch School of Medicine at Loyola University Chicago, IL.
+B. Parrell is with the Department of Communication Sciences and Disorders at University of Wisconsin, Madison, WI. D.A. Chari is with the
+University of Massachusetts Chan Medical School, Worcester, MA
+and the Massachusetts Eye and Ear Infirmary,
+Boston, MA.
 The authors declare no competing interests.}%
 \thanks{\textsuperscript{\textdagger{}} Corresponding Author}}%
 % NB NOTE: This is mentioned at the top of Materials and Methods. Should be just one or the other. 
@@ -534,7 +537,8 @@ The authors declare no competing interests.}%
 \section{Introduction}
 % INTRO PARAGRAPH 1/3
 \IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound (\eg ringing, buzzing)
-in the absence of any corresponding external stimulus\textemdash{}affects over 25 million people in the U.S., with some estimates ranging up to 50 million \cite{QuickStatisticsHearing,bhattPrevalenceSeverityExposures2016}, a third of whom experience functional cognitive impairment and substantial reduction in quality of life
+in the absence of any corresponding external stimulus\textemdash{}affects over 25 million people in the U.S., with some estimates ranging up to 50 million \cite{bhattPrevalenceSeverityExposures2016,nationalinstituteondeafnessandothercommunicationdisordersQuickStatisticsHearing},
+a third of whom experience functional cognitive impairment and substantial reduction in quality of life
 \cite{ahmedImpactTinnitusPerception2017,nondahlImpactTinnitusQuality2007,tegg-quinnImpactTinnitusCognition2016}.
 Primary treatment options for tinnitus are currently limited by a lack of methods for accurately characterizing the full breadth of internal sounds experienced by patients.
 Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like external sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or in the context of Cognitive Behavioral Therapy, where patients are encouraged to perceive their tinnitus as a neutral stimulus \cite{tunkelClinicalPracticeGuideline2014}.
@@ -548,7 +552,7 @@ There is a pressing need for characterization methods targeting tinnitus patient
 
 % INTRO PARAGRAPH 2/3
 Tinnitus sounds are presumed to be both complex and heterogeneous
-\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryTinnitusEpidemiologicPerspective2020,meikleTinnitusArchiveArchive2004}.
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryTinnitusEpidemiologicPerspective2020,meikleTinnitusArchiveArchive2004},
 although little has been firmly established about the specific characteristics.
 Therefore, we base our approach on the demonstrated capabilities of \textit{reverse correlation} (RC),
 an established behavioral method
@@ -564,8 +568,8 @@ which has also inspired so-called white-noise approaches to system characterizat
 
 % INTRO PARAGRAPH 3/3
 Here, we validate RC as a method for characterizing all component
-frequencies of non-tonal tinnitus sounds, and
-specifically, for estimating the full psychoacoustic tinnitus spectrum (PTS).
+frequencies of non-tonal tinnitus sounds
+by estimating the full psychoacoustic tinnitus spectrum (PTS).
 To that end, we asked normal-hearing participants to complete an augmented RC experiment where they had to compare random stimuli to a target tinnitus-like sound.
 Target sounds were subsequently used as the basis for validating the quality of the estimated PTS.
 Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC. 
@@ -646,7 +650,7 @@ The $400$ total trials took subjects about 10-20 minutes to complete.
   \caption{Diagram of the experimental protocol.
   Subjects listen to a series of random stimuli,
   each preceded by a target sound.
-  Subjects compare the stimulus to the target, and respond either "yes" or "no"
+  Subjects compare the stimulus to the target, and respond either ``yes'' or ``no''
   depending on their perceived similarity.
   The recorded stimulus-response pairs are used to form an estimate of the target
   using a restricted regression procedure.}
@@ -731,11 +735,11 @@ where the subject ignores any knowledge of the stimulus, or indeed their own int
 Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ (\ie reconstruction accuracy) from human, ideal, and random subject responses in the buzzing and roaring experimental conditions.
 Accuracies from human responses were generally higher than those from random subject responses,
 with some accuracies approaching those from ideal subject responses.
-Mean accuracy from the random subject responses was $~0$ in all conditions,
+Mean accuracy from the random subject responses was $0$ in all conditions,
 while mean accuracy from human responses was significantly different from $0$ in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
-The roaring results vary more than the buzzing results for human subjects. The roaring ground truth spectrum contains significant high-frequency content,
+The buzzing results vary more than the roaring results for human subjects. The buzzing ground truth spectrum contains significant high-frequency content,
 suggesting that the task may vary in difficulty for subjects with different audiograms (\ie for subjects with minor high-frequency hearing loss).
-Figure \ref{fig:spectra} shows example reconstructions from top human responses (as quantified by reconstruction accuracy) overlaid on the target sound spectra,
+Figure \ref{fig:spectra} shows example reconstructions from the best human responses (as quantified by reconstruction accuracy) overlaid on the target sound spectra,
 showing that those reconstructions capture many of the salient features of the target.
 
 \begin{figure}[ht]
@@ -757,7 +761,7 @@ showing that those reconstructions capture many of the salient features of the t
     The left-hand column shows reconstructions for the buzzing target,
     while the right-hand column shows reconstructions for the roaring target.
     On each set of axes, the black trace indicates the target,
-    while colored traces plot exemplar reconstructions from human subjects data.
+    while colored traces plot exemplar reconstructions from human subjects' data.
     In the top row, the target and reconstructions are shown as
     standardized power levels within each frequency bin.
     In the bottom row, those standardized power levels are mapped from the $8$-dimensional bin domain
@@ -795,6 +799,7 @@ and may also be applicable in the context of tinnitus.
 % \textsc{Supplementary Materials}
 % \par Supplementary materials are encouraged. Please use the Supplementary Materials template. If you have Supplementary Materials, please use this section to direct readers to the Supplementary Materials and give them a brief overview of what they can expect to find in the Supplementary Materials. \\
 % \\
+\vspace{18pt}
 \textsc{Acknowledgment}
 \par A. H. thanks Drs. Srinivas Gorur-Shandilya and Mark Zielinski for informative discussions regarding data visualization.
 % \\
