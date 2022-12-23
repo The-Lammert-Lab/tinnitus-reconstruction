@@ -1,5 +1,4 @@
-# Tinnitus Reconstruction
-## via reverse correlation
+# Tinnitus Reconstruction via reverse correlation
 
 Reconstructing high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
 
