@@ -1,4 +1,5 @@
 # Tinnitus Reconstruction via reverse correlation
+[![docs-passing](https://img.shields.io/static/v1?label=docs&message=passing&color=green)](https://alec-hoyland.github.io/tinnitus-reconstruction/)
 
 Reconstructing high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
 
