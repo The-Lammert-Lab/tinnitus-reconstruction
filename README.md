@@ -1,11 +1,12 @@
 # Tinnitus Reconstruction via reverse correlation
 [![docs-passing](https://img.shields.io/static/v1?label=docs&message=passing&color=green)](https://alec-hoyland.github.io/tinnitus-reconstruction/)
+[![paper](https://img.shields.io/static/v1?label=paper&message=bioRxiv&color=green)](https://alec-hoyland.github.io/tinnitus-reconstruction/)
 
 Reconstructing high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
 
 ## Installing
 
-For most users, it is best to install the MATLAB toolbox from the latest [Release](https://github.com/alec-hoyland/tinnitus-project/releases#latest).
+For most users, it is best to install the MATLAB toolbox from the latest [Release](https://www.biorxiv.org/content/10.1101/2022.12.23.521795v1).
 For development, clone the following projects:
 
 * [mtools](https://github.com/sg-s/srinivas.gs_mtools)
