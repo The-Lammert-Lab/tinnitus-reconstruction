@@ -190,3 +190,19 @@ Then do one of the following:
 [x, responses_output, stimuli_matrix_output] = get_reconstruction('config', config);
 [x, responses_output, stimuli_matrix_output] = get_reconstruction('config_file', 'path/to/config/file.yaml');
 ```
+
+# Citation
+
+```
+@article {Hoyland2022.12.23.521795,
+	author = {Hoyland, Alec and Barnett, Nelson V. and Roop, Benjamin W. and Alexandrou, Danae and Caplan, Myah and Mills, Jacob and Parrell, Benjamin and Chari, Divya A. and Lammert, Adam C.},
+	title = {Reverse Correlation Uncovers More Complete Tinnitus Spectra},
+	elocation-id = {2022.12.23.521795},
+	year = {2022},
+	doi = {10.1101/2022.12.23.521795},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2022/12/23/2022.12.23.521795},
+	eprint = {https://www.biorxiv.org/content/early/2022/12/23/2022.12.23.521795.full.pdf},
+	journal = {bioRxiv}
+}
+```
