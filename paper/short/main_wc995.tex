@@ -1,0 +1,825 @@
+%% bare_jrnl.tex
+%% V1.4b
+%% 2015/08/26
+%% by Michael Shell
+%% see http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.8b or later) with an IEEE
+%% journal paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/pkg/ieeetran
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall the IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%*************************************************************************
+
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+
+\documentclass[journal]{IEEEtran}
+\usepackage[usenames]{color}
+\usepackage{epsfig}
+\usepackage{graphics}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{array}
+\usepackage{pslatex} 
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{graphicx}  % Written by David Carlisle and Sebastian Rahtz
+\usepackage{setspace}
+\usepackage{tikz}
+\usepackage{hhline}
+\usepackage{mathtools}
+\usepackage{caption}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=0.7in,bmargin=0.7in,lmargin=0.65in,rmargin=0.65in}
+\setlength{\headheight}{17pt}
+\setlength{\headsep}{5pt}
+ \newcommand{\flogo}{\includegraphics[height=18pt]{Logo.jpg}
+ }
+%\captionsetup{labelfont={up},font=small}
+\captionsetup[figure]{name={Fig.},labelsep=period,font=small}
+ \captionsetup[table]{name={TABLE},labelsep=period,font=small}
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[journal]{../sty/IEEEtran}
+
+
+
+
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+
+
+% *** MISC UTILITY PACKAGES ***
+%
+\usepackage{ifpdf}
+% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
+% compilation based on whether the output is pdf or dvi.
+% usage:
+% \ifpdf
+%   % pdf code
+% \else
+%   % dvi code
+% \fi
+% The latest version of ifpdf.sty can be obtained from:
+% http://www.ctan.org/pkg/ifpdf
+% Also, note that IEEEtran.cls V1.7 and later provides a builtin
+% \ifCLASSINFOpdf conditional that works the same way.
+% When switching from latex to pdflatex and vice-versa, the compiler may
+% have to be run twice to clear warning/error messages.
+
+
+
+
+
+
+% *** CITATION PACKAGES ***
+%
+\usepackage{cite}
+% cite.sty was written by Donald Arseneau
+% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
+% \cite{} output to follow that of the IEEE. Loading the cite package will
+% result in citation numbers being automatically sorted and properly
+% "compressed/ranged". \eg, [1], [9], [2], [7], [5], [6] without using
+% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
+% \cite will automatically add leading space, if needed. Use cite.sty's
+% noadjust option (cite.sty V3.8 and later) if you want to turn this off
+% such as if a citation ever needs to be enclosed in parenthesis.
+% cite.sty is already installed on most LaTeX systems. Be sure and use
+% version 5.0 (2009-03-20) and later if using hyperref.sty.
+% The latest version can be obtained at:
+% http://www.ctan.org/pkg/cite
+% The documentation is contained in the cite.sty file itself.
+
+
+
+
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  \usepackage{graphicx}
+  % declare the path(s) where your graphic files are
+  \graphicspath{{gfx}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png,.eps}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% graphicx was written by David Carlisle and Sebastian Rahtz. It is
+% required if you want graphics, photos, etc. graphicx.sty is already
+% installed on most LaTeX systems. The latest version and documentation
+% can be obtained at: 
+% http://www.ctan.org/pkg/graphicx
+% Another good source of documentation is "Using Imported Graphics in
+% LaTeX2e" by Keith Reckdahl which can be found at:
+% http://www.ctan.org/pkg/epslatex
+%
+% latex, and pdflatex in dvi mode, support graphics in encapsulated
+% postscript (.eps) format. pdflatex in pdf mode supports graphics
+% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
+% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
+% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
+% which can result in "jaggedy"/blurry rendering of lines and letters as
+% well as large increases in file sizes.
+%
+% You can find documentation about the pdfTeX application at:
+% http://www.tug.org/applications/pdftex
+
+
+
+
+
+% *** MATH PACKAGES ***
+%
+\usepackage{amsmath}
+% A popular package from the American Mathematical Society that provides
+% many useful and powerful commands for dealing with mathematics.
+%
+% Note that the amsmath package sets \interdisplaylinepenalty to 10000
+% thus preventing page breaks from occurring within multiline equations. Use:
+\interdisplaylinepenalty=2500
+% after loading amsmath to restore such page breaks as IEEEtran.cls normally
+% does. amsmath.sty is already installed on most LaTeX systems. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/amsmath
+
+
+
+
+
+% *** SPECIALIZED LIST PACKAGES ***
+%
+\usepackage{algorithmic}
+% algorithmic.sty was written by Peter Williams and Rogerio Brito.
+% This package provides an algorithmic environment fo describing algorithms.
+% You can use the algorithmic environment in-text or within a figure
+% environment to provide for a floating algorithm. Do NOT use the algorithm
+% floating environment provided by algorithm.sty (by the same authors) or
+% algorithm2e.sty (by Christophe Fiorio) as the IEEE does not use dedicated
+% algorithm float types and packages that provide these will not provide
+% correct IEEE style captions. The latest version and documentation of
+% algorithmic.sty can be obtained at:
+% http://www.ctan.org/pkg/algorithms
+% Also of interest may be the (relatively newer and more customizable)
+% algorithmicx.sty package by Szasz Janos:
+% http://www.ctan.org/pkg/algorithmicx
+
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/array
+
+
+% IEEEtran contains the IEEEeqnarray family of commands that can be used to
+% generate multiline equations as well as matrices, tables, etc., of high
+% quality.
+
+
+
+
+% *** SUBFIGURE PACKAGES ***
+%\ifCLASSOPTIONcompsoc
+%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+%\else
+%  \usepackage[caption=false,font=footnotesize]{subfig}
+%\fi
+% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
+% for subfigure.sty, the latter of which is no longer maintained and is
+% incompatible with some LaTeX packages including fixltx2e. However,
+% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
+% which will override IEEEtran.cls' handling of captions and this will result
+% in non-IEEE style figure/table captions. To prevent this problem, be sure
+% and invoke subfig.sty's "caption=false" package option (available since
+% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
+% handling of captions.
+% Note that the Computer Society format requires a larger sans serif font
+% than the serif footnote size font used in traditional IEEE formatting
+% and thus the need to invoke different subfig.sty package options depending
+% on whether compsoc mode has been enabled.
+%
+% The latest version and documentation of subfig.sty can be obtained at:
+% http://www.ctan.org/pkg/subfig
+
+
+
+
+% *** FLOAT PACKAGES ***
+%
+%\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure.
+% Be aware that LaTeX2e kernels dated 2015 and later have fixltx2e.sty's
+% corrections already built into the system in which case a warning will
+% be issued if an attempt is made to load fixltx2e.sty as it is no longer
+% needed.
+% The latest version and documentation can be found at:
+% http://www.ctan.org/pkg/fixltx2e
+
+
+%\usepackage{stfloats}
+% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
+% the ability to do double column floats at the bottom of the page as well
+% as the top. (\eg, "\begin{figure*}[!b]" is not normally possible in
+% LaTeX2e). It also provides a command:
+%\fnbelowfloat
+% to enable the placement of footnotes below bottom floats (the standard
+% LaTeX2e kernel puts them above bottom floats). This is an invasive package
+% which rewrites many portions of the LaTeX2e float routines. It may not work
+% with other packages that modify the LaTeX2e float routines. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/stfloats
+% Do not use the stfloats baselinefloat ability as the IEEE does not allow
+% \baselineskip to stretch. Authors submitting work to the IEEE should note
+% that the IEEE rarely uses double column equations and that authors should try
+% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
+% packages (also by Sigitas Tolusis) as the IEEE does not format its papers in
+% such ways.
+% Do not attempt to use stfloats with fixltx2e as they are incompatible.
+% Instead, use Morten Hogholm'a dblfloatfix which combines the features
+% of both fixltx2e and stfloats:
+%
+% \usepackage{dblfloatfix}
+% The latest version can be found at:
+% http://www.ctan.org/pkg/dblfloatfix
+
+
+
+
+%\ifCLASSOPTIONcaptionsoff
+%  \usepackage[nomarkers]{endfloat}
+% \let\MYoriglatexcaption\caption
+% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
+%\fi
+% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
+% Axel Sommerfeldt. This package may be useful when used in conjunction with 
+% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
+% submissions have lists of figures/tables at the end of the paper and that
+% figures/tables without any captions are placed on a page by themselves at
+% the end of the document. If needed, the draftcls IEEEtran class option or
+% \CLASSINPUTbaselinestretch interface can be used to increase the line
+% spacing as well. Be sure and use the nomarkers option of endfloat to
+% prevent endfloat from "marking" where the figures would have been placed
+% in the text. The two hack lines of code above are a slight modification of
+% that suggested by in the endfloat docs (section 8.4.1) to ensure that
+% the full captions always appear in the list of figures/tables - even if
+% the user used the short optional argument of \caption[]{}.
+% IEEE papers do not typically make use of \caption[]'s optional argument,
+% so this should not be an issue. A similar trick can be used to disable
+% captions of packages such as subfig.sty that lack options to turn off
+% the subcaptions:
+% For subfig.sty:
+% \let\MYorigsubfloat\subfloat
+% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
+% However, the above trick will not work if both optional arguments of
+% the \subfloat command are used. Furthermore, there needs to be a
+% description of each subfigure *somewhere* and endfloat does not add
+% subfigure captions to its list of figures. Thus, the best approach is to
+% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
+% and instead reference/explain all the subfigures within the main caption.
+% The latest version of endfloat.sty and its documentation can obtained at:
+% http://www.ctan.org/pkg/endfloat
+%
+% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
+% later in the document, say, to conditionally put the References on a 
+% page by themselves.
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/url
+% Basically, \url{my_url_here}.
+
+
+
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+% *** Custom ***
+% \usepackage[utf8]{inputenc}
+% \usepackage[backend=biber, style=ieee]{biblatex}
+% \addbibresource{mybib.bib}
+% \usepackage{csquotes}
+\usepackage{soul}
+\newcommand{\etal}{\textit{et al}.,\ }
+\newcommand{\ie}{\textit{i}.\textit{e}.,\ }
+\newcommand{\eg}{\textit{e}.\textit{g}.,\ }
+\newcommand{\cf}{\textit{cf}.\ }
+\usepackage{hyperref}
+\usepackage{siunitx}
+\sisetup{parse-numbers = false}
+
+% correct bad hyphenation here
+\hyphenation{com-press-ive sens-ing cor-rel-a-tion}
+\pagenumbering{gobble} 
+ 
+% The paper headers
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+% \lhead{\flogo}
+% \fancyhead[L,RO]{\hl{PAPER ID NUMBER}}
+\rhead{\textcolor{violet}{\Large\textbf{Technology Letter         }} \thepage}
+\pagestyle{fancyplain}
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{\textcolor{violet}{Reverse Correlation Uncovers More Complete Tinnitus Spectra \vspace{0.25cm}}}
+
+%
+%
+% author names and IEEE memberships
+% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
+% a structure at a ~ so this keeps an author's name from being broken across
+% two lines.
+% use \thanks{} to gain access to the first footnote area
+% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
+% was not built to handle multiple paragraphs
+%
+
+\author{Alec Hoyland, Nelson V. Barnett, Benjamin W. Roop, Danae Alexandrou, Myah Caplan, Jacob Mills, Benjamin Parrell, Divya A. Chari, and Adam C. Lammert\textsuperscript{\textdagger{}}%
+\thanks{This work was supported in part by the University of Massachusetts
+Center for Clinical and Translation Science.}%
+\thanks{A. Hoyland is with the Department of Biomedical Engineering (BME)
+at Worcester Polytechnic Institute (WPI), Worcester, MA and with Clarifai, Inc., Wilmington, DE.
+N.V. Barnett, M. Caplan, J. Mills and A.C. Lammert are also with BME at WPI.
+B.W. Roop is formerly of the Neuroscience Program at WPI, now with  MIT Lincoln Laboratory, Lexington, MA.
+D. Alexandrou is with the Stritch School of Medicine at Loyola University Chicago, Chicago, IL.
+B. Parrell is with the Department of Communication Sciences and Disorders and the Waisman Center at University of Wisconsin, Madison, WI. D.A. Chari is with the
+University of Massachusetts Chan Medical School, Worcester, MA
+and the Massachusetts Eye and Ear Infirmary,
+Boston, MA.
+The authors declare no competing interests.}%
+\thanks{\textsuperscript{\textdagger{}} Corresponding Author}}%
+
+% note the % following the last \IEEEmembership and also \thanks - 
+% these prevent an unwanted space from occurring between the last author name
+% and the end of the author line. i.e., if you had this:
+% 
+% \author{....lastname \thanks{...} \thanks{...} }
+%                     ^------------^------------^----Do not want these spaces!
+%
+% a space would be appended to the last name and could cause every name on that
+% line to be shifted left slightly. This is one of those "LaTeX things". For
+% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
+% "AB" then you have to do: "\textbf{A}\textbf{B}"
+% \thanks is no different in this regard, so shield the last } of each \thanks
+% that ends a line with a % and do not let a space in before the next \thanks.
+% Spaces after \IEEEmembership other than the last one are OK (and needed) as
+% you are supposed to have spaces between the names. For what it is worth,
+% this is a minor point as most people would not even notice if the said evil
+% space somehow managed to creep in.
+
+
+
+% The paper headers
+%\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
+%{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
+% The only time the second header will appear is for the odd numbered pages
+% after the title page when using the twoside option.
+% 
+% *** Note that you probably will NOT want to include the author's ***
+% *** name in the headers of peer review papers.                   ***
+% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
+% you desire.
+
+
+
+
+% If you want to put a publisher's ID mark on the page you can do it like
+% this:
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark.
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+
+
+% make the title area
+\maketitle\thispagestyle{fancy}
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+% TC:ignore
+\begin{abstract}
+  \textit{Goal:} This study validates a reverse correlation method for characterizing the sounds experienced by tinnitus patients with potential for characterizing a wider range of sounds than currently possible.
+  \textit{Methods:} Ten normal-hearing subjects assessed the subjective similarity of random auditory stimuli and target tinnitus-like sounds (“buzzing” and “roaring”).
+  Reconstructions of the targets were obtained by regressing subject responses on the stimuli, and were compared for accuracy to the frequency spectra of the targets using Pearson's $r$.
+  \textit{Results:} Reconstruction accuracy was significantly higher than chance across subjects: buzzing ($M=0.53$, $SD=0.27$): $t(9)=5.766$, $p<0.001$; roaring ($M=0.57$, $SD=0.30$): $t(9)=5.76$, $p<0.001$.
+  \textit{Conclusion:} Reverse correlation can accurately reconstruct non-tonal tinnitus-like sounds in normal-hearing subjects,
+  indicating its potential for characterizing the sounds experienced by patients with non-tonal tinnitus.
+% The purpose of this document is to illustrate how one should prepare manuscripts for submission to the IEEE Open Journal of Engineering in Medicine and Biology (OJEMB). Please notice that this is the template for TECHNOLOGY LETTERS. These are short manuscripts with primary focus on the development of new devices, methods, and technologies. The material must be organized in a main manuscript body and a section entitled Supplementary Materials. The main manuscript body should be limited to 1,000 words and the material should be organized in the following sections (in the order shown here): Introduction, Materials and Methods, Results, Discussion, Conclusions. Authors can include in the main manuscript body up to 3 display items (i.e. figures and tables). In addition, the main manuscript body should include an abstract and up to 20 references. The references are not considered in the 1,000-word count. The abstract should be organized in subsections as shown here (i.e., Goal, Methods, Results, Conclusions). An impact statement should be included. The impact statement should be a short paragraph of no more than 30 words. Additional material should be included in the Supplementary Materials section of the manuscript. The Supplementary Materials section should either be organized in sections as per the main manuscript body (using up to 4,000 words) or it should be used to provide readers with a set of up to 10 additional display items (i.e. figures and tables). \textit{Methods}: Use this document as a template if you are using Latex. Otherwise, use this document as an instruction set. \textit{Results}: Paper titles should be written in uppercase and lowercase letters as shown above. Do not cite references in the abstract. Do not delete the blank line immediately above the abstract; it sets the footnote at the bottom of this column. The abstract should not exceed 150 words. \textit{Conclusions}: Preparing carefully your manuscript will lead to enhanced readability.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+    reverse correlation, tinnitus, behavioral assay
+\end{IEEEkeywords}
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+\ifCLASSOPTIONpeerreview
+\begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+\fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+%TC:ignore
+\begin{minipage}[t]{0.9\columnwidth}
+  \textbf{\textit{Impact Statement}\textemdash{}Characterization of tinnitus can inform tinnitus treatment by allowing for individualized sound therapies, leading to better outcomes for patients suffering from the cognitive and psychological effects of tinnitus.}\\
+\\
+\end{minipage}
+%TC:endignore
+
+\section{Introduction}
+% INTRO PARAGRAPH 1/3
+\IEEEPARstart{T}{INNITUS}\textemdash{}the perception of sound
+in the absence of any corresponding external stimulus\textemdash{}affects up to 50 million people in the U.S. \cite{bhattPrevalenceSeverityExposures2016,nationalinstituteondeafnessandothercommunicationdisordersQuickStatisticsHearing},
+a third of whom experience functional cognitive impairment and substantial reduction in quality of life
+\cite{ahmedImpactTinnitusPerception2017,nondahlImpactTinnitusQuality2007,tegg-quinnImpactTinnitusCognition2016}.
+Clinical guidelines for tinnitus management frequently involve targeted exposure to tinnitus-like sounds, either as a form of habituation therapy (termed \textit{sound therapy}), or using Cognitive Behavioral Therapy \cite{tunkelClinicalPracticeGuideline2014}.
+Critically, sound therapy is shown to improve with knowledge of the patient's internal tinnitus experience \cite{davisNeuromonicsTinnitusTreatment2007,landgrebeMethodologicalAspectsClinical2012,nickelOutcomeResearchMusic2005,okamotoListeningTailormadeNotched2010,schaetteAcousticStimulationTreatments2010,steinInhibitioninducedPlasticityTinnitus2015,tassCounteractingTinnitusAcoustic2012,wangStateArtSound2020}.
+However, existing strategies for characterizing tinnitus sounds, such as Pitch Matching (PM) methods, are best suited for patients whose tinnitus resembles pure tones (\eg ringing), which may represent only $20-50\%$ of patients \cite{turnerjrAuditoryDysfunctionTinnitus1990,henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017}.
+There is a pressing need for more robust characterization methods \cite{henryTinnitusEpidemiologicPerspective2020,henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002,robertsResidualInhibitionFunctions2006}.
+
+% INTRO PARAGRAPH 2/3
+Tinnitus sounds are presumed to be complex and heterogeneous
+\cite{vajsakovicPrinciplesMethodsPsychoacoustic2021,henryTinnitusEpidemiologicPerspective2020,meikleTinnitusArchiveArchive2004},
+although few specifics have been firmly established.
+Therefore, we base our approach on \textit{reverse correlation} (RC),
+an established behavioral method
+\cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013}
+for probing internal representations of visual and auditory percepts, unconstrained by prior knowledge.
+RC asks subjects to render subjective judgments over random stimuli, 
+from which unbiased estimates of the percepts can be produced.
+RC is closely related to Wiener theory \cite{wienerNonlinearProblemsRandom1966},
+which has inspired ``white-noise'' approaches to system characterization in physiology
+\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978} and engineering \cite{ljungMeasureLackFit1978}.
+
+% INTRO PARAGRAPH 3/3
+Here, we validate RC as a method for characterizing all component
+frequencies of non-tonal tinnitus sounds
+by estimating the full psychoacoustic tinnitus spectrum (PTS).
+To that end, we asked normal-hearing participants to complete an augmented RC experiment, comparing random stimuli to a target sound.
+The estimated PTS were subsequently validated against the targets.
+Our results demonstrate, for the first time, that tinnitus-like sounds with complex spectra can be accurately estimated using RC. 
+
+% document is a Latex  template for Technology Letters to be submitted to IEEE OJEMB \cite{ahumadaStimulusFeaturesSignal1971}. Submissions must have the sections listed in the following exactly in the order shown here: Introduction, Materials and Methods, Results, Discussion, Conclusions. Manuscripts to be submitted to IEEE OJEMB as a Science Letters must use a different template. For both types of manuscript, the authors can opt to add a Supplementary Materials section.
+
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps.
+% 
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+% 
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by the IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+% 
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+% 
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+% You must have at least 2 lines in the paragraph with the drop letter
+% (should never be an issue)
+
+
+\section{Materials and Methods}
+% To use this template, type over sections of the template or cut and paste from another document. Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline. 
+% IEEE will do the final formatting of your paper. However, you should format your manuscript for submission to IEEE OJEMB for review and also for preparing for preprint that will be e-published several days after you upload the final version of an accepted manuscript. 
+
+% Software for the experiments and analysis was written in MATLAB.\footnote{Code is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-reconstruction/}}
+
+\subsection{Stimuli}
+
+Stimuli were composed of $b=8$ Mel-spaced frequency bins,
+which divide the frequency spectrum between $[100,~13,000]$
+Hz into continuous segments of equal amplitude (\ie ``rectangular'' bins).
+Reconstruction detail increases with $b$, but $b=8$ provides a good approximation to the chosen target sounds (see Fig. \ref{fig:spectra}).
+
+For each stimulus, $[2,7]$ bins were randomly ``filled'' with power $0$ dB. ``Unfilled'' bins were assigned a power of $-100$ dB. 
+Assigning random phase, the inverse Fourier transform of the spectrum yields a $500$ ms stimulus waveform.\footnote{Software for the experiments and analysis was written in MATLAB and is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-reconstruction/}}
+
+\subsection{Target Sounds}
+
+Two spectrally complex and complimentary target sounds (``buzzing'' and ``roaring'') were downloaded from the American Tinnitus Association \cite{MeasuringTinnitusAmerican2022} and truncated to $500$ ms in duration.
+
+\subsection{Experiment}
+
+10 normal-hearing subjects listened to the same target sound followed by a random stimulus for each trial (Fig. \ref{fig:experimentdiagram}).
+The task is designed to mimic how a tinnitus patient might compare random stimuli to their tinnitus.
+
+Subjects were instructed to respond ``yes'' to any stimuli that sounded similar to the target, and ``no'' otherwise.
+Subjects completed $200$ trials for both target sounds within $10-20$ minutes.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{experiment_overview.pdf}
+  \caption{Diagram of the experimental protocol.
+  Subjects listen to a series of random stimuli,
+  each preceded by a target sound.
+  Subjects compare the stimulus to the target, and respond either ``yes'' or ``no''
+  depending on their perceived similarity.
+  The recorded stimulus-response pairs are used to form an estimate of the target.}
+  \label{fig:experimentdiagram}
+\end{figure}
+
+\subsection{Reconstruction}
+
+A subject performing $n$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{b \times n}$
+and a response vector $y \in \{1,-1\}^n$,
+where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically assumes the subject response model:
+
+\begin{equation}
+  y = sign(\Psi^\mathrm{T} x), 
+\end{equation}
+
+where $x \in \mathbb{R}^\mathrm{b}$ is the subject's internal representation of interest (\eg their tinnitus percept).
+This model can be inverted, yielding the following formula:
+
+\begin{equation}
+  \hat{x} = \frac{1}{n} \Psi y
+  \label{eq:linreg}
+\end{equation}
+
+This formula is a restricted form of the Normal equation, under
+the assumption that the stimulus dimensions are uncorrelated \cite{gosselinSuperstitiousPerceptionsReveal2003}.
+Intuitively, $\hat{x}$ is the sum of all stimuli eliciting a ``yes'' response, after subtracting all stimuli eliciting a ``no.'' 
+
+\subsection{Validation}
+
+The experimental paradigm allows for direct validation of the reconstructions $\hat{x}_{buzzing}$ and $\hat{x}_{roaring}$.
+We represent the spectra of the target sounds as vectors $s_{buzzing} \in \mathbb{R}^\mathrm{b}$ and $s_{roaring} \in \mathbb{R}^\mathrm{b}$ using the same frequency bins as in stimulus generation with power equal to the mean power of frequencies within that bin.
+Pearson's $r$ between $s_{buzzing}$ and $s_{roaring}$ and their corresponding reconstructions represents reconstruction accuracy.
+One-sample t-tests were performed on the mean Fisher-transformed Pearson's $r$ values across subjects to assess significant differences from zero.
+
+\subsection{Synthetic Subjects}
+
+To establish bounds on human performance,
+additional experiments were run with two simulated subjects who give either \textit{ideal} or \textit{random} responses.
+Each experiment ran for $n=200$ trials and was repeated $1000$ times.
+
+The \textit{ideal} subject gives responses following:
+
+\begin{equation}
+    y_i =
+        \begin{cases}
+            1 & \text{if } \Psi_i s \geq Q(0.5; \Psi s) \\
+            -1 & \text{otherwise}
+        \end{cases}
+\end{equation}
+
+% NB NOTE: What is s??
+for $i \in 1, ..., n$, where $Q(x, y)$ is the quantile function for $x \in [0, 1]$ of the similarity calculation $\Psi s$, and
+$\Psi_i$ is the $i^\mathrm{th}$ column of $\Psi$.
+The ideal subject has precise knowledge of every stimulus and responds mirroring Eq. \ref{eq:linreg}.
+
+The \textit{random} subject responds with uniformly random probability.
+
+\section{Results}
+
+Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ for human, ideal, and random subject responses.
+Human accuracies were generally higher than random,
+with some approaching ideal.
+Mean random accuracy was $0$ in all conditions,
+while mean human accuracy was significantly different from $0$ in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
+Greater variability in buzzing results may stem from the target spectrum containing significant high-frequency content, increasing the difficulty for subjects with minor high-frequency hearing loss.
+Figure \ref{fig:spectra} plots the most accurate human reconstructions over the target sound spectra.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{gfx/reconstruction_violin_cropped.pdf}
+    \caption{Human reconstruction accuracy is significantly above baseline,
+    but is not optimal. Random, human, and ideal reconstruction accuracies
+    are shown as violin plots with box plots overlaid.
+    The median is a white dot, the ordinate of the blue points are the Pearson's $r$ values.}
+    \label{fig:reconstructions}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{gfx/reconstruction_spectra_cropped.pdf}
+    \caption{Reconstructions of the PTS capture many salient features of tinnitus spectra.
+    The black trace indicates the target,
+    while colored traces plot exemplar human reconstructions.
+    The top row shows standardized power levels within each frequency bin.
+    The bottom row maps the $8$-dimensional bin domain
+    to a $11025$-dimensional frequency domain with the unbinned power spectral density of the targets shown in gray.}
+    \label{fig:spectra}
+\end{figure}
+
+\section{Conclusion}
+
+Reconstruction accuracies observed here are well below the simulated ideal,
+which may be attributed to noisy responses universally observed in applications of RC.
+This may be mitigated by optimizing the experimental protocol, stimulus generation, and reconstruction method.
+For example, recent approaches to improving RC reconstruction methods can boost efficiency, noise robustness and overall accuracy \cite{roopCompressiveSensingApproach2021,comptonStimulusWhiteningImproves2022a}.
+
+Nevertheless, our results show that RC can accurately reconstruct the frequency spectrum of complex, non-tonal tinnitus-like sounds.
+This indicates that RC may also be useful for developing a clinical assay to characterize a wider variety of tinnitus percepts than currently possible.
+Additionally, subjects completed the required number of trials within 20 minutes,
+indicating that this procedure could be conducted in a single clinical visit.
+Future work will focus on validating this approach in patients suffering from tinnitus.
+
+% A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
+% \\
+% \textsc{Supplementary Materials}
+% \par Supplementary materials are encouraged. Please use the Supplementary Materials template. If you have Supplementary Materials, please use this section to direct readers to the Supplementary Materials and give them a brief overview of what they can expect to find in the Supplementary Materials. \\
+% \\
+% \\
+% \textsc{REFERENCES AND FOOTNOTES}
+
+% \subsection{References}
+
+% See the end of this document for formats and examples of common references. For a complete discussion of references and their formats, see “The IEEE Style Manual,” available as a PDF link off the  \underline{\textit{Author Digital Toolbox}} main page.
+
+% \subsection{Footnotes}
+% Number footnotes separately in superscripts\footnote{It is recommended that footnotes be avoided (except for the unnumbered footnote with the receipt date on the first page). Instead, try to integrate the footnote information into the text.}.  Place the actual footnote at the bottom of the column in which it is cited; do not put footnotes in the reference list (endnotes). Use letters for table footnotes (see Table I). 
+
+
+
+% \section{Submitting Your Paper for Review}
+
+% {
+% 	\subsection{Uploading the Document}
+% 	All submissions must be uploaded via ScholarOne Manuscripts. Include full mailing addresses and e-mail addresses of all authors when uploading a manuscript. In addition, designate one author as the “corresponding author.” This is the author to whom proofs of the paper will be sent. Proofs are sent to the corresponding author only.
+    
+% 	\subsection{Review Stage Using ScholarOne$^{\tiny\textregistered}$ Manuscripts}
+% 	Contributions to IEEE OJEMB must be submitted electronically on IEEE’s on-line manuscript submission and peer-review system, ScholarOne$^{\tiny\textregistered}$ Manuscripts at \textit{http://mc.manuscriptcentral.com/embs-ieee}. First check if you have an existing account. If there is none, please create a new account. After logging in, go to your Author Center and click “Submit First Draft of a New Manuscript.” 
+% 	There are various steps to the submission process; you must complete all steps for a complete submission. At the end of each step you must click “Save and Continue”; just uploading the paper is not sufficient. After the last step, you should see a confirmation that the submission is complete. You should also receive an e-mail confirmation. For inquiries regarding the submission of your paper on ScholarOne Manuscripts, please contact oprs-support@ieee.org or call +1 732 465 5861.
+    
+% 	\subsection{Final Stage Using ScholarOne Manuscripts}
+% 	Upon acceptance, you will receive an email with specific instructions regarding the submission of your final files.  To avoid any delays in publication, please be sure to follow these instructions.  Final submissions should include source files of your accepted manuscript, high quality graphic files, and a formatted pdf file.  If you have any questions regarding the final submission process, please contact the administrative contact for the journal. 
+% }
+
+
+% \section{Editorial Policy}
+% {
+% 	Do not publish “preliminary” data or results. The submitting author is responsible for obtaining agreement of all coauthors and any consent required from sponsors before submitting a paper. IEEE OJEMB strongly discourages courtesy authorship. It is the obligation of the authors to cite relevant prior work. IEEE OJEMB expects the main source of references be archival journal articles or books or thesis. Conference proceeding papers should be minimized since many are not undergoing rigorous peer reviews. 
+% 	At least two reviews are required for every paper submitted. Indecipherable English is a valid reason for rejection. There is a service available that will help you improve your English for a fee, and the link to that service can be found at \textit{http://www.ieee.org/web/publications/authors/transjnl/ index.html}. 
+    
+% }
+
+% \section{Publication Principles}
+% {
+% 	The two types of contents of that are published are; 1) peer-reviewed and 2) archival. IEEE OJEMB publishes scholarly articles of archival value as well as tutorial expositions and critical reviews of classical subjects and topics of current interest. 
+% 	Authors should consider the following points:
+% 	\begin{enumerate}
+% 		\item Technical papers submitted for publication must advance the state of knowledge and must cite relevant prior work. 
+% 		\item The length of a submitted paper should be commensurate with the importance, or appropriate to the complexity, of the work. 
+% 		\item Authors must convince both peer reviewers and the editors of the scientific and technical merit of a paper; the standards of proof are higher when extraordinary or unexpected results are reported. 
+% 		\item Because replication is required for scientific progress, papers submitted for publication must provide sufficient information to allow readers to perform similar experiments or calculations and use the reported results. Although not everything need be disclosed, a paper must contain new, useable, and fully described information. For example, a specimen’s chemical composition need not be reported if the main purpose of a paper is to introduce a new measurement technique. Authors should expect to be challenged by reviewers if the results are not supported by adequate data and critical details.
+% 		\item Papers that describe ongoing work or announce the latest technical achievement, which are suitable for presentation at a professional conference, may not be appropriate for publication.
+% 	\end{enumerate}
+    
+    
+% }
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,mybib}
+% \printbibliography
+
+% \begin{thebibliography}{1}
+% 	%\textit{Basic Format for Books:}\\
+% 	\bibitem{BasicBook} \textbf{Basic Format for Books:} J. K. Author, Title of chapter in the book, in \textit{Title of His Published Book}, xth ed. City of Publisher, Country if not USA: Abbrev. of Publisher, year, ch. x, sec. x, pp. xxx–xxx.
+    
+% 	\bibitem{ExampleBook1} \textit{Example Book 1:} G. O. Young, “Synthetic structure of industrial plastics”, in \textit{Plastics},  2nd  ed.,  vol.  3,  J.  Peters,  Ed.  New  York: McGraw-Hill, 1964, pp. 15–64.
+    
+% 	\bibitem{ExampleBook1} \textit{Example Book 2:} W.-K. Chen, \textit{Linear Networks and Systems}. Belmont, CA: Wadsworth, 1993, pp. 123–135.\\
+    
+% 	\bibitem{BasicPeriodical} \textbf{Basic Format for Periodicals:} J. K. Author, “Name of paper”, \textit{Abbrev. Title of Periodical},  vol. x, no. x, pp. xxx-xxx, Abbrev. Month, year.
+    
+% 	\bibitem{ExamplePeriodical1} \textit{Example Periodical 1:} J. U. Duncombe, “Infrared navigation—Part I: An assessment of feasibility”, \textit{IEEE Trans. Electron Devices}, vol. ED-11, no. 1, pp. 34–39, Jan. 1959.
+    
+% 	\bibitem{ExamplePeriodical2} \textit{Example Periodical 2:} E. P. Wigner, “Theory of traveling-wave optical laser”, \textit{Phys. Rev.}, vol. 134, pp. A635–A646, Dec. 1965.
+    
+% 	\bibitem{ExamplePeriodical3} \textit{Example Periodical 3:} E. H. Miller et al., “A note on reflector arrays”,\textit{ IEEE Trans. Antennas Propagat.}, to be published.\\
+    
+% 	\bibitem{BasicHandbook} \textbf{Basic Format for Handbooks:} \textit{Name of Manual/Handbook}, x ed., Abbrev. Name of Co., City of Co., Abbrev. State, year, pp. xxx-xxx.
+    
+% 	\bibitem{ExampleHandbook1} \textit{Example Handbook 1:} \textit{Transmission Systems for Communications}, 3rd ed., Western Electric Co., Winston-Salem, NC, 1985, pp. 44–60.
+    
+% 	\bibitem{ExampleHandbook2} \textit{Example Handbook 2:} \textit{Motorola Semiconductor Data Manual}, Motorola Semiconductor Products Inc., Phoenix, AZ, 1989.\\
+    
+% 	\bibitem{BasicBookOnline} \textbf{Basic Format for Books (when available online):} Author. (year, month day). \textit{Title}. (edition) [Type of medium]. volume (issue). Available: site/path/file
+    
+% 	\bibitem{ExampleBookOnline} \textit{Example Book Available Online 1:} J. Jones. (1991, May 10). \textit{Networks}. (2nd ed.) [Online]. Available: http://www.atm.com\\
+    
+% 	\bibitem{BasicJournalOnline} \textbf{Basic Format for Journals (when available online):} Author. (year, month). Title. \textit{Journal}. [Type of medium]. volume (issue), pages. Available: site/path/file 
+    
+% 	\bibitem{ExampleJournalOnline} \textit{Example Journal Available Online 1:} R. J. Vidmar. (1992,  Aug.).  On  the  use  of  atmospheric plasmas as electromagnetic reflectors. \textit{IEEE Trans. Plasma Sci.} [Online]. 21(3), pp. 876–880. Available: http://www.halcyon.com/pub/journals/21ps03-vidmar\\
+    
+% 	\bibitem{BasicConferenceOnline} \textbf{Basic Format for Papers Presented at Conferences(when available online):} Author. (year, month). Title. Presented at Conference title. [Type of Medium]. Available: site/path/file
+    
+% 	\bibitem{ExampleConferenceOnline} \textit{Example Conference Paper Available Online 1:} PROCESS  Corp.,  MA.  Intranets:  Internet  technologies deployed behind the firewall for corporate productivity. Presented at 
+% 	INET96 Annual Meeting. [Online]. Available:  http://home.process.com/Intranets/wp2.htp\\
+    
+% 	\bibitem{BasicReportsOnline} \textbf{Basic Format for Reports and Handbooks (when available online):} Author.   (year,   month).   Title. Company . City, State or Country. [Type of Medium]. Available: site/path/file
+    
+% 	\bibitem{ExampleReportOnline} \textit{Example Report Available Online 1:}  S.L.Talleen. (1996, Apr.). The Intranet  Architecture:  Managing  information  in  the  new paradigm. Amdahl Corp., CA. [Online]. Available: http://www.amdahl.com/doc/products/bsg/intra/infra/html\\
+    
+% 	 \textbf{Basic Format for Computer Programs and Electronic Documents (when available online):} ISO recommends that capitalization follow the accepted practice for the language or script in which the information is given.
+    
+% 	\bibitem{ExampleProgramOnline}\textit{Example Program Available Online 1:} A. Harriman. (1993, June). Compendium of genealogical software. \textit{Humanist}. [Online]. Available e-mail: HUMANIST@NYVM.ORG Message: get GENEALOGY REPORT\\
+    
+% 	\bibitem{BasicPatentsOnline} \textbf{Basic Format for Patents (when available online):} Name of the invention, by inventor’s name. (year, month day). \textit{Patent Number} [Type of medium]. Available: site/path/file\\
+    
+% 	\bibitem{ExamplePatentOnline}\text{Example Patent Available Online 1:} Musical toothbrush with adjustable neck and mirror, by L.M.R. Brooks. (1992, May 19). \textit{Patent D326189} [Online]. Available: NEXIS Library: LEXPAT File: DESIGN
+    
+    
+% \end{thebibliography}
+
+% that's all folks
+\end{document}
+
+
