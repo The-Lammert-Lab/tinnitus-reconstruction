@@ -38,7 +38,7 @@ function follow_up(options)
         options.project_dir char = []
         options.this_hash char = []
         options.target_sound (:,1) {mustBeNumeric} = []
-        options.target_fs {mustBePositive} = []
+        options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
         options.config_file (1,:) char = ''
@@ -78,11 +78,16 @@ function follow_up(options)
         options.n_trials = inf;
     end
 
-    if isempty(options.target_sound) || isempty(options.target_fs)
-        [options.target_sound, options.target_fs] = audioread(config.target_signal_filepath);
-        if length(options.target_sound) > floor(0.5 * options.target_fs)
-            options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
-        end
+    if (isempty(options.target_sound) || ~options.target_fs) ...
+            && (isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath))
+            [options.target_sound, options.target_fs] = audioread(config.target_signal_filepath);
+    else
+        options.target_sound = [];
+        options.target_fs = 0;
+    end
+
+    if length(options.target_sound) > floor(0.5 * options.target_fs)
+        options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
     % Get version from config or take
@@ -139,8 +144,13 @@ function follow_up(options)
     % Sound screens
     sound_screens = cell(2,1);
 
-    sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
-    sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
+    if isempty(options.target_sound)
+        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
+        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
+    else
+        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
+        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
+    end
 
     %% Response file
     % Set up response file
@@ -199,7 +209,7 @@ function follow_up(options)
         play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
 
         % Get key press or repeat sounds
-        while value ~= -1
+        while ~(value < 0)
             value = readkeypress('range', 49:53, 'extra', 114, 'verbose', options.verbose); % r - 114
             if value == 114
                 play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
@@ -244,8 +254,10 @@ function k = waitforkeypress(verbose)
 end % function
 
 function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
-    soundsc(target_sound, target_fs);
-    pause(length(target_sound) / target_fs + 0.3);
+    if ~isempty(target_sound)
+        soundsc(target_sound, target_fs);
+        pause(length(target_sound) / target_fs + 0.3);
+    end
     soundsc(comp_sound, comp_fs);
 end % function
 
