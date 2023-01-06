@@ -42,7 +42,7 @@ function follow_up(options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
         options.config_file (1,:) char = ''
-        options.hFig matlab.ui.Figure
+        options.fig matlab.ui.Figure
         options.verbose (1,1) logical = true
     end
 
