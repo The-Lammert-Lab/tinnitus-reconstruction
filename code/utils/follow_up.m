@@ -185,7 +185,7 @@ function follow_up(options)
     %% Press 'F' to start
     disp_fullscreen(intro_screen)
     
-    value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
+    value = readkeypress(102, 'verbose', options.verbose); % f - 102
     if value < 0
         corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
         return
@@ -195,7 +195,7 @@ function follow_up(options)
     % Static questions
     for i = 1:length(static_qs)
         disp_fullscreen(static_qs{i})
-        value = readkeypress('range', 49:53, 'verbose', options.verbose);
+        value = readkeypress(49:53, 'verbose', options.verbose);
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
@@ -209,7 +209,7 @@ function follow_up(options)
     for i = 1:length(sound_screens)
         % Wait for 'F' to play sound
         disp_fullscreen(sound_screens{i});
-        value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
+        value = readkeypress(102, 'verbose', options.verbose); % f - 102
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
@@ -219,7 +219,7 @@ function follow_up(options)
 
         % Get key press or repeat sounds
         while ~(value < 0)
-            value = readkeypress('range', 49:53, 'extra', 114, 'verbose', options.verbose); % r - 114
+            value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
             if value == 114
                 play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
             else
@@ -270,27 +270,26 @@ function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
     soundsc(comp_sound, comp_fs);
 end % function
 
-function value = readkeypress(options)
+function value = readkeypress(range, options)
     % Frequently repeated block of code 
     % to wait for a key press and return the value.
     % Can register a value within a range or a single extra value.
     % Not extremely robust, but sufficient for this implementation.
 
     arguments
-        options.range {mustBeNumeric} = inf
-        options.extra (1,1) {mustBeNumeric} = inf
-        options.verbose (1,1) logical = true
+        range {mustBeNumeric}
+        options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
-    k = waitforkeypress();
+    k = waitforkeypress(options.verbose);
     if k < 0
         value = -1;
         return
     end
 
     value = double(get(gcf,'CurrentCharacter')); % 1-5 = 49-53
-    while isempty(value) || ~any(ismember(options.range, value)) && (value ~= options.extra)
-        k = waitforkeypress();
+    while isempty(value) || ~any(ismember(range, value))
+        k = waitforkeypress(options.verbose);
         if k < 0
             value = -1;
             return
