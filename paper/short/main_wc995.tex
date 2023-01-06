@@ -525,9 +525,12 @@ The authors declare no competing interests.}%
 in the absence of any corresponding external stimulus\textemdash{}affects up to 50 million people in the U.S. \cite{bhattPrevalenceSeverityExposures2016},
 a third of whom experience functional cognitive impairment and diminished quality of life
 \cite{nondahlImpactTinnitusQuality2007,tegg-quinnImpactTinnitusCognition2016}.
-Clinical guidelines for tinnitus management involve targeted exposure to tinnitus-like sounds, for habituation therapy (termed \textit{sound therapy}), or as part of Cognitive Behavioral Therapy \cite{tunkelClinicalPracticeGuideline2014}.
+Clinical guidelines for tinnitus management involve targeted exposure to tinnitus-like sounds
+in a habituation therapy term \textit{sound therapy},
+or as part of cognitive behavioral therapy \cite{tunkelClinicalPracticeGuideline2014}.
 Critically, sound therapy outcomes improve when closely informed by the patient's internal tinnitus experience \cite{okamotoListeningTailormadeNotched2010,schaetteAcousticStimulationTreatments2010,steinInhibitioninducedPlasticityTinnitus2015}.
-However, existing strategies for characterizing tinnitus sounds, such as Pitch Matching (PM), are best suited for patients whose tinnitus resembles pure tones (\eg ringing), which may represent only $20-50\%$ of patients \cite{henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017}.
+However, existing strategies for characterizing tinnitus sounds, such as \textit{pitch matching} (PM),
+are best suited for patients whose tinnitus resembles pure tones (\eg ringing), which may represent only $20-50\%$ of patients \cite{henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017}.
 There is a need for methods to characterize nontonal (\eg buzzing, roaring) tinnitus \cite{henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
 
 
@@ -539,7 +542,9 @@ Therefore, we base our approach on \textit{reverse correlation} (RC),
 an established behavioral method
 \cite{ahumadaStimulusFeaturesSignal1971,gosselinSuperstitiousPerceptionsReveal2003,brimijoinInternalRepresentationVowel2013}
 for estimating internal perceptual representations that is unconstrained by prior knowledge about the representations themselves.
-RC asks subjects to render subjective judgments over random stimuli, being closely related to Wiener theory,
+RC asks participants to render subjective judgments over random stimuli,
+and reconstructs the latent signal as a linear combination of stimuli.
+RC is closely related to Wiener theory,
 which has inspired ``white-noise'' approaches to system characterization in physiology
 \cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978} and engineering \cite{ljungMeasureLackFit1978}.
 
@@ -578,21 +583,26 @@ Our results demonstrate, for the first time, that tinnitus-like sounds with comp
 
 \subsection{Stimuli}
 
-Stimuli were composed of $b=8$ Mel-spaced frequency bins,
-which divide the frequency spectrum between $[100,~13,000]$
+The frequency space of the stimuli was partitioned into $b=8$ Mel-spaced frequency bins,
+which divide the frequency space between $[100,~13,000]$
 Hz into contiguous segments of equal amplitude (\ie ``rectangular'' bins).
-Reconstruction detail increases with $b$, but $b=8$ provides a good approximation to the chosen target sounds (see Fig. \ref{fig:spectra}).
+Reconstruction detail increases with $b$,
+but $b=8$ provides a good approximation to the chosen target sounds (\cf Fig. \ref{fig:spectra}).
 
 For each stimulus, $[2,7]$ bins were randomly ``filled'' with power $0$ dB. ``Unfilled'' bins were assigned $-100$ dB. All frequencies were assigned random phase.
 Inverse Fourier transform of the constructed spectrum yields a $500$ ms stimulus waveform.\footnote{Software for the experiments and analysis was written in MATLAB and is freely available at \protect\url{https://github.com/alec-hoyland/tinnitus-reconstruction/}}
 
 \subsection{Target Sounds}
 
-Two spectrally complex and complimentary target sounds (``buzzing'' and ``roaring'') were downloaded from the American Tinnitus Association \cite{MeasuringTinnitusAmerican2022} and truncated to $500$ ms in duration (Fig. \ref{fig:spectra}).
+Two spectrally complex and complementary target sounds (``buzzing'' and ``roaring'') were downloaded from the American Tinnitus Association \cite{MeasuringTinnitusAmerican2022} and truncated to $500$ ms in duration (Fig. \ref{fig:spectra}).
 
 \subsection{Experiment}
 
-Ten ($n=10$) normal-hearing subjects listened to $A-X$ trials containing a target sound ($A$) followed by a stimulus ($X$). $X$ was randomly generated for each trial, while $A$ remained the same within a block of $100$ trials (Fig. \ref{fig:experimentdiagram}). Subjects completed two (2) blocks per target sound. Subjects were told that some stimuli had $A$ embedded in them, and were instructed to respond ``yes'' to such stimuli, otherwise ``no''. Subjects listened over earphones at a self-determined comfortable level. Procedures were approved by the UMass IRB.
+Ten ($n=10$) normal-hearing subjects listened to $A-X$ trials containing a target sound ($A$) followed by a stimulus ($X$). $X$ was randomly generated for each trial, while $A$ remained the same within a block of $100$ trials (Fig. \ref{fig:experimentdiagram}).
+Subjects completed two (2) blocks per target sound ($p=200$ total trials per subject).
+Subjects were told that some stimuli had $A$ embedded in them, and were instructed to respond ``yes'' to such stimuli, otherwise ``no.''
+Subjects listened over earphones at a self-determined comfortable level.
+Procedures were approved by the UMass IRB.
 
 \begin{figure}[t]
   \centering
@@ -608,20 +618,18 @@ Ten ($n=10$) normal-hearing subjects listened to $A-X$ trials containing a targe
 
 \subsection{Reconstruction}
 
-A subject performing $p$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{p \times b}$
-and a response vector $y \in \{1,-1\}^n$,
-where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically assumes the subject response model:
+A subject performing $p$ RC trials with $b$ frequency bins produces a stimulus matrix $\Psi \in \mathbb{R}^{p \times b}$ and a response vector $y \in \{1,-1\}^p$, where $1$ corresponds to a ``yes'' response and $-1$ to a ``no.'' RC classically assumes the subject response model:
 
 \begin{equation}
-  y = sign(\Psi^\mathrm{T} x),
+  y = sign(\Psi x),
   \label{eq:subjresp} 
 \end{equation}
 
-where $x \in \mathbb{R}^\mathrm{b}$ is the subject's internal representation of interest (\eg of their tinnitus).
+where $x \in \mathbb{R}^\mathrm{b}$ is the subject's internal representation of interest (\ie of their tinnitus).
 Inverting this model yields:
 
 \begin{equation}
-  \hat{x} = \frac{1}{n} \Psi y
+  \hat{x} = \frac{1}{n} \Psi^\mathrm{T} y
   \label{eq:linreg}
 \end{equation}
 which is a restricted form of the Normal equation under
@@ -648,12 +656,13 @@ The \textit{ideal} subject gives responses following:
             1 & \text{if } \Psi_i s \geq Q(0.5; \Psi s) \\
             -1 & \text{otherwise}
         \end{cases}
+    \label{eq:idealsubject}
 \end{equation}
 
 % NB NOTE: What is s?? ACL: it is the target sound vector
 for $i \in 1, ..., p$, where $Q(x, y)$ is the quantile function for $x \in [0, 1]$ of the similarity calculation $\Psi s$, and
 $\Psi_i$ is the $i^\mathrm{th}$ column of $\Psi$.
-Thus, the ideal subject has precise knowledge of every stimulus and responds according to Eq. \ref{eq:subjresp}. The \textit{random} subject responds $y_i \in \{1,-1\}$ with uniform random probability, thus ignoring the stimulus entirely.
+Thus, the ideal subject has precise knowledge of every stimulus and responds according to Eq. \ref{eq:idealsubject}. The \textit{random} subject responds $y_i \in \{1,-1\}$ with uniform random probability, thus ignoring the stimulus entirely.
 
 \section{Results}
 
@@ -691,7 +700,7 @@ Our results show that RC can accurately reconstruct the PTS of complex, non-tona
 Reconstruction accuracies observed here are below the simulated ideal, which may be attributed to noisy responses universally observed in applications of RC, and which may be mitigated by further optimizing the experimental protocol, stimulus generation, and reconstruction method.
 For example, recent approaches to improving RC reconstruction methods can boost efficiency, noise robustness and overall accuracy \cite{comptonStimulusWhiteningImproves2022a}.
 Subjects completed the required number of trials within 10 minutes,
-indicating that this procedure could be conducted in a single clinical visit.
+indicating that this procedure can be conducted in a single clinical visit.
 RC may therefore be useful as the basis for a clinical assay to characterize a wider variety of tinnitus percepts than currently possible.
 Future work will focus on validating this approach in patients suffering from tinnitus.
 
