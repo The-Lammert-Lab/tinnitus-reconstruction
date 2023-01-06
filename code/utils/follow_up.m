@@ -270,14 +270,14 @@ function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
     soundsc(comp_sound, comp_fs);
 end % function
 
-function value = readkeypress(range, options)
+function value = readkeypress(target, options)
     % Frequently repeated block of code 
     % to wait for a key press and return the value.
     % Can register a value within a range or a single extra value.
     % Not extremely robust, but sufficient for this implementation.
 
     arguments
-        range {mustBeNumeric}
+        target {mustBeNumeric}
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
@@ -288,7 +288,7 @@ function value = readkeypress(range, options)
     end
 
     value = double(get(gcf,'CurrentCharacter')); % 1-5 = 49-53
-    while isempty(value) || ~any(ismember(range, value))
+    while isempty(value) || ~any(ismember(target, value))
         k = waitforkeypress(options.verbose);
         if k < 0
             value = -1;
