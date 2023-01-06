@@ -56,6 +56,9 @@ function Protocol(options)
     
     % Useful variables
     project_dir = pathlib.strip(mfilename('fullpath'), 2);
+    screenSize = get(0, 'ScreenSize');
+    screenWidth = screenSize(3);
+    screenHeight = screenSize(4);
     
     % Determine the stimulus generation function
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
@@ -141,7 +144,14 @@ function Protocol(options)
     %% Intro Screen & Start
 
     % Show the startup screen
-    imshow(Screen1);
+    hFig = figure('Numbertitle','off',...
+        'Position', [0 0 screenWidth screenHeight],...
+        'Color',[0.5 0.5 0.5],...
+        'Toolbar','none', ...
+        'MenuBar','none');
+    hFig.CloseRequestFcn = {@closeRequest hFig};
+
+    disp_fullscreen(Screen1);
 
     % Press "F" to start
     k = waitforkeypress();
@@ -170,7 +180,7 @@ function Protocol(options)
         counter = counter + 1;
 
         % Reminder Screen
-        imshow(Screen2);
+        disp_fullscreen(Screen2);
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
@@ -237,7 +247,7 @@ function Protocol(options)
                     config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs)
             else
-                imshow(Screen4)
+                disp_fullscreen(Screen4);
             end
             return
         elseif mod(total_trials_done, config.n_trials_per_block) == 0 % give rest before proceeding to next block
@@ -245,7 +255,7 @@ function Protocol(options)
 
             % reset counter
             counter = 0;
-            imshow(Screen3)
+            disp_fullscreen(Screen3);
             corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
             k = waitforkeypress();
             if k < 0
@@ -277,6 +287,24 @@ function Protocol(options)
         end
         
     end
+
+
+    function closeRequest(~,~,hFig)
+        percent_done = 100*(total_trials_done / config.n_trials); 
+
+        ButtonName = questdlg(['You have done ', ...
+            num2str(total_trials_done), ' trials of ', ...
+            num2str(config.n_trials), '(', num2str(percent_done), '%). ', ...
+            'End the experiment?'],...
+            'Confirm Close', ...
+            'Yes', 'No', 'Yes');
+        switch ButtonName
+            case 'Yes'
+                delete(hFig);
+            case 'No'
+                return
+        end
+    end % closeRequest
     
 end % function
 

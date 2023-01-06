@@ -327,6 +327,26 @@ and `m` is the dimensionality of the stimuli/spectrum/bins
 
 -------
 
+### disp_fullscreen
+
+Fill full screen figure with new image.
+
+**Arguments:**
+
+- img: image loaded via imread()
+- hFig: handle to maximized figure. 
+Defaults to current figure handle.
+
+**Outputs:**
+
+- hFig now displays an image.
+
+
+
+
+
+-------
+
 ### filematch
 Match files by terminal UUID or other identifier.
 This function expects filenames in the form

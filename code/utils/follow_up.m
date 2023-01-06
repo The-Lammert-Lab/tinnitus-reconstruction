@@ -42,6 +42,7 @@ function follow_up(options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
         options.config_file (1,:) char = ''
+        options.hFig matlab.ui.Figure
         options.verbose (1,1) logical = true
     end
 
@@ -81,9 +82,6 @@ function follow_up(options)
     if (isempty(options.target_sound) || ~options.target_fs) ...
             && (isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath))
             [options.target_sound, options.target_fs] = audioread(config.target_signal_filepath);
-    else
-        options.target_sound = [];
-        options.target_fs = 0;
     end
 
     if length(options.target_sound) > floor(0.5 * options.target_fs)
@@ -94,6 +92,17 @@ function follow_up(options)
     if isfield(config, 'follow_up_version') && ~isempty(config.follow_up_version)
         options.version = config.follow_up_version;
     end
+
+    % Open full screen figure if none is provided
+    screenSize = get(0, 'ScreenSize');
+    screenWidth = screenSize(3);
+    screenHeight = screenSize(4);
+
+    hFig = figure('Numbertitle','off',...
+        'Position', [0 0 screenWidth screenHeight],...
+        'Color',[0.5 0.5 0.5],...
+        'Toolbar','none', ...
+        'MenuBar','none');
 
     %% Setup
 
@@ -145,11 +154,11 @@ function follow_up(options)
     sound_screens = cell(2,1);
 
     if isempty(options.target_sound)
-        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
-        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
+        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
+        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
     else
-        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
-        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
+        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
+        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
     end
 
     %% Response file
@@ -174,7 +183,7 @@ function follow_up(options)
     end
 
     %% Press 'F' to start
-    imshow(intro_screen);
+    disp_fullscreen(intro_screen)
     
     value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
     if value < 0
@@ -185,7 +194,7 @@ function follow_up(options)
     %% Ask questions
     % Static questions
     for i = 1:length(static_qs)
-        imshow(static_qs{i})
+        disp_fullscreen(static_qs{i})
         value = readkeypress('range', 49:53, 'verbose', options.verbose);
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
@@ -199,7 +208,7 @@ function follow_up(options)
     % Sound assessment 
     for i = 1:length(sound_screens)
         % Wait for 'F' to play sound
-        imshow(sound_screen{i});
+        disp_fullscreen(sound_screens{i});
         value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
@@ -226,7 +235,7 @@ function follow_up(options)
 
     end
 
-    imshow(final_screen)
+    disp_fullscreen(final_screen);
     fclose(fid_survey);
     
 end % function
