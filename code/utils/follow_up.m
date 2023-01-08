@@ -24,6 +24,8 @@
 %       Question version number.
 %   - config_file: character vector, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
+%   - fig: matlab.ui.Figure, name-value.
+%       Handle to open figure on which to display questions.
 %   - verbose: logical, name-value, default: `true`
 %       Flag to print information and warnings. 
 % 
@@ -34,9 +36,9 @@
 function follow_up(options)
 
     arguments
-        options.data_dir char = []
-        options.project_dir char = []
-        options.this_hash char = []
+        options.data_dir char = ''
+        options.project_dir char = ''
+        options.this_hash char = ''
         options.target_sound (:,1) {mustBeNumeric} = []
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
@@ -79,30 +81,21 @@ function follow_up(options)
         options.n_trials = inf;
     end
 
+    % Load target sound if not passed as an argument but is in config.
     if (isempty(options.target_sound) || ~options.target_fs) ...
             && (isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath))
             [options.target_sound, options.target_fs] = audioread(config.target_signal_filepath);
     end
 
+    % Truncate sound if necessary
     if length(options.target_sound) > floor(0.5 * options.target_fs)
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
-    % Get version from config or take
+    % Get version from config (otherwise use default = 1).
     if isfield(config, 'follow_up_version') && ~isempty(config.follow_up_version)
         options.version = config.follow_up_version;
     end
-
-    % Open full screen figure if none is provided
-    screenSize = get(0, 'ScreenSize');
-    screenWidth = screenSize(3);
-    screenHeight = screenSize(4);
-
-    hFig = figure('Numbertitle','off',...
-        'Position', [0 0 screenWidth screenHeight],...
-        'Color',[0.5 0.5 0.5],...
-        'Toolbar','none', ...
-        'MenuBar','none');
 
     %% Setup
 
@@ -138,7 +131,6 @@ function follow_up(options)
         ['FollowUp_v', num2str(options.version)]);
 
     intro_screen = imread(pathlib.join(img_dir, 'FollowUp_intro.png'));
-
     final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
 
     % Question screens
@@ -182,6 +174,23 @@ function follow_up(options)
             fprintf(fid_survey, 'noise-recon\n');
     end
 
+    %% Figure
+    % Open full screen figure if none provided or the provided was deleted
+    if ~isfield(options, 'fig') || ~ishandle(options.fig)
+        screenSize = get(0, 'ScreenSize');
+        screenWidth = screenSize(3);
+        screenHeight = screenSize(4);
+
+        hFig = figure('Numbertitle','off',...
+            'Position', [0 0 screenWidth screenHeight],...
+            'Color',[0.5 0.5 0.5],...
+            'Toolbar','none', ...
+            'MenuBar','none');
+    else
+        hFig = options.fig;
+    end
+    hFig.CloseRequestFcn = {@closeRequest hFig};
+
     %% Press 'F' to start
     disp_fullscreen(intro_screen)
     
@@ -195,7 +204,7 @@ function follow_up(options)
     % Static questions
     for i = 1:length(static_qs)
         disp_fullscreen(static_qs{i})
-        value = readkeypress(49:53, 'verbose', options.verbose);
+        value = readkeypress(49:53, 'verbose', options.verbose); % 1-5 = 49-53
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
@@ -237,7 +246,7 @@ function follow_up(options)
 
     disp_fullscreen(final_screen);
     fclose(fid_survey);
-    
+
 end % function
 
 function k = waitforkeypress(verbose)
@@ -271,10 +280,8 @@ function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
 end % function
 
 function value = readkeypress(target, options)
-    % Frequently repeated block of code 
-    % to wait for a key press and return the value.
-    % Can register a value within a range or a single extra value.
-    % Not extremely robust, but sufficient for this implementation.
+    % Wait for a key press and return the value
+    % only if the pressed key was in `target`. 
 
     arguments
         target {mustBeNumeric}
@@ -287,7 +294,7 @@ function value = readkeypress(target, options)
         return
     end
 
-    value = double(get(gcf,'CurrentCharacter')); % 1-5 = 49-53
+    value = double(get(gcf,'CurrentCharacter'));
     while isempty(value) || ~any(ismember(target, value))
         k = waitforkeypress(options.verbose);
         if k < 0
@@ -299,3 +306,16 @@ function value = readkeypress(target, options)
 
     return
 end % function
+
+function closeRequest(~,~,hFig)
+    ButtonName = questdlg(['Do you wish not to ' ...
+        'answer the follow up questions?'],...
+        'Confirm Close', ...
+        'Yes', 'No', 'No');
+    switch ButtonName
+        case 'Yes'
+            delete(hFig);
+        case 'No'
+            return
+    end
+end % closeRequest

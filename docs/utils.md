@@ -399,6 +399,8 @@ Number of trials to use for reconstruction. Uses all data if `inf`.
 Question version number.
 - config_file: character vector, name-value, default: ``''``
 A path to a YAML-spec configuration file.
+- fig: matlab.ui.Figure, name-value.
+Handle to open figure on which to display questions.
 - verbose: logical, name-value, default: `true`
 Flag to print information and warnings. 
 
