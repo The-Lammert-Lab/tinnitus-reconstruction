@@ -21,7 +21,7 @@
 % - None
 % 
 % See Also:
-% * collect_data
+% collect_data
 
 function update_hashes(new_hash, old_hash, data_dir, verbose)
 
