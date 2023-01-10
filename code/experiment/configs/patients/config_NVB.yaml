@@ -19,7 +19,7 @@ stimuli_type: UniformPrior
 min_bins: 6
 max_bins: 16
 
-data_dir: 
+data_dir: ''
 
 stimuli_save_type: bins
 
