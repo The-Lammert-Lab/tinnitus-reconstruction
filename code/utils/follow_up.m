@@ -24,6 +24,8 @@
 %       Question version number.
 %   - config_file: character vector, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
+%   - fig: matlab.ui.Figure, name-value.
+%       Handle to open figure on which to display questions.
 %   - verbose: logical, name-value, default: `true`
 %       Flag to print information and warnings. 
 % 
@@ -34,14 +36,15 @@
 function follow_up(options)
 
     arguments
-        options.data_dir char = []
-        options.project_dir char = []
-        options.this_hash char = []
+        options.data_dir char = ''
+        options.project_dir char = ''
+        options.this_hash char = ''
         options.target_sound (:,1) {mustBeNumeric} = []
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
         options.config_file (1,:) char = ''
+        options.fig matlab.ui.Figure
         options.verbose (1,1) logical = true
     end
 
@@ -78,19 +81,18 @@ function follow_up(options)
         options.n_trials = inf;
     end
 
+    % Load target sound if not passed as an argument but is in config.
     if (isempty(options.target_sound) || ~options.target_fs) ...
             && (isfield(config, 'target_signal_filepath') && ~isempty(config.target_signal_filepath))
             [options.target_sound, options.target_fs] = audioread(config.target_signal_filepath);
-    else
-        options.target_sound = [];
-        options.target_fs = 0;
     end
 
+    % Truncate sound if necessary
     if length(options.target_sound) > floor(0.5 * options.target_fs)
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
-    % Get version from config or take
+    % Get version from config (otherwise use default = 1).
     if isfield(config, 'follow_up_version') && ~isempty(config.follow_up_version)
         options.version = config.follow_up_version;
     end
@@ -107,18 +109,23 @@ function follow_up(options)
     reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
         'use_n_trials', options.n_trials, 'data_dir', data_dir);
 
-    [~, freqs] = wav2spect(config.target_signal_filepath);
-
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
-    recon_binrep = rescale(reconstruction, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
-    recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
-
     % (since using one stimgen, recon and noise share fs).
     Fs = stimgen.Fs;
+
+    recon_binrep = rescale(reconstruction, -20, 0);
+    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+
+    if ~isempty(options.target_sound)
+        [~, freqs] = wav2spect(config.target_signal_filepath);
+    else
+        freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
+    end
+
+    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
+    recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
 
     % Generate white noise
     noise_waveform = white_noise('config', config, 'stimgen', stimgen, 'freqs', freqs);
@@ -129,11 +136,14 @@ function follow_up(options)
         ['FollowUp_v', num2str(options.version)]);
 
     intro_screen = imread(pathlib.join(img_dir, 'FollowUp_intro.png'));
-
     final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
 
     % Question screens
-    d = dir(pathlib.join(img_dir, '*Q*.png'));
+    if isempty(options.target_sound)
+        d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
+    else
+        d = dir(pathlib.join(img_dir, '*Q*.png'));
+    end
 
     static_qs = cell(length(d),1);
 
@@ -145,11 +155,11 @@ function follow_up(options)
     sound_screens = cell(2,1);
 
     if isempty(options.target_sound)
-        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
-        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
+        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
+        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
     else
-        sound_screen{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
-        sound_screen{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
+        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
+        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
     end
 
     %% Response file
@@ -173,10 +183,27 @@ function follow_up(options)
             fprintf(fid_survey, 'noise-recon\n');
     end
 
+    %% Figure
+    % Open full screen figure if none provided or the provided was deleted
+    if ~isfield(options, 'fig') || ~ishandle(options.fig)
+        screenSize = get(0, 'ScreenSize');
+        screenWidth = screenSize(3);
+        screenHeight = screenSize(4);
+
+        hFig = figure('Numbertitle','off',...
+            'Position', [0 0 screenWidth screenHeight],...
+            'Color',[0.5 0.5 0.5],...
+            'Toolbar','none', ...
+            'MenuBar','none');
+    else
+        hFig = options.fig;
+    end
+    hFig.CloseRequestFcn = {@closeRequest hFig};
+
     %% Press 'F' to start
-    imshow(intro_screen);
+    disp_fullscreen(intro_screen)
     
-    value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
+    value = readkeypress(102, 'verbose', options.verbose); % f - 102
     if value < 0
         corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
         return
@@ -185,8 +212,8 @@ function follow_up(options)
     %% Ask questions
     % Static questions
     for i = 1:length(static_qs)
-        imshow(static_qs{i})
-        value = readkeypress('range', 49:53, 'verbose', options.verbose);
+        disp_fullscreen(static_qs{i})
+        value = readkeypress(49:53, 'verbose', options.verbose); % 1-5 = 49-53
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
@@ -199,8 +226,8 @@ function follow_up(options)
     % Sound assessment 
     for i = 1:length(sound_screens)
         % Wait for 'F' to play sound
-        imshow(sound_screen{i});
-        value = readkeypress('extra', 102, 'verbose', options.verbose); % f - 102
+        disp_fullscreen(sound_screens{i});
+        value = readkeypress(102, 'verbose', options.verbose); % f - 102
         if value < 0
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
@@ -210,7 +237,7 @@ function follow_up(options)
 
         % Get key press or repeat sounds
         while ~(value < 0)
-            value = readkeypress('range', 49:53, 'extra', 114, 'verbose', options.verbose); % r - 114
+            value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
             if value == 114
                 play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
             else
@@ -226,9 +253,9 @@ function follow_up(options)
 
     end
 
-    imshow(final_screen)
+    disp_fullscreen(final_screen);
     fclose(fid_survey);
-    
+
 end % function
 
 function k = waitforkeypress(verbose)
@@ -261,27 +288,24 @@ function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
     soundsc(comp_sound, comp_fs);
 end % function
 
-function value = readkeypress(options)
-    % Frequently repeated block of code 
-    % to wait for a key press and return the value.
-    % Can register a value within a range or a single extra value.
-    % Not extremely robust, but sufficient for this implementation.
+function value = readkeypress(target, options)
+    % Wait for a key press and return the value
+    % only if the pressed key was in `target`. 
 
     arguments
-        options.range {mustBeNumeric} = inf
-        options.extra (1,1) {mustBeNumeric} = inf
-        options.verbose (1,1) logical = true
+        target {mustBeNumeric}
+        options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
-    k = waitforkeypress();
+    k = waitforkeypress(options.verbose);
     if k < 0
         value = -1;
         return
     end
 
-    value = double(get(gcf,'CurrentCharacter')); % 1-5 = 49-53
-    while isempty(value) || ~any(ismember(options.range, value)) && (value ~= options.extra)
-        k = waitforkeypress();
+    value = double(get(gcf,'CurrentCharacter'));
+    while isempty(value) || ~any(ismember(target, value))
+        k = waitforkeypress(options.verbose);
         if k < 0
             value = -1;
             return
@@ -291,3 +315,16 @@ function value = readkeypress(options)
 
     return
 end % function
+
+function closeRequest(~,~,hFig)
+    ButtonName = questdlg(['Do you wish not to ' ...
+        'answer the follow up questions?'],...
+        'Confirm Close', ...
+        'Yes', 'No', 'No');
+    switch ButtonName
+        case 'Yes'
+            delete(hFig);
+        case 'No'
+            return
+    end
+end % closeRequest

@@ -72,7 +72,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
-    binned_repr = -20 * ones(self.n_bins, 1);
+    binned_repr = -100 * ones(self.n_bins, 1);
     binned_repr(filled_bins) = 0;
 
 end
