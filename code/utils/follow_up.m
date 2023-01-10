@@ -121,7 +121,7 @@ function follow_up(options)
     if ~isempty(options.target_sound)
         [~, freqs] = wav2spect(config.target_signal_filepath);
     else
-        freqs = linspace(1, floor(Fs/2), length(recon_spectrum)); % ACL
+        freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
     end
 
     recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
