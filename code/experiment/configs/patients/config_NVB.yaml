@@ -1,7 +1,7 @@
 # Test config for tinnitus patient protocol
 
-experiment_name: grant_proposal-ALC-TEST
-subject_ID: ACL
+experiment_name: grant_proposal-NVB-TEST
+subject_ID: NVB
 
 n_trials_per_block: 100
 n_blocks: 1
