@@ -139,7 +139,11 @@ function follow_up(options)
     final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
 
     % Question screens
-    d = dir(pathlib.join(img_dir, '*Q*.png'));
+    if isempty(options.target_sound)
+        d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
+    else
+        d = dir(pathlib.join(img_dir, '*Q*.png'));
+    end
 
     static_qs = cell(length(d),1);
 

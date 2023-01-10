@@ -117,9 +117,9 @@ function Protocol(options)
 
     %% Load Presentations Screens
 
-    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1B.png'));
-    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2B.png'));
-    Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3B.png'));
+    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
+    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
+    Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
