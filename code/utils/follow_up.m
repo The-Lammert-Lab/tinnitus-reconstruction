@@ -109,18 +109,23 @@ function follow_up(options)
     reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
         'use_n_trials', options.n_trials, 'data_dir', data_dir);
 
-    [~, freqs] = wav2spect(config.target_signal_filepath);
-
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
-    recon_binrep = rescale(reconstruction, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
-    recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
-
     % (since using one stimgen, recon and noise share fs).
     Fs = stimgen.Fs;
+
+    recon_binrep = rescale(reconstruction, -20, 0);
+    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+
+    if ~isempty(options.target_sound)
+        [~, freqs] = wav2spect(config.target_signal_filepath);
+    else
+        freqs = linspace(1, floor(Fs/2), length(recon_spectrum)); % ACL
+    end
+
+    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
+    recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
 
     % Generate white noise
     noise_waveform = white_noise('config', config, 'stimgen', stimgen, 'freqs', freqs);
