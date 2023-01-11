@@ -45,7 +45,7 @@ function Protocol(options)
 
     % Add additional config fields here
     config.n_trials = config.n_trials_per_block;
-
+ 
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
 
@@ -236,6 +236,8 @@ function Protocol(options)
         meta = {expID, this_hash, this_datetime, total_trials_done};
         meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
+
+        pause(length(stimuli_matrix(:, counter)) / Fs - 0.3)
             
         % Decide How To Continue
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
