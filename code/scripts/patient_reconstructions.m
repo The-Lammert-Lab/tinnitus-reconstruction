@@ -27,7 +27,7 @@ end
 
 % Config settings are the same so just use the last one
 stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-stimgen = stimgen.from_config(cqonfig);
+stimgen = stimgen.from_config(config);
 
 Fs = stimgen.Fs;
 
@@ -43,7 +43,7 @@ t = tiledlayout(rows, cols);
 
 for i = 1:length(config_files)
     % Linear
-    if i == length(config_files) - 1 && mod(length(config_files), 2)
+    if i == length(config_files) && mod(length(config_files), 2)
         nexttile([1,2])
     else
         nexttile
@@ -82,7 +82,7 @@ t = tiledlayout(rows, cols);
 
 for i = 1:length(config_files)
     % Linear
-    if i == length(config_files) - 1 && mod(length(config_files), 2)
+    if i == length(config_files) && mod(length(config_files), 2)
         nexttile([1,2])
     else
         nexttile
