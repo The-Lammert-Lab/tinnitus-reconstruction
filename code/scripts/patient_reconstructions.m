@@ -7,20 +7,21 @@ config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 reconstructions_binned_lr = cell(length(config_files), 1);
 reconstructions_binned_cs = cell(length(config_files), 1);
+ID_nums = cell(length(config_files), 1);
 
 my_normalize = @(x) normalize(x, 'zscore', 'std');
 
 %% Generate reconstructions
 for i = 1:length(config_files)
     config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+    ID_nums{i} = extractAfter(config.subject_ID, '_');
+
     reconstructions_binned_lr{i} = get_reconstruction('config', config, ...
         'method', 'linear', ...
-        'preprocessing', 'bit_flip', ...
         'verbose', true, ...
         'data_dir', data_dir);
     reconstructions_binned_cs{i} = get_reconstruction('config', config, ...
         'method', 'cs', ...
-        'preprocessing', 'bit_flip', ...
         'verbose', true, ...
         'data_dir', data_dir);
 end
@@ -35,7 +36,7 @@ Fs = stimgen.Fs;
 rows = ceil(length(config_files)/2);
 cols = 4;
 
-label_y = 1:cols:(rows*cols);
+label_y = 1:0.5*cols:0.5*(rows*cols);
 
 % Binned
 figure;
@@ -51,7 +52,7 @@ for i = 1:length(config_files)
 
     plot(my_normalize(reconstructions_binned_lr{i}), 'k');
 
-    title(['Subject ', num2str(i), ' - linear'], 'FontSize', 18);
+    title(['Subject ', ID_nums{i}, ' - linear'], 'FontSize', 18);
     xlabel('Bin #', 'FontSize', 16)
     xlim([1, config.n_bins]);
 
@@ -68,7 +69,7 @@ for i = 1:length(config_files)
 
     plot(my_normalize(reconstructions_binned_cs{i}), 'k');
     
-    title(['Subject ', num2str(i), ' - cs'], 'FontSize', 18);
+    title(['Subject ', ID_nums{i}, ' - cs'], 'FontSize', 18);
     xlabel('Bin #', 'FontSize', 16)
     xlim([1, config.n_bins]);
 
@@ -98,7 +99,7 @@ for i = 1:length(config_files)
     unbinned_lr(unbinned_lr == 0) = NaN;
 
     plot(1e-3 * freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), 'k');
-    title(['Subject ', num2str(i), ' - linear'], 'FontSize', 18);
+    title(['Subject ', ID_nums{i}, ' - linear'], 'FontSize', 18);
     xlabel('Frequency (kHz)', 'FontSize', 16)
     xlim([0, 1e-3 * config.max_freq]);
 
@@ -124,7 +125,7 @@ for i = 1:length(config_files)
 
     plot(1e-3 * freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), 'k');
 
-    title(['Subject ', num2str(i), ' - cs'], 'FontSize', 18);
+    title(['Subject ', ID_nums{i}, ' - cs'], 'FontSize', 18);
     xlabel('Frequency (kHz)', 'FontSize', 16)
     xlim([0, 1e-3 * config.max_freq]);
 end
