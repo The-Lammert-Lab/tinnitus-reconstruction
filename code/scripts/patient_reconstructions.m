@@ -31,14 +31,22 @@ stimgen = stimgen.from_config(config{1});
 Fs = stimgen.Fs;
 
 % Fields to remove for comparing configs
+% TODO: Change to listing fieldnames to keep
 fields = {'experiment_name', 'subject_ID', 'data_dir', ...
     'stimuli_save_type', 'follow_up', 'follow_up_version'};
 
 %% Plot setup
-rows = ceil(length(config_files)/2);
-cols = 4;
+CS = true;
 
-label_y = 1:0.5*cols:0.5*(rows*cols);
+rows = ceil(length(config_files)/2);
+
+if CS
+    cols = 4;
+else
+    cols = 2;
+end
+
+label_y = 1:(rows*cols)/rows:rows*cols;
 
 linewidth = 1.5;
 linecolor = 'b';
@@ -58,9 +66,11 @@ for i = 1:length(config_files)
 
     % Linear
     if i == length(config_files) && mod(length(config_files), 2)
-        nexttile(t_binned, [1,2])
+        tile = nexttile(t_binned, [1,2]);
+        tile_num = tilenum(tile);
     else
-        nexttile(t_binned)
+        tile = nexttile(t_binned);
+        tile_num = tilenum(tile);
     end
 
     plot(my_normalize(reconstructions_binned_lr{i}), linecolor, ...
@@ -74,7 +84,7 @@ for i = 1:length(config_files)
     end
 
     % Label start of each row
-    if ismember(i, label_y)
+    if ismember(tile_num, label_y)
         ylabel('Power (dB)', 'FontSize', 16);
     end
 
@@ -82,24 +92,26 @@ for i = 1:length(config_files)
     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 
     % CS
-    if i == length(config_files) && mod(length(config_files), 2)
-        nexttile(t_binned, [1,2])
-    else
-        nexttile(t_binned)
+    if CS
+        if i == length(config_files) && mod(length(config_files), 2)
+            nexttile(t_binned, [1,2])
+        else
+            nexttile(t_binned)
+        end
+    
+        plot(my_normalize(reconstructions_binned_cs{i}), linecolor, ...
+            'LineWidth', linewidth);
+    
+        xlim([1, config{i}.n_bins]);
+    
+        % Label only last row
+        if i > rows
+            xlabel('Bin #', 'FontSize', 16)
+        end
+    
+        title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
+        set(gca, 'yticklabels', [], 'FontWeight', 'bold')
     end
-
-    plot(my_normalize(reconstructions_binned_cs{i}), linecolor, ...
-        'LineWidth', linewidth);
-
-    xlim([1, config{i}.n_bins]);
-
-    % Label only last row
-    if i > rows
-        xlabel('Bin #', 'FontSize', 16)
-    end
-
-    title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
-    set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 
     %%%%% Unbinned %%%%%
 
@@ -112,9 +124,11 @@ for i = 1:length(config_files)
 
     % Linear
     if i == length(config_files) && mod(length(config_files), 2)
-        nexttile(t_unbinned, [1,2])
+        tile = nexttile(t_unbinned, [1,2]);
+        tile_num = tilenum(tile);
     else
-        nexttile(t_unbinned)
+        tile = nexttile(t_unbinned);
+        tile_num = tilenum(tile);
     end
 
     % Unbin
@@ -139,7 +153,7 @@ for i = 1:length(config_files)
     end
 
     % Label start of each row
-    if ismember(i, label_y)
+    if ismember(tile_num, label_y)
         ylabel('Power (dB)', 'FontSize', 16);
     end
 
@@ -147,33 +161,35 @@ for i = 1:length(config_files)
     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 
     % CS
-    if i == length(config_files) && mod(length(config_files), 2)
-        nexttile(t_unbinned, [1,2])
-    else
-        nexttile(t_unbinned)
+    if CS
+        if i == length(config_files) && mod(length(config_files), 2)
+            nexttile(t_unbinned, [1,2])
+        else
+            nexttile(t_unbinned)
+        end
+    
+        % Unbin
+        recon_binrep = rescale(reconstructions_binned_cs{i}, -20, 0);
+        recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+    
+        freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
+        indices_to_plot = freqs(:, 1) <= config{i}.max_freq;
+    
+        unbinned_cs = stimgen.binnedrepr2spect(reconstructions_binned_cs{i});
+        unbinned_cs(unbinned_cs == 0) = NaN;
+    
+        % Plot
+        plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
+            linecolor, 'LineWidth', linewidth);
+    
+        xlim([0, config{i}.max_freq]);
+    
+        % Label only last row
+        if i > rows
+            xlabel('Frequency (Hz)', 'FontSize', 16)
+        end
+    
+        title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
+        set(gca, 'yticklabels', [], 'FontWeight', 'bold')
     end
-
-    % Unbin
-    recon_binrep = rescale(reconstructions_binned_cs{i}, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-
-    freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
-    indices_to_plot = freqs(:, 1) <= config{i}.max_freq;
-
-    unbinned_cs = stimgen.binnedrepr2spect(reconstructions_binned_cs{i});
-    unbinned_cs(unbinned_cs == 0) = NaN;
-
-    % Plot
-    plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
-        linecolor, 'LineWidth', linewidth);
-
-    xlim([0, config{i}.max_freq]);
-
-    % Label only last row
-    if i > rows
-        xlabel('Frequency (Hz)', 'FontSize', 16)
-    end
-
-    title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
-    set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 end
