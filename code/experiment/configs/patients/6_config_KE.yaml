@@ -1,0 +1,28 @@
+# Tinnitus patient config for Feb. 1, 2023 grant proposal
+
+experiment_name: grant_proposal-KE
+subject_ID: KE_6
+
+n_trials_per_block: 80
+n_blocks: 10
+
+total_trials: 800
+
+min_freq: 100
+max_freq: 13000
+duration: 0.5
+
+n_bins: 32
+
+stimuli_type: UniformPrior
+
+min_bins: 6
+max_bins: 16
+
+data_dir: '/Users/nbarnett/Desktop/tinnitus_code/tinnitus-reconstruction/code/experiment/Data'
+
+stimuli_save_type: bins
+
+follow_up: true
+
+follow_up_version: 1
