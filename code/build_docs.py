@@ -1,6 +1,5 @@
 # Adapted from xolotl project for use in tinnitus project.
 # NB 6/3/22
-# Only functional as written on macOS/Linux systems
 
 import os
 from glob import glob
@@ -11,20 +10,24 @@ from comment2docs import comment2docs
 # Make sure initial glob begins at said root dir.
 curr_dir = os.getcwd()
 
-if curr_dir.endswith('tinnitus-project'):
+# Repo used to be tinnitus-project, now tinnitus-reconstruction.
+if curr_dir.endswith('tinnitus-project') or curr_dir.endswith('tinnitus-reconstruction'):
     root_pth = '.'
 else:
     split_dir = curr_dir.split('/')
-    root_ind = [ind for ind, subdir in enumerate(split_dir) if subdir == 'tinnitus-project']
+    root_ind = [ind for ind, subdir in enumerate(split_dir) if subdir == 'tinnitus-project' or subdir == 'tinnitus-reconstruction']
     root_pth = '/'.join(split_dir[:root_ind[0]+1])
 
+# Loop through every folder and every file within each folder
 for folder in sorted(glob(f"{root_pth}/code/*/")):
     for i, item in enumerate(sorted(glob(folder + "*.m") + glob(folder + "@*"), key = str.lower)):
 
+        # Classes
         if item.find("@") > 0:
             classname = item.replace(f"{folder}@",'')
             header_file =  f"{root_pth}/docs/stimgen/{classname}-head.md"
 
+            # Only write documentation if header file exists (is pre-written)
             if not os.path.exists(header_file):
                 print(f"[ABORT] Can't find header {header_file}, skipping...")
                 continue
@@ -36,6 +39,7 @@ for folder in sorted(glob(f"{root_pth}/code/*/")):
 
                 doc_file = f"{root_pth}/docs/stimgen/{classname}.md"
 
+                # Write header file at top of current docs
                 if j == 0:
                     first = True
                     copyfile(header_file, doc_file)
@@ -48,6 +52,7 @@ for folder in sorted(glob(f"{root_pth}/code/*/")):
 
                 comment2docs(filename, file, out_file, first, root_pth)
 
+        # Non-classes (functions, scripts)
         else:
 
             first = False
