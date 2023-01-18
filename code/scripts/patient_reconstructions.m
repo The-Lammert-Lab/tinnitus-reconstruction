@@ -6,6 +6,7 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 CS = true;
+verbose = true;
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -15,9 +16,10 @@ keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
 n = length(config_files);
 
 % Pre-allocate
-sensitivity = zeros(n,1);
+sensitivity = zeros(n, 1);
 specificity = zeros(n, 1);
 accuracy = zeros(n, 1);
+yesses = zeros(n, 1);
 
 %% Plot setup
 rows = ceil(n/2);
@@ -73,19 +75,23 @@ for i = 1:n
     % Get reconstructions
     [reconstructions_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
         'method', 'linear', ...
-        'verbose', true, ...
+        'verbose', verbose, ...
         'data_dir', data_dir);
 
     if CS
         reconstructions_binned_cs = get_reconstruction('config', config, ...
             'method', 'cs', ...
-            'verbose', true, ...
+            'verbose', verbose, ...
             'data_dir', data_dir);
     end
 
     %%%%% Compare responses to synthetic %%%%% 
+    yesses(i) = 100 * length(responses(responses == 1))/length(responses);
+
     e = stimuli_matrix' * reconstructions_binned_lr;
-    y = double(e >= prctile(e, 100 * length(find(responses == -1))/length(responses)));
+
+    % Percentile is percent of "no" answers for current subject.
+    y = double(e >= prctile(e, 100 - yesses(i)));
     y(y == 0) = -1;
 
     TP = sum((responses==1)&(y==1));
@@ -218,6 +224,10 @@ for i = 1:n
 end
 
 bal_accuracy = (specificity + sensitivity)/2;
+
+% Create table and print for easy viewing.
+T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
+    'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"])
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
