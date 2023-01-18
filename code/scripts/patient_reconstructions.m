@@ -88,7 +88,7 @@ for i = 1:n
     %%%%% Compare responses to synthetic %%%%% 
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
 
-    e = stimuli_matrix' * reconstructions_binned_lr;
+    e = stimuli_matrix' * reconstructions_binned_cs;
 
     % Percentile is percent of "no" answers for current subject.
     y = double(e >= prctile(e, 100 - yesses(i)));
@@ -227,7 +227,8 @@ bal_accuracy = (specificity + sensitivity)/2;
 
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
-    'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"])
+    'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
+    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
