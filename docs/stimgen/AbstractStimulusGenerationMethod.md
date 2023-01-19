@@ -42,25 +42,20 @@ class method.
 
 **OUTPUTS:**
 
-- stim: `n x self.n_trials` numerical vector,
+- stimuli_matrix: `n x self.n_trials` numerical vector,
 the stimulus waveform,
 where `n` is `self.get_nfft() + 1`.
 
 - Fs: `1x1` numerical scalar,
 the sample rate in Hz.
 
-- spect: `m x self.n_trials` numerical vector,
+- spect_matrix: `m x self.n_trials` numerical vector,
 the half-spectrum,
 where `m` is `self.get_nfft() / 2`,
 in dB.
 
-- binned_repr: `self.n_bins x self.n_trials` numerical vector,
+- binned_repr_matrix: `self.n_bins x self.n_trials` numerical vector,
 the binned representation.
-
-- frequency_vector: `m x self.n_trials` numerical vector,
-the frequencies associated with the spectrum,
-where `m` is `self.get_nfft() / 2`,
-in Hz.
 
 
 
