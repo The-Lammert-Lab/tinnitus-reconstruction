@@ -128,7 +128,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % Set properties from a struct holding config options.
             % 
             % See also: 
-            % * yaml.loadFile
+            % yaml.loadFile
 
             if isa(options, 'char')
                 options = yaml.loadFile(options);

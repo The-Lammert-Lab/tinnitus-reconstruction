@@ -82,7 +82,7 @@ Set properties from a struct holding config options.
 
 
 !!! info "See Also"
-    * [* yaml.loadFile](../* yaml/#loadfile)
+    * [yaml.loadFile](../yaml/#loadfile)
 
 
 
