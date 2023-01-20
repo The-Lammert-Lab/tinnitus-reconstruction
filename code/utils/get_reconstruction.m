@@ -108,6 +108,9 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
 
     n_trials = round(options.fraction * length(stimuli_matrix(1, :)));
 
+    corelib.verb(options.verbose, 'INFO: get_reconstruction', ...
+        ['Computing reconstructions using ' num2str(n_trials), ' trials.'])
+
     responses_output = responses(1:n_trials);
     stimuli_matrix_output = stimuli_matrix(:, 1:n_trials);
     
@@ -126,30 +129,30 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
         for i = 1:options.bootstrap
             ind = round((length(responses_bs)-1) * rand(n_samples, 1)) + 1;
             switch options.method
-            case 'cs'
-                x = cs(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma, 'verbose', options.verbose);
-            case 'cs_nb'
-                x = cs_no_basis(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma);
-            case 'linear'
-                x = gs(responses_bs(ind), stimuli_matrix_bs(:, ind)');
-            otherwise
-                error('Unknown method')
+                case 'cs'
+                    x = cs(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma, 'verbose', options.verbose);
+                case 'cs_nb'
+                    x = cs_no_basis(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma);
+                case 'linear'
+                    x = gs(responses_bs(ind), stimuli_matrix_bs(:, ind)');
+                otherwise
+                    error('Unknown method')
             end
             r_bootstrap(i) = corr(x, options.target);
-        end        
+        end
     else
         r_bootstrap = [];
     end
 
     switch options.method
-    case 'cs'
-        x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma, 'verbose', options.verbose);
-    case 'cs_nb'
-        x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
-    case 'linear'
-        x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
-    otherwise
-        error('Unknown method')
+        case 'cs'
+            x = cs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma, 'verbose', options.verbose);
+        case 'cs_nb'
+            x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
+        case 'linear'
+            x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
+        otherwise
+            error('Unknown method')
     end
 
 end % function
