@@ -102,11 +102,11 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
 
     %% Reconstruction Step
     if ~isinf(options.use_n_trials) && options.use_n_trials <= length(stimuli_matrix) 
-        conv_factor = options.use_n_trials / length(stimuli_matrix);
+        conv_factor = options.use_n_trials / size(stimuli_matrix, 2);
         options.fraction = conv_factor * options.fraction;
     end
 
-    n_trials = round(options.fraction * length(stimuli_matrix(1, :)));
+    n_trials = round(options.fraction * size(stimuli_matrix, 2));
 
     corelib.verb(options.verbose, 'INFO: get_reconstruction', ...
         ['Computing reconstructions using ' num2str(n_trials), ' trials.'])
