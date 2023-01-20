@@ -88,8 +88,9 @@ for i = 1:n
     %%%%% Compare responses to synthetic %%%%% 
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
 
-    e = stimuli_matrix' * reconstructions_binned_cs;
-
+%     e = stimuli_matrix' * reconstructions_binned_lr;
+    e = (stimuli_matrix' - mean(stimuli_matrix')) * (reconstructions_binned_lr - mean(reconstructions_binned_lr));
+    
     % Percentile is percent of "no" answers for current subject.
     y = double(e >= prctile(e, 100 - yesses(i)));
     y(y == 0) = -1;
@@ -120,7 +121,7 @@ for i = 1:n
     xlim([1, config.n_bins]);
 
     % Label only last row
-    if i > rows
+    if tile_num >= rows*(cols-1)
         xlabel('Bin #', 'FontSize', 16)
     end
 
@@ -135,9 +136,11 @@ for i = 1:n
     % CS
     if CS
         if i == n && mod(n, 2)
-            nexttile(t_binned, [1,2])
+            tile = nexttile(t_binned, [1,2]);
+            tile_num = tilenum(tile);
         else
-            nexttile(t_binned)
+            tile = nexttile(t_binned);
+            tile_num = tilenum(tile);
         end
     
         plot(my_normalize(reconstructions_binned_cs), linecolor, ...
@@ -146,7 +149,7 @@ for i = 1:n
         xlim([1, config.n_bins]);
     
         % Label only last row
-        if i > rows
+        if tile_num >= rows*(cols-1)
             xlabel('Bin #', 'FontSize', 16)
         end
     
@@ -184,7 +187,7 @@ for i = 1:n
     xlim([0, config.max_freq]);
 
     % Label only last row
-    if i > rows
+    if tile_num >= rows*(cols-1)
         xlabel('Frequency (Hz)', 'FontSize', 16)
     end
 
@@ -199,9 +202,11 @@ for i = 1:n
     % CS
     if CS
         if i == n && mod(n, 2)
-            nexttile(t_unbinned, [1,2])
+            tile = nexttile(t_unbinned, [1,2]);
+            tile_num = tilenum(tile);
         else
-            nexttile(t_unbinned)
+            tile = nexttile(t_unbinned);
+            tile_num = tilenum(tile);
         end
     
         % Unbin
@@ -214,7 +219,7 @@ for i = 1:n
         xlim([0, config.max_freq]);
     
         % Label only last row
-        if i > rows
+        if tile_num >= rows*(cols-1) 
             xlabel('Frequency (Hz)', 'FontSize', 16)
         end
     
