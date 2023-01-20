@@ -117,7 +117,7 @@ plot(ax(2, 1), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_buzzing(indic
 for ii = 1:n_traces
     this_reconstruction = T3_buzzing.reconstructions_lr_1{ii};
     unbinned_this_reconstruction = stimgen.binnedrepr2spect(this_reconstruction);
-    unbinned_this_reconstruction(unbinned_this_reconstruction == 0) = NaN;
+    unbinned_this_reconstruction(unbinned_this_reconstruction == -100) = NaN;
     p = plot(ax(2, 1), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
@@ -143,7 +143,7 @@ plot(ax(2, 2), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_roaring(indic
 for ii = 1:n_traces
     this_reconstruction = T3_roaring.reconstructions_lr_1{ii};
     unbinned_this_reconstruction = stimgen.binnedrepr2spect(this_reconstruction);
-    unbinned_this_reconstruction(unbinned_this_reconstruction == 0) = NaN;
+    unbinned_this_reconstruction(unbinned_this_reconstruction == -100) = NaN;
     p = plot(ax(2, 2), 1e-3 * f(indices_to_plot, 1), my_normalize(unbinned_this_reconstruction(indices_to_plot)), 'Color', cmap(ii, :));
     p.Color(4) = 0.8;
 end
