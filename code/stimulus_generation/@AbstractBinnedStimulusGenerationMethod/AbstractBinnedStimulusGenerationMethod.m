@@ -131,7 +131,7 @@ methods
         % spect2binnedrepr
 
         B = self.get_freq_bins();
-        T = zeros(length(B), size(binned_repr, 2));
+        T = -100 * ones(length(B), size(binned_repr, 2));
         for bin_num = 1:self.n_bins
             T(B == bin_num, :) = repmat(binned_repr(bin_num, :), sum(B == bin_num), 1);
         end
