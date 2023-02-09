@@ -5,40 +5,24 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
-reconstructions_binned_lr = cell(length(config_files), 1);
-reconstructions_binned_cs = cell(length(config_files), 1);
-ID_nums = cell(length(config_files), 1);
-config = cell(length(config_files), 1);
+CS = true;
+verbose = true;
 
-%% Generate reconstructions
-for i = 1:length(config_files)
-    config{i} = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
-    ID_nums{i} = extractAfter(config{i}.subject_ID, '_');
+% Fields to keep for comparing configs
+keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
+    'min_freq', 'max_freq', 'duration', 'n_bins', 'stimuli_type', ...
+    'min_bins', 'max_bins'};
 
-    reconstructions_binned_lr{i} = get_reconstruction('config', config{i}, ...
-        'method', 'linear', ...
-        'verbose', true, ...
-        'data_dir', data_dir);
-    reconstructions_binned_cs{i} = get_reconstruction('config', config{i}, ...
-        'method', 'cs', ...
-        'verbose', true, ...
-        'data_dir', data_dir);
-end
+n = length(config_files);
 
-% Get stimgen and Fs from first config
-stimgen = eval([char(config{1}.stimuli_type), 'StimulusGeneration()']);
-stimgen = stimgen.from_config(config{1});
-Fs = stimgen.Fs;
-
-% Fields to remove for comparing configs
-% TODO: Change to listing fieldnames to keep
-fields = {'experiment_name', 'subject_ID', 'data_dir', ...
-    'stimuli_save_type', 'follow_up', 'follow_up_version'};
+% Pre-allocate
+sensitivity = zeros(n, 1);
+specificity = zeros(n, 1);
+accuracy = zeros(n, 1);
+yesses = zeros(n, 1);
 
 %% Plot setup
-CS = true;
-
-rows = ceil(length(config_files)/2);
+rows = ceil(n/2);
 
 if CS
     cols = 4;
@@ -46,7 +30,7 @@ else
     cols = 2;
 end
 
-label_y = 1:(rows*cols)/rows:rows*cols;
+label_y = 1:cols:rows*cols;
 
 linewidth = 1.5;
 linecolor = 'b';
@@ -60,12 +44,70 @@ t_binned = tiledlayout(f_binned, rows, cols);
 f_unbinned = figure;
 t_unbinned = tiledlayout(f_unbinned, rows, cols);
 
-% Loop and plot
-for i = 1:length(config_files)
+%% Loop and plot
+for i = 1:n
+    %%%%% Get data %%%%%
+    
+    % Keep previous config obj. and rm_fields for setting comparison
+    if i > 1
+        prev_config = config;
+        prev_rm_fields = rm_fields;
+        prev_names = names;
+    end
+    
+    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+
+    % Skip config files with target signals (healthy controls)
+    if isfield(config, 'target_signal') && ~isempty(config.target_signal)
+        continue
+    end
+
+    % Get subject ID number 
+    ID_num = extractAfter(config.subject_ID, '_');
+    if isempty(ID_num)
+        ID_num = '???';
+    end
+
+    % Non-critical fields in current config
+    names = fieldnames(config);
+    rm_fields = ~ismember(names, keep_fields);
+
+    % Get reconstructions
+    [reconstructions_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
+        'method', 'linear', ...
+        'verbose', verbose, ...
+        'data_dir', data_dir);
+
+    if CS
+        reconstructions_binned_cs = get_reconstruction('config', config, ...
+            'method', 'cs', ...
+            'verbose', verbose, ...
+            'data_dir', data_dir);
+    end
+
+    %%%%% Compare responses to synthetic %%%%% 
+    yesses(i) = 100 * length(responses(responses == 1))/length(responses);
+
+%     e = stimuli_matrix' * reconstructions_binned_lr;
+    e = (stimuli_matrix' - mean(stimuli_matrix')) * (reconstructions_binned_lr - mean(reconstructions_binned_lr));
+    
+    % Percentile is percent of "no" answers for current subject.
+    y = double(e >= prctile(e, 100 - yesses(i)));
+    y(y == 0) = -1;
+
+    TP = sum((responses==1)&(y==1));
+    FP = sum((responses==-1)&(y==1));
+    FN = sum((responses==1)&(y==-1));
+    TN = sum((responses==-1)&(y==-1));
+
+    specificity(i) = TN/(TN+FP);
+    sensitivity(i) = TP/(TP+FN);
+    accuracy(i) = (TP + TN) / (TP + TN + FP + FN);
+
     %%%%% Binned %%%%%
 
     % Linear
-    if i == length(config_files) && mod(length(config_files), 2)
+    if i == n && mod(n, 2)
         tile = nexttile(t_binned, [1,2]);
         tile_num = tilenum(tile);
     else
@@ -73,13 +115,13 @@ for i = 1:length(config_files)
         tile_num = tilenum(tile);
     end
 
-    plot(my_normalize(reconstructions_binned_lr{i}), linecolor, ...
+    plot(my_normalize(reconstructions_binned_lr), linecolor, ...
         'LineWidth', linewidth);
 
-    xlim([1, config{i}.n_bins]);
+    xlim([1, config.n_bins]);
 
     % Label only last row
-    if i > rows
+    if tile_num >= rows*(cols-1)
         xlabel('Bin #', 'FontSize', 16)
     end
 
@@ -88,42 +130,46 @@ for i = 1:length(config_files)
         ylabel('Power (dB)', 'FontSize', 16);
     end
 
-    title(['Subject ', ID_nums{i}, ' - Linear'], 'FontSize', 18);
+    title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 
     % CS
     if CS
-        if i == length(config_files) && mod(length(config_files), 2)
-            nexttile(t_binned, [1,2])
+        if i == n && mod(n, 2)
+            tile = nexttile(t_binned, [1,2]);
+            tile_num = tilenum(tile);
         else
-            nexttile(t_binned)
+            tile = nexttile(t_binned);
+            tile_num = tilenum(tile);
         end
     
-        plot(my_normalize(reconstructions_binned_cs{i}), linecolor, ...
+        plot(my_normalize(reconstructions_binned_cs), linecolor, ...
             'LineWidth', linewidth);
     
-        xlim([1, config{i}.n_bins]);
+        xlim([1, config.n_bins]);
     
         % Label only last row
-        if i > rows
+        if tile_num >= rows*(cols-1)
             xlabel('Bin #', 'FontSize', 16)
         end
     
-        title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
+        title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
         set(gca, 'yticklabels', [], 'FontWeight', 'bold')
     end
 
     %%%%% Unbinned %%%%%
 
     % Create a new stimgen object if current config settings are different
-    if i > 1 && ~isequal(rmfield(config{i}, fields), rmfield(config{i-1}, fields))
-        stimgen = eval([char(config{i}.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config{i});
-        Fs = stimgen.Fs;
+    if i == 1
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
+    elseif ~isequal(rmfield(config, names(rm_fields)), rmfield(prev_config, prev_names(prev_rm_fields)))
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
     end
 
     % Linear
-    if i == length(config_files) && mod(length(config_files), 2)
+    if i == n && mod(n, 2)
         tile = nexttile(t_unbinned, [1,2]);
         tile_num = tilenum(tile);
     else
@@ -132,23 +178,16 @@ for i = 1:length(config_files)
     end
 
     % Unbin
-    recon_binrep = rescale(reconstructions_binned_lr{i}, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-
-    freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
-    indices_to_plot = freqs(:, 1) <= config{i}.max_freq;
-
-    unbinned_lr = stimgen.binnedrepr2spect(reconstructions_binned_lr{i});
-    unbinned_lr(unbinned_lr == 0) = NaN;
+    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstructions_binned_lr, stimgen, config.max_freq);
 
     % Plot
     plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
         linecolor, 'LineWidth', linewidth);
 
-    xlim([0, config{i}.max_freq]);
+    xlim([0, config.max_freq]);
 
     % Label only last row
-    if i > rows
+    if tile_num >= rows*(cols-1)
         xlabel('Frequency (Hz)', 'FontSize', 16)
     end
 
@@ -157,39 +196,54 @@ for i = 1:length(config_files)
         ylabel('Power (dB)', 'FontSize', 16);
     end
 
-    title(['Subject ', ID_nums{i}, ' - Linear'], 'FontSize', 18);
+    title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
 
     % CS
     if CS
-        if i == length(config_files) && mod(length(config_files), 2)
-            nexttile(t_unbinned, [1,2])
+        if i == n && mod(n, 2)
+            tile = nexttile(t_unbinned, [1,2]);
+            tile_num = tilenum(tile);
         else
-            nexttile(t_unbinned)
+            tile = nexttile(t_unbinned);
+            tile_num = tilenum(tile);
         end
     
         % Unbin
-        recon_binrep = rescale(reconstructions_binned_cs{i}, -20, 0);
-        recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-    
-        freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
-        indices_to_plot = freqs(:, 1) <= config{i}.max_freq;
-    
-        unbinned_cs = stimgen.binnedrepr2spect(reconstructions_binned_cs{i});
-        unbinned_cs(unbinned_cs == 0) = NaN;
+        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstructions_binned_cs, stimgen, config.max_freq);
     
         % Plot
         plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
             linecolor, 'LineWidth', linewidth);
     
-        xlim([0, config{i}.max_freq]);
+        xlim([0, config.max_freq]);
     
         % Label only last row
-        if i > rows
+        if tile_num >= rows*(cols-1) 
             xlabel('Frequency (Hz)', 'FontSize', 16)
         end
     
-        title(['Subject ', ID_nums{i}, ' - CS'], 'FontSize', 18);
+        title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
         set(gca, 'yticklabels', [], 'FontWeight', 'bold')
     end
 end
+
+bal_accuracy = (specificity + sensitivity)/2;
+
+% Create table and print for easy viewing.
+T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
+    'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
+    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+
+%% Local functions
+function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
+    recon_binrep = rescale(binned_recon, -20, 0);
+    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+    
+    freqs = linspace(1, floor(stimgen.Fs/2), length(recon_spectrum))';
+    indices_to_plot = freqs(:, 1) <= max_freq;
+    
+    unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
+    unbinned_recon(unbinned_recon == 0) = NaN;
+end
+
