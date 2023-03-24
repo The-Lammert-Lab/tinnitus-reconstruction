@@ -491,7 +491,9 @@ The authors declare no competing interests.}%
 \begin{abstract}
   \textit{Goal:} This study validates an approach to characterizing the sounds experienced by tinnitus patients via reverse correlation, with potential for characterizing a wider range of sounds than currently possible.
   \textit{Methods:} Ten normal-hearing subjects assessed the subjective similarity of random auditory stimuli and target tinnitus-like sounds (“buzzing” and “roaring”). Reconstructions of the targets were obtained by regressing subject responses on the stimuli, and were compared for accuracy to the frequency spectra of the targets using Pearson's $r$.
-  \textit{Results:} Reconstruction accuracy was significantly higher than chance across subjects: buzzing ($M=0.53$, $SD=0.27$): $t(9)=5.766$, $p<0.001$; roaring ($M=0.57$, $SD=0.30$): $t(9)=5.76$, $p<0.001$.
+  \textit{Results:} Reconstruction accuracy was significantly higher than chance across subjects: buzzing: $0.52 \pm 0.27$ (mean $\pm$ s.d.), $t(9) = 5.766$, $p < 0.001$;
+  roaring: $0.62 \pm 0.23$, $t(9) = 5.76$, $p < 0.001$;
+  combined: $0.57 \pm 0.25$, $t(19) = 7.542$, $p < 0.001$.
   \textit{Conclusion:} Reverse correlation can accurately reconstruct non-tonal tinnitus-like sounds in normal-hearing subjects,
   indicating its potential for characterizing the sounds experienced by patients with non-tonal tinnitus.
 % The purpose of this document is to illustrate how one should prepare manuscripts for submission to the IEEE Open Journal of Engineering in Medicine and Biology (OJEMB). Please notice that this is the template for TECHNOLOGY LETTERS. These are short manuscripts with primary focus on the development of new devices, methods, and technologies. The material must be organized in a main manuscript body and a section entitled Supplementary Materials. The main manuscript body should be limited to 1,000 words and the material should be organized in the following sections (in the order shown here): Introduction, Materials and Methods, Results, Discussion, Conclusions. Authors can include in the main manuscript body up to 3 display items (i.e. figures and tables). In addition, the main manuscript body should include an abstract and up to 20 references. The references are not considered in the 1,000-word count. The abstract should be organized in subsections as shown here (i.e., Goal, Methods, Results, Conclusions). An impact statement should be included. The impact statement should be a short paragraph of no more than 30 words. Additional material should be included in the Supplementary Materials section of the manuscript. The Supplementary Materials section should either be organized in sections as per the main manuscript body (using up to 4,000 words) or it should be used to provide readers with a set of up to 10 additional display items (i.e. figures and tables). \textit{Methods}: Use this document as a template if you are using Latex. Otherwise, use this document as an instruction set. \textit{Results}: Paper titles should be written in uppercase and lowercase letters as shown above. Do not cite references in the abstract. Do not delete the blank line immediately above the abstract; it sets the footnote at the bottom of this column. The abstract should not exceed 150 words. \textit{Conclusions}: Preparing carefully your manuscript will lead to enhanced readability.
@@ -530,7 +532,7 @@ in a habituation therapy term \textit{sound therapy},
 or as part of cognitive behavioral therapy \cite{tunkelClinicalPracticeGuideline2014}.
 Critically, sound therapy outcomes improve when closely informed by the patient's internal tinnitus experience \cite{okamotoListeningTailormadeNotched2010,schaetteAcousticStimulationTreatments2010,steinInhibitioninducedPlasticityTinnitus2015}.
 However, existing strategies for characterizing tinnitus sounds, such as \textit{pitch matching} (PM),
-are best suited for patients whose tinnitus resembles pure tones (\eg ringing), which may represent only $20-50\%$ of patients \cite{henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017}.
+are best suited for patients whose tinnitus resembles pure tones (\eg ringing), which may represent about $50\%$ of patients \cite{henryAuditoryTestResult2009,ukaegbeTinnitusItsEffect2017,vajsakovicPrinciplesMethodsPsychoacoustic2021}.
 There is a need for methods to characterize nontonal (\eg buzzing, roaring) tinnitus \cite{henryMeasurementTinnitus2016,norenaPsychoacousticCharacterizationTinnitus2002}.
 
 
@@ -546,7 +548,7 @@ RC asks participants to render subjective judgments over random stimuli,
 and reconstructs the latent signal as a linear combination of stimuli.
 RC is closely related to Wiener theory,
 which has inspired ``white-noise'' approaches to system characterization in physiology
-\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978} and engineering \cite{ljungMeasureLackFit1978}.
+\cite{ringachReverseCorrelationNeurophysiology2004,marmarelisWhiteNoiseMethodSystem1978} and engineering \cite{ljungSystemIdentificationTheory1998}.
 
 % INTRO PARAGRAPH 3/3
 Here, we validate RC as a method for characterizing a more complete psychoacoustic tinnitus spectrum (PTS) for tinnitus sounds.
@@ -598,10 +600,11 @@ Two spectrally complex and complementary target sounds (``buzzing'' and ``roarin
 
 \subsection{Experiment}
 
-Ten ($n=10$) normal-hearing subjects listened to $A-X$ trials containing a target sound ($A$) followed by a stimulus ($X$). $X$ was randomly generated for each trial, while $A$ remained the same within a block of $100$ trials (Fig. \ref{fig:experimentdiagram}).
+Ten ($n=10$) normal-hearing subjects listened to \textit{A-X} trials containing a target sound ($A$) followed by a stimulus ($X$). $X$ was randomly generated for each trial, while $A$ remained the same within a block of $100$ trials (Fig. \ref{fig:experimentdiagram}).
 Subjects completed two (2) blocks per target sound ($p=200$ total trials per subject).
 Subjects were told that some stimuli had $A$ embedded in them, and were instructed to respond ``yes'' to such stimuli, otherwise ``no.''
-Subjects listened over earphones at a self-determined comfortable level.
+Subjects listened over earphones at a self-determined comfortable level, which they adjusted themselves while listening to sample stimuli.
+Presentation level (in dB sound pressure level (SPL)) was not recorded.
 Procedures were approved by the UMass IRB.
 
 \begin{figure}[t]
@@ -667,9 +670,17 @@ Thus, the ideal subject has precise knowledge of every stimulus and responds acc
 \section{Results}
 
 Figure \ref{fig:reconstructions} shows the distribution of Pearson's $r$ for human, ideal, and random subject responses.
-Human accuracies were generally higher than random,
-with some approaching \textit{ideal}. 
-Mean human accuracy was significantly different from $0$ (i.e., mean \textit{random} accuracy) in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
+Human accuracy is statistically significantly higher than random chance and for some subjects, approaches the ideal case.
+% Mean human accuracy was significantly different from $0$ (i.e., mean \textit{random} accuracy) in all conditions: buzzing: $t(9) = 5.766$, $p < 0.001$; roaring: $t(9) = 5.76$, $p < 0.001$; combined: $t(19) = 7.542$, $p < 0.001$.
+Accuracy from the random subject was $0.00 \pm 0.44$ (mean $\pm$ st.dev.) for buzzing and $0.00 \pm 0.39$ for roaring,
+while mean accuracy from human responses was significantly different from $0$ in all conditions:
+buzzing: $0.52 \pm 0.27$, $t(9) = 5.766$, $p < 0.001$;
+roaring: $0.62 \pm 0.23$, $t(9) = 5.76$, $p < 0.001$;
+combined: $0.57 \pm 0.25$, $t(19) = 7.542$, $p < 0.001$.
+From Figure \ref{fig:reconstructions},
+it appears that the distribution of buzzing results differs from that of the roaring results,
+however the difference between buzzing and roaring is not statistically significant
+(two-way ANOVA across subjects ($F(13) = 2.94$, $p > 0.05$) and target signals ($F(1) = 2.44$, $p > 0.05$)).
 Figure \ref{fig:spectra} plots the most accurate human reconstructions over the target sound spectra.
 
 \begin{figure}[ht]
@@ -696,13 +707,14 @@ Figure \ref{fig:spectra} plots the most accurate human reconstructions over the 
 
 \section{Conclusion}
 
-Our results show that RC can accurately reconstruct the PTS of complex, non-tonal, tinnitus-like sounds, capturing the most salient features of the target.
+Our results show that RC can accurately reconstruct the frequency spectrum of certain relevant non-tonal tinnitus sounds.
 Reconstruction accuracies observed here are below the simulated ideal, which may be attributed to noisy responses universally observed in applications of RC, and which may be mitigated by further optimizing the experimental protocol, stimulus generation, and reconstruction method.
 For example, recent approaches to improving RC reconstruction methods can boost efficiency, noise robustness and overall accuracy \cite{comptonStimulusWhiteningImproves2022a}.
 Subjects completed the required number of trials within 10 minutes,
 indicating that this procedure can be conducted in a single clinical visit.
 RC may therefore be useful as the basis for a clinical assay to characterize a wider variety of tinnitus percepts than currently possible.
-Future work will focus on validating this approach in patients suffering from tinnitus.
+Future work will focus on validating this approach with larger sample sizes, with more target signals,
+stricter sound pressure level (SPL) control.
 
 % A conclusion section is required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the major findings and significance of the work or suggest applications and extensions. Do not exceed 300 words for the conclusion section.\\
 % \\
