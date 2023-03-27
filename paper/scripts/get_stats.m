@@ -1,6 +1,7 @@
 %% Compute stats used in the main paper
 
 T2 = T(T.n_bins == 8, :);
+groupsummary(T2, "target_signal_name", ["mean", "std"], ["r_lr_bins_1", "r_synth", "r_rand"])
 
 %% Stats for buzzing
 
