@@ -47,6 +47,7 @@ function [distribution] = build_distribution(self, save_path)
     pxx = abs(Y(1:Fs_file/2 + 1));
     
     power_spectra = zeros(length(pxx), length(filenames));
+    power_spectra(:, 1) = 10*log10(pxx);
 
     for ii = 2:length(filenames)
         [y, Fs_file] = audioread(pathlib.join(sound_dir, filenames{ii}));
