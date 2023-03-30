@@ -70,7 +70,6 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     
     % fill the bins
     filled_bins = zeros(length(n_bins_to_fill), 1);
-    X = -20 * ones(nfft/2, 1);
     for ii = 1:n_bins_to_fill
         % select a bin at random from the list
         random_bin_index = 0;
@@ -84,14 +83,9 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
         % remove that bin from the master list
         frequency_bin_list(frequency_bin_list==bin_to_fill) = [];
     end
-    % X = zeros(nfft/2,1);
-    % for itor = 1:self.n_bins
-    %     X(binnum==itor) = -20 * floor(2 * rand(1,1) .^ self.prob_f);
-    % end
-    % filled_bins = sort(filled_bins);
 
     % Synthesize Audio
-    stim = self.synthesize_audio(X, nfft);
+    stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
     binned_repr = -20 * ones(self.n_bins, 1);
