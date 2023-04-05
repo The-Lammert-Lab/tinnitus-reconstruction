@@ -57,7 +57,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     cont = true;
     count = 0;
     while cont
-        n_bins_to_fill = round(normrnd(self.n_bins_filled_mean, self.n_bins_filled_var));
+        n_bins_to_fill = round(normrnd(self.n_bins_filled_mean, sqrt(self.n_bins_filled_var)));
         if n_bins_to_fill > 0 && n_bins_to_fill <= self.n_bins
             cont = false;
         else

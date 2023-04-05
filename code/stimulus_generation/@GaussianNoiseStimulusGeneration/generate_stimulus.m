@@ -42,7 +42,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     binned_repr = zeros(self.n_bins, 1);
 
     for ii = 1:self.n_bins
-        this_amplitude_value = self.amplitude_mean + self.amplitude_var * randn();
+        this_amplitude_value = self.amplitude_mean + sqrt(self.amplitude_var) * randn();
         binned_repr(ii) = this_amplitude_value;
         spect(binnum==ii) = this_amplitude_value;
     end
