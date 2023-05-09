@@ -54,9 +54,9 @@ for i = 1:n
         prev_rm_fields = rm_fields;
         prev_names = names;
     end
-    
-    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
 
+    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+    
     % Skip config files with target signals (healthy controls)
     if isfield(config, 'target_signal') && ~isempty(config.target_signal)
         continue
@@ -73,23 +73,25 @@ for i = 1:n
     rm_fields = ~ismember(names, keep_fields);
 
     % Get reconstructions
-    [reconstructions_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-        'method', 'linear', ...
-        'verbose', verbose, ...
-        'data_dir', data_dir);
+    [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
+                                                                                    'method', 'linear', ...
+                                                                                    'verbose', verbose, ...
+                                                                                    'data_dir', data_dir ...
+                                                                                );
 
     if CS
-        reconstructions_binned_cs = get_reconstruction('config', config, ...
-            'method', 'cs', ...
-            'verbose', verbose, ...
-            'data_dir', data_dir);
+        reconstruction_binned_cs = get_reconstruction('config', config, ...
+                                                        'method', 'cs', ...
+                                                        'verbose', verbose, ...
+                                                        'data_dir', data_dir ...
+                                                    );
     end
 
     %%%%% Compare responses to synthetic %%%%% 
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
 
 %     e = stimuli_matrix' * reconstructions_binned_lr;
-    e = (stimuli_matrix' - mean(stimuli_matrix')) * (reconstructions_binned_lr - mean(reconstructions_binned_lr));
+    e = (stimuli_matrix - mean(stimuli_matrix,2))' * (reconstruction_binned_lr - mean(reconstruction_binned_lr));
     
     % Percentile is percent of "no" answers for current subject.
     y = double(e >= prctile(e, 100 - yesses(i)));
@@ -115,7 +117,7 @@ for i = 1:n
         tile_num = tilenum(tile);
     end
 
-    plot(my_normalize(reconstructions_binned_lr), linecolor, ...
+    plot(my_normalize(reconstruction_binned_lr), linecolor, ...
         'LineWidth', linewidth);
 
     xlim([1, config.n_bins]);
@@ -143,7 +145,7 @@ for i = 1:n
             tile_num = tilenum(tile);
         end
     
-        plot(my_normalize(reconstructions_binned_cs), linecolor, ...
+        plot(my_normalize(reconstruction_binned_cs), linecolor, ...
             'LineWidth', linewidth);
     
         xlim([1, config.n_bins]);
@@ -178,7 +180,7 @@ for i = 1:n
     end
 
     % Unbin
-    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstructions_binned_lr, stimgen, config.max_freq);
+    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq);
 
     % Plot
     plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
@@ -210,7 +212,7 @@ for i = 1:n
         end
     
         % Unbin
-        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstructions_binned_cs, stimgen, config.max_freq);
+        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq);
     
         % Plot
         plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
@@ -228,12 +230,61 @@ for i = 1:n
     end
 end
 
+%% Accuracy
 bal_accuracy = (specificity + sensitivity)/2;
 
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
     'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
     'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+
+%% Predict responses with cross validation
+folds = 5;
+
+% NOTE: This breaks if not all the subjects did the same number of trials
+leave_out = round(length(responses) / folds);
+
+predicted_responses_cs = zeros(length(responses), n);
+predicted_responses_lr = zeros(length(responses), n);
+given_responses = zeros(length(responses), n);
+corr_lr = zeros(1,n); 
+corr_cs = zeros(1,n);
+
+for ii = 1:n
+    % Get responses and stimuli
+    config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
+    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
+    for jj = 1:folds
+        % Shift data
+        responses = circshift(responses, leave_out);
+        stimuli_matrix = circshift(stimuli_matrix, leave_out, 2);
+
+        % Split data
+        responses_train = responses(1:size(responses,1)-leave_out);
+        responses_test = responses(size(responses,1)-leave_out+1:end);
+        stimuli_matrix_train = stimuli_matrix(:, 1:size(stimuli_matrix,2)-leave_out);
+        stimuli_matrix_test = stimuli_matrix(:, size(stimuli_matrix,2)-leave_out+1:end);
+
+        % Get reconstructions
+        gamma = get_gamma_from_config(config, verbose);
+
+        recon_cs = cs(responses_train, stimuli_matrix_train', gamma, 'verbose', verbose);
+        recon_lr = gs(responses_train, stimuli_matrix_train');
+
+        % Make predictions
+        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test');
+        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test');
+
+        % Store predictions
+        filled = nnz(predicted_responses_cs);
+        predicted_responses_cs(filled+1:filled+length(pred_cs), ii) = pred_cs;
+        predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
+        given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
+    end
+    corr_lr(1,ii) = corr(predicted_responses_lr(:,ii), given_responses(:,ii));
+    corr_cs(1,ii) = corr(predicted_responses_cs(:,ii), given_responses(:,ii));
+end
+
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
@@ -246,4 +297,3 @@ function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen,
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
 end
-
