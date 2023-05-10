@@ -35,15 +35,41 @@
 % See Also: 
 % AbstractStimulusGenerationMethod.subject_selection_process
 
-function [y, X] = subject_selection_process(target_signal, stimuli, n_samples)
+function [y, X] = subject_selection_process(target_signal, stimuli, n_samples, responses, options)
+    
+    arguments
+        target_signal (:,1) {mustBeNumeric}
+        stimuli (:,:) {mustBeNumeric, mustBeReal}
+        n_samples {mustBeNumeric, mustBePositive, mustBeInteger} = []
+        responses (:,1) {mustBeNumeric} = []
+        options.mean_zero {mustBeNumericOrLogical} = false
+        options.response_thresh char = ''
+    end
+
     if isempty(stimuli)
         X = round(rand(n_samples, length(target_signal)));
     else
         X = stimuli;
     end
 
-    % ideal selection
-    e = X * target_signal(:);
-    y = double(e >= prctile(e, 50));
+    % Projection
+    if options.mean_zero
+        e = (X - mean(X,2)) * (target_signal(:) - mean(target_signal(:)));
+    else
+        e = X * target_signal(:);
+    end
+
+    % Percentile is percent of "yes" or "no" answers if specified.
+    % Otherwise, it is 50.
+    if ~isempty(responses) && strcmp(options.response_thresh, 'yesses')
+        thresh = 100 * sum(responses == 1)/length(responses);
+    elseif ~isempty(responses) && strcmp(options.response_thresh, 'noes')
+        thresh = 100 * sum(responses == -1)/length(responses);
+    else
+        thresh = 50;
+    end
+
+    % Make selection
+    y = double(e >= prctile(e, thresh));
     y(y == 0) = -1;
 end

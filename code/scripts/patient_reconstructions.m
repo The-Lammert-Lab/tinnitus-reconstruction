@@ -6,7 +6,7 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 CS = true;
-verbose = true;
+verbose = false;
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -19,6 +19,7 @@ n = length(config_files);
 sensitivity = zeros(n, 1);
 specificity = zeros(n, 1);
 accuracy = zeros(n, 1);
+bal_accuracy = zeros(n, 1);
 yesses = zeros(n, 1);
 
 %% Plot setup
@@ -88,16 +89,16 @@ for i = 1:n
     end
 
     %%%%% Compare responses to synthetic %%%%% 
+
+    y = subject_selection_process(reconstruction_binned_cs, ...
+                                    stimuli_matrix', ...
+                                    [], ...
+                                    responses, ...
+                                    'mean_zero',true, ...
+                                    'response_thresh','noes' ...
+                                );
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
-
-%     e = stimuli_matrix' * reconstructions_binned_lr;
-    e = (stimuli_matrix - mean(stimuli_matrix,2))' * (reconstruction_binned_lr - mean(reconstruction_binned_lr));
-    
-    % Percentile is percent of "no" answers for current subject.
-    y = double(e >= prctile(e, 100 - yesses(i)));
-    y(y == 0) = -1;
-
-    [accuracy(i), sensitivity(i), specificity(i)] = get_accuracy_measures(responses, y);
+    [accuracy(i), bal_accuracy(i), sensitivity(i), specificity(i)] = get_accuracy_measures(responses, y);
 
     %%%%% Binned %%%%%
 
@@ -224,7 +225,7 @@ for i = 1:n
 end
 
 %% Accuracy
-bal_accuracy = (specificity + sensitivity)/2;
+% bal_accuracy = (specificity + sensitivity)/2;
 
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
@@ -237,12 +238,15 @@ folds = 5;
 % NOTE: This breaks if not all the subjects have the same number of trials
 leave_out = round(length(responses) / folds);
 
+% Initialize
 predicted_responses_cs = zeros(length(responses), n);
 predicted_responses_lr = zeros(length(responses), n);
 given_responses = zeros(length(responses), n);
 
-pred_acc_lr = zeros(n,1); 
 pred_acc_cs = zeros(n,1);
+pred_acc_lr = zeros(n,1); 
+pred_bal_acc_cs = zeros(n,1);
+pred_bal_acc_lr = zeros(n,1);
 
 for ii = 1:n
     % Get responses and stimuli
@@ -266,8 +270,20 @@ for ii = 1:n
         recon_lr = gs(responses_train, stimuli_matrix_train');
 
         % Make predictions
-        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test');
-        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test');
+        pred_cs = subject_selection_process(recon_cs, ...
+                                            stimuli_matrix_test', ...
+                                            [], ...
+                                            responses_train, ...
+                                            'mean_zero',true, ...
+                                            'response_thresh','noes' ...
+                                        );
+        pred_lr = subject_selection_process(recon_lr, ...
+                                            stimuli_matrix_test', ...
+                                            [], ...
+                                            responses_train, ...
+                                            'mean_zero',true, ...
+                                            'response_thresh','noes' ...
+                                        );
 
         % Store predictions
         filled = nnz(predicted_responses_cs(:, ii));
@@ -275,12 +291,12 @@ for ii = 1:n
         predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
         given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
     end
-    [pred_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
-    [pred_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
+    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
+    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
 end
 
-T_predictions = table(pred_acc_lr, pred_acc_cs, ...
-    'VariableNames', ["Linear Prediction Accuracy", "CS Prediction Accuracy"], ...
+T_predictions = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
+    'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
     'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
 %% Local functions
@@ -295,7 +311,7 @@ function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen,
     unbinned_recon(unbinned_recon == 0) = NaN;
 end
 
-function [accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
+function [accuracy, balanced_accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
     TP = sum((y==1)&(y_hat==1));
     FP = sum((y==-1)&(y_hat==1));
     FN = sum((y==1)&(y_hat==-1));
@@ -304,4 +320,5 @@ function [accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
     specificity = TN/(TN+FP);
     sensitivity = TP/(TP+FN);
     accuracy = (TP + TN) / (TP + TN + FP + FN);
+    balanced_accuracy = (sensitivity + specificity) / 2;
 end
