@@ -97,14 +97,7 @@ for i = 1:n
     y = double(e >= prctile(e, 100 - yesses(i)));
     y(y == 0) = -1;
 
-    TP = sum((responses==1)&(y==1));
-    FP = sum((responses==-1)&(y==1));
-    FN = sum((responses==1)&(y==-1));
-    TN = sum((responses==-1)&(y==-1));
-
-    specificity(i) = TN/(TN+FP);
-    sensitivity(i) = TP/(TP+FN);
-    accuracy(i) = (TP + TN) / (TP + TN + FP + FN);
+    [accuracy(i), sensitivity(i), specificity(i)] = get_accuracy_measures(responses, y);
 
     %%%%% Binned %%%%%
 
@@ -241,14 +234,15 @@ T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
 %% Predict responses with cross validation
 folds = 5;
 
-% NOTE: This breaks if not all the subjects did the same number of trials
+% NOTE: This breaks if not all the subjects have the same number of trials
 leave_out = round(length(responses) / folds);
 
 predicted_responses_cs = zeros(length(responses), n);
 predicted_responses_lr = zeros(length(responses), n);
 given_responses = zeros(length(responses), n);
-corr_lr = zeros(1,n); 
-corr_cs = zeros(1,n);
+
+pred_acc_lr = zeros(n,1); 
+pred_acc_cs = zeros(n,1);
 
 for ii = 1:n
     % Get responses and stimuli
@@ -276,15 +270,18 @@ for ii = 1:n
         pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test');
 
         % Store predictions
-        filled = nnz(predicted_responses_cs);
+        filled = nnz(predicted_responses_cs(:, ii));
         predicted_responses_cs(filled+1:filled+length(pred_cs), ii) = pred_cs;
         predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
         given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
     end
-    corr_lr(1,ii) = corr(predicted_responses_lr(:,ii), given_responses(:,ii));
-    corr_cs(1,ii) = corr(predicted_responses_cs(:,ii), given_responses(:,ii));
+    [pred_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
+    [pred_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
 end
 
+T_predictions = table(pred_acc_lr, pred_acc_cs, ...
+    'VariableNames', ["Linear Prediction Accuracy", "CS Prediction Accuracy"], ...
+    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
@@ -296,4 +293,15 @@ function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen,
     
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
+end
+
+function [accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
+    TP = sum((y==1)&(y_hat==1));
+    FP = sum((y==-1)&(y_hat==1));
+    FN = sum((y==1)&(y_hat==-1));
+    TN = sum((y==-1)&(y_hat==-1));
+
+    specificity = TN/(TN+FP);
+    sensitivity = TP/(TP+FN);
+    accuracy = (TP + TN) / (TP + TN + FP + FN);
 end
