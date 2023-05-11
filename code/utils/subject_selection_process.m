@@ -51,12 +51,14 @@
 function [y, X] = subject_selection_process(representation, stimuli, n_samples, responses, options)
     
     arguments
-        representation (:,1) {mustBeNumeric}
-        stimuli (:,:) {mustBeNumeric, mustBeReal}
-        n_samples {mustBeNumeric, mustBePositive, mustBeInteger} = []
+        representation (:,1) {mustBeReal}
+        stimuli (:,:) {mustBeReal}
+        n_samples {mustBePositive, mustBeInteger} = []
         responses (:,1) {mustBeNumeric} = []
-        options.mean_zero {mustBeNumericOrLogical} = false
-        options.response_thresh char = ''
+        options.mean_zero (1,1) logical = false
+        options.from_responses (1,1) logical = false
+        options.threshold {mustBePositive} = 50
+        options.verbose (1,1) logical = true
     end
 
     if isempty(stimuli)
@@ -72,14 +74,15 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         e = X * representation(:);
     end
 
-    % Percentile is percent of "yes" or "no" answers if specified.
-    % Otherwise, it is 50.
-    if ~isempty(responses) && strcmp(options.response_thresh, 'yesses')
-        thresh = 100 * sum(responses == 1)/length(responses);
-    elseif ~isempty(responses) && strcmp(options.response_thresh, 'noes')
+    % Threshold is percent of "no" answers in given responses or 50%.
+    % Thresh is percent of "no" answers in predicted resopnse.
+    if options.from_responses
+        if options.verbose
+            corelib.verb(options.verbose, 'INFO: subject_selection_process', 'setting threshold from responses')
+        end
         thresh = 100 * sum(responses == -1)/length(responses);
     else
-        thresh = 50;
+        thresh = options.threshold;
     end
 
     % Make selection

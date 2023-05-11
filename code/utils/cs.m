@@ -22,7 +22,8 @@ function x = cs(responses, Phi, Gamma, options)
         responses (:,1) {mustBeNumeric}
         Phi {mustBeNumeric}
         Gamma (1,1) {mustBeInteger, mustBeNonnegative} = 32
-        options.verbose = true
+        options.mean_zero (1,1) logical = false
+        options.verbose (1,1) logical = true
     end
     
     n_samples = length(responses);
@@ -30,6 +31,10 @@ function x = cs(responses, Phi, Gamma, options)
 
     if options.verbose
         waittext(0, 'init');
+    end
+
+    if options.mean_zero
+        Phi = Phi - mean(Phi,2);
     end
 
     Theta = zeros(n_samples, len_signal);
