@@ -108,19 +108,5 @@ If `Protocol()` is invoked, a GUI is automatically opened for the user to select
 
 -------
 
-### Protocol_2AFC
-
-Reverse Correlation Protocol for Cognitive Representations of Speech
-
-This function runs the "Two Alternative Forced Choice" experimental procedure of this project.
-
-It can be called in two ways:
-```matlab
-Protocol_2AFC() or Protocol_2AFC('config', 'path2config')
-```
-Where `'path2config'` is the file path to the desired config file.
-
-If `Protocol_2AFC()` is invoked, a GUI is automatically opened for the user to select the proper config file.
-
 
 
