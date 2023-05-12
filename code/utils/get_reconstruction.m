@@ -135,6 +135,8 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
                     x = cs_no_basis(responses_bs(ind), stimuli_matrix_bs(:, ind)', options.gamma);
                 case 'linear'
                     x = gs(responses_bs(ind), stimuli_matrix_bs(:, ind)');
+                case 'linear_ridge'
+                    x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', 'ridge', true);
                 otherwise
                     error('Unknown method')
             end
@@ -151,6 +153,8 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
             x = cs_no_basis(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', options.gamma);
         case 'linear'
             x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)');
+        case 'linear_ridge'
+            x = gs(responses(1:n_trials), stimuli_matrix(:, 1:n_trials)', 'ridge', true);
         otherwise
             error('Unknown method')
     end

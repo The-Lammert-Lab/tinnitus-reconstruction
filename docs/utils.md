@@ -318,8 +318,18 @@ Write the stimuli into the stimuli file.
 where `n` is the number of trials/samples
 and `m` is the dimensionality of the stimuli/spectrum/bins
 
+- Gamma: Positive scalar, default: 32
+optional value for zhangpassivegamma function.
+
+- mean_zero: `bool`, name-value, default: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
+
 **OUTPUTS:**
-- x: compressed sensing reconstruction of the signal.
+- x: `m x 1` vector,
+representing the compressed sensing reconstruction of the signal.
 
 
 
@@ -495,6 +505,42 @@ for values `values`.
 
 **OUTPUTS**
 y: `1x1` scalar, the sampled value
+
+
+
+
+
+-------
+
+### gs
+
+Returns the linear reconstruction of stimuli and responses.
+
+```matlab
+x = gs(responses, Phi)
+x = gs(responses, Phi, 'ridge', true, 'mean_zero', true)
+```
+
+**ARGUMENTS:**
+
+- responses: `n x 1` vector of 1 and -1 values,
+representing the subject's responses.
+
+- Phi: `n x m` numerical matrix,
+where m is the length of each stimulus 
+and n is the same length as the responses
+
+- ridge: `boolean`, name-value, default: `false`,
+a flag to for using ridge regression.
+
+- mean_zero: `boolean`, name-value, defaut: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+**OUTPUTS:**
+
+- x: `m x 1` vector,
+representing the linear reconstruction of the signal, 
+where m is the length of a stimulus. 
 
 
 
@@ -721,7 +767,8 @@ about how well the stimuli correspond to the representation.
 
 ```matlab
 y = subject_selection_process(representation, stimuli)
-y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'response_thresh', 'noes')
+y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
 [y, X] = subject_selection_process(representation, [], n_samples)
 ```
 
@@ -743,13 +790,20 @@ for stimuli, if the stimuli argument is empty.
 which contains only `-1` and `1` values,
 used to determine the threshold if using one of the custom options.
 
-- options.mean_zero: `bool`, default: false, 
+- mean_zero: `bool`, default: false, 
 representing a flag that centers the mean of the stimuli and representation.
 
-- options.response_thresh: `char`, either: `'yesses'` or `'noes'`, default: `''`,
-which determines by what measure the threshold 
-for choosing a "yes" response is determined. The default results in
-50% threshold. If using this option, `responses` must be passed as well.
+- from_responses: `bool`, name-value, default: `false`,
+a flag to determine the threshold from the given responses. 
+The default results in 50% threshold. 
+If using this option, `responses` must be passed as well.
+
+- threshold: Positive scalar, name-value, default: 50,
+representing a variable by which to manually set the response
+threshold. If `from_responses` is true, this will be ignored.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
 
 **OUTPUTS:**
 

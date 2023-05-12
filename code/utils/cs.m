@@ -13,8 +13,18 @@
 %       where `n` is the number of trials/samples
 %       and `m` is the dimensionality of the stimuli/spectrum/bins
 % 
+%   - Gamma: Positive scalar, default: 32
+%       optional value for zhangpassivegamma function.
+% 
+%   - mean_zero: `bool`, name-value, default: `false`,
+%       a flag for setting the mean of `Phi` to zero.
+% 
+%   - verbose: `bool`, name-value, default: `true`,
+%       a flag to print information messages
+% 
 % **OUTPUTS:**
-%   - x: compressed sensing reconstruction of the signal.
+%   - x: `m x 1` vector,
+%       representing the compressed sensing reconstruction of the signal.
 
 function x = cs(responses, Phi, Gamma, options)
 

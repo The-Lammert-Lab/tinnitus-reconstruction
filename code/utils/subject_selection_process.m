@@ -7,7 +7,8 @@
 % 
 % ```matlab
 %   y = subject_selection_process(representation, stimuli)
-%   y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'response_thresh', 'noes')
+%   y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+%   y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
 %   [y, X] = subject_selection_process(representation, [], n_samples)
 % ```
 % 
@@ -29,13 +30,20 @@
 %       which contains only `-1` and `1` values,
 %       used to determine the threshold if using one of the custom options.
 % 
-%   - options.mean_zero: `bool`, default: false, 
+%   - mean_zero: `bool`, default: false, 
 %       representing a flag that centers the mean of the stimuli and representation.
 % 
-%   - options.response_thresh: `char`, either: `'yesses'` or `'noes'`, default: `''`,
-%       which determines by what measure the threshold 
-%       for choosing a "yes" response is determined. The default results in
-%       50% threshold. If using this option, `responses` must be passed as well.
+%   - from_responses: `bool`, name-value, default: `false`,
+%       a flag to determine the threshold from the given responses. 
+%       The default results in 50% threshold. 
+%       If using this option, `responses` must be passed as well.
+% 
+%   - threshold: Positive scalar, name-value, default: 50,
+%       representing a variable by which to manually set the response
+%       threshold. If `from_responses` is true, this will be ignored.
+% 
+%   - verbose: `bool`, name-value, default: `true`,
+%       a flag to print information messages
 % 
 % **OUTPUTS:**
 % 

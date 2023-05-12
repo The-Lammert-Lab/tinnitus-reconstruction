@@ -75,7 +75,7 @@ for i = 1:n
 
     % Get reconstructions
     [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-                                                                                    'method', 'linear', ...
+                                                                                    'method', 'linear_ridge', ...
                                                                                     'verbose', verbose, ...
                                                                                     'data_dir', data_dir ...
                                                                                 );
@@ -90,7 +90,8 @@ for i = 1:n
     y_hat = subject_selection_process(reconstruction_binned_lr, ...
                                     stimuli_matrix', [], responses, ...
                                     'mean_zero', true, ...
-                                    'from_responses', true ...
+                                    'from_responses', true, ...
+                                    'verbose', verbose ...
                                 );
 
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
@@ -226,17 +227,22 @@ end
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
     'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
-    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))));
 
 %% Predict responses with cross validation
 folds = 5;
 
 % NOTE: This breaks if not all the subjects have the same number of trials
-leave_out = round(length(responses) / folds);
+fold_frac = round(length(responses) / folds);
 
 % Prediction settings
 mean_zero = true;
 from_responses = false;
+gs_ridge = true;
+
+% Threshold test vals
+linspace_n = 1000
+thresh_vals = linspace(10,90,linspace_n);
 
 % Initialize
 predicted_responses_cs = zeros(length(responses), n);
@@ -248,40 +254,68 @@ pred_acc_lr = zeros(n,1);
 pred_bal_acc_cs = zeros(n,1);
 pred_bal_acc_lr = zeros(n,1);
 
+pred_bal_acc_tune_cs = zeros(size(thresh_vals));
+pred_bal_acc_tune_lr = zeros(size(thresh_vals));
+
 for ii = 1:n
     % Get responses and stimuli
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
     [responses, stimuli_matrix] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
     for jj = 1:folds
         % Shift data
-        responses = circshift(responses, leave_out);
-        stimuli_matrix = circshift(stimuli_matrix, leave_out, 2);
+        responses = circshift(responses, fold_frac);
+        stimuli_matrix = circshift(stimuli_matrix, fold_frac, 2);
 
         % Split data
-        responses_train = responses(1:size(responses,1)-leave_out);
-        responses_test = responses(size(responses,1)-leave_out+1:end);
-        stimuli_matrix_train = stimuli_matrix(:, 1:size(stimuli_matrix,2)-leave_out);
-        stimuli_matrix_test = stimuli_matrix(:, size(stimuli_matrix,2)-leave_out+1:end);
+        responses_train = responses(1:size(responses,1)-(2*fold_frac));
+        responses_dev = responses(size(responses,1)-(2*fold_frac)+1:end-fold_frac);
+        responses_test = responses(size(responses,1)-fold_frac+1:end);
+
+        stimuli_matrix_train = stimuli_matrix(:, 1:size(stimuli_matrix,2)-(2*fold_frac));
+        stimuli_matrix_dev = stimuli_matrix(:, size(stimuli_matrix,2)-(2*fold_frac)+1:end-fold_frac);
+        stimuli_matrix_test = stimuli_matrix(:, size(stimuli_matrix,2)-fold_frac+1:end);
 
         % Get reconstructions
         gamma = get_gamma_from_config(config, verbose);
 
-        recon_cs = cs(responses_train, stimuli_matrix_train', gamma, 'verbose', verbose);
-        recon_lr = gs(responses_train, stimuli_matrix_train');
+        recon_cs = cs(responses_train, stimuli_matrix_train', gamma, ...
+                        'mean_zero', mean_zero, 'verbose', verbose);
+        recon_lr = gs(responses_train, stimuli_matrix_train', ...
+                        'ridge', gs_ridge, 'mean_zero', mean_zero);
 
-        % Make predictions
-        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test', ...
-                                            [], responses_train, ...
+        % Collect balanced accuracies for each threshold value using dev set
+        for kk = 1:length(thresh_vals)
+            pred_cs = subject_selection_process(recon_cs, stimuli_matrix_dev', [], [], ...
+                                                    'mean_zero', mean_zero, ...
+                                                    'threshold', thresh_vals(kk), ...
+                                                    'verbose', verbose ...
+                                                );
+
+            pred_lr = subject_selection_process(recon_lr, stimuli_matrix_dev', [], [], ...
+                                                    'mean_zero', mean_zero, ...
+                                                    'threshold', thresh_vals(kk), ...
+                                                    'verbose', verbose ...
+                                                );
+
+            [~, pred_bal_acc_tune_cs(kk), ~, ~] = get_accuracy_measures(responses_dev, pred_cs);
+            [~, pred_bal_acc_tune_lr(kk), ~, ~] = get_accuracy_measures(responses_dev, pred_lr);
+        end
+
+        % Identify best threshold values
+        [~, ind_cs] = max(pred_bal_acc_tune_cs);
+        [~, ind_lr] = max(pred_bal_acc_tune_lr);
+
+        % Make predictions on test data
+        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test', [], [], ...
                                             'mean_zero', mean_zero, ...
-                                            'from_responses', from_responses ...
+                                            'threshold', thresh_vals(ind_cs), ...
+                                            'verbose', verbose ...
                                         );
 
-        pred_lr = subject_selection_process(recon_lr, ...
-                                            stimuli_matrix_test', ...
-                                            [], ...
-                                            responses_train, ...
+        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test', [], [], ...
                                             'mean_zero', mean_zero, ...
-                                            'from_responses', from_responses ...
+                                            'threshold', thresh_vals(ind_lr), ...
+                                            'verbose', verbose ...
                                         );
 
         % Store predictions
@@ -290,11 +324,11 @@ for ii = 1:n
         predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
         given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
     end
-    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
-    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
+    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
+    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
 end
 
-T_predictions = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
+T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
     'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
     'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
