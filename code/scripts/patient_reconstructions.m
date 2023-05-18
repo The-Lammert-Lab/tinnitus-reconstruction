@@ -232,28 +232,15 @@ T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
 %% Predict responses with cross validation
 folds = 5;
 
-% NOTE: This breaks if not all the subjects have the same number of trials
-% TODO: Turn this into a function so that it won't break in that case.
-fold_frac = round(length(responses) / folds);
-
 % Prediction settings
 mean_zero = true;
 from_responses = false;
 gs_ridge = true;
 
 % Threshold test vals
-linspace_n = 200;
-thresh_vals = linspace(10,90,linspace_n);
+thresh_vals = linspace(10,90,200);
 
 % Initialize
-predicted_responses_cs = zeros(length(responses), n);
-predicted_responses_lr = zeros(length(responses), n);
-given_responses = zeros(length(responses), n);
-
-predicted_responses_on_train_cs = zeros(3*fold_frac*folds*length(responses), n);
-predicted_responses_on_train_lr = zeros(3*fold_frac*folds*length(responses), n);
-training_responses = zeros(3*fold_frac*folds*length(responses), n);
-
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
 pred_bal_acc_cs = zeros(n,1);
@@ -264,97 +251,24 @@ pred_acc_on_train_lr = zeros(n,1);
 pred_bal_acc_on_train_cs = zeros(n,1);
 pred_bal_acc_on_train_lr = zeros(n,1);
 
-pred_bal_acc_tune_cs = zeros(size(thresh_vals));
-pred_bal_acc_tune_lr = zeros(size(thresh_vals));
-
 for ii = 1:n
-    % Get responses and stimuli
+    % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
-    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
-    for jj = 1:folds
-        % Shift data
-        responses = circshift(responses, fold_frac);
-        stimuli_matrix = circshift(stimuli_matrix, fold_frac, 2);
-
-        % Split data
-        responses_train = responses(1:size(responses,1)-(2*fold_frac));
-        responses_dev = responses(size(responses,1)-(2*fold_frac)+1:end-fold_frac);
-        responses_test = responses(size(responses,1)-fold_frac+1:end);
-
-        stimuli_matrix_train = stimuli_matrix(:, 1:size(stimuli_matrix,2)-(2*fold_frac));
-        stimuli_matrix_dev = stimuli_matrix(:, size(stimuli_matrix,2)-(2*fold_frac)+1:end-fold_frac);
-        stimuli_matrix_test = stimuli_matrix(:, size(stimuli_matrix,2)-fold_frac+1:end);
-
-        % Get reconstructions
-        gamma = get_gamma_from_config(config, verbose);
-
-        recon_cs = cs(responses_train, stimuli_matrix_train', gamma, ...
-                        'mean_zero', mean_zero, 'verbose', verbose);
-        recon_lr = gs(responses_train, stimuli_matrix_train', ...
-                        'ridge', gs_ridge, 'mean_zero', mean_zero);
-
-        % Collect balanced accuracies for each threshold value using dev set
-        for kk = 1:length(thresh_vals)
-            pred_cs = subject_selection_process(recon_cs, stimuli_matrix_dev', [], [], ...
-                                                    'mean_zero', mean_zero, ...
-                                                    'threshold', thresh_vals(kk), ...
-                                                    'verbose', verbose ...
-                                                );
-
-            pred_lr = subject_selection_process(recon_lr, stimuli_matrix_dev', [], [], ...
-                                                    'mean_zero', mean_zero, ...
-                                                    'threshold', thresh_vals(kk), ...
-                                                    'verbose', verbose ...
-                                                );
-
-            [~, pred_bal_acc_tune_cs(kk), ~, ~] = get_accuracy_measures(responses_dev, pred_cs);
-            [~, pred_bal_acc_tune_lr(kk), ~, ~] = get_accuracy_measures(responses_dev, pred_lr);
-        end
-
-        % Identify best threshold values
-        [~, ind_cs] = max(pred_bal_acc_tune_cs);
-        [~, ind_lr] = max(pred_bal_acc_tune_lr);
-
-        % Make predictions on test data
-        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test', [], [], ...
-                                            'mean_zero', mean_zero, ...
-                                            'threshold', thresh_vals(ind_cs), ...
-                                            'verbose', verbose ...
-                                        );
-        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test', [], [], ...
-                                            'mean_zero', mean_zero, ...
-                                            'threshold', thresh_vals(ind_lr), ...
-                                            'verbose', verbose ...
-                                        );
-
-        pred_on_train_cs = subject_selection_process(recon_cs, stimuli_matrix_train', [], [], ...
-                                            'mean_zero', mean_zero, ...
-                                            'threshold', thresh_vals(ind_cs), ...
-                                            'verbose', verbose ...
-                                        );
-        pred_on_train_lr = subject_selection_process(recon_lr, stimuli_matrix_train', [], [], ...
-                                            'mean_zero', mean_zero, ...
-                                            'threshold', thresh_vals(ind_lr), ...
-                                            'verbose', verbose ...
-                                        );
-
-        % Store predictions
-        filled = nnz(predicted_responses_cs(:, ii));
-        predicted_responses_cs(filled+1:filled+length(pred_cs), ii) = pred_cs;
-        predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
-        given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
-
-        % For error estimation
-        filled_on_train = nnz(predicted_responses_on_train_cs(:,ii));
-        predicted_responses_on_train_cs(filled_on_train+1:filled_on_train+length(pred_on_train_cs), ii) = pred_on_train_cs;
-        predicted_responses_on_train_lr(filled_on_train+1:filled_on_train+length(pred_on_train_lr), ii) = pred_on_train_lr;
-        training_responses(filled_on_train+1:filled_on_train+length(responses_train), ii) = responses_train;
-    end
-    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
-    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
     
-    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses(:,ii), predicted_responses_on_train_cs(:,ii));
-    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses(:,ii), predicted_responses_on_train_lr(:,ii));
+    [given_responses, training_responses, ...
+        predicted_responses_cs, predicted_responses_lr, ...
+        predicted_responses_on_train_cs, predicted_responses_on_train_lr, ...
+     ] = crossval_predicted_responses(config, folds, data_dir, ...
+                                        'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
+                                        'from_responses', from_responses, 'threshold_values', thresh_vals, ...
+                                        'verbose', verbose ...
+                                    );
+
+    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, predicted_responses_cs);
+    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, predicted_responses_lr);
+    
+    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses, predicted_responses_on_train_cs);
+    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses, predicted_responses_on_train_lr);
 end
 
 T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
@@ -375,16 +289,4 @@ function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen,
     
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
-end
-
-function [accuracy, balanced_accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
-    TP = sum((y==1)&(y_hat==1));
-    FP = sum((y==-1)&(y_hat==1));
-    FN = sum((y==1)&(y_hat==-1));
-    TN = sum((y==-1)&(y_hat==-1));
-
-    specificity = TN/(TN+FP);
-    sensitivity = TP/(TP+FN);
-    accuracy = (TP + TN) / (TP + TN + FP + FN);
-    balanced_accuracy = (sensitivity + specificity) / 2;
 end
