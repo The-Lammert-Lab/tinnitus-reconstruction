@@ -171,7 +171,7 @@ for i = 1:n
     end
 
     % Unbin
-    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq);
+    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq, config.min_freq);
 
     % Plot
     plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
@@ -203,7 +203,7 @@ for i = 1:n
         end
     
         % Unbin
-        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq);
+        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq, config.min_freq);
     
         % Plot
         plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
@@ -241,7 +241,7 @@ from_responses = false;
 gs_ridge = true;
 
 % Threshold test vals
-linspace_n = 1000
+linspace_n = 200;
 thresh_vals = linspace(10,90,linspace_n);
 
 % Initialize
@@ -333,12 +333,12 @@ T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
     'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
 %% Local functions
-function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
+function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq, min_freq)
     recon_binrep = rescale(binned_recon, -20, 0);
     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
     
     freqs = linspace(1, floor(stimgen.Fs/2), length(recon_spectrum))';
-    indices_to_plot = freqs(:, 1) <= max_freq;
+    indices_to_plot = freqs(:,1) <= max_freq & freqs(:,1) >= min_freq;
     
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
