@@ -233,6 +233,7 @@ T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
 folds = 5;
 
 % NOTE: This breaks if not all the subjects have the same number of trials
+% TODO: Turn this into a function so that it won't break in that case.
 fold_frac = round(length(responses) / folds);
 
 % Prediction settings
@@ -249,10 +250,19 @@ predicted_responses_cs = zeros(length(responses), n);
 predicted_responses_lr = zeros(length(responses), n);
 given_responses = zeros(length(responses), n);
 
+predicted_responses_on_train_cs = zeros(3*fold_frac*folds*length(responses), n);
+predicted_responses_on_train_lr = zeros(3*fold_frac*folds*length(responses), n);
+training_responses = zeros(3*fold_frac*folds*length(responses), n);
+
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
 pred_bal_acc_cs = zeros(n,1);
 pred_bal_acc_lr = zeros(n,1);
+
+pred_acc_on_train_cs = zeros(n,1);
+pred_acc_on_train_lr = zeros(n,1); 
+pred_bal_acc_on_train_cs = zeros(n,1);
+pred_bal_acc_on_train_lr = zeros(n,1);
 
 pred_bal_acc_tune_cs = zeros(size(thresh_vals));
 pred_bal_acc_tune_lr = zeros(size(thresh_vals));
@@ -311,8 +321,18 @@ for ii = 1:n
                                             'threshold', thresh_vals(ind_cs), ...
                                             'verbose', verbose ...
                                         );
-
         pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test', [], [], ...
+                                            'mean_zero', mean_zero, ...
+                                            'threshold', thresh_vals(ind_lr), ...
+                                            'verbose', verbose ...
+                                        );
+
+        pred_on_train_cs = subject_selection_process(recon_cs, stimuli_matrix_train', [], [], ...
+                                            'mean_zero', mean_zero, ...
+                                            'threshold', thresh_vals(ind_cs), ...
+                                            'verbose', verbose ...
+                                        );
+        pred_on_train_lr = subject_selection_process(recon_lr, stimuli_matrix_train', [], [], ...
                                             'mean_zero', mean_zero, ...
                                             'threshold', thresh_vals(ind_lr), ...
                                             'verbose', verbose ...
@@ -323,13 +343,26 @@ for ii = 1:n
         predicted_responses_cs(filled+1:filled+length(pred_cs), ii) = pred_cs;
         predicted_responses_lr(filled+1:filled+length(pred_lr), ii) = pred_lr;
         given_responses(filled+1:filled+length(responses_test), ii) = responses_test;
+
+        % For error estimation
+        filled_on_train = nnz(predicted_responses_on_train_cs(:,ii));
+        predicted_responses_on_train_cs(filled_on_train+1:filled_on_train+length(pred_on_train_cs), ii) = pred_on_train_cs;
+        predicted_responses_on_train_lr(filled_on_train+1:filled_on_train+length(pred_on_train_lr), ii) = pred_on_train_lr;
+        training_responses(filled_on_train+1:filled_on_train+length(responses_train), ii) = responses_train;
     end
     [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_cs(:,ii));
     [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses(:,ii), predicted_responses_lr(:,ii));
+    
+    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses(:,ii), predicted_responses_on_train_cs(:,ii));
+    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses(:,ii), predicted_responses_on_train_lr(:,ii));
 end
 
 T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
     'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
+    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+
+T_CV_on_train = table(pred_bal_acc_on_train_lr, pred_bal_acc_on_train_cs, pred_acc_on_train_lr, pred_acc_on_train_cs, ...
+    'VariableNames', ["LR CV Pred Bal Acc On Train", "CS CV Pred Bal Acc On Train", "LR CV Pred Acc On Train", "CS CV Pred Acc On Train"], ...
     'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
 
 %% Local functions
