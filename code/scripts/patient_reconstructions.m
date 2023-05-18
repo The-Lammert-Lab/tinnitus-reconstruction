@@ -222,62 +222,84 @@ for i = 1:n
 end
 
 %% Accuracy
-% bal_accuracy = (specificity + sensitivity)/2;
+row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
     'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
-    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))));
+    'RowNames', row_names);
 
 %% Predict responses with cross validation
-folds = 5;
 
 % Prediction settings
+folds = 5;
+knn = true;
 mean_zero = true;
 from_responses = false;
 gs_ridge = true;
-
-% Threshold test vals
 thresh_vals = linspace(10,90,200);
+k_vals = 5:3:30;
 
 % Initialize
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
+
 pred_bal_acc_cs = zeros(n,1);
 pred_bal_acc_lr = zeros(n,1);
 
 pred_acc_on_train_cs = zeros(n,1);
 pred_acc_on_train_lr = zeros(n,1); 
+
 pred_bal_acc_on_train_cs = zeros(n,1);
 pred_bal_acc_on_train_lr = zeros(n,1);
+
+if knn
+    pred_acc_knn = zeros(n,1);
+    pred_bal_acc_knn = zeros(n,1);
+    pred_acc_on_train_knn = zeros(n,1); 
+    pred_bal_acc_on_train_knn = zeros(n,1);
+end
 
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
     
-    [given_responses, training_responses, ...
-        predicted_responses_cs, predicted_responses_lr, ...
-        predicted_responses_on_train_cs, predicted_responses_on_train_lr, ...
-     ] = crossval_predicted_responses(config, folds, data_dir, ...
-                                        'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
-                                        'from_responses', from_responses, 'threshold_values', thresh_vals, ...
-                                        'verbose', verbose ...
-                                    );
+    [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(config, folds, data_dir, ...
+                                                                            'knn', knn, 'from_responses', from_responses, ...
+                                                                            'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
+                                                                            'threshold_values', thresh_vals, 'k_vals', k_vals, ...
+                                                                            'verbose', verbose ...
+                                                                        );
 
-    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, predicted_responses_cs);
-    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, predicted_responses_lr);
-    
-    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses, predicted_responses_on_train_cs);
-    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses, predicted_responses_on_train_lr);
+    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.cs);
+    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.lr);
+
+    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.cs);
+    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.lr);
+
+    if knn
+        [pred_acc_knn(ii), pred_bal_acc_knn(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.knn);
+        [pred_acc_on_train_knn(ii), pred_bal_acc_on_train_knn(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.knn);
+    end
 end
 
 T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
     'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
-    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+    'RowNames', row_names)
 
 T_CV_on_train = table(pred_bal_acc_on_train_lr, pred_bal_acc_on_train_cs, pred_acc_on_train_lr, pred_acc_on_train_cs, ...
     'VariableNames', ["LR CV Pred Bal Acc On Train", "CS CV Pred Bal Acc On Train", "LR CV Pred Acc On Train", "CS CV Pred Acc On Train"], ...
-    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+    'RowNames', row_names)
+
+if knn
+    T_CV_knn = table(pred_bal_acc_knn, pred_acc_knn, ...
+        'VariableNames', ["KNN CV Pred Bal Acc", "KNN CV Pred Acc"], ...
+        'RowNames', row_names)
+    
+    T_CV_on_train_knn = table(pred_bal_acc_on_train_knn, pred_acc_on_train_knn, ...
+        'VariableNames', ["KNN CV Pred Bal Acc On Train", "KNN CV Pred Acc On Train"], ...
+        'RowNames', row_names)
+end
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq, min_freq)
