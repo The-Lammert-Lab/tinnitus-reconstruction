@@ -238,7 +238,7 @@ mean_zero = true;
 from_responses = false;
 gs_ridge = true;
 thresh_vals = linspace(10,90,200);
-k_vals = 5:3:30;
+k_vals = 1:2:15;
 
 % Initialize
 pred_acc_cs = zeros(n,1);
@@ -263,7 +263,8 @@ end
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
-    
+
+    % Generate cross-validated predictions
     [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(config, folds, data_dir, ...
                                                                             'knn', knn, 'from_responses', from_responses, ...
                                                                             'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
@@ -271,6 +272,7 @@ for ii = 1:n
                                                                             'verbose', verbose ...
                                                                         );
 
+    % Assess prediction quality
     [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.cs);
     [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.lr);
 
@@ -283,6 +285,7 @@ for ii = 1:n
     end
 end
 
+% Print results
 T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
     'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
     'RowNames', row_names)

@@ -1,26 +1,35 @@
-% Inputs:
-%    y - A n-by-1 vector of class labels, corresponding to data points in X
-%    X - A n-by-p data matrix
-%    T - A m-by-p matrix of reference points, without/needing class labels
-%    k - A scalar value indicating the number of nearest neighbors
-%        to be considered.
+% ### knn_classify
 % 
-% Outputs:
-%    z_hat - A m-by-1 vector of estimated class labels for data points in T
-%
-% Description: Determine estimated class labels for a matrix of 
-%               reference points T, given data points X and labels y
+% Returns the estimated class labels for a matrix of 
+%   reference points T, given data points X and labels y.
+% 
+% **ARGUMENTS:**
+% 
+%   - y: `n x 1` vector,
+%       representing class labels that correspond to data points in `X`.
+% 
+%   - X: `n x p` numerical matrix,
+%       labelled data points.
+% 
+%   - T: `m x p` numerical matrix,
+%       representing reference points without/needing class labels
+% 
+%   - k: `scalar`,
+%       indicating the number of nearest neighbors to be considered.
+% 
+% **OUTPUTS:**
+% 
+%   - z_hat: `m x 1` vector,
+%       estimated class labels for data points in T.
 
 function z_hat = knn_classify(y,X,T,k)
-    % Setup
-    m = size(T,1); % number of data points in T
-    n = size(X,1); % number of data points in X
-    z_hat = zeros(m,1); % vector for storing class label predictions
-    distance = zeros(n,1); % vector of distances
+    m = size(T,1);
+    n = size(X,1);
+    z_hat = zeros(m,1);
+    distance = zeros(n,1);
     
-    % Iterate over all reference points in T
     for ii = 1:m
-        % Calculate the distance between each point in x 
+        % Calculate the distance between each point in X
         % and the current reference point in T.
         for jj = 1:n
             distance(jj) = pdist([T(ii,:);X(jj,:)]);

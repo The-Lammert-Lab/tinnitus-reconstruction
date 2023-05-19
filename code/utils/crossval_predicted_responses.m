@@ -1,14 +1,81 @@
+% ### crossval_predicted_responses
+% 
+% Generate response predictions for a given config file
+% using stratified cross validation.
+% 
+% **ARGUMENTS:**
+% 
+%   - config: `struct`,
+%       config struct from which to find responses and stimuli
+% 
+%   - folds: `scalar` positive integer, must be greater than 3,
+%       representing the number of cross validation folds to complete.
+%       Data will be partitioned into `1/folds` for `test` and `dev` sets
+%       and the remaining for the `train` set.
+% 
+%   - data_dir: `char`,
+%       the path to directory in which the data corresponding to the 
+%       config structis stored.
+% 
+%   - knn: `bool`, name-value, default: `false`,
+%       flag to run additional K-Nearest-Neighbor analysis
+% 
+%   - mean_zero: `bool`, name-value, default: `false`,
+%       flag to set the mean of the stimuli to zero when computing the
+%       reconstruction and both the mean of the stimuli and the
+%       reconstruction to zero when generating the predictions.
+% 
+%   - from_responses: `bool`, name-value, default: `false`,
+%       flag to determine the threshold from the given responses. 
+%       Overwrites `threshold_values` and does not run threshold
+%       development cycle.
+% 
+%   - ridge_reg: `bool`, name-value, default: `false`,
+%       flag to use ridge regression instead of standard linear regression
+%       for reconstruction.
+% 
+%   - threshold_values: `1 x m` numerical vector, name-value, default:
+%       `linspace(10,90,200)`, representing the percentile threshold values
+%       on which to perform development to identify optimum. 
+%       Values must be on (0,100].
+%       
+%   - k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
+%       representing the K values on which to perform development to
+%       identify optimum for KNN analysis. Values must be positive integers.
+% 
+%   - verbose: `bool`, name-value, default: `true`,
+%       flag to print information messages.       
+% 
+% **OUTPUTS:**
+% 
+%   - given_resps: `p x 1` vector,
+%       the original subject responses in the order corresponding 
+%       to the predicted responses, i.e., a shifted version of the 
+%       original response vector. `p` is the number of original responses.
+% 
+%   - training_resps: `(folds-2)*p x 1` vector,
+%       the original subject responses used in the training phase.
+%       The training data is partially repeated between folds.
+% 
+%   - on_test: `struct` with `p x 1` vectors in fields
+%       `cs`, `lr`, and if `knn = true`, `knn`.
+%       Predicted responses on testing data.
+% 
+%   - on_train: `struct` with `(folds-2)*p x 1` vectors in fields
+%       `cs`, `lr`, and if `knn = true`, `knn`.
+%       Predicted responses on training data.
+
 function [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir, options)
 
     arguments
         config struct
-        folds (1,1) {mustBePositive, mustBeInteger}
+        folds (1,1) {mustBePositive, mustBeInteger, mustBeGreaterThan(folds,3)}
         data_dir char
         options.knn logical = false
         options.mean_zero logical = false
         options.from_responses logical = false
         options.ridge_reg logical = false
-        options.threshold_values (1,:) {mustBePositive} = linspace(10,90,200)
+        options.threshold_values (1,:) {mustBePositive, mustBeLessThanOrEqual(options.threshold_values,100)} = linspace(10,90,200)
         options.k_vals (1,:) {mustBePositive, mustBeInteger} = 10:5:50
         options.verbose logical = true
     end
@@ -56,52 +123,55 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
                         'mean_zero', options.mean_zero, 'verbose', options.verbose);
         recon_lr = gs(resps_train, stimuli_matrix_train', ...
                         'ridge', options.ridge_reg, 'mean_zero', options.mean_zero);
-        
-        % Collect balanced accuracies for each threshold value using dev set
-        for jj = 1:length(options.threshold_values)
-            pred_cs = subject_selection_process(recon_cs, stimuli_matrix_dev', [], [], ...
-                                                    'mean_zero', options.mean_zero, ...
-                                                    'threshold', options.threshold_values(jj), ...
-                                                    'from_responses', options.from_responses, ...
-                                                    'verbose', options.verbose ...
-                                                );
-            pred_lr = subject_selection_process(recon_lr, stimuli_matrix_dev', [], [], ...
-                                                    'mean_zero', options.mean_zero, ...
-                                                    'threshold', options.threshold_values(jj), ...
-                                                    'from_responses', options.from_responses, ...
-                                                    'verbose', options.verbose ...
-                                                );
-        
 
-            [~, pred_bal_acc_dev_cs(jj), ~, ~] = get_accuracy_measures(resps_dev, pred_cs);
-            [~, pred_bal_acc_dev_lr(jj), ~, ~] = get_accuracy_measures(resps_dev, pred_lr);
+
+        if ~options.from_responses
+            % Collect balanced accuracies for each threshold value using dev set
+            for jj = 1:length(options.threshold_values)
+                pred_cs = subject_selection_process(recon_cs, stimuli_matrix_dev', [], [], ...
+                                                        'mean_zero', options.mean_zero, ...
+                                                        'threshold', options.threshold_values(jj), ...
+                                                        'from_responses', options.from_responses, ...
+                                                        'verbose', options.verbose ...
+                                                    );
+                pred_lr = subject_selection_process(recon_lr, stimuli_matrix_dev', [], [], ...
+                                                        'mean_zero', options.mean_zero, ...
+                                                        'threshold', options.threshold_values(jj), ...
+                                                        'from_responses', options.from_responses, ...
+                                                        'verbose', options.verbose ...
+                                                    );
+            
+    
+                [~, pred_bal_acc_dev_cs(jj), ~, ~] = get_accuracy_measures(resps_dev, pred_cs);
+                [~, pred_bal_acc_dev_lr(jj), ~, ~] = get_accuracy_measures(resps_dev, pred_lr);
+            end
+            
+            % Identify best threshold values
+            [~, ind_cs] = max(pred_bal_acc_dev_cs);
+            [~, ind_lr] = max(pred_bal_acc_dev_lr);
         end
         
-        % Identify best threshold values
-        [~, ind_cs] = max(pred_bal_acc_dev_cs);
-        [~, ind_lr] = max(pred_bal_acc_dev_lr);
-        
         % Make predictions on test data
-        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test', [], [], ...
+        pred_cs = subject_selection_process(recon_cs, stimuli_matrix_test', [], resps_test, ...
                                             'mean_zero', options.mean_zero, ...
                                             'threshold', options.threshold_values(ind_cs), ...
                                             'from_responses', options.from_responses, ...
                                             'verbose', options.verbose ...
                                         );
-        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test', [], [], ...
+        pred_lr = subject_selection_process(recon_lr, stimuli_matrix_test', [], resps_test, ...
                                             'mean_zero', options.mean_zero, ...
                                             'threshold', options.threshold_values(ind_lr), ...
                                             'from_responses', options.from_responses, ...
                                             'verbose', options.verbose ...
                                         );
         
-        pred_on_train_cs = subject_selection_process(recon_cs, stimuli_matrix_train', [], [], ...
+        pred_on_train_cs = subject_selection_process(recon_cs, stimuli_matrix_train', [], resps_test, ...
                                             'mean_zero', options.mean_zero, ...
                                             'threshold', options.threshold_values(ind_cs), ...
                                             'from_responses', options.from_responses, ...
                                             'verbose', options.verbose ...
                                         );
-        pred_on_train_lr = subject_selection_process(recon_lr, stimuli_matrix_train', [], [], ...
+        pred_on_train_lr = subject_selection_process(recon_lr, stimuli_matrix_train', [], resps_test, ...
                                             'mean_zero', options.mean_zero, ...
                                             'threshold', options.threshold_values(ind_lr), ...
                                             'from_responses', options.from_responses, ...
