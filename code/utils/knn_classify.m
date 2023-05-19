@@ -24,21 +24,17 @@
 
 function z_hat = knn_classify(y,X,T,k)
     m = size(T,1);
-    n = size(X,1);
     z_hat = zeros(m,1);
-    distance = zeros(n,1);
     
     for ii = 1:m
         % Calculate the distance between each point in X
         % and the current reference point in T.
-        for jj = 1:n
-            distance(jj) = pdist([T(ii,:);X(jj,:)]);
-        end
+        distance = pdist2(T(ii,:), X);
         
         % Get neighbor labels
         [~, ind] = sort(distance);
-        l = y(ind(1:k))';
-            
+        l = y(ind(1:k));
+
         % Determine the class label
         z_hat(ii) = mode(l);
     end

@@ -86,24 +86,26 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
     end
 
     [resps, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', data_dir);
-
     fold_frac = round(length(resps) / folds);
 
-    % Initialize
-    given_resps = zeros(length(resps), 1);
-    on_test.cs = zeros(length(resps), 1);
-    on_test.lr = zeros(length(resps), 1);
+    resps_len = length(resps);
+    train_len = (folds-2)*resps_len;
 
-    training_resps = zeros(3*fold_frac*folds, 1);
-    on_train.cs = zeros(3*fold_frac*folds, 1);
-    on_train.lr = zeros(3*fold_frac*folds, 1);
+    % Initialize
+    given_resps = zeros(resps_len, 1);
+    on_test.cs = zeros(resps_len, 1);
+    on_test.lr = zeros(resps_len, 1);
+
+    training_resps = zeros(train_len, 1);
+    on_train.cs = zeros(train_len, 1);
+    on_train.lr = zeros(train_len, 1);
     
     pred_bal_acc_dev_cs = zeros(size(options.threshold_values));
     pred_bal_acc_dev_lr = zeros(size(options.threshold_values));
     
     if options.knn
-        on_test.knn = zeros(length(resps), 1);
-        on_train.knn = zeros(3*fold_frac*folds, 1);
+        on_test.knn = zeros(resps_len, 1);
+        on_train.knn = zeros(train_len, 1);
         pred_bal_acc_dev_knn = zeros(size(options.k_vals));
     end
 

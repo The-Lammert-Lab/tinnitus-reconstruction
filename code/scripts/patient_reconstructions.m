@@ -238,7 +238,7 @@ mean_zero = true;
 from_responses = false;
 gs_ridge = true;
 thresh_vals = linspace(10,90,200);
-k_vals = 1:2:15;
+k_vals = 1:2:25;
 
 % Initialize
 pred_acc_cs = zeros(n,1);
