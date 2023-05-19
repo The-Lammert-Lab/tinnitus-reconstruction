@@ -308,6 +308,11 @@ Write the stimuli into the stimuli file.
 Generate response predictions for a given config file
 using stratified cross validation.
 
+```matlab
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir)
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir, 'knn', true, 'knn_vals', 2:3:15, 'mean_zero', true)
+```
+
 **ARGUMENTS:**
 
 - config: `struct`,
