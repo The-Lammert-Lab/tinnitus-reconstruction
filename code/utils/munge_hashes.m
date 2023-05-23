@@ -1,8 +1,12 @@
 % ### munge_hashes
+% 
 % Processes config files, correcting errors.
 % Then, fixes the hashes for saved data files
 % associated with changed config files.
 % 
+% ```matlab
+%   munge_hashes("file_string", "config*.yaml", "verbose", true)
+% ```
 % 
 % **Arguments:**
 % 
@@ -20,11 +24,6 @@
 %   - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``  
 %   Path to the directory where the data files to-be-munged are.
 % 
-% **Example:**
-% 
-% ```matlab
-%   munge_hashes("file_string", "config*.yaml", "verbose", true)
-% ```
 % **See Also:**
 % update_hashes
 

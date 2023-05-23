@@ -3,6 +3,11 @@
 % Compute reconstructions using data specified
 % by a configuration file.
 % 
+% ```matlab
+% [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
+% x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+% ```
+% 
 % **ARGUMENTS:**
 % 
 %   - config_file: string or character array, name-value, default: ``''``
@@ -16,18 +21,14 @@
 %       Currently, the only supported preprocessing step is ``'bit flip'``,
 %       which flips the sign on all responses before computing the reconstruction.
 %   - method: character vector, name-value, default: ``'cs'``
-%       Which reconstruction algorithm to use.
+%       Which reconstruction algorithm to use. 
+%       Options: ``'cs'``, ``'cs_nb'``, ``'linear'`, ``'linear_ridge'``.
 %   - use_n_trials: Positive scalar, name-value, default: `inf`
 %       Indicates how many trials to use of data. `inf` uses all data.
 %   - bootstrap: Positive scalar, name-value, deafult: 0
 %       Number of bootstrap iterations to perform.
 % 
-% ```matlab
-% [x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-% x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
-% ```
 % 
-% Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
 % 
 % See Also: 
 % collect_reconstructions

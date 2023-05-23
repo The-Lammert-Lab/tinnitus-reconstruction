@@ -8,6 +8,7 @@
 %   - T: `table` that includes r values of interest
 % 
 % **OUTPUTS:**
+% 
 %   - n figures, where n is the number of subjects included
 %       in the table.
 % 

@@ -10,11 +10,12 @@
 % ```
 % 
 % **ARGUMENTS:**
+% 
 %   - N: a 1x1 scalar, positive, real integer
 % 
 % **OUTPUTS:**
-%   - n: a 1x1 scalar, positive, real power of 2
 % 
+%   - n: a 1x1 scalar, positive, real power of 2
 
 function n = get_highest_power_of_2(N)
 

@@ -406,6 +406,7 @@ a flag for setting the mean of `Phi` to zero.
 a flag to print information messages
 
 **OUTPUTS:**
+
 - x: `m x 1` vector,
 representing the compressed sensing reconstruction of the signal.
 
@@ -419,13 +420,13 @@ representing the compressed sensing reconstruction of the signal.
 
 Fill full screen figure with new image.
 
-**Arguments:**
+**ARGUMENTS:**
 
 - img: image loaded via imread()
 - hFig: handle to maximized figure. 
 Defaults to current figure handle.
 
-**Outputs:**
+**OUTPUTS:**
 
 - hFig now displays an image.
 
@@ -471,6 +472,7 @@ and generates config-informed white noise for comparison against target
 sound. Responses are saved in the specified data directory. 
 
 **ARGUMENTS:**
+
 - data_dir: character vector, name-value, default: empty
 Directory where data is stored. If blank, config.data_dir is used. 
 - project_dir: character vector, name-value, default: empty
@@ -493,6 +495,7 @@ Handle to open figure on which to display questions.
 Flag to print information and warnings. 
 
 **OUTPUTS:**
+
 - survey_XXX.csv: csv file, where XXX is the config hash.
 In the data directory. 
 
@@ -546,9 +549,11 @@ n = get_highest_power_of_2(N);
 ```
 
 **ARGUMENTS:**
+
 - N: a 1x1 scalar, positive, real integer
 
 **OUTPUTS:**
+
 - n: a 1x1 scalar, positive, real power of 2
 
 
@@ -561,6 +566,11 @@ n = get_highest_power_of_2(N);
 
 Compute reconstructions using data specified
 by a configuration file.
+
+```matlab
+[x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
+x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+```
 
 **ARGUMENTS:**
 
@@ -575,18 +585,14 @@ A list of preprocessing steps to take.
 Currently, the only supported preprocessing step is ``'bit flip'``,
 which flips the sign on all responses before computing the reconstruction.
 - method: character vector, name-value, default: ``'cs'``
-Which reconstruction algorithm to use.
+Which reconstruction algorithm to use. 
+Options: ``'cs'``, ``'cs_nb'``, ``'linear'`, ``'linear_ridge'``.
 - use_n_trials: Positive scalar, name-value, default: `inf`
 Indicates how many trials to use of data. `inf` uses all data.
 - bootstrap: Positive scalar, name-value, deafult: 0
 Number of bootstrap iterations to perform.
 
-```matlab
-[x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
-```
 
-Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
 
 
 
@@ -594,27 +600,6 @@ Compute the reconstruction, given the response vector and the stimuli matrix wit
     * [collect_reconstructions](./#collect_reconstructions)
     * [collect_data](./#collect_data)
     * [config2table](./#config2table)
-
-
-
-
-
--------
-
-### get_weighted_sample
-
-```matlab
-y = get_weighted_sample(weights, values)
-```
-Sample from a discrete distribution with weights `weights`
-for values `values`.
-
-**ARGUMENTS**
-- weights: `n x 1` vector of probability weights
-- values: `n x 1` vector of values with corresponding weights
-
-**OUTPUTS**
-y: `1x1` scalar, the sampled value
 
 
 
@@ -667,13 +652,10 @@ reference points T, given data points X and labels y.
 
 - y: `n x 1` vector,
 representing class labels that correspond to data points in `X`.
-
 - X: `n x p` numerical matrix,
 labelled data points.
-
 - T: `m x p` numerical matrix,
 representing reference points without/needing class labels
-
 - k: `scalar`,
 indicating the number of nearest neighbors to be considered.
 
@@ -689,10 +671,14 @@ estimated class labels for data points in T.
 -------
 
 ### munge_hashes
+
 Processes config files, correcting errors.
 Then, fixes the hashes for saved data files
 associated with changed config files.
 
+```matlab
+munge_hashes("file_string", "config*.yaml", "verbose", true)
+```
 
 **Arguments:**
 
@@ -710,11 +696,6 @@ Whether to print informative text.
 - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``  
 Path to the directory where the data files to-be-munged are.
 
-**Example:**
-
-```matlab
-munge_hashes("file_string", "config*.yaml", "verbose", true)
-```
 
 
 !!! info "See Also"
@@ -732,13 +713,13 @@ Read a config file and perform any special parsing that is required.
 
 **ARGUMENTS:**
 
-config_file: character vector, default: []
+- config_file: character vector, default: []
 Path to the config file to be used.
 If empty, opens a GUI to find the file using a file browser.
 
 **OUTPUTS:**
 
-varargout: `1 x 2` cell array:
+- varargout: `1 x 2` cell array:
 varargout{1} = config: `struct`, the parsed config file.
 varargout{2} = config_file OR abs_path, `char`,
 if path provided, return the path, else return path chosen
@@ -747,7 +728,7 @@ from GUI.
 
 
 !!! info "See Also"
-    * [* yaml.loadFile](../stimgen/* yaml/#loadfile)
+    * [yaml.loadFile](../stimgen/yaml/#loadfile)
 
 
 
@@ -807,6 +788,7 @@ A separate figure is made for each subject.
 - T: `table` that includes r values of interest
 
 **OUTPUTS:**
+
 - n figures, where n is the number of subjects included
 in the table.
 
@@ -984,6 +966,7 @@ by updating the hashes.
 pointing to the directory where the data files are stored.
 
 **Outputs:**
+
 - None
 
 
@@ -1003,9 +986,11 @@ Filters data table from `pilot_reconstructions.m`
 and generates a figure with a uitable for easy viewing.
 
 **Arguments:**
+
 - T: `table` generated by pilot_reconstructions
 
 **OUTPUTS:**
+
 - 1 figure
 
 
@@ -1034,6 +1019,7 @@ in terms of magnitudes, s, and frequencies, f, in Hz.
 Generate a white noise stimulus based on a config file's settings.
 
 **ARGUMENTS:**
+
 - config_file: string or character array, name-value, default: ``''``
 A path to a YAML-spec configuration file.
 Either this argument or ``config`` is required.
@@ -1042,6 +1028,7 @@ A configuration file struct
 (e.g., one created by ``parse_config``).
 
 **OUTPUTS:**
+
 - white_waveform: `n x 1` white noise waveform
 - fs: `1 x 1` Associated frequency of waveform.
 
