@@ -3,7 +3,9 @@
 # but includes additional comments to help explain what the different
 # fields mean. 
 
-experiment_name: paper1-buzzing-AH
+# A good syntax for this field is
+# {experiment_name}-{target_signal}-{subject_initials}-[resynth]
+experiment_name: paper1-buzzing-AH-resynth
 subject_ID: AH
 
 # These fields describe the number of trials in the experiment.
@@ -61,7 +63,17 @@ max_bins: 30
 # (i.e., for pilot subjects)
 # this field describes the full filepath
 # to the target signal audio file.
-target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+target_signal_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+
+# This field gives the short-form name of the target signal.
+# For resynth experiments, you should name it
+# "resynth-buzzing" for instance.
+target_signal_name: buzzing
+
+# This field is a boolean flag
+# that indicates whether the target signal
+# should be binned (and then unbinned)
+# before playback to the user.
 bin_target_signal: true
 
 # This is the path where the output files are saved.

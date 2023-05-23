@@ -8,6 +8,7 @@
 % sound. Responses are saved in the specified data directory. 
 % 
 % **ARGUMENTS:**
+% 
 %   - data_dir: character vector, name-value, default: empty
 %       Directory where data is stored. If blank, config.data_dir is used. 
 %   - project_dir: character vector, name-value, default: empty
@@ -30,6 +31,7 @@
 %       Flag to print information and warnings. 
 % 
 % **OUTPUTS:**
+% 
 %   - survey_XXX.csv: csv file, where XXX is the config hash.
 %       In the data directory. 
 

@@ -7,13 +7,10 @@
 % 
 %   - y: `n x 1` vector,
 %       representing class labels that correspond to data points in `X`.
-% 
 %   - X: `n x p` numerical matrix,
 %       labelled data points.
-% 
 %   - T: `m x p` numerical matrix,
 %       representing reference points without/needing class labels
-% 
 %   - k: `scalar`,
 %       indicating the number of nearest neighbors to be considered.
 % 

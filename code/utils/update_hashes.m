@@ -12,13 +12,14 @@
 % 
 % **Arguments:**
 % 
-% - new_hash: character vector
-% - old_hash: character vector
-% - data_dir: character vector
+%   - new_hash: character vector
+%   - old_hash: character vector
+%   - data_dir: character vector
 %       pointing to the directory where the data files are stored.
 % 
 % **Outputs:**
-% - None
+%   
+%   - None
 % 
 % See Also:
 % collect_data

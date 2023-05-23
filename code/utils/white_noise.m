@@ -2,6 +2,7 @@
 % Generate a white noise stimulus based on a config file's settings.
 % 
 % **ARGUMENTS:**
+% 
 %   - config_file: string or character array, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
 %       Either this argument or ``config`` is required.
@@ -10,6 +11,7 @@
 %       (e.g., one created by ``parse_config``).
 % 
 % **OUTPUTS:**
+% 
 %   - white_waveform: `n x 1` white noise waveform
 %   - fs: `1 x 1` Associated frequency of waveform.
 
