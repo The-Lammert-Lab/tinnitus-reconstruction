@@ -233,12 +233,12 @@ T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
 
 % Prediction settings
 folds = 5;
-knn = true;
+knn = false;
 mean_zero = true;
 from_responses = false;
 gs_ridge = true;
 thresh_vals = linspace(10,90,200);
-k_vals = 1:2:25;
+k_vals = 1:2:15;
 
 % Initialize
 pred_acc_cs = zeros(n,1);
