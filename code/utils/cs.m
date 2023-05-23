@@ -13,8 +13,18 @@
 %       where `n` is the number of trials/samples
 %       and `m` is the dimensionality of the stimuli/spectrum/bins
 % 
+%   - Gamma: Positive scalar, default: 32
+%       optional value for zhangpassivegamma function.
+% 
+%   - mean_zero: `bool`, name-value, default: `false`,
+%       a flag for setting the mean of `Phi` to zero.
+% 
+%   - verbose: `bool`, name-value, default: `true`,
+%       a flag to print information messages
+% 
 % **OUTPUTS:**
-%   - x: compressed sensing reconstruction of the signal.
+%   - x: `m x 1` vector,
+%       representing the compressed sensing reconstruction of the signal.
 
 function x = cs(responses, Phi, Gamma, options)
 
@@ -22,7 +32,8 @@ function x = cs(responses, Phi, Gamma, options)
         responses (:,1) {mustBeNumeric}
         Phi {mustBeNumeric}
         Gamma (1,1) {mustBeInteger, mustBeNonnegative} = 32
-        options.verbose = true
+        options.mean_zero (1,1) logical = false
+        options.verbose (1,1) logical = true
     end
     
     n_samples = length(responses);
@@ -30,6 +41,10 @@ function x = cs(responses, Phi, Gamma, options)
 
     if options.verbose
         waittext(0, 'init');
+    end
+
+    if options.mean_zero
+        Phi = Phi - mean(Phi,2);
     end
 
     Theta = zeros(n_samples, len_signal);

@@ -2,11 +2,11 @@
 
 %% General setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
-
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
+% Script parameters
 CS = true;
-verbose = true;
+verbose = false;
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -19,6 +19,7 @@ n = length(config_files);
 sensitivity = zeros(n, 1);
 specificity = zeros(n, 1);
 accuracy = zeros(n, 1);
+bal_accuracy = zeros(n, 1);
 yesses = zeros(n, 1);
 
 %% Plot setup
@@ -54,9 +55,9 @@ for i = 1:n
         prev_rm_fields = rm_fields;
         prev_names = names;
     end
-    
-    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
 
+    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+    
     % Skip config files with target signals (healthy controls)
     if isfield(config, 'target_signal') && ~isempty(config.target_signal)
         continue
@@ -73,36 +74,28 @@ for i = 1:n
     rm_fields = ~ismember(names, keep_fields);
 
     % Get reconstructions
-    [reconstructions_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-        'method', 'linear', ...
-        'verbose', verbose, ...
-        'data_dir', data_dir);
+    [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
+                                                                                    'method', 'linear_ridge', ...
+                                                                                    'verbose', verbose, ...
+                                                                                    'data_dir', data_dir ...
+                                                                                );
 
     if CS
-        reconstructions_binned_cs = get_reconstruction('config', config, ...
-            'method', 'cs', ...
-            'verbose', verbose, ...
-            'data_dir', data_dir);
+        reconstruction_binned_cs = get_reconstruction('config', config, 'method', 'cs', ...
+                                                        'verbose', verbose, 'data_dir', data_dir ...
+                                                    );
     end
 
     %%%%% Compare responses to synthetic %%%%% 
+    y_hat = subject_selection_process(reconstruction_binned_lr, ...
+                                    stimuli_matrix', [], responses, ...
+                                    'mean_zero', true, ...
+                                    'from_responses', true, ...
+                                    'verbose', verbose ...
+                                );
+
     yesses(i) = 100 * length(responses(responses == 1))/length(responses);
-
-%     e = stimuli_matrix' * reconstructions_binned_lr;
-    e = (stimuli_matrix' - mean(stimuli_matrix')) * (reconstructions_binned_lr - mean(reconstructions_binned_lr));
-    
-    % Percentile is percent of "no" answers for current subject.
-    y = double(e >= prctile(e, 100 - yesses(i)));
-    y(y == 0) = -1;
-
-    TP = sum((responses==1)&(y==1));
-    FP = sum((responses==-1)&(y==1));
-    FN = sum((responses==1)&(y==-1));
-    TN = sum((responses==-1)&(y==-1));
-
-    specificity(i) = TN/(TN+FP);
-    sensitivity(i) = TP/(TP+FN);
-    accuracy(i) = (TP + TN) / (TP + TN + FP + FN);
+    [accuracy(i), bal_accuracy(i), sensitivity(i), specificity(i)] = get_accuracy_measures(responses, y_hat);
 
     %%%%% Binned %%%%%
 
@@ -115,7 +108,7 @@ for i = 1:n
         tile_num = tilenum(tile);
     end
 
-    plot(my_normalize(reconstructions_binned_lr), linecolor, ...
+    plot(my_normalize(reconstruction_binned_lr), linecolor, ...
         'LineWidth', linewidth);
 
     xlim([1, config.n_bins]);
@@ -143,7 +136,7 @@ for i = 1:n
             tile_num = tilenum(tile);
         end
     
-        plot(my_normalize(reconstructions_binned_cs), linecolor, ...
+        plot(my_normalize(reconstruction_binned_cs), linecolor, ...
             'LineWidth', linewidth);
     
         xlim([1, config.n_bins]);
@@ -178,7 +171,7 @@ for i = 1:n
     end
 
     % Unbin
-    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstructions_binned_lr, stimgen, config.max_freq);
+    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq, config.min_freq);
 
     % Plot
     plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
@@ -210,7 +203,7 @@ for i = 1:n
         end
     
         % Unbin
-        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstructions_binned_cs, stimgen, config.max_freq);
+        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq, config.min_freq);
     
         % Plot
         plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
@@ -228,22 +221,97 @@ for i = 1:n
     end
 end
 
-bal_accuracy = (specificity + sensitivity)/2;
+%% Accuracy
+row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
 % Create table and print for easy viewing.
 T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
     'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
-    'RowNames', cellstr(strcat('Subject', {' '}, string((1:n)))))
+    'RowNames', row_names);
+
+%% Predict responses with cross validation
+
+% Prediction settings
+folds = 5;
+knn = false;
+mean_zero = true;
+from_responses = false;
+gs_ridge = true;
+thresh_vals = linspace(10,90,200);
+k_vals = 1:2:15;
+
+% Initialize
+pred_acc_cs = zeros(n,1);
+pred_acc_lr = zeros(n,1); 
+
+pred_bal_acc_cs = zeros(n,1);
+pred_bal_acc_lr = zeros(n,1);
+
+pred_acc_on_train_cs = zeros(n,1);
+pred_acc_on_train_lr = zeros(n,1); 
+
+pred_bal_acc_on_train_cs = zeros(n,1);
+pred_bal_acc_on_train_lr = zeros(n,1);
+
+if knn
+    pred_acc_knn = zeros(n,1);
+    pred_bal_acc_knn = zeros(n,1);
+    pred_acc_on_train_knn = zeros(n,1); 
+    pred_bal_acc_on_train_knn = zeros(n,1);
+end
+
+for ii = 1:n
+    % Get config
+    config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
+
+    % Generate cross-validated predictions
+    [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(config, folds, data_dir, ...
+                                                                            'knn', knn, 'from_responses', from_responses, ...
+                                                                            'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
+                                                                            'threshold_values', thresh_vals, 'k_vals', k_vals, ...
+                                                                            'verbose', verbose ...
+                                                                        );
+
+    % Assess prediction quality
+    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.cs);
+    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.lr);
+
+    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.cs);
+    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.lr);
+
+    if knn
+        [pred_acc_knn(ii), pred_bal_acc_knn(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.knn);
+        [pred_acc_on_train_knn(ii), pred_bal_acc_on_train_knn(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.knn);
+    end
+end
+
+% Print results
+T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
+    'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
+    'RowNames', row_names)
+
+T_CV_on_train = table(pred_bal_acc_on_train_lr, pred_bal_acc_on_train_cs, pred_acc_on_train_lr, pred_acc_on_train_cs, ...
+    'VariableNames', ["LR CV Pred Bal Acc On Train", "CS CV Pred Bal Acc On Train", "LR CV Pred Acc On Train", "CS CV Pred Acc On Train"], ...
+    'RowNames', row_names)
+
+if knn
+    T_CV_knn = table(pred_bal_acc_knn, pred_acc_knn, ...
+        'VariableNames', ["KNN CV Pred Bal Acc", "KNN CV Pred Acc"], ...
+        'RowNames', row_names)
+    
+    T_CV_on_train_knn = table(pred_bal_acc_on_train_knn, pred_acc_on_train_knn, ...
+        'VariableNames', ["KNN CV Pred Bal Acc On Train", "KNN CV Pred Acc On Train"], ...
+        'RowNames', row_names)
+end
 
 %% Local functions
-function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq)
+function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq, min_freq)
     recon_binrep = rescale(binned_recon, -20, 0);
     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
     
     freqs = linspace(1, floor(stimgen.Fs/2), length(recon_spectrum))';
-    indices_to_plot = freqs(:, 1) <= max_freq;
+    indices_to_plot = freqs(:,1) <= max_freq & freqs(:,1) >= min_freq;
     
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
 end
-

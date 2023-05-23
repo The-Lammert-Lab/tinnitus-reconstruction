@@ -303,6 +303,84 @@ Write the stimuli into the stimuli file.
 
 -------
 
+### crossval_predicted_responses
+
+Generate response predictions for a given config file
+using stratified cross validation.
+
+```matlab
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir)
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir, 'knn', true, 'knn_vals', 2:3:15, 'mean_zero', true)
+```
+
+**ARGUMENTS:**
+
+- config: `struct`,
+config struct from which to find responses and stimuli
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+
+- data_dir: `char`,
+the path to directory in which the data corresponding to the 
+config structis stored.
+
+- knn: `bool`, name-value, default: `false`,
+flag to run additional K-Nearest-Neighbor analysis
+
+- mean_zero: `bool`, name-value, default: `false`,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.
+
+- from_responses: `bool`, name-value, default: `false`,
+flag to determine the threshold from the given responses. 
+Overwrites `threshold_values` and does not run threshold
+development cycle.
+
+- ridge_reg: `bool`, name-value, default: `false`,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.
+
+- threshold_values: `1 x m` numerical vector, name-value, default:
+`linspace(10,90,200)`, representing the percentile threshold values
+on which to perform development to identify optimum. 
+Values must be on (0,100].
+
+- k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
+representing the K values on which to perform development to
+identify optimum for KNN analysis. Values must be positive integers.
+
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.       
+
+**OUTPUTS:**
+
+- given_resps: `p x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector. `p` is the number of original responses.
+
+- training_resps: `(folds-2)*p x 1` vector,
+the original subject responses used in the training phase.
+The training data is partially repeated between folds.
+
+- on_test: `struct` with `p x 1` vectors in fields
+`cs`, `lr`, and if `knn = true`, `knn`.
+Predicted responses on testing data.
+
+- on_train: `struct` with `(folds-2)*p x 1` vectors in fields
+`cs`, `lr`, and if `knn = true`, `knn`.
+Predicted responses on training data.
+
+
+
+
+
+-------
+
 ### cs  
 
 ```matlab
@@ -318,8 +396,18 @@ Write the stimuli into the stimuli file.
 where `n` is the number of trials/samples
 and `m` is the dimensionality of the stimuli/spectrum/bins
 
+- Gamma: Positive scalar, default: 32
+optional value for zhangpassivegamma function.
+
+- mean_zero: `bool`, name-value, default: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
+
 **OUTPUTS:**
-- x: compressed sensing reconstruction of the signal.
+- x: `m x 1` vector,
+representing the compressed sensing reconstruction of the signal.
 
 
 
@@ -414,6 +502,38 @@ In the data directory.
 
 -------
 
+### get_accuracy_measures
+
+Computes standard accuracy measures between true and predicted labels
+
+**ARGUMENTS:**
+
+- y: `m x n` numerical matrix,
+representing true labels. Values must be either `1` or `-1`.
+
+- y_hat: `m x n` numerical matrix,
+representing predicted labels. Values must be either `1` or `-1`.
+
+**OUTPUTS:**
+
+- accuracy: `scalar`,
+the correct prediction rate.
+
+- balanced_accuracy: `scalar`,
+the average of `sensitivity` and `specificity`.
+
+- sensitivity: `scalar`,
+the true positive rate.
+
+- specificity: `scalar`,
+the true negative rate.
+
+
+
+
+
+-------
+
 ### get_highest_power_of_2
 Compute the highest power of two less than or equal
 to a number.
@@ -495,6 +615,72 @@ for values `values`.
 
 **OUTPUTS**
 y: `1x1` scalar, the sampled value
+
+
+
+
+
+-------
+
+### gs
+
+Returns the linear reconstruction of stimuli and responses.
+
+```matlab
+x = gs(responses, Phi)
+x = gs(responses, Phi, 'ridge', true, 'mean_zero', true)
+```
+
+**ARGUMENTS:**
+
+- responses: `n x 1` vector of 1 and -1 values,
+representing the subject's responses.
+
+- Phi: `n x m` numerical matrix,
+where m is the length of each stimulus 
+and n is the same length as the responses
+
+- ridge: `boolean`, name-value, default: `false`,
+a flag to for using ridge regression.
+
+- mean_zero: `boolean`, name-value, defaut: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+**OUTPUTS:**
+
+- x: `m x 1` vector,
+representing the linear reconstruction of the signal, 
+where m is the length of a stimulus. 
+
+
+
+
+
+-------
+
+### knn_classify
+
+Returns the estimated class labels for a matrix of 
+reference points T, given data points X and labels y.
+
+**ARGUMENTS:**
+
+- y: `n x 1` vector,
+representing class labels that correspond to data points in `X`.
+
+- X: `n x p` numerical matrix,
+labelled data points.
+
+- T: `m x p` numerical matrix,
+representing reference points without/needing class labels
+
+- k: `scalar`,
+indicating the number of nearest neighbors to be considered.
+
+**OUTPUTS:**
+
+- z_hat: `m x 1` vector,
+estimated class labels for data points in T.
 
 
 
@@ -717,26 +903,47 @@ obj = str2prop(prop_string, [], '&&')
 Returns a response vector and the stimuli
 where the response vector is made of up -1 and 1 values
 corresponding to yes and no statements
-about how well the stimuli correspond to the target signal.
+about how well the stimuli correspond to the representation.
 
 ```matlab
-y = subject_selection_process(target_signal, stimuli)
-[y, X] = subject_selection_process(target_signal, [], n_samples)
+y = subject_selection_process(representation, stimuli)
+y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
+[y, X] = subject_selection_process(representation, [], n_samples)
 ```
 
 **ARGUMENTS:**
 
-- target_signal: `n x 1` numerical vector,
+- representation: `n x 1` numerical vector,
 the signal to compare against (e.g., the tinnitus signal).
 
 - stimuli: numerical matrix,
 an `m x n` matrix where m is the number of samples/trials
-and n is the same length as the target signal.
+and n is the same length as the representation.
 If stimuli is empty, a random Bernoulli matrix (p = 0.5) is used.
 
 - n_samples: integer scalar
 representing how many samples are used when generating the Bernoulli matrix default
 for stimuli, if the stimuli argument is empty.
+
+- responses: `m x 1` numerical vector, 
+which contains only `-1` and `1` values,
+used to determine the threshold if using one of the custom options.
+
+- mean_zero: `bool`, default: false, 
+representing a flag that centers the mean of the stimuli and representation.
+
+- from_responses: `bool`, name-value, default: `false`,
+a flag to determine the threshold from the given responses. 
+The default results in 50% threshold. 
+If using this option, `responses` must be passed as well.
+
+- threshold: Positive scalar, name-value, default: 50,
+representing a variable by which to manually set the response
+threshold. If `from_responses` is true, this will be ignored.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
 
 **OUTPUTS:**
 
