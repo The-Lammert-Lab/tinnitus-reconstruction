@@ -1,4 +1,4 @@
-name: Publish docs via GitHub Pages
+name: Build and deploy docs
 on:
   push:
     branches:
@@ -6,13 +6,12 @@ on:
 
 jobs:
   build:
-    name: Build and deploy docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
 
-      - name: setup python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -20,14 +19,14 @@ jobs:
       - name: Build docs
         run: python code/build_docs.py
 
-      - name: commit files
+      - name: Commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
           git diff-index --quiet HEAD || (git commit -a -m "updated files" --allow-empty)
 
-      - name: push changes
+      - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
