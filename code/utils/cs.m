@@ -40,7 +40,11 @@ function x = cs(responses, Phi, Gamma, options)
     n_samples = length(responses);
     len_signal = size(Phi, 2);
 
-    if options.verbose
+    % Since this is only cosmetic, shouldn't error if user doesn't have 
+    % parallel computing toolbox that is required by waittext.
+    show_waittext = options.verbose && license('test','Distrib_Computing_Toolbox');
+
+    if show_waittext
         waittext(0, 'init');
     end
 
@@ -50,7 +54,7 @@ function x = cs(responses, Phi, Gamma, options)
 
     Theta = zeros(n_samples, len_signal);
     for ii = 1:len_signal
-        if options.verbose
+        if show_waittext
             waittext(ii/len_signal, 'fraction');
         end
         ek = zeros(1, len_signal);
@@ -61,13 +65,13 @@ function x = cs(responses, Phi, Gamma, options)
         
     s = zhangpassivegamma(Theta, responses, Gamma);
 
-    if options.verbose
+    if show_waittext
         waittext(0, 'init');
     end
 
     x = zeros(len_signal, 1);
     for ii = 1:len_signal
-        if options.verbose
+        if show_waittext
             waittext(ii/len_signal, 'fraction');
         end
         ek = zeros(1, len_signal);
