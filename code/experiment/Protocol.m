@@ -116,11 +116,19 @@ function Protocol(options)
     end
 
     %% Load Presentations Screens
-
+if is_two_afc
     Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
     Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
+else
+    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png')); % need to make new pictures for these
+    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
+    Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3D.png'));
+    Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
+end
+
+
     
     %% Generate initial files and stimuli
 
