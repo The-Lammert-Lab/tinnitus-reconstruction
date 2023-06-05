@@ -236,8 +236,6 @@ function Protocol(options)
         meta = {expID, this_hash, this_datetime, total_trials_done};
         meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
-
-        pause(length(stimuli_matrix(:, counter)) / Fs - 0.3)
             
         % Decide How To Continue
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
@@ -286,7 +284,12 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
-            % pause(1)
+            % Pause before playing next stimuli  
+            if is_two_afc
+                pause(length(stimuli_matrix_1(:,counter)) / Fs - 0.3)
+            else
+                pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
+            end
         end
         
     end

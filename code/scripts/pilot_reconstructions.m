@@ -11,7 +11,8 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
+% DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
+DATA_DIR = '/Users/nbarnett/repos/tinnitus-reconstruction/code/experiment/Data/nvb_test_twoafc';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 BOOTSTRAP = 0; % Set to 0 or false if not using.
 PUBLISH = false;
