@@ -2,11 +2,12 @@
 
 %% General setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
+% data_dir = '~/repos/TinnitusStimulusFitter.jl/data/smote_patient_data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
 CS = true;
-verbose = false;
+verbose = true;
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -15,7 +16,7 @@ keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
 
 n = length(config_files);
 
-% Pre-allocate
+% Pre-allocate  
 sensitivity = zeros(n, 1);
 specificity = zeros(n, 1);
 accuracy = zeros(n, 1);
@@ -265,7 +266,8 @@ for ii = 1:n
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
 
     % Generate cross-validated predictions
-    [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(config, folds, data_dir, ...
+    [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(folds, ...
+                                                                            'config', config, 'data_dir', data_dir, ...
                                                                             'knn', knn, 'from_responses', from_responses, ...
                                                                             'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
                                                                             'threshold_values', thresh_vals, 'k_vals', k_vals, ...

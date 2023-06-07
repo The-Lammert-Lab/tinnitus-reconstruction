@@ -1,53 +1,56 @@
 % ### crossval_predicted_responses
 % 
-% Generate response predictions for a given config file
+% Generate response predictions for a given 
+% config file or pair of stimuli and responses
 % using stratified cross validation.
 % 
 % ```matlab
-%   [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir)
-%   [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir, 'knn', true, 'knn_vals', 2:3:15, 'mean_zero', true)
+%   [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'config', config, 'data_dir', data_dir)
+%   [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'responses', responses, 'stimuli', stimuli)
 % ```
 % 
 % **ARGUMENTS:**
-% 
-%   - config: `struct`,
-%       config struct from which to find responses and stimuli
 % 
 %   - folds: `scalar` positive integer, must be greater than 3,
 %       representing the number of cross validation folds to complete.
 %       Data will be partitioned into `1/folds` for `test` and `dev` sets
 %       and the remaining for the `train` set.
-% 
-%   - data_dir: `char`,
+%   - config: `struct`, name-value, deafult: `[]`
+%       config struct from which to find responses and stimuli
+%   - data_dir: `char`, name-value, deafult: `''`
 %       the path to directory in which the data corresponding to the 
 %       config structis stored.
-% 
+%   - responses: `n x 1` array, name-value, default: `[]`
+%       responses to use in reconstruction, 
+%       where `n` is the number of responses.
+%       Only used if passed with `stimuli`.
+%   - stimuli: `m x n` array, name-value, default: `[]`
+%       stimuli to use in reconstruction,
+%       where `m` is the number of bins.
+%       Only used if passed with `responses`.
 %   - knn: `bool`, name-value, default: `false`,
 %       flag to run additional K-Nearest-Neighbor analysis
-% 
 %   - mean_zero: `bool`, name-value, default: `false`,
 %       flag to set the mean of the stimuli to zero when computing the
 %       reconstruction and both the mean of the stimuli and the
 %       reconstruction to zero when generating the predictions.
-% 
 %   - from_responses: `bool`, name-value, default: `false`,
 %       flag to determine the threshold from the given responses. 
 %       Overwrites `threshold_values` and does not run threshold
 %       development cycle.
-% 
 %   - ridge_reg: `bool`, name-value, default: `false`,
 %       flag to use ridge regression instead of standard linear regression
 %       for reconstruction.
-% 
 %   - threshold_values: `1 x m` numerical vector, name-value, default:
 %       `linspace(10,90,200)`, representing the percentile threshold values
 %       on which to perform development to identify optimum. 
 %       Values must be on (0,100].
-%       
 %   - k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
 %       representing the K values on which to perform development to
 %       identify optimum for KNN analysis. Values must be positive integers.
-% 
+%   - gamma: `1 x 1` scalar, name-value, default: `8`,
+%       representing the gamma value to use in 
+%       compressed sensing reconstructions if `config` is empty.
 %   - verbose: `bool`, name-value, default: `true`,
 %       flag to print information messages.       
 % 
@@ -57,35 +60,40 @@
 %       the original subject responses in the order corresponding 
 %       to the predicted responses, i.e., a shifted version of the 
 %       original response vector. `p` is the number of original responses.
-% 
 %   - training_resps: `(folds-2)*p x 1` vector,
 %       the original subject responses used in the training phase.
 %       The training data is partially repeated between folds.
-% 
 %   - on_test: `struct` with `p x 1` vectors in fields
 %       `cs`, `lr`, and if `knn = true`, `knn`.
 %       Predicted responses on testing data.
-% 
 %   - on_train: `struct` with `(folds-2)*p x 1` vectors in fields
 %       `cs`, `lr`, and if `knn = true`, `knn`.
 %       Predicted responses on training data.
 
-function [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(config, folds, data_dir, options)
+function [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, options)
 
     arguments
-        config struct
         folds (1,1) {mustBePositive, mustBeInteger, mustBeGreaterThan(folds,3)}
-        data_dir char
+        options.config struct = []
+        options.data_dir char = ''
+        options.responses (:,1) {mustBeReal, mustBeInteger} = []
+        options.stimuli (:,:) {mustBeReal} = []
         options.knn logical = false
         options.mean_zero logical = false
         options.from_responses logical = false
         options.ridge_reg logical = false
         options.threshold_values (1,:) {mustBePositive, mustBeLessThanOrEqual(options.threshold_values,100)} = linspace(10,90,200)
         options.k_vals (1,:) {mustBePositive, mustBeInteger} = 10:5:50
+        options.gamma (1,1) {mustBePositive, mustBeInteger} = 8
         options.verbose logical = true
     end
 
-    [resps, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', data_dir);
+    if isempty(options.responses) && isempty(options.stimuli)
+        [resps, stimuli_matrix] = collect_data('config', options.config, 'verbose', options.verbose, 'data_dir', options.data_dir);
+    else
+        resps = options.responses;
+        stimuli_matrix = options.stimuli;
+    end
     fold_frac = round(length(resps) / folds);
 
     resps_len = length(resps);
@@ -124,7 +132,11 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
         stimuli_matrix_test = stimuli_matrix(:, size(stimuli_matrix,2)-fold_frac+1:end);
         
         % Get reconstructions
-        gamma = get_gamma_from_config(config, options.verbose);
+        if ~isempty(options.config)
+            gamma = get_gamma_from_config(options.config, options.verbose);
+        else
+            gamma = options.gamma;
+        end
         
         recon_cs = cs(resps_train, stimuli_matrix_train', gamma, ...
                         'mean_zero', options.mean_zero, 'verbose', options.verbose);
