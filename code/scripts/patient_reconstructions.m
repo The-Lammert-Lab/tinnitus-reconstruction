@@ -2,7 +2,6 @@
 
 %% General setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
-% data_dir = '~/repos/TinnitusStimulusFitter.jl/data/smote_patient_data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
