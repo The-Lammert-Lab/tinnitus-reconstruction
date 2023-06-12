@@ -42,7 +42,7 @@ function x = cs(responses, Phi, Gamma, options)
 
     % Since this is only cosmetic, shouldn't error if user doesn't have 
     % parallel computing toolbox that is required by waittext.
-    show_waittext = options.verbose && license('test','Distrib_Computing_Toolbox');
+    show_waittext = options.verbose && ~license('test','Distrib_Computing_Toolbox');
 
     if show_waittext
         waittext(0, 'init');
