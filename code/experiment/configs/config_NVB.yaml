@@ -19,7 +19,20 @@ stimuli_type: UniformPrior
 min_bins: 6
 max_bins: 16
 
-data_dir: ''
+target_signal_filepath: C:\Users\jackb\OneDrive\Documents\GitHub\tinnitus-reconstruction\code\experiment\ATA\ATA_Tinnitus_Buzzing_Tone_1sec.wav
+
+# This field gives the short-form name of the target signal.
+# For resynth experiments, you should name it
+# "resynth-buzzing" for instance.
+target_signal_name: buzzing
+
+# This field is a boolean flag
+# that indicates whether the target signal
+# should be binned (and then unbinned)
+# before playback to the user.
+bin_target_signal: true
+
+data_dir: '~\Data\data_pilot'
 
 stimuli_save_type: bins
 
