@@ -139,10 +139,10 @@ function [responses, stimuli] = collect_data(options)
                 correct_stimuli = NaN(m, n);
                 incorrect_stimuli = NaN(m, n);
 
-                correct_stimuli(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
-                correct_stimuli(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
-                incorrect_stimuli(:, responses{ii} == 1) = stimulus_block_2(:, responses{ii} == 1);
-                incorrect_stimuli(:, responses{ii} == -1) = stimulus_block_1(:, responses{ii} == -1);
+                incorrect_stimuli(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
+                incorrect_stimuli(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
+                correct_stimuli(:, responses{ii} == 1) = stimulus_block_2(:, responses{ii} == 1);
+                correct_stimuli(:, responses{ii} == -1) = stimulus_block_1(:, responses{ii} == -1);
 
                 stimulus_block_fused = NaN(m, 2 * n);
                 stimulus_block_fused(:, 1:2:end) = correct_stimuli;

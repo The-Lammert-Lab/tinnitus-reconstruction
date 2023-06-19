@@ -12,7 +12,8 @@
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
 % DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
-DATA_DIR = '/Users/nbarnett/repos/tinnitus-reconstruction/code/experiment/Data/nvb_test_twoafc';
+DATA_DIR = 'C:\USers\jackb\OneDrive\Documents\GitHub\tinnitus-reconstruction\code\experiment\Data\data_pilot';
+% DATA_DIR = '~\Data\data_pilot';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 BOOTSTRAP = 0; % Set to 0 or false if not using.
 PUBLISH = false;
