@@ -464,9 +464,9 @@ Example:
 
 ### follow_up
 
-Runs the follow up protocol to ask exit survey questions
-Questions are included in code/experiment/fixationscreens/FollowUp_vX
-Where X is the version number.
+Runs the follow up protocol to ask exit survey questions.
+Questions are included in code/experiment/fixationscreens/FollowUp_vX,
+where X is the version number.
 Also asks reconstruction quality assessment. Computes linear reconstruction
 and generates config-informed white noise for comparison against target
 sound. Responses are saved in the specified data directory. 
