@@ -15,7 +15,6 @@ jobs:
           echo "The ref_name is: ${{ github.ref_name }}"
 
   build:
-    if: github.ref_name != 'auto-docs-pr'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -37,15 +36,3 @@ jobs:
           branch: auto-docs-pr
           delete-branch: true
           labels: documentation, automated pr
-
-  deploy:
-      if: github.ref_name == 'auto-docs-pr'
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout main
-          uses: actions/checkout@v3
-        
-        - name: Deploy docs
-          uses: mhausenblas/mkdocs-deploy-gh-pages@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,26 @@
+name: Build and deploy docs
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  printing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: show env vars
+        run: |
+          echo "context: $GITHUB_CONTEXT"
+          echo "The base_ref is: ${{ github.base_ref }}" 
+
+  deploy:
+    if: github.event.pull_request.merged == true && github.base_ref == 'auto-docs-pr' 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+          
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
