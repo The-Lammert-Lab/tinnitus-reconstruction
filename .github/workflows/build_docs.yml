@@ -5,15 +5,6 @@ on:
       - main
 
 jobs:
-  printing:
-    runs-on: ubuntu-latest
-    steps:
-      - name: show env vars
-        run: |
-          echo "Context is: $GITHUB_CONTEXT"
-          echo "The ref is: $GITHUB_REF"
-          echo "The ref_name is: ${{ github.ref_name }}"
-
   build:
     runs-on: ubuntu-latest
     steps:
