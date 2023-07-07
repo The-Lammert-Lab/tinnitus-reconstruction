@@ -1027,7 +1027,7 @@ A configuration file struct
 
 **OUTPUTS:**
 
-- white_waveform: `n x 1` white noise waveform
+- white_waveform: `n x 1` white noise waveform.
 - fs: `1 x 1` Associated frequency of waveform.
 
 
