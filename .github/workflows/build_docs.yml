@@ -23,7 +23,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Auto-update doc files'
+          commit-message: '🤖 Auto-update doc files'
+          title: '🤖 Auto-update doc files'
           branch: auto-docs-pr
           delete-branch: true
           labels: documentation, automated pr
