@@ -26,6 +26,9 @@
 % 
 %   - x: `m x 1` vector,
 %       representing the compressed sensing reconstruction of the signal.
+% 
+% See also:
+% cs_no_basis
 
 function x = cs(responses, Phi, Gamma, options)
 
