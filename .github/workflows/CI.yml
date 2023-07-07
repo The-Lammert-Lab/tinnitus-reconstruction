@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    if: github.ref != 'auto-docs-pr'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -19,21 +20,23 @@ jobs:
       - name: Build docs
         run: python code/build_docs.py
 
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated files" --allow-empty)
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Auto-update doc files'
+          branch: auto-docs-pr
+          delete-branch: true
+          labels: documentation, automated pr
 
-      - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+  deploy:
+      if: github.ref == 'auto-docs-pr'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout main
+          uses: actions/checkout@v3
+        
+        - name: Deploy docs
+          uses: mhausenblas/mkdocs-deploy-gh-pages@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
