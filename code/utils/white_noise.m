@@ -12,7 +12,7 @@
 % 
 % **OUTPUTS:**
 % 
-%   - white_waveform: `n x 1` white noise waveform
+%   - white_waveform: `n x 1` white noise waveform.
 %   - fs: `1 x 1` Associated frequency of waveform.
 
 function [white_waveform, Fs] = white_noise(options)
