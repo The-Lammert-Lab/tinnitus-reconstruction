@@ -738,6 +738,10 @@ from GUI.
 
 ### prop2str
 
+```matlab
+stringified_properties = prop2str(obj, [], '&&')
+```
+
 Converts the property names and values of a struct or object
 into a character vector.
 For example, a struct, s, with the properties, s.a = 1, s.b = 2,
@@ -760,12 +764,6 @@ What separator to use between parameter statements.
 **OUTPUTS:**
 
 - stringified_properties: character vector
-
-Example:
-
-```matlab
-stringified_properties = prop2str(obj, [], '&&')
-```
 
 
 
