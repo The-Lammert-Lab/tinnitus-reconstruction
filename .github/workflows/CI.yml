@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    if: github.ref != 'auto-docs-pr'
+    if: github.ref_name != 'auto-docs-pr'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -30,7 +30,7 @@ jobs:
           labels: documentation, automated pr
 
   deploy:
-      if: github.ref == 'auto-docs-pr'
+      if: github.ref_name == 'auto-docs-pr'
       runs-on: ubuntu-latest
       steps:
         - name: Checkout main
