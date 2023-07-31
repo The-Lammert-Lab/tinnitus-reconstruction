@@ -233,12 +233,31 @@ T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
 
 % Prediction settings
 folds = 5;
+thresh_vals = linspace(10,90,200);
+
 knn = false;
+knn_method = 'mode';
+knn_percent = 1:5:90;
+k_vals = 1:2:50;
+
+svm = false;
+lda = false;
+
+lwlr = true;
+gauss_h = 1e-10:0.1:0.1;
+norm_stim_lwlr = true;
+
+pnr = false;
+pnr_ords = 2:4;
+norm_stim_pnr = false;
+
+randguess = true;
+randtype = 'normal';
+
 mean_zero = true;
 from_responses = false;
 gs_ridge = true;
-thresh_vals = linspace(10,90,200);
-k_vals = 1:2:15;
+norm_stim_recon = false;
 
 % Initialize
 pred_acc_cs = zeros(n,1);
@@ -260,6 +279,32 @@ if knn
     pred_bal_acc_on_train_knn = zeros(n,1);
 end
 
+if svm
+    pred_acc_svm = zeros(n,1);
+    pred_bal_acc_svm = zeros(n,1);
+end
+
+if lda
+    pred_acc_lda = zeros(n,1);
+    pred_bal_acc_lda = zeros(n,1);
+end
+
+if lwlr
+    pred_acc_lwlr = zeros(n,1);
+    pred_bal_acc_lwlr = zeros(n,1);
+end
+
+if pnr
+    pred_acc_pnr = zeros(n,1);
+    pred_bal_acc_pnr = zeros(n,1);
+end
+
+if randguess
+    pred_acc_randguess = zeros(n,1);
+    pred_bal_acc_randguess = zeros(n,1);
+end
+
+
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
@@ -267,9 +312,11 @@ for ii = 1:n
     % Generate cross-validated predictions
     [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(folds, ...
                                                                             'config', config, 'data_dir', data_dir, ...
-                                                                            'knn', knn, 'from_responses', from_responses, ...
+                                                                            'knn', knn, 'knn_method', knn_method, ...
+                                                                            'knn_percent', knn_percent, 'from_responses', from_responses, ...
                                                                             'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
                                                                             'threshold_values', thresh_vals, 'k_vals', k_vals, ...
+                                                                            'normalize', norm_stim_recon, ...
                                                                             'verbose', verbose ...
                                                                         );
 
@@ -283,6 +330,31 @@ for ii = 1:n
     if knn
         [pred_acc_knn(ii), pred_bal_acc_knn(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.knn);
         [pred_acc_on_train_knn(ii), pred_bal_acc_on_train_knn(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.knn);
+    end
+
+    if svm
+        [pred_svm, true_svm] = crossval_svm(folds,'config',config,'data_dir',data_dir,'verbose',verbose);
+        [pred_acc_svm(ii), pred_bal_acc_svm(ii), ~, ~] = get_accuracy_measures(true_svm, pred_svm);
+    end
+
+    if lda
+        [pred_lda, true_lda] = crossval_lda(folds,'config',config,'data_dir',data_dir,'verbose',verbose);
+        [pred_acc_lda(ii), pred_bal_acc_lda(ii), ~, ~] = get_accuracy_measures(true_lda, pred_lda);
+    end
+
+    if lwlr
+        [pred_lwlr, true_lwlr] = crossval_lwlr(folds, gauss_h, thresh_vals, 'config',config,'data_dir',data_dir,'norm_stim',norm_stim_lwlr,'verbose',verbose);
+        [pred_acc_lwlr(ii), pred_bal_acc_lwlr(ii), ~, ~] = get_accuracy_measures(true_lwlr, pred_lwlr);
+    end
+
+    if pnr
+        [pred_pnr, true_pnr] = crossval_pnr(folds, pnr_ords, thresh_vals, 'config',config,'data_dir',data_dir,'norm_stim',norm_stim_pnr,'verbose',verbose);
+        [pred_acc_pnr(ii), pred_bal_acc_pnr(ii), ~, ~] = get_accuracy_measures(true_pnr, pred_pnr);
+    end
+
+    if randguess
+        [pred_randguess, true_randguess] = crossval_rand(folds, thresh_vals, 'config',config,'data_dir',data_dir,'dist',randtype,'verbose',verbose);
+        [pred_acc_randguess(ii), pred_bal_acc_randguess(ii), ~, ~] = get_accuracy_measures(true_randguess, pred_randguess);
     end
 end
 
@@ -302,6 +374,36 @@ if knn
     
     T_CV_on_train_knn = table(pred_bal_acc_on_train_knn, pred_acc_on_train_knn, ...
         'VariableNames', ["KNN CV Pred Bal Acc On Train", "KNN CV Pred Acc On Train"], ...
+        'RowNames', row_names)
+end
+
+if svm
+    T_CV_svm = table(pred_bal_acc_svm, pred_acc_svm, ...
+        'VariableNames', ["SVM CV Pred Bal Acc", "SVM CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if lda
+    T_CV_lda = table(pred_bal_acc_lda, pred_acc_lda, ...
+        'VariableNames', ["LDA CV Pred Bal Acc", "LDA CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if lwlr
+    T_CV_lwlr = table(pred_bal_acc_lwlr, pred_acc_lwlr, ...
+        'VariableNames', ["LWLR CV Pred Bal Acc", "LWLR CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if pnr
+    T_CV_pnr = table(pred_bal_acc_pnr, pred_acc_pnr, ...
+        'VariableNames', ["PNR CV Pred Bal Acc", "PNR CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if randguess
+    T_CV_randguess = table(pred_bal_acc_randguess, pred_acc_randguess, ...
+        'VariableNames', ["Random CV Pred Bal Acc", "Random CV Pred Acc"], ...
         'RowNames', row_names)
 end
 

@@ -65,7 +65,7 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         responses (:,1) {mustBeNumeric} = []
         options.mean_zero (1,1) logical = false
         options.from_responses (1,1) logical = false
-        options.threshold {mustBePositive} = 50
+        options.threshold (1,1) {mustBePositive} = 50
         options.verbose (1,1) logical = true
     end
 
