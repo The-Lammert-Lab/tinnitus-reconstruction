@@ -303,11 +303,187 @@ Write the stimuli into the stimuli file.
 
 -------
 
+### crossval_lda
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using linear discriminant analysis.
+
+
+```matlab
+[pred_resps, true_resps] = crossval_lda(folds, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_lda(folds, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [fitcdiscr](https://mathworks.com/help/stats/fitcdiscr.html)
+
+
+
+
+
+-------
+
+### crossval_lwlr
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using locally weighted linear regression.
+
+```matlab
+[pred_resps, true_resps] = crossval_lwlr(folds, h, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_lwlr(folds, h, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- h: `1 x p` numerical vector or `scalar`,
+representing the width parameter(s) for the Gaussian kernel.
+If there are multiple values, 
+it will be optimized in the development section.
+- thresh: `1 x q` numerical vector or `scalar`,
+representing the percentile threshold value(s).
+If there are multiple values, 
+it will be optimized in the development section.
+Values must be on (0,100].
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- norm_stimuli: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+
+
+-------
+
+### crossval_pnr
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using polynomial regression.
+
+```matlab
+[pred_resps, true_resps] = crossval_pnr(folds, ords, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_pnr(folds, ords, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- h: `1 x p` numerical vector or `scalar`,
+representing the polynomial order(s) on which to perform regression.
+If there are multiple values, 
+it will be optimized in the development section.
+- thresh: `1 x q` numerical vector or `scalar`,
+representing the percentile threshold value(s).
+If there are multiple values, 
+it will be optimized in the development section.
+Values must be on (0,100].
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- norm_stimuli: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [polyfitn](https://mathworks.com/matlabcentral/fileexchange/34765-polyfitn)
+
+
+
+
+
+-------
+
 ### crossval_predicted_responses
 
 Generate response predictions for a given 
 config file or pair of stimuli and responses
-using stratified cross validation.
+using stratified cross validation and either
+the subject response model or KNN.
 
 ```matlab
 [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'config', config, 'data_dir', data_dir)
@@ -333,8 +509,18 @@ Only used if passed with `stimuli`.
 stimuli to use in reconstruction,
 where `m` is the number of bins.
 Only used if passed with `responses`.
+- normalize: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
 - knn: `bool`, name-value, default: `false`,
 flag to run additional K-Nearest-Neighbor analysis
+- knn_method: `char`, name-value, default: 'mode',
+class determination flag to be passed to knn function.
+- knn_percent: `scalar`, name-value, default: 75,
+Target percent passed to knn function if `knn_method` is 'percent'.
+- k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
+representing the K values on which to perform development to
+identify optimum for KNN analysis. Values must be positive integers.
+- gamma: `1 x 1` scalar, name-value, default: `8`,
 - mean_zero: `bool`, name-value, default: `false`,
 flag to set the mean of the stimuli to zero when computing the
 reconstruction and both the mean of the stimuli and the
@@ -350,10 +536,6 @@ for reconstruction.
 `linspace(10,90,200)`, representing the percentile threshold values
 on which to perform development to identify optimum. 
 Values must be on (0,100].
-- k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
-representing the K values on which to perform development to
-identify optimum for KNN analysis. Values must be positive integers.
-- gamma: `1 x 1` scalar, name-value, default: `8`,
 representing the gamma value to use in 
 compressed sensing reconstructions if `config` is empty.
 - verbose: `bool`, name-value, default: `true`,
@@ -374,6 +556,64 @@ Predicted responses on testing data.
 - on_train: `struct` with `(folds-2)*p x 1` vectors in fields
 `cs`, `lr`, and if `knn = true`, `knn`.
 Predicted responses on training data.
+
+
+
+!!! info "See Also"
+    * [subject_selection_process](./#subject_selection_process)
+    * [knn_classify](./#knn_classify)
+
+
+
+
+
+-------
+
+### crossval_svm
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using support vector machines.
+
+
+```matlab
+[pred_resps, true_resps] = crossval_svm(folds, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_svm(folds, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [fitclinear](https://mathworks.com/help/stats/fitclinear.html)
 
 
 
@@ -513,15 +753,17 @@ In the data directory.
 
 ### get_accuracy_measures
 
-Computes standard accuracy measures between true and predicted labels
+Computes standard accuracy measures between true and predicted labels.
+Values greater than or equal to 1 are considered positives,
+and values less than 1 are considered negative.
 
 **ARGUMENTS:**
 
 - y: `m x n` numerical matrix,
-representing true labels. Values must be either `1` or `-1`.
+representing true labels.
 
 - y_hat: `m x n` numerical matrix,
-representing predicted labels. Values must be either `1` or `-1`.
+representing predicted labels.
 
 **OUTPUTS:**
 
@@ -664,6 +906,14 @@ labelled data points.
 representing reference points without/needing class labels
 - k: `scalar`,
 indicating the number of nearest neighbors to be considered.
+- method: `char`, name-value, default: 'mode',
+method by which to determine the class label.
+Valid methods are 'mode', which takes the most common neighbor label
+'min_class', which takes the least common, 
+and 'percent', which takes the class with the closest percent occurrance.
+- percent: `scalar`, name-value, default: 75,
+if method is 'percent', label is assigned based on the class with 
+the closest percent occurrance to this argument.
 
 **OUTPUTS:**
 
