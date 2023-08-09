@@ -15,7 +15,7 @@
 %       representing the number of cross validation folds to complete.
 %       Data will be partitioned into `1/folds` for `test` and `dev` sets
 %       and the remaining for the `train` set.
-%   - h: `1 x p` numerical vector or `scalar`,
+%   - ords: `1 x p` numerical vector or `scalar`,
 %       representing the polynomial order(s) on which to perform regression.
 %       If there are multiple values, 
 %       it will be optimized in the development section.
@@ -102,13 +102,9 @@ function [pred_resps, true_resps] = crossval_pnr(folds,ords,thresh,options)
             % Evaluate
             est_dev = polyvaln(p,stimuli_matrix(:,dev_inds)');
             % Convert estimate to -1 or 1.
-            preds_dev = double(est_dev >= prctile(est_dev, thresh));
-            preds_dev(preds_dev == 0) = -1;
-
+            preds_dev = sign(est_dev + thresh);
             % Get bal acc for each threshold value for this order 
-            for kk = 1:length(thresh)
-                [~, bal_acc_dev(jj,kk), ~, ~] = get_accuracy_measures(resps(dev_inds),preds_dev(:,kk));
-            end
+            [~, bal_acc_dev(jj,:), ~, ~] = get_accuracy_measures(resps(dev_inds),preds_dev);
         end
 
         % Get row and column of max balanced accuracy index.

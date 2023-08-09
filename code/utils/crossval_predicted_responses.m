@@ -31,15 +31,6 @@
 %       Only used if passed with `responses`.
 %   - normalize: `bool`, name-value, default: `false`,
 %       flag to normalize the stimuli after loading.
-%   - knn: `bool`, name-value, default: `false`,
-%       flag to run additional K-Nearest-Neighbor analysis
-%   - knn_method: `char`, name-value, default: 'mode',
-%       class determination flag to be passed to knn function.
-%   - knn_percent: `scalar`, name-value, default: 75,
-%       Target percent passed to knn function if `knn_method` is 'percent'.
-%   - k_vals: `1 x n` numerical vector, name-value, default: `10:5:50`,
-%       representing the K values on which to perform development to
-%       identify optimum for KNN analysis. Values must be positive integers.
 %   - gamma: `1 x 1` scalar, name-value, default: `8`,
 %   - mean_zero: `bool`, name-value, default: `false`,
 %       flag to set the mean of the stimuli to zero when computing the
@@ -89,14 +80,10 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
         options.data_dir char = ''
         options.responses (:,1) {mustBeReal, mustBeInteger} = []
         options.stimuli (:,:) {mustBeReal} = []
-        options.knn logical = false
-        options.knn_method char = 'mode'
-        options.knn_percent (:,1) {mustBePositive, mustBeLessThanOrEqual(options.knn_percent,100)} = 75
         options.mean_zero logical = false
         options.from_responses logical = false
         options.ridge_reg logical = false
         options.threshold_values (1,:) {mustBePositive, mustBeLessThanOrEqual(options.threshold_values,100)} = linspace(10,90,200)
-        options.k_vals (1,:) {mustBePositive, mustBeInteger} = 10:5:50
         options.gamma (1,1) {mustBePositive, mustBeInteger} = 8
         options.normalize logical = false
         options.verbose logical = true
@@ -133,17 +120,6 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
     
     pred_bal_acc_dev_cs = zeros(size(options.threshold_values));
     pred_bal_acc_dev_lr = zeros(size(options.threshold_values));
-    
-    if options.knn
-        on_test.knn = zeros(n, 1);
-        on_train.knn = zeros(train_len, 1);
-        if isempty(options.knn_percent)
-            knn_hparams = options.k_vals';
-        else
-            knn_hparams = allcomb(options.k_vals, options.knn_percent);
-        end
-        pred_bal_acc_dev_knn = zeros(length(knn_hparams),1);
-    end
 
     for ii = 1:folds
         % Shift data
@@ -238,32 +214,5 @@ function [given_resps, training_resps, on_test, on_train] = crossval_predicted_r
         training_resps(unfilled_inds_train) = resps_train;
         on_train.cs(unfilled_inds_train) = pred_on_train_cs;
         on_train.lr(unfilled_inds_train) = pred_on_train_lr;
-
-        if options.knn
-            % Collect balanced accuracies for each K value using dev set 
-            for jj = 1:size(knn_hparams,1)
-                if ~strcmp(options.knn_method, 'percent')
-                    pred_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_dev',knn_hparams(jj,1),'method',options.knn_method);
-                else
-                    pred_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_dev',knn_hparams(jj,1),'method',options.knn_method,'percent',knn_hparams(jj,2));
-                end
-                [~, pred_bal_acc_dev_knn(jj), ~, ~] = get_accuracy_measures(resps_dev, pred_knn);
-            end
-
-            % Make predictions on test and train using best k value
-            [~, ind_knn] = max(pred_bal_acc_dev_knn);
-            if ~strcmp(options.knn_method, 'percent')
-                pred_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_test', knn_hparams(ind_knn,1), 'method', options.knn_method);
-                pred_on_train_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_train',knn_hparams(ind_knn,1), 'method', options.knn_method);
-            else
-                pred_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_test',knn_hparams(ind_knn,1),'method',options.knn_method,'percent',knn_hparams(ind_knn,2));
-                pred_on_train_knn = knn_classify(resps_train,stimuli_matrix_train',stimuli_matrix_train',knn_hparams(ind_knn,1),'method',options.knn_method,'percent',knn_hparams(ind_knn,2));
-            end
-
-            % Store
-            on_test.knn(unfilled_inds_test) = pred_knn;
-            on_train.knn(unfilled_inds_train) = pred_on_train_knn;
-        end
-
     end
 end
