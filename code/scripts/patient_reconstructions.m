@@ -5,8 +5,9 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
-CS = true;
-verbose = true;
+CS = false;
+showfigs = false;
+verbose = false;
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -15,120 +16,85 @@ keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
 
 n = length(config_files);
 
+skip_subjects = {'KE_6'};
+
 % Pre-allocate  
-sensitivity = zeros(n, 1);
-specificity = zeros(n, 1);
-accuracy = zeros(n, 1);
-bal_accuracy = zeros(n, 1);
-yesses = zeros(n, 1);
+yesses = zeros(n, 1); 
 
 %% Plot setup
-rows = ceil(n/2);
-
-if CS
-    cols = 4;
-else
-    cols = 2;
-end
-
-label_y = 1:cols:rows*cols;
-
-linewidth = 1.5;
-linecolor = 'b';
-
-my_normalize = @(x) normalize(x, 'zscore', 'std');
-
-% Figs
-f_binned = figure;
-t_binned = tiledlayout(f_binned, rows, cols);
-
-f_unbinned = figure;
-t_unbinned = tiledlayout(f_unbinned, rows, cols);
-
-%% Loop and plot
-for i = 1:n
-    %%%%% Get data %%%%%
+if showfigs
+    rows = ceil(n/2);
     
-    % Keep previous config obj. and rm_fields for setting comparison
-    if i > 1
-        prev_config = config;
-        prev_rm_fields = rm_fields;
-        prev_names = names;
-    end
-
-    config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
-    
-    % Skip config files with target signals (healthy controls)
-    if isfield(config, 'target_signal') && ~isempty(config.target_signal)
-        continue
-    end
-
-    % Get subject ID number 
-    ID_num = extractAfter(config.subject_ID, '_');
-    if isempty(ID_num)
-        ID_num = '???';
-    end
-
-    % Non-critical fields in current config
-    names = fieldnames(config);
-    rm_fields = ~ismember(names, keep_fields);
-
-    % Get reconstructions
-    [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-                                                                                    'method', 'linear_ridge', ...
-                                                                                    'verbose', verbose, ...
-                                                                                    'data_dir', data_dir ...
-                                                                                );
-
     if CS
-        reconstruction_binned_cs = get_reconstruction('config', config, 'method', 'cs', ...
-                                                        'verbose', verbose, 'data_dir', data_dir ...
-                                                    );
-    end
-
-    %%%%% Compare responses to synthetic %%%%% 
-    y_hat = subject_selection_process(reconstruction_binned_lr, ...
-                                    stimuli_matrix', [], responses, ...
-                                    'mean_zero', true, ...
-                                    'from_responses', true, ...
-                                    'verbose', verbose ...
-                                );
-
-    yesses(i) = 100 * length(responses(responses == 1))/length(responses);
-    [accuracy(i), bal_accuracy(i), sensitivity(i), specificity(i)] = get_accuracy_measures(responses, y_hat);
-
-    %%%%% Binned %%%%%
-
-    % Linear
-    if i == n && mod(n, 2)
-        tile = nexttile(t_binned, [1,2]);
-        tile_num = tilenum(tile);
+        cols = 4;
     else
-        tile = nexttile(t_binned);
-        tile_num = tilenum(tile);
+        cols = 2;
     end
-
-    plot(my_normalize(reconstruction_binned_lr), linecolor, ...
-        'LineWidth', linewidth);
-
-    xlim([1, config.n_bins]);
-
-    % Label only last row
-    if tile_num >= rows*(cols-1)
-        xlabel('Bin #', 'FontSize', 16)
-    end
-
-    % Label start of each row
-    if ismember(tile_num, label_y)
-        ylabel('Power (dB)', 'FontSize', 16);
-    end
-
-    title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
-    set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-
-    % CS
-    if CS
-        if i == n && mod(n, 2)
+    
+    label_y = 1:cols:rows*cols;
+    
+    linewidth = 1.5;
+    linecolor = 'b';
+    
+    my_normalize = @(x) normalize(x, 'zscore', 'std');
+    
+    % Figs
+    f_binned = figure;
+    t_binned = tiledlayout(f_binned, rows, cols);
+    
+    f_unbinned = figure;
+    t_unbinned = tiledlayout(f_unbinned, rows, cols);
+    
+    %% Loop and plot
+    for i = 1:n
+        %%%%% Get data %%%%%
+        
+        % Keep previous config obj. and rm_fields for setting comparison
+        if i > 1
+            prev_config = config;
+            prev_rm_fields = rm_fields;
+            prev_names = names;
+        end
+    
+        config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+        
+        if all(ismember(config.subject_ID, skip_subjects))
+            continue
+        end
+    
+        % Skip config files with target signals (healthy controls)
+        if isfield(config, 'target_signal') && ~isempty(config.target_signal)
+            continue
+        end
+    
+        % Get subject ID number 
+        ID_num = extractAfter(config.subject_ID, '_');
+        if isempty(ID_num)
+            ID_num = '???';
+        end
+    
+        % Non-critical fields in current config
+        names = fieldnames(config);
+        rm_fields = ~ismember(names, keep_fields);
+    
+        % Get reconstructions
+        [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
+                                                                                        'method', 'linear_ridge', ...
+                                                                                        'verbose', verbose, ...
+                                                                                        'data_dir', data_dir ...
+                                                                                    );
+        yesses(i) = 100 * length(responses(responses == 1))/length(responses);
+    
+        if CS
+            reconstruction_binned_cs = get_reconstruction('config', config, 'method', 'cs', ...
+                                                            'verbose', verbose, 'data_dir', data_dir ...
+                                                        );
+        end
+    
+        %%%%% Binned %%%%%
+    
+        % Linear
+        if i == n-length(skip_subjects)
             tile = nexttile(t_binned, [1,2]);
             tile_num = tilenum(tile);
         else
@@ -136,7 +102,7 @@ for i = 1:n
             tile_num = tilenum(tile);
         end
     
-        plot(my_normalize(reconstruction_binned_cs), linecolor, ...
+        plot(my_normalize(reconstruction_binned_lr), linecolor, ...
             'LineWidth', linewidth);
     
         xlim([1, config.n_bins]);
@@ -146,55 +112,51 @@ for i = 1:n
             xlabel('Bin #', 'FontSize', 16)
         end
     
-        title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
+        % Label start of each row
+        if ismember(tile_num, label_y)
+            ylabel('Power (dB)', 'FontSize', 16);
+        end
+    
+        title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
         set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-    end
-
-    %%%%% Unbinned %%%%%
-
-    % Create a new stimgen object if current config settings are different
-    if i == 1
-        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config);
-    elseif ~isequal(rmfield(config, names(rm_fields)), rmfield(prev_config, prev_names(prev_rm_fields)))
-        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config);
-    end
-
-    % Linear
-    if i == n && mod(n, 2)
-        tile = nexttile(t_unbinned, [1,2]);
-        tile_num = tilenum(tile);
-    else
-        tile = nexttile(t_unbinned);
-        tile_num = tilenum(tile);
-    end
-
-    % Unbin
-    [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq, config.min_freq);
-
-    % Plot
-    plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
-        linecolor, 'LineWidth', linewidth);
-
-    xlim([0, config.max_freq]);
-
-    % Label only last row
-    if tile_num >= rows*(cols-1)
-        xlabel('Frequency (Hz)', 'FontSize', 16)
-    end
-
-    % Label start of each row
-    if ismember(tile_num, label_y)
-        ylabel('Power (dB)', 'FontSize', 16);
-    end
-
-    title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
-    set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-
-    % CS
-    if CS
-        if i == n && mod(n, 2)
+    
+        % CS
+        if CS
+            if i == n-length(skip_subjects)
+                tile = nexttile(t_binned, [1,2]);
+                tile_num = tilenum(tile);
+            else
+                tile = nexttile(t_binned);
+                tile_num = tilenum(tile);
+            end
+        
+            plot(my_normalize(reconstruction_binned_cs), linecolor, ...
+                'LineWidth', linewidth);
+        
+            xlim([1, config.n_bins]);
+        
+            % Label only last row
+            if tile_num >= rows*(cols-1)
+                xlabel('Bin #', 'FontSize', 16)
+            end
+        
+            title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
+            set(gca, 'yticklabels', [], 'FontWeight', 'bold')
+        end
+    
+        %%%%% Unbinned %%%%%
+    
+        % Create a new stimgen object if current config settings are different
+        if i == 1
+            stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+            stimgen = stimgen.from_config(config);
+        elseif ~isequal(rmfield(config, names(rm_fields)), rmfield(prev_config, prev_names(prev_rm_fields)))
+            stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+            stimgen = stimgen.from_config(config);
+        end
+    
+        % Linear
+        if i == n-length(skip_subjects)
             tile = nexttile(t_unbinned, [1,2]);
             tile_num = tilenum(tile);
         else
@@ -203,63 +165,93 @@ for i = 1:n
         end
     
         % Unbin
-        [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq, config.min_freq);
+        [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq, config.min_freq);
     
         % Plot
-        plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
+        plot(freqs(indices_to_plot, 1), my_normalize(unbinned_lr(indices_to_plot)), ...
             linecolor, 'LineWidth', linewidth);
     
         xlim([0, config.max_freq]);
     
         % Label only last row
-        if tile_num >= rows*(cols-1) 
+        if tile_num >= rows*(cols-1)
             xlabel('Frequency (Hz)', 'FontSize', 16)
         end
     
-        title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
+        % Label start of each row
+        if ismember(tile_num, label_y)
+            ylabel('Power (dB)', 'FontSize', 16);
+        end
+    
+        title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
         set(gca, 'yticklabels', [], 'FontWeight', 'bold')
+    
+        % CS
+        if CS
+            if i == n-length(skip_subjects)
+                tile = nexttile(t_unbinned, [1,2]);
+                tile_num = tilenum(tile);
+            else
+                tile = nexttile(t_unbinned);
+                tile_num = tilenum(tile);
+            end
+        
+            % Unbin
+            [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq, config.min_freq);
+        
+            % Plot
+            plot(freqs(indices_to_plot, 1), my_normalize(unbinned_cs(indices_to_plot)), ...
+                linecolor, 'LineWidth', linewidth);
+        
+            xlim([0, config.max_freq]);
+        
+            % Label only last row
+            if tile_num >= rows*(cols-1) 
+                xlabel('Frequency (Hz)', 'FontSize', 16)
+            end
+        
+            title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
+            set(gca, 'yticklabels', [], 'FontWeight', 'bold')
+        end
     end
 end
-
-%% Accuracy
+%% Predict responses with cross validation
 row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
-% Create table and print for easy viewing.
-T = table(bal_accuracy, accuracy, sensitivity, specificity, yesses, ...
-    'VariableNames', ["Balanced Accuracy", "Accuracy", "Sensitivity", "Specificity", "% Yesses"], ...
-    'RowNames', row_names);
-
-%% Predict responses with cross validation
-
-% Prediction settings
-folds = 5;
-thresh_vals = linspace(10,90,200);
-
+% Analysis flags
+glm = true;
 knn = false;
+lda = false;
+lwlr = true;
+pnr = false;
+randguess = false;
+svm = false;
+
+% Global settings
+folds = 5;
+thresh_vals = linspace(-5,5,500);
+
+% GLM
+mean_zero = true;
+gs_ridge = false;
+
+% KNN
 knn_method = 'mode';
 knn_percent = 1:5:90;
 k_vals = 1:2:50;
 
-svm = false;
-lda = false;
+% LWLR
+gauss_h = 10.^(-12:1);
+norm_stim_lwlr = false;
 
-lwlr = true;
-gauss_h = 1e-10:0.1:0.1;
-norm_stim_lwlr = true;
-
-pnr = false;
+% PNR
 pnr_ords = 2:4;
 norm_stim_pnr = false;
 
-randguess = true;
+% randguess
 randtype = 'normal';
 
-mean_zero = true;
-from_responses = false;
-gs_ridge = true;
-norm_stim_recon = false;
-
-% Initialize
+% Containers
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
 
@@ -272,16 +264,18 @@ pred_acc_on_train_lr = zeros(n,1);
 pred_bal_acc_on_train_cs = zeros(n,1);
 pred_bal_acc_on_train_lr = zeros(n,1);
 
+if glm
+    pred_acc_glm = zeros(n,1);
+    pred_bal_acc_glm = zeros(n,1);
+    pred_acc_glm_train = zeros(n,1);
+    pred_bal_acc_glm_train = zeros(n,1);
+end
+
 if knn
     pred_acc_knn = zeros(n,1);
     pred_bal_acc_knn = zeros(n,1);
     pred_acc_on_train_knn = zeros(n,1); 
     pred_bal_acc_on_train_knn = zeros(n,1);
-end
-
-if svm
-    pred_acc_svm = zeros(n,1);
-    pred_bal_acc_svm = zeros(n,1);
 end
 
 if lda
@@ -292,6 +286,8 @@ end
 if lwlr
     pred_acc_lwlr = zeros(n,1);
     pred_bal_acc_lwlr = zeros(n,1);
+    pred_acc_lwlr_train = zeros(n,1);
+    pred_bal_acc_lwlr_train = zeros(n,1);
 end
 
 if pnr
@@ -304,37 +300,35 @@ if randguess
     pred_bal_acc_randguess = zeros(n,1);
 end
 
+if svm
+    pred_acc_svm = zeros(n,1);
+    pred_bal_acc_svm = zeros(n,1);
+end
 
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
 
-    % Generate cross-validated predictions
-    [given_responses, training_responses, pred_on_test, pred_on_train] = crossval_predicted_responses(folds, ...
-                                                                            'config', config, 'data_dir', data_dir, ...
-                                                                            'knn', knn, 'knn_method', knn_method, ...
-                                                                            'knn_percent', knn_percent, 'from_responses', from_responses, ...
-                                                                            'mean_zero', mean_zero, 'ridge_reg', gs_ridge, ...
-                                                                            'threshold_values', thresh_vals, 'k_vals', k_vals, ...
-                                                                            'normalize', norm_stim_recon, ...
-                                                                            'verbose', verbose ...
-                                                                        );
-
-    % Assess prediction quality
-    [pred_acc_cs(ii), pred_bal_acc_cs(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.cs);
-    [pred_acc_lr(ii), pred_bal_acc_lr(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.lr);
-
-    [pred_acc_on_train_cs(ii), pred_bal_acc_on_train_cs(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.cs);
-    [pred_acc_on_train_lr(ii), pred_bal_acc_on_train_lr(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.lr);
-
-    if knn
-        [pred_acc_knn(ii), pred_bal_acc_knn(ii), ~, ~] = get_accuracy_measures(given_responses, pred_on_test.knn);
-        [pred_acc_on_train_knn(ii), pred_bal_acc_on_train_knn(ii), ~, ~] = get_accuracy_measures(training_responses, pred_on_train.knn);
+    if all(ismember(config.subject_ID, skip_subjects))
+        continue
     end
 
-    if svm
-        [pred_svm, true_svm] = crossval_svm(folds,'config',config,'data_dir',data_dir,'verbose',verbose);
-        [pred_acc_svm(ii), pred_bal_acc_svm(ii), ~, ~] = get_accuracy_measures(true_svm, pred_svm);
+    % Generate cross-validated predictions
+    if glm
+        [pred_glm, true_glm, pred_glm_train, true_glm_train] = crossval_glm(folds, thresh_vals, ...
+                                                                            'config',config,'data_dir',data_dir, ...
+                                                                            'mean_zero',mean_zero,'ridge',gs_ridge, ...
+                                                                            'verbose',verbose);
+        [pred_acc_glm(ii), pred_bal_acc_glm(ii), ~, ~] = get_accuracy_measures(true_glm, pred_glm);
+        [pred_acc_glm_train(ii), pred_bal_acc_glm_train(ii), ~, ~] = get_accuracy_measures(true_glm_train, pred_glm_train);
+    end
+
+    if knn
+        [pred_knn, true_knn, pred_knn_train, true_knn_train] = crossval_knn(folds,k_vals,'config',config, ...
+                                                                            'data_dir',data_dir,'method',knn_method, ...
+                                                                            'percent',knn_percent,'verbose',verbose);
+        [pred_acc_knn(ii), pred_bal_acc_knn(ii), ~, ~] = get_accuracy_measures(true_knn, pred_knn);
+        [pred_acc_on_train_knn(ii), pred_bal_acc_on_train_knn(ii), ~, ~] = get_accuracy_measures(true_knn_train, pred_knn_train);
     end
 
     if lda
@@ -343,8 +337,9 @@ for ii = 1:n
     end
 
     if lwlr
-        [pred_lwlr, true_lwlr] = crossval_lwlr(folds, gauss_h, thresh_vals, 'config',config,'data_dir',data_dir,'norm_stim',norm_stim_lwlr,'verbose',verbose);
+        [pred_lwlr, true_lwlr, pred_lwlr_train, true_lwlr_train] = crossval_lwlr(folds,gauss_h,thresh_vals,'config',config,'data_dir',data_dir,'norm_stim',norm_stim_lwlr,'verbose',verbose);
         [pred_acc_lwlr(ii), pred_bal_acc_lwlr(ii), ~, ~] = get_accuracy_measures(true_lwlr, pred_lwlr);
+        [pred_acc_lwlr_train(ii), pred_bal_acc_lwlr_train(ii), ~, ~] = get_accuracy_measures(true_lwlr_train, pred_lwlr_train);
     end
 
     if pnr
@@ -356,16 +351,21 @@ for ii = 1:n
         [pred_randguess, true_randguess] = crossval_rand(folds, thresh_vals, 'config',config,'data_dir',data_dir,'dist',randtype,'verbose',verbose);
         [pred_acc_randguess(ii), pred_bal_acc_randguess(ii), ~, ~] = get_accuracy_measures(true_randguess, pred_randguess);
     end
+
+    if svm
+        [pred_svm, true_svm] = crossval_svm(folds,'config',config,'data_dir',data_dir,'verbose',verbose);
+        [pred_acc_svm(ii), pred_bal_acc_svm(ii), ~, ~] = get_accuracy_measures(true_svm, pred_svm);
+    end
 end
 
-% Print results
-T_CV = table(pred_bal_acc_lr, pred_bal_acc_cs, pred_acc_lr, pred_acc_cs, ...
-    'VariableNames', ["LR CV Pred Bal Acc", "CS CV Pred Bal Acc", "LR CV Pred Acc", "CS CV Pred Acc"], ...
-    'RowNames', row_names)
-
-T_CV_on_train = table(pred_bal_acc_on_train_lr, pred_bal_acc_on_train_cs, pred_acc_on_train_lr, pred_acc_on_train_cs, ...
-    'VariableNames', ["LR CV Pred Bal Acc On Train", "CS CV Pred Bal Acc On Train", "LR CV Pred Acc On Train", "CS CV Pred Acc On Train"], ...
-    'RowNames', row_names)
+if glm
+    T_CV_glm = table(pred_bal_acc_glm, pred_acc_glm, ...
+        'VariableNames', ["GLM CV Pred Bal Acc", "GLM CV Pred Acc"], ...
+        'RowNames', row_names)
+    T_CV_glm_train = table(pred_bal_acc_glm_train, pred_acc_glm_train, ...
+        'VariableNames', ["GLM CV Pred Bal Acc On Train", "GLM CV Pred Acc On Train"], ...
+        'RowNames', row_names)
+end
 
 if knn
     T_CV_knn = table(pred_bal_acc_knn, pred_acc_knn, ...
@@ -374,12 +374,6 @@ if knn
     
     T_CV_on_train_knn = table(pred_bal_acc_on_train_knn, pred_acc_on_train_knn, ...
         'VariableNames', ["KNN CV Pred Bal Acc On Train", "KNN CV Pred Acc On Train"], ...
-        'RowNames', row_names)
-end
-
-if svm
-    T_CV_svm = table(pred_bal_acc_svm, pred_acc_svm, ...
-        'VariableNames', ["SVM CV Pred Bal Acc", "SVM CV Pred Acc"], ...
         'RowNames', row_names)
 end
 
@@ -393,6 +387,9 @@ if lwlr
     T_CV_lwlr = table(pred_bal_acc_lwlr, pred_acc_lwlr, ...
         'VariableNames', ["LWLR CV Pred Bal Acc", "LWLR CV Pred Acc"], ...
         'RowNames', row_names)
+    T_CV_lwlr_train = table(pred_bal_acc_lwlr_train, pred_acc_lwlr_train, ...
+        'VariableNames', ["LWLR CV Pred Bal Acc On Train", "LWLR CV Pred Acc On Train"], ...
+        'RowNames', row_names)
 end
 
 if pnr
@@ -404,6 +401,12 @@ end
 if randguess
     T_CV_randguess = table(pred_bal_acc_randguess, pred_acc_randguess, ...
         'VariableNames', ["Random CV Pred Bal Acc", "Random CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if svm
+    T_CV_svm = table(pred_bal_acc_svm, pred_acc_svm, ...
+        'VariableNames', ["SVM CV Pred Bal Acc", "SVM CV Pred Acc"], ...
         'RowNames', row_names)
 end
 

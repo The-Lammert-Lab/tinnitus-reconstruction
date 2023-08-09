@@ -6,24 +6,20 @@
 % 
 % **ARGUMENTS:**
 % 
-%   - y: `m x n` numerical matrix,
+%   - y: `m x p` numerical matrix,
 %       representing true labels.
-% 
 %   - y_hat: `m x n` numerical matrix,
 %       representing predicted labels.
 % 
 % **OUTPUTS:**
 % 
-%   - accuracy: `scalar`,
-%       the correct prediction rate.
-% 
-%   - balanced_accuracy: `scalar`,
+%   - accuracy: `scalar` or `1 x max(n,p)` vector,
+%       the correct prediction rate. 
+%   - balanced_accuracy: `scalar` or `1 x max(n,p)` vector,
 %       the average of `sensitivity` and `specificity`.
-% 
-%   - sensitivity: `scalar`,
+%   - sensitivity: `scalar` or `1 x max(n,p)` vector,
 %       the true positive rate.
-% 
-%   - specificity: `scalar`,
+%   - specificity: `scalar` or `1 x max(n,p)` vector,
 %       the true negative rate.
 
 function [accuracy, balanced_accuracy, sensitivity, specificity] = get_accuracy_measures(y,y_hat)
@@ -32,8 +28,8 @@ function [accuracy, balanced_accuracy, sensitivity, specificity] = get_accuracy_
     FN = sum((y>=1)&(y_hat<1));
     TN = sum((y<1)&(y_hat<1));
 
-    specificity = TN/(TN+FP);
-    sensitivity = TP/(TP+FN);
-    balanced_accuracy = (sensitivity + specificity) / 2;
-    accuracy = (TP + TN) / (TP + TN + FP + FN);
+    specificity = TN./(TN+FP);
+    sensitivity = TP./(TP+FN);
+    balanced_accuracy = (sensitivity + specificity) ./ 2;
+    accuracy = (TP + TN) ./ (TP + TN + FP + FN);
 end

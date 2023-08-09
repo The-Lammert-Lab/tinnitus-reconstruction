@@ -25,9 +25,15 @@ function [pred_resps, true_resps] = crossval_rand(folds,thresh,options)
     % Useful
     n = length(resps);
     n_test = round(n / folds);
-    dev_inds = n-(2*n_test)+1:n-n_test;
     test_inds = n-n_test+1:n;
 
+    % Flag to optimize thresh values
+    rundev = ~isscalar(thresh);
+
+    if rundev
+        dev_inds = n-(2*n_test)+1:n-n_test;
+    end
+    
     % Containers
     pred_resps = NaN(n,1);
     true_resps = NaN(n,1);
@@ -38,22 +44,19 @@ function [pred_resps, true_resps] = crossval_rand(folds,thresh,options)
         resps = circshift(resps, n_test);
 
         % Development section
-        for jj = 1:length(thresh)
+        if rundev
             % Get estimations
             y_hat = randfunc(length(dev_inds),1);
-
             % Convert estimations to binary choices.
-            preds = double(y_hat >= prctile(y_hat, thresh(jj)));
-            preds(preds == 0) = -1;
-            [~, bal_acc_dev(jj), ~, ~] = get_accuracy_measures(resps(dev_inds),preds);
+            preds = sign(y_hat + thresh);
+            [~, bal_acc_dev, ~, ~] = get_accuracy_measures(resps(dev_inds),preds);
         end
 
         % Get row and column of max balanced accuracy index.
         [~, thresh_ind] = max(bal_acc_dev);
 
         y_hat = randfunc(length(test_inds),1);
-        preds = double(y_hat >= prctile(y_hat, thresh(thresh_ind)));
-        preds(preds == 0) = -1;
+        preds = sign(y_hat + thresh(thresh_ind));
         
         % Store
         filled = sum(~isnan(pred_resps));
