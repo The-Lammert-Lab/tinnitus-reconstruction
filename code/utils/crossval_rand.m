@@ -33,7 +33,7 @@ function [pred_resps, true_resps] = crossval_rand(folds,thresh,options)
     if rundev
         dev_inds = n-(2*n_test)+1:n-n_test;
     end
-
+    
     % Containers
     pred_resps = NaN(n,1);
     true_resps = NaN(n,1);
