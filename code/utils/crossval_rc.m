@@ -1,12 +1,13 @@
-% ### crossval_glm
+% ### crossval_rc
 % 
 % Generate the cross-validated response predictions for a given 
 % config file or pair of stimuli and responses
-% using a generalized linear model.
+% using the classical reverse correlation model 
+% y = sign(Psi * x) or y = sign(Psi * x + thresh).
 % 
 % ```matlab
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_glm(folds, thresh, 'config', config, 'data_dir', data_dir)
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_glm(folds, thresh, 'responses', responses, 'stimuli', stimuli)
+%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'config', config, 'data_dir', data_dir)
+%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'responses', responses, 'stimuli', stimuli)
 % ```
 % 
 % **ARGUMENTS:**
@@ -110,15 +111,17 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
                 'mean_zero', options.mean_zero);
 
         if rundev
-            preds_dev = glm(stimuli_matrix(:,dev_inds)', recon, thresh, options.mean_zero);
+            preds_dev = rc(stimuli_matrix(:,dev_inds)', recon, thresh, options.mean_zero);
             [~, bal_acc_dev, ~, ~] = get_accuracy_measures(resps(dev_inds), preds_dev);
             [~, thresh_ind] = max(bal_acc_dev);
         else
             thresh_ind = 1;
         end
 
-        preds_test = glm(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
-        preds_train = glm(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
+        % fprintf(['thresh = ', num2str(thresh(thresh_ind)), '\n'])
+
+        preds_test = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
+        preds_train = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
 
         % Store
         filled = sum(~isnan(pred_resps));
@@ -131,7 +134,7 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
     end
 end
 
-function p = glm(stimuli, representation, thresh, mean_zero)
+function p = rc(stimuli, representation, thresh, mean_zero)
     arguments
         stimuli
         representation
@@ -145,6 +148,8 @@ function p = glm(stimuli, representation, thresh, mean_zero)
     else
         e = stimuli * representation(:);
     end
+%     fprintf(['max(e) = ', num2str(max(e)), '\n'])
+%     fprintf(['min(e) = ', num2str(min(e)), '\n'])
     
     % Convert to response
     p = sign(e + thresh);
