@@ -41,7 +41,7 @@ function x = gs(responses, Phi, options)
     end
 
     if options.ridge
-        x = (Phi'*Phi + 0.0001*eye(size(Phi,2),size(Phi,2)))\(Phi'*responses);
+        x = (Phi'*Phi + 0.0001*eye(size(Phi,2)))\(Phi'*responses);
     else
         len_signal = size(Phi, 2);
         x = (1 / len_signal) * Phi' * responses;

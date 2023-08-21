@@ -5,8 +5,8 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
-CS = false;
-showfigs = false;
+CS = true;
+showfigs = true;
 verbose = false;
 
 % Fields to keep for comparing configs
@@ -15,8 +15,7 @@ keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
     'min_bins', 'max_bins'};
 
 n = length(config_files);
-
-skip_subjects = {'KE_6'};
+skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
 
 % Pre-allocate  
 yesses = zeros(n, 1); 
@@ -83,8 +82,7 @@ if showfigs
                                                                                         'verbose', verbose, ...
                                                                                         'data_dir', data_dir ...
                                                                                     );
-        yesses(i) = 100 * length(responses(responses == 1))/length(responses);
-    
+
         if CS
             reconstruction_binned_cs = get_reconstruction('config', config, 'method', 'cs', ...
                                                             'verbose', verbose, 'data_dir', data_dir ...
@@ -219,21 +217,23 @@ end
 row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
 % Analysis flags
-glm = true;
+glm = false;
 knn = false;
 lda = false;
-lwlr = true;
+lwlr = false;
 pnr = false;
 randguess = false;
 svm = false;
 
 % Global settings
 folds = 5;
-thresh_vals = linspace(-5,5,500);
+% thresh_vals = linspace(-1,1,100000);
+% thresh_vals = linspace(-10000,10000,1000000);
 
 % GLM
 mean_zero = true;
 gs_ridge = false;
+thresh_vals_glm = 0;
 
 % KNN
 knn_method = 'mode';
@@ -243,6 +243,7 @@ k_vals = 1:2:50;
 % LWLR
 gauss_h = 10.^(-12:1);
 norm_stim_lwlr = false;
+thresh_vals_lwlr = linspace(-5,5,100000);
 
 % PNR
 pnr_ords = 2:4;
@@ -308,6 +309,8 @@ end
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
+    [responses, ~] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
+    yesses(ii) = 100 * length(responses(responses == 1))/length(responses);
 
     if all(ismember(config.subject_ID, skip_subjects))
         continue
@@ -315,7 +318,7 @@ for ii = 1:n
 
     % Generate cross-validated predictions
     if glm
-        [pred_glm, true_glm, pred_glm_train, true_glm_train] = crossval_glm(folds, thresh_vals, ...
+        [pred_glm, true_glm, pred_glm_train, true_glm_train] = crossval_glm(folds, thresh_vals_glm, ...
                                                                             'config',config,'data_dir',data_dir, ...
                                                                             'mean_zero',mean_zero,'ridge',gs_ridge, ...
                                                                             'verbose',verbose);
@@ -337,7 +340,7 @@ for ii = 1:n
     end
 
     if lwlr
-        [pred_lwlr, true_lwlr, pred_lwlr_train, true_lwlr_train] = crossval_lwlr(folds,gauss_h,thresh_vals,'config',config,'data_dir',data_dir,'norm_stim',norm_stim_lwlr,'verbose',verbose);
+        [pred_lwlr, true_lwlr, pred_lwlr_train, true_lwlr_train] = crossval_lwlr(folds,gauss_h,thresh_vals_lwlr,'config',config,'data_dir',data_dir,'norm_stim',norm_stim_lwlr,'verbose',verbose);
         [pred_acc_lwlr(ii), pred_bal_acc_lwlr(ii), ~, ~] = get_accuracy_measures(true_lwlr, pred_lwlr);
         [pred_acc_lwlr_train(ii), pred_bal_acc_lwlr_train(ii), ~, ~] = get_accuracy_measures(true_lwlr_train, pred_lwlr_train);
     end

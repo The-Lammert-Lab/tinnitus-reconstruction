@@ -117,6 +117,8 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
             thresh_ind = 1;
         end
 
+        fprintf(['thresh = ', num2str(thresh(thresh_ind)), '\n'])
+
         preds_test = glm(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
         preds_train = glm(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
 
@@ -145,6 +147,8 @@ function p = glm(stimuli, representation, thresh, mean_zero)
     else
         e = stimuli * representation(:);
     end
+%     fprintf(['max(e) = ', num2str(max(e)), '\n'])
+%     fprintf(['min(e) = ', num2str(min(e)), '\n'])
     
     % Convert to response
     p = sign(e + thresh);

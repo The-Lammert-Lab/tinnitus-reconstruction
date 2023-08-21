@@ -7,7 +7,7 @@ config_files = dir(pathlib.join(data_dir, '*.yaml'));
 % Script parameters
 CS = false;
 verbose = true;
-skip_subjects = {'KE_6'};
+skip_subjects = {'1', '2', '3', '6'};
 
 % Fields to keep for comparing configs
 keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
@@ -17,47 +17,43 @@ keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
 n = length(config_files);
 
 %% Plot setup
-rows = ceil(n/2);
+rows = n - length(skip_subjects);
 
 if CS
-    cols = 4;
-else
     cols = 2;
+else
+    cols = 1;
 end
 
-label_y = 1:cols:rows*cols;
-
-linewidth = 1.5;
+fontsize = 32;
+ticksize = 20;
+linewidth = 3;
 linecolor = 'k';
 
 my_normalize = @(x) normalize(x, 'zscore', 'std');  
 
 % Figs
 f_binned = figure;
-t_binned = tiledlayout(f_binned, rows, cols);
+t_binned = tiledlayout(f_binned, rows, cols, 'TileSpacing','compact');
 
 f_unbinned = figure;
-t_unbinned = tiledlayout(f_unbinned, rows, cols);
+t_unbinned = tiledlayout(f_unbinned, rows, cols, 'TileSpacing','compact');
 
 %% Loop and plot
 for i = 1:n
     %%%%% Get data %%%%%
-    
-    % Keep previous config obj. and rm_fields for setting comparison
-    if i > 1
-        prev_config = config;
-        prev_rm_fields = rm_fields;
-        prev_names = names;
-    end
-
     config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
     
-    if all(ismember(config.subject_ID, skip_subjects))
-        continue
+    % Only create on first iteration since they're all the same.
+    if i == 1
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
     end
 
-    % Skip config files with target signals (healthy controls)
-    if isfield(config, 'target_signal') && ~isempty(config.target_signal)
+    % Skip config files with target signals (healthy controls) or in
+    % skip_subjcts
+    if contains(config.subject_ID, skip_subjects) || ...
+        (isfield(config, 'target_signal') && ~isempty(config.target_signal))
         continue
     end
 
@@ -66,10 +62,6 @@ for i = 1:n
     if isempty(ID_num)
         ID_num = '???';
     end
-
-    % Non-critical fields in current config
-    names = fieldnames(config);
-    rm_fields = ~ismember(names, keep_fields);
 
     % Get reconstructions
     reconstruction_binned_lr = get_reconstruction('config', config, ...
@@ -83,54 +75,58 @@ for i = 1:n
                                                     );
     end
 
-    two_col = i == n-length(skip_subjects);
-
     %%%%% Binned %%%%%
-
-    plot_binned(t_binned, my_normalize(reconstruction_binned_lr), ...
-        config.n_bins, two_col, ...
-        linewidth, linecolor)
+    tile_binned = nexttile(t_binned);
+    plot(my_normalize(reconstruction_binned_lr), linecolor, 'LineWidth', linewidth)
+    xlim([1, config.n_bins])
+%     set(tile_binned, 'ylim', [-3, 3], 'FontWeight', 'bold', 'FontSize', ticksize)
+    set(tile_binned, 'FontWeight', 'bold', 'FontSize', ticksize, 'XTickLabels', [])
+    ylabel('Power (dB)', 'FontSize', fontsize)
 
     % CS
     if CS
-        plot_binned(t_binned, my_normalize(reconstruction_binned_cs), ...
-            config.n_bins, two_col, ...
-            linewidth, linecolor)
+        tile_binned_cs = nexttile(t_binned);
+        plot(my_normalize(reconstruction_binned_cs), linecolor, 'LineWidth', linewidth)
+        xlim([1, config.n_bins])
+%         set(gca, 'ylim', [-3, 3], 'FontWeight', 'bold', 'FontSize', ticksize)
+        set(tile_binned_cs, 'XTickLabels', [], 'FontWeight', 'bold', 'FontSize', ticksize)
     end
-
+ 
     %%%%% Unbinned %%%%%
-
-    % Create a new stimgen object if current config settings are different
-    if i == 1
-        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config);
-    elseif ~isequal(rmfield(config, names(rm_fields)), rmfield(prev_config, prev_names(prev_rm_fields)))
-        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config);
-    end
-
     % Unbin
     [unbinned_lr, indices_to_plot, freqs] = unbin(reconstruction_binned_lr, stimgen, config.max_freq, config.min_freq);
-    
-    plot_unbinned(t_unbinned, freqs(indices_to_plot,1), ...
-        my_normalize(unbinned_lr(indices_to_plot)), ...
-        config.max_freq, two_col, ...
-        linewidth, linecolor)
+
+    tile_unbinned = nexttile(t_unbinned);
+    plot(freqs(indices_to_plot,1), my_normalize(unbinned_lr(indices_to_plot)), linecolor, 'LineWidth', linewidth)
+    xlim([1, config.max_freq])
+%     set(tile_unbinned, 'ylim', [-3, 3], 'FontWeight', 'bold', 'FontSize', ticksize)
+    set(tile_unbinned, 'FontWeight', 'bold', 'FontSize', ticksize, 'XTickLabels', [])
+    ylabel('Power (dB)', 'FontSize', fontsize)
 
     % CS
     if CS
         % Unbin
         [unbinned_cs, indices_to_plot, freqs] = unbin(reconstruction_binned_cs, stimgen, config.max_freq, config.min_freq);
-        
-        plot_unbinned(t_unbinned, freqs(indices_to_plot,1), ...
-            my_normalize(unbinned_cs(indices_to_plot)), ...
-            config.max_freq, two_col, ...
-            linewidth, linecolor)
+
+        tile_unbinned_cs = nexttile(t_unbinned);
+        plot(freqs(indices_to_plot,1), my_normalize(unbinned_cs(indices_to_plot)), linecolor, 'LineWidth', linewidth)
+        xlim([1, config.max_freq])
+%         set(tile_unbinned_cs, 'ylim', [-5, 3], 'FontWeight', 'bold', 'FontSize', ticksize, 'XTickLabels', [])
+        set(tile_unbinned_cs, 'ylim', [-5, 3], 'FontWeight', 'bold', 'FontSize', ticksize, 'XTickLabels', [])
     end
 end
 
-% figlib.pretty(f_unbinned, 'FontSize', 20, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
-% figlib.pretty(f_binned, 'FontSize', 20, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
+xticklabels(tile_unbinned, 'auto');
+xticklabels(tile_binned, 'auto');
+xlabel(tile_unbinned, 'Frequency (Hz)', 'FontSize', fontsize, 'FontWeight', 'bold')
+xlabel(tile_binned, 'Bin #', 'FontSize', fontsize, 'FontWeight', 'bold')
+
+if CS
+    xticklabels(tile_binned_cs, 'auto');
+    xticklabels(tile_unbinned_cs, 'auto');
+    xlabel(tile_binned_cs, 'Bin #', 'FontSize', fontsize, 'FontWeight', 'bold')
+    xlabel(tile_unbinned_cs, 'Frequency (Hz)', 'FontSize', fontsize, 'FontWeight', 'bold')
+end
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq, min_freq)
@@ -142,70 +138,4 @@ function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen,
     
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
-end
-
-function plot_binned(ax, data, n_bins, two_col, linewidth, linecolor)
-    rows = ax.GridSize(1);
-    cols = ax.GridSize(2);
-    label_y = 1:cols:rows*cols;
-
-    % Linear
-    if two_col
-        tile = nexttile(ax, [1,2]);
-        tile_num = tilenum(tile);
-    else
-        tile = nexttile(ax);
-        tile_num = tilenum(tile);
-    end
-
-    plot(data, linecolor, ...
-        'LineWidth', linewidth);
-
-    xlim([1, n_bins]);
-
-    % Label only last row
-    if tile_num >= rows*(cols-1)
-        xlabel('Bin #', 'FontSize', 16)
-    end
-
-    % Label start of each row
-    if ismember(tile_num, label_y)
-        ylabel('Power (dB)', 'FontSize', 16);
-    end
-
-%     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-    set(gca, 'ylim', [-3, 3], 'FontWeight', 'bold')
-end
-
-function plot_unbinned(ax, x, y, max_freq, two_col, linewidth, linecolor)
-    rows = ax.GridSize(1);
-    cols = ax.GridSize(2);
-    label_y = 1:cols:rows*cols;
-
-    % Linear
-    if two_col
-        tile = nexttile(ax, [1,2]);
-        tile_num = tilenum(tile);
-    else
-        tile = nexttile(ax);
-        tile_num = tilenum(tile);
-    end
-
-    plot(x, y, ...
-        linecolor, 'LineWidth', linewidth);
-
-    xlim([0, max_freq]);
-
-        % Label only last row
-    if tile_num >= rows*(cols-1)
-        xlabel('Frequency (Hz)', 'FontSize', 16)
-    end
-
-    % Label start of each row
-    if ismember(tile_num, label_y)
-        ylabel('Power (dB)', 'FontSize', 16);
-    end
-
-%     set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-    set(gca, 'ylim', [-3, 3], 'FontWeight', 'bold')
 end
