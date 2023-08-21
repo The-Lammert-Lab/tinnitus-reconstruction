@@ -1,5 +1,6 @@
 # Tinnitus Reconstruction via reverse correlation
 [![docs-passing](https://img.shields.io/static/v1?label=docs&message=passing&color=green)](https://the-lammert-lab.github.io/tinnitus-reconstruction/)
+[![paper](https://img.shields.io/badge/paper-IEEE-green)](https://ieeexplore.ieee.org/document/10129035)
 [![paper](https://img.shields.io/static/v1?label=paper&message=bioRxiv&color=green)](https://www.biorxiv.org/content/10.1101/2022.12.23.521795v1)
 
 Reconstructing high-dimensional representations of tinnitus using reverse correlation and compressed sensing.
