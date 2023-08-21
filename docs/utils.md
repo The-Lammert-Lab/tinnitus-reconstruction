@@ -303,74 +303,6 @@ Write the stimuli into the stimuli file.
 
 -------
 
-### crossval_glm
-
-Generate the cross-validated response predictions for a given 
-config file or pair of stimuli and responses
-using a generalized linear model.
-
-```matlab
-[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_glm(folds, thresh, 'config', config, 'data_dir', data_dir)
-[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_glm(folds, thresh, 'responses', responses, 'stimuli', stimuli)
-```
-
-**ARGUMENTS:**
-
-- folds: `scalar` positive integer, must be greater than 3,
-representing the number of cross validation folds to complete.
-Data will be partitioned into `1/folds` for `test` and `dev` sets
-and the remaining for the `train` set.
-- thresh: `1 x p` numerical vector or `scalar`, 
-representing the threshold value in the estimate to response
-conversion: `sign(X*b + threshold)`.
-If there are multiple values,
-it will be optimized in the development section.
-- config: `struct`, name-value, deafult: `[]`
-config struct from which to find responses and stimuli
-- data_dir: `char`, name-value, deafult: `''`
-the path to directory in which the data corresponding to the 
-config structis stored.
-- responses: `n x 1` array, name-value, default: `[]`
-responses to use in reconstruction, 
-where `n` is the number of responses.
-Only used if passed with `stimuli`.
-- stimuli: `m x n` array, name-value, default: `[]`
-stimuli to use in reconstruction,
-where `m` is the number of bins.
-Only used if passed with `responses`.
-- ridge: `bool`, name-value, default: `false`,
-flag to use ridge regression instead of standard linear regression
-for reconstruction.
-- mean_zero: `bool`, name-value, default: `false`,
-flag to set the mean of the stimuli to zero when computing the
-reconstruction and both the mean of the stimuli and the
-reconstruction to zero when generating the predictions.
-- verbose: `bool`, name-value, default: `true`,
-flag to print information messages.    
-
-**OUTPUTS:**
-
-- pred_resps: `n x 1` vector,
-the predicted responses.
-- true_resps: `n x 1` vector,
-the original subject responses in the order corresponding 
-to the predicted responses, i.e., a shifted version of the 
-original response vector.
-- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
-OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
-the predicted responses on the training data.
-- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
-OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
-the predicted responses on the training data.
-the original subject responses in the order corresponding 
-to the predicted responses on the training data,
-
-
-
-
-
--------
-
 ### crossval_knn
 
 Generate the cross-validated response predictions for a given 
@@ -695,6 +627,75 @@ Predicted responses on training data.
 !!! info "See Also"
     * [subject_selection_process](./#subject_selection_process)
     * [knn_classify](./#knn_classify)
+
+
+
+
+
+-------
+
+### crossval_rc
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using the classical reverse correlation model 
+y = sign(Psi * x) or y = sign(Psi * x + thresh).
+
+```matlab
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- thresh: `1 x p` numerical vector or `scalar`, 
+representing the threshold value in the estimate to response
+conversion: `sign(X*b + threshold)`.
+If there are multiple values,
+it will be optimized in the development section.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- ridge: `bool`, name-value, default: `false`,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.
+- mean_zero: `bool`, name-value, default: `false`,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,
 
 
 
