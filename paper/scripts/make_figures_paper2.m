@@ -9,11 +9,6 @@ CS = false;
 verbose = true;
 skip_subjects = {'1', '2', '3', '6'};
 
-% Fields to keep for comparing configs
-keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
-    'min_freq', 'max_freq', 'duration', 'n_bins', 'stimuli_type', ...
-    'min_bins', 'max_bins'};
-
 n = length(config_files);
 
 %% Plot setup

@@ -1,18 +1,16 @@
 % Reconstruct and visualize patient tinnitus
 
+%%%%% NOTE: Figure generation is tempermental. make_figures_paper2 is
+%%%%% better but doesn't label figures the same.
+
 %% General setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
 CS = true;
-showfigs = true;
+showfigs = false;
 verbose = false;
-
-% Fields to keep for comparing configs
-keep_fields = {'n_trials_per_block', 'n_blocks', 'total_trials', ...
-    'min_freq', 'max_freq', 'duration', 'n_bins', 'stimuli_type', ...
-    'min_bins', 'max_bins'};
 
 n = length(config_files);
 skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
@@ -22,7 +20,7 @@ yesses = zeros(n, 1);
 
 %% Plot setup
 if showfigs
-    rows = ceil(n/2);
+    rows = ceil((n - length(skip_subjects))/2);
     
     if CS
         cols = 4;
@@ -47,22 +45,11 @@ if showfigs
     %% Loop and plot
     for i = 1:n
         %%%%% Get data %%%%%
-        
-        % Keep previous config obj. and rm_fields for setting comparison
-        if i > 1
-            prev_config = config;
-            prev_rm_fields = rm_fields;
-            prev_names = names;
-        end
-    
         config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
         
-        if all(ismember(config.subject_ID, skip_subjects))
-            continue
-        end
-    
-        % Skip config files with target signals (healthy controls)
-        if isfield(config, 'target_signal') && ~isempty(config.target_signal)
+        % Skip deliberate config files or ones with target signals (healthy controls)
+        if all(ismember(config.subject_ID, skip_subjects)) || ...
+            (isfield(config, 'target_signal') && ~isempty(config.target_signal))
             continue
         end
     
@@ -71,10 +58,6 @@ if showfigs
         if isempty(ID_num)
             ID_num = '???';
         end
-    
-        % Non-critical fields in current config
-        names = fieldnames(config);
-        rm_fields = ~ismember(names, keep_fields);
     
         % Get reconstructions
         [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
@@ -94,10 +77,8 @@ if showfigs
         % Linear
         if i == n-length(skip_subjects)
             tile = nexttile(t_binned, [1,2]);
-            tile_num = tilenum(tile);
         else
             tile = nexttile(t_binned);
-            tile_num = tilenum(tile);
         end
     
         plot(my_normalize(reconstruction_binned_lr), linecolor, ...
@@ -106,26 +87,24 @@ if showfigs
         xlim([1, config.n_bins]);
     
         % Label only last row
-        if tile_num >= rows*(cols-1)
+        if tilenum(tile) >= rows-1
             xlabel('Bin #', 'FontSize', 16)
         end
     
         % Label start of each row
-        if ismember(tile_num, label_y)
+        if ismember(tilenum(tile), label_y)
             ylabel('Power (dB)', 'FontSize', 16);
         end
     
         title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
-        set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-    
+        set(gca, 'FontWeight', 'bold')
+
         % CS
         if CS
             if i == n-length(skip_subjects)
                 tile = nexttile(t_binned, [1,2]);
-                tile_num = tilenum(tile);
             else
                 tile = nexttile(t_binned);
-                tile_num = tilenum(tile);
             end
         
             plot(my_normalize(reconstruction_binned_cs), linecolor, ...
@@ -134,32 +113,23 @@ if showfigs
             xlim([1, config.n_bins]);
         
             % Label only last row
-            if tile_num >= rows*(cols-1)
+            if tilenum(tile) >= rows-1
                 xlabel('Bin #', 'FontSize', 16)
             end
         
             title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
-            set(gca, 'yticklabels', [], 'FontWeight', 'bold')
+            set(gca, 'FontWeight', 'bold')
         end
     
         %%%%% Unbinned %%%%%
-    
-        % Create a new stimgen object if current config settings are different
-        if i == 1
-            stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-            stimgen = stimgen.from_config(config);
-        elseif ~isequal(rmfield(config, names(rm_fields)), rmfield(prev_config, prev_names(prev_rm_fields)))
-            stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-            stimgen = stimgen.from_config(config);
-        end
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
     
         % Linear
         if i == n-length(skip_subjects)
             tile = nexttile(t_unbinned, [1,2]);
-            tile_num = tilenum(tile);
         else
             tile = nexttile(t_unbinned);
-            tile_num = tilenum(tile);
         end
     
         % Unbin
@@ -172,26 +142,24 @@ if showfigs
         xlim([0, config.max_freq]);
     
         % Label only last row
-        if tile_num >= rows*(cols-1)
+        if tilenum(tile) >= rows-1
             xlabel('Frequency (Hz)', 'FontSize', 16)
         end
     
         % Label start of each row
-        if ismember(tile_num, label_y)
+        if ismember(tilenum(tile), label_y)
             ylabel('Power (dB)', 'FontSize', 16);
         end
     
         title(['Subject #', ID_num, ' - Linear'], 'FontSize', 18);
-        set(gca, 'yticklabels', [], 'FontWeight', 'bold')
-    
+        set(gca, 'FontWeight', 'bold')
+
         % CS
         if CS
             if i == n-length(skip_subjects)
                 tile = nexttile(t_unbinned, [1,2]);
-                tile_num = tilenum(tile);
             else
                 tile = nexttile(t_unbinned);
-                tile_num = tilenum(tile);
             end
         
             % Unbin
@@ -204,12 +172,12 @@ if showfigs
             xlim([0, config.max_freq]);
         
             % Label only last row
-            if tile_num >= rows*(cols-1) 
+            if tilenum(tile) >= rows-1
                 xlabel('Frequency (Hz)', 'FontSize', 16)
             end
         
             title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
-            set(gca, 'yticklabels', [], 'FontWeight', 'bold')
+            set(gca, 'FontWeight', 'bold')
         end
     end
 end
@@ -217,7 +185,7 @@ end
 row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
 % Analysis flags
-glm = false;
+rc = true;
 knn = false;
 lda = false;
 lwlr = false;
@@ -230,10 +198,10 @@ folds = 5;
 % thresh_vals = linspace(-1,1,100000);
 % thresh_vals = linspace(-10000,10000,1000000);
 
-% GLM
+% RC
 mean_zero = true;
 gs_ridge = false;
-thresh_vals_glm = 0;
+thresh_vals_rc = 0;
 
 % KNN
 knn_method = 'mode';
@@ -265,11 +233,11 @@ pred_acc_on_train_lr = zeros(n,1);
 pred_bal_acc_on_train_cs = zeros(n,1);
 pred_bal_acc_on_train_lr = zeros(n,1);
 
-if glm
-    pred_acc_glm = zeros(n,1);
-    pred_bal_acc_glm = zeros(n,1);
-    pred_acc_glm_train = zeros(n,1);
-    pred_bal_acc_glm_train = zeros(n,1);
+if rc
+    pred_acc_rc = zeros(n,1);
+    pred_bal_acc_rc = zeros(n,1);
+    pred_acc_rc_train = zeros(n,1);
+    pred_bal_acc_rc_train = zeros(n,1);
 end
 
 if knn
@@ -317,13 +285,13 @@ for ii = 1:n
     end
 
     % Generate cross-validated predictions
-    if glm
-        [pred_glm, true_glm, pred_glm_train, true_glm_train] = crossval_glm(folds, thresh_vals_glm, ...
+    if rc
+        [pred_rc, true_rc, pred_rc_train, true_rc_train] = crossval_rc(folds, thresh_vals_rc, ...
                                                                             'config',config,'data_dir',data_dir, ...
                                                                             'mean_zero',mean_zero,'ridge',gs_ridge, ...
                                                                             'verbose',verbose);
-        [pred_acc_glm(ii), pred_bal_acc_glm(ii), ~, ~] = get_accuracy_measures(true_glm, pred_glm);
-        [pred_acc_glm_train(ii), pred_bal_acc_glm_train(ii), ~, ~] = get_accuracy_measures(true_glm_train, pred_glm_train);
+        [pred_acc_rc(ii), pred_bal_acc_rc(ii), ~, ~] = get_accuracy_measures(true_rc, pred_rc);
+        [pred_acc_rc_train(ii), pred_bal_acc_rc_train(ii), ~, ~] = get_accuracy_measures(true_rc_train, pred_rc_train);
     end
 
     if knn
@@ -361,12 +329,12 @@ for ii = 1:n
     end
 end
 
-if glm
-    T_CV_glm = table(pred_bal_acc_glm, pred_acc_glm, ...
-        'VariableNames', ["GLM CV Pred Bal Acc", "GLM CV Pred Acc"], ...
+if rc
+    T_CV_rc = table(pred_bal_acc_rc, pred_acc_rc, ...
+        'VariableNames', ["RC CV Pred Bal Acc", "RC CV Pred Acc"], ...
         'RowNames', row_names)
-    T_CV_glm_train = table(pred_bal_acc_glm_train, pred_acc_glm_train, ...
-        'VariableNames', ["GLM CV Pred Bal Acc On Train", "GLM CV Pred Acc On Train"], ...
+    T_CV_rc_train = table(pred_bal_acc_rc_train, pred_acc_rc_train, ...
+        'VariableNames', ["RC CV Pred Bal Acc On Train", "RC CV Pred Acc On Train"], ...
         'RowNames', row_names)
 end
 
