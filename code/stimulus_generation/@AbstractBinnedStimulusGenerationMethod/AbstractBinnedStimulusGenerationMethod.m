@@ -97,6 +97,7 @@ methods
         % See Also: 
         % binnedrepr2spect
         % spect2binnedrepr
+        % binnedrepr2wav
 
         binned_repr = zeros(self.n_bins, size(T, 2));
         B = self.get_freq_bins();
@@ -129,12 +130,93 @@ methods
         % See also:
         % binnedrepr2spect
         % spect2binnedrepr
+        % binnedrepr2wav
 
         B = self.get_freq_bins();
         T = -100 * ones(length(B), size(binned_repr, 2));
         for bin_num = 1:self.n_bins
             T(B == bin_num, :) = repmat(binned_repr(bin_num, :), sum(B == bin_num), 1);
         end
+    end
+
+    function wav = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
+        % ### binnedrepr2wav
+        %
+        % Get the peak-sharpened waveform of a binned representation 
+        %
+        % **ARGUMENTS:**
+        %
+        %   - binned_repr: `n_bins x 1` numerical vector
+        %       representing the amplitude in each frequency bin.
+        %   - mult: `1 x 1` scalar, the peak sharpening factor.
+        %   - binrange: `1 x 1` scalar, the upper bound of the 
+        %       dynamic range of the stimuli from [0, binrange]
+        %   - new_n_bins: `1 x 1` scalar, default: 256,
+        %       the number of bins to upsample to before synthesis.
+        %
+        % **OUTPUTS:**
+        %
+        %   - wav: `nfft+1 x 1` numerical vector
+        %       representing the upsampled, peak-sharpened, 
+        %       wavform of the binned representation.
+        %
+        % See Also:
+        % binnedrepr2spect
+        % spect2binnedrepr
+        
+        arguments
+            self (1,1) AbstractBinnedStimulusGenerationMethod
+            binned_rep (:,1) {mustBeReal}
+            mult (1,1) {mustBePositive}
+            binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), mustBeLessThanOrEqual(binrange,100)}
+            new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
+        end
+
+        % Setup
+        nfft = self.get_nfft();
+        Fs = self.get_fs();
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Rescale dynamic range of audio signal by adjusting bin heights
+        binned_rep = binrange*rescale(binned_rep);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Interpolate to `new_n_bins` bins via spline interpolation
+        binidx = 1:self.n_bins;
+        binidx2 = linspace(1,self.n_bins,new_n_bins);
+        binned_rep = interp1(binidx,binned_rep,binidx2,'spline');
+
+        bintops = round(mels2hz(linspace(hz2mels(self.min_freq),hz2mels(self.max_freq),new_n_bins+1)));
+        binst = bintops(1:end-1);
+        binnd = bintops(2:end);
+        binnum = NaN(nfft/2, 1);
+        frequency_vector = linspace(0, Fs/2, nfft/2)';
+        for itor = 1:new_n_bins
+            binnum(frequency_vector <= binnd(itor) & frequency_vector >= binst(itor)) = itor;
+        end
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Sharpen peaks in interpolated spectrum
+        thing = conv(binned_rep,[1 -2 1],'same');
+        thing([1,end]) = 0;
+        thing2 = conv(thing,[1 -2 1],'same');
+        thing2([1:2,end-1:end]) = 0;
+        binned_rep = binned_rep - (mult*(50^2)/40)*thing + (mult*(50^4)/600)*thing2;
+        binned_rep = binned_rep-min(binned_rep);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Assign power to bins
+        X = zeros(nfft/2,1);
+        for itor = 1:new_n_bins
+            X(binnum==itor) = binned_rep(itor);
+        end
+        X(isnan(binnum)) = 0;
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+        % Synthesize audio
+        stim = self.synthesize_audio(X,nfft);
+        stim = stim./max(abs(stim));
+        wav = stim./(8*sqrt(mean(stim.^2)));
     end
 
     function W = bin_signal(self, W, Fs)

@@ -46,6 +46,9 @@ function follow_up(options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) {mustBePositive} = 1
         options.config_file (1,:) char = ''
+        options.mult (1,1) {mustBePositive} = 0.01
+        options.binrange (1,1) {mustBeGreaterThanOrEqual(options.binrange,1), ...
+        mustBeLessThanOrEqual(options.binrange,100)} = 60
         options.fig matlab.ui.Figure
         options.verbose (1,1) logical = true
     end
@@ -114,21 +117,25 @@ function follow_up(options)
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
+    recon_waveform = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);
+
     % (since using one stimgen, recon and noise share fs).
     Fs = stimgen.Fs;
 
-    recon_binrep = rescale(reconstruction, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+%     recon_binrep = rescale(reconstruction, -20, 0);
+%     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+ 
+    recon_spectrum = stimgen.binnedrepr2spect(reconstruction);
 
     if ~isempty(options.target_sound)
         [~, freqs] = wav2spect(config.target_signal_filepath);
     else
         freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
     end
-
-    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
-    recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
-
+% 
+%     recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
+%     recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
+% 
     % Generate white noise
     noise_waveform = white_noise('config', config, 'stimgen', stimgen, 'freqs', freqs);
 
