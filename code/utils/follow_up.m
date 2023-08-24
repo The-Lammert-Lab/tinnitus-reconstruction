@@ -21,8 +21,8 @@
 %       Frequency associated with target_sound
 %   - n_trials: Positive number, name-value, default: inf
 %       Number of trials to use for reconstruction. Uses all data if `inf`.
-%   - version: Positive number, name-value, default: 1
-%       Question version number.
+%   - version: Positive number, name-value, default: 0
+%       Question version number. Must be passed or in config.
 %   - config_file: character vector, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
 %   - fig: matlab.ui.Figure, name-value.
@@ -44,7 +44,7 @@ function follow_up(options)
         options.target_sound (:,1) {mustBeNumeric} = []
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
-        options.version (1,1) {mustBePositive} = 1
+        options.version (1,1) {mustBePositive} = 0
         options.config_file (1,:) char = ''
         options.mult (1,1) {mustBePositive} = 0.01
         options.binrange (1,1) {mustBeGreaterThanOrEqual(options.binrange,1), ...
@@ -71,7 +71,9 @@ function follow_up(options)
 
     % Hash config if necessary
     if isempty(options.this_hash)
-        options.this_hash = get_hash(config);
+        this_datetime = datetime('now', 'Timezone', 'local');
+        posix_time = num2str(floor(posixtime(this_datetime)));
+        options.this_hash = [get_hash(config), '_', posix_time];
     end
 
     % n_trials can't be more than total data
@@ -97,9 +99,11 @@ function follow_up(options)
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
-    % Get version from config (otherwise use default = 1).
-    if isfield(config, 'follow_up_version') && ~isempty(config.follow_up_version)
+    % Use supplied version or take from config if not supplied.  
+    if options.version < 1 && isfield(config, 'follow_up_version') && ~isempty(config.follow_up_version)
         options.version = config.follow_up_version;
+    elseif options.version < 1
+        error('No version supplied and no version available in config.')
     end
 
     %% Setup
@@ -126,11 +130,8 @@ function follow_up(options)
     recon_binrep = rescale(reconstruction, -20, 0);
     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
  
-    if ~isempty(options.target_sound)
-        [~, freqs] = wav2spect(config.target_signal_filepath);
-    else
-        freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
-    end
+    % Create frequency vector 
+    freqs = linspace(1, floor(Fs/2), length(recon_spectrum))' - 1; 
 
     recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
     recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
@@ -153,7 +154,7 @@ function follow_up(options)
     if isempty(options.target_sound)
         d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
     else
-        d = dir(pathlib.join(img_dir, '*Q*.png'));
+        d = dir(pathlib.join(img_dir, '*Q*_healthy.png'));
     end
 
     static_qs = cell(length(d),1);
@@ -200,6 +201,7 @@ function follow_up(options)
         end
     else
         % Auto-fill static question headers
+        % Either "QX," or "QXX,"
         if length(static_qs) < 10
             inds = 1:3:(3*length(static_qs))+1;
             staticqs_header = blanks(3*length(static_qs));
@@ -208,10 +210,11 @@ function follow_up(options)
             staticqs_header = blanks(4*(length(static_qs)-9)+27);
         end
 
-        for i = length(static_qs)
+        for i = 1:length(static_qs)
             staticqs_header(inds(i):inds(i+1)-1) = ['Q', num2str(i), ','];
         end
 
+        % Put sounds in a random order
         order = randperm(n_sounds);
         comparison{order(1),1} = noise_waveform;
         comparison{order(1),2} = 'whitenoise';
@@ -221,12 +224,12 @@ function follow_up(options)
         comparison{order(3),2} = 'recon_adjusted';
 
         % Write header
-        fprintf(fid_survey, ['version,','mult,','binrange,', ...
-            staticqs_header,comparison{1,2},',', ...
-            comparison{2,2},',',comparison{3,2},'\n']);
-        
-        % Write version, mult, and binrange params to file.
-        fprintf(fid_survey, [num2str(options.version),',', ...
+        fprintf(fid_survey, ['hash,','version,', ...
+            'mult,','binrange,', staticqs_header, ...
+            comparison{1,2},',',comparison{2,2},',',comparison{3,2},'\n']);
+
+        % Write config hash, version, mult, and binrange params to file.
+        fprintf(fid_survey, [get_hash(config),',',num2str(options.version),',', ...
             num2str(options.mult),',',num2str(options.binrange),',']);
     end
 
@@ -284,18 +287,27 @@ function follow_up(options)
             return
         end
 
-        play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
+        play_sounds(options.target_sound, options.target_fs, comparison{i,1}, Fs)
 
         % Get key press or repeat sounds
         while ~(value < 0)
-            value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
-            if value == 114
-                play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
+            if options.version == 1
+                value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
             else
+                value = readkeypress([49:55, 114], 'verbose', options.verbose); % r - 114
+            end
+            if value == 114
+                play_sounds(options.target_sound, options.target_fs, comparison{i,1}, Fs)
+            else
+                % Write response to file
                 if options.version == 1
                     fprintf(fid_survey, [char(value), '\n']);
                 else
-                    fprintf(fid_survey, [char(value), ',']);
+                    if i < length(sound_screens)
+                        fprintf(fid_survey, [char(value), ',']);
+                    else
+                        fprintf(fid_survey, char(value));
+                    end
                 end
                 break
             end

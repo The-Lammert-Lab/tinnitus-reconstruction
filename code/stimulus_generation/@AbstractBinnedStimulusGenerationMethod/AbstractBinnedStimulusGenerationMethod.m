@@ -149,8 +149,9 @@ methods
         %   - binned_repr: `n_bins x 1` numerical vector
         %       representing the amplitude in each frequency bin.
         %   - mult: `1 x 1` scalar, the peak sharpening factor.
-        %   - binrange: `1 x 1` scalar, the upper bound of the 
-        %       dynamic range of the stimuli from [0, binrange]
+        %   - binrange: `1 x 1` scalar, must be between [1, 100],
+        %       the upper bound of the dynamic range of the 
+        %       stimuli from [0, binrange]
         %   - new_n_bins: `1 x 1` scalar, default: 256,
         %       the number of bins to upsample to before synthesis.
         %
@@ -163,7 +164,7 @@ methods
         % See Also:
         % binnedrepr2spect
         % spect2binnedrepr
-        
+
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod
             binned_rep (:,1) {mustBeReal}

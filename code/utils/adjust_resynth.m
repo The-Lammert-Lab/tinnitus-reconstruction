@@ -2,7 +2,7 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
     arguments
         mult (1,1) {mustBePositive} = 0.001
         binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), ...
-        mustBeLessThanOrEqual(binrange,100)}  = 60
+        mustBeLessThanOrEqual(binrange,100)} = 60
         options.fig matlab.ui.Figure
         options.data_dir char = ''
         options.this_hash char = ''
