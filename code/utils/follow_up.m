@@ -76,9 +76,9 @@ function follow_up(options)
 
     % n_trials can't be more than total data
     total_trials_done = 0;
-    d = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
-    for ii = 1:length(d)
-        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
+    dir_responses = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
+    for ii = 1:length(dir_responses)
+        responses = readmatrix(pathlib.join(dir_responses(ii).folder, dir_responses(ii).name));
         total_trials_done = total_trials_done + length(responses);
     end
     
@@ -103,12 +103,14 @@ function follow_up(options)
     end
 
     %% Setup
-
-    % Set order for qualitative sound assessment.
-    order = randi(1:2);
+    if options.version == 1
+        n_sounds = 2;
+    else
+        n_sounds = 3;
+    end
 
     % Container for non-target sounds.
-    comparison = cell(2,1);
+    comparison = cell(n_sounds,2);
 
     % Generate reconstruction
     reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
@@ -117,25 +119,25 @@ function follow_up(options)
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
-    recon_waveform = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);
-
     % (since using one stimgen, recon and noise share fs).
     Fs = stimgen.Fs;
 
-%     recon_binrep = rescale(reconstruction, -20, 0);
-%     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+    % Make unadjusted (standard) waveform from reconstruction
+    recon_binrep = rescale(reconstruction, -20, 0);
+    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
  
-    recon_spectrum = stimgen.binnedrepr2spect(reconstruction);
-
     if ~isempty(options.target_sound)
         [~, freqs] = wav2spect(config.target_signal_filepath);
     else
         freqs = linspace(1, floor(Fs/2), length(recon_spectrum))'; % ACL
     end
-% 
-%     recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
-%     recon_waveform = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
-% 
+
+    recon_spectrum(freqs(1:length(recon_spectrum),1) > config.max_freq) = -20;
+    recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
+
+    % Make adjusted (peak sharpened, etc.) waveform from reconstruction
+    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);
+
     % Generate white noise
     noise_waveform = white_noise('config', config, 'stimgen', stimgen, 'freqs', freqs);
 
@@ -161,14 +163,14 @@ function follow_up(options)
     end
     
     % Sound screens
-    sound_screens = cell(2,1);
-
-    if isempty(options.target_sound)
-        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus1.png'));
-        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare_tinnitus2.png'));
-    else
-        sound_screens{1} = imread(pathlib.join(img_dir, 'FollowUp_compare1.png'));
-        sound_screens{2} = imread(pathlib.join(img_dir, 'FollowUp_compare2.png'));
+    sound_screens = cell(n_sounds,1);
+    
+    for i = 1:n_sounds
+        if isempty(options.target_sound)
+            sound_screens{i} = imread(pathlib.join(img_dir,['FollowUp_compare_tinnitus', num2str(i), '.png']));
+        else
+            sound_screens{i} = imread(pathlib.join(img_dir,['FollowUp_compare', num2str(i), '.png']));
+        end
     end
 
     %% Response file
@@ -176,20 +178,56 @@ function follow_up(options)
     filename_survey = pathlib.join(data_dir, ['survey_', options.this_hash, '.csv']);
     fid_survey = fopen(filename_survey, 'w');
 
-    % Write follow up question version and order of presented stimuli
-    fprintf(fid_survey, ['v_', num2str(options.version), '\n']);
-    fprintf(fid_survey, ['o_', num2str(order), '\n']);
+    % Version 1 has a different save configuration than future versions.
+    if options.version == 1
+        % Set order for qualitative sound assessment.
+        order = randi(1:n_sounds);
+    
+        % Write follow up question version and order of presented stimuli
+        fprintf(fid_survey, ['v_', num2str(options.version), '\n']);
+        fprintf(fid_survey, ['o_', num2str(order), '\n']);    
+    
+        % Set order and write to file for clarity
+        switch order
+            case 1
+                comparison{1,1} = recon_waveform_standard;
+                comparison{2,1} = noise_waveform;
+                fprintf(fid_survey, 'recon-noise\n');
+            case 2
+                comparison{1,1} = noise_waveform;
+                comparison{2,1} = recon_waveform_standard;
+                fprintf(fid_survey, 'noise-recon\n');
+        end
+    else
+        % Auto-fill static question headers
+        if length(static_qs) < 10
+            inds = 1:3:(3*length(static_qs))+1;
+            staticqs_header = blanks(3*length(static_qs));
+        else
+            inds = [1:3:28, 32:4:33+(4*(length(static_qs)-10))];
+            staticqs_header = blanks(4*(length(static_qs)-9)+27);
+        end
 
-    % Set order and write to file for clarity
-    switch order
-        case 1
-            comparison{1,1} = recon_waveform;
-            comparison{2,1} = noise_waveform;
-            fprintf(fid_survey, 'recon-noise\n');
-        case 2
-            comparison{1,1} = noise_waveform;
-            comparison{2,1} = recon_waveform;
-            fprintf(fid_survey, 'noise-recon\n');
+        for i = length(static_qs)
+            staticqs_header(inds(i):inds(i+1)-1) = ['Q', num2str(i), ','];
+        end
+
+        order = randperm(n_sounds);
+        comparison{order(1),1} = noise_waveform;
+        comparison{order(1),2} = 'whitenoise';
+        comparison{order(2),1} = recon_waveform_standard;
+        comparison{order(2),2} = 'recon_standard';
+        comparison{order(3),1} = recon_waveform_adjusted;
+        comparison{order(3),2} = 'recon_adjusted';
+
+        % Write header
+        fprintf(fid_survey, ['version,','mult,','binrange,', ...
+            staticqs_header,comparison{1,2},',', ...
+            comparison{2,2},',',comparison{3,2},'\n']);
+        
+        % Write version, mult, and binrange params to file.
+        fprintf(fid_survey, [num2str(options.version),',', ...
+            num2str(options.mult),',',num2str(options.binrange),',']);
     end
 
     %% Figure
@@ -229,7 +267,11 @@ function follow_up(options)
         end
 
         % Write the response to file
-        fprintf(fid_survey, [char(value) '\n']);
+        if options.version == 1
+            fprintf(fid_survey, [char(value), '\n']);
+        else
+            fprintf(fid_survey, [char(value), ',']);
+        end
     end
 
     % Sound assessment 
@@ -250,7 +292,11 @@ function follow_up(options)
             if value == 114
                 play_sounds(options.target_sound, options.target_fs, comparison{i}, Fs)
             else
-                fprintf(fid_survey, [char(value) '\n']);
+                if options.version == 1
+                    fprintf(fid_survey, [char(value), '\n']);
+                else
+                    fprintf(fid_survey, [char(value), ',']);
+                end
                 break
             end
         end
