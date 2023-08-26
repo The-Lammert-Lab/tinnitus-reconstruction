@@ -97,7 +97,7 @@ methods
         % See Also: 
         % binnedrepr2spect
         % spect2binnedrepr
-        % binnedrepr2wav
+        % AbstractStimulusGenerationMethod.binnedrepr2wav
 
         binned_repr = zeros(self.n_bins, size(T, 2));
         B = self.get_freq_bins();
@@ -130,7 +130,7 @@ methods
         % See also:
         % binnedrepr2spect
         % spect2binnedrepr
-        % binnedrepr2wav
+        % AbstractStimulusGenerationMethod.binnedrepr2wav
 
         B = self.get_freq_bins();
         T = -100 * ones(length(B), size(binned_repr, 2));
