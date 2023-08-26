@@ -10,6 +10,8 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
         options.config_file (1,:) char = ''
+        options.recon (:,1) {mustBeNumeric} = []
+        options.save (1,1) logical = false
         options.verbose (1,1) logical = true
     end
 
@@ -37,15 +39,17 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
     end
 
     % n_trials can't be more than total data
-    total_trials_done = 0;
-    d = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
-    for ii = 1:length(d)
-        responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
-        total_trials_done = total_trials_done + length(responses);
-    end
-    
-    if options.n_trials > total_trials_done
-        options.n_trials = inf;
+    if isempty(options.recon)
+        total_trials_done = 0;
+        d = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
+        for ii = 1:length(d)
+            responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));
+            total_trials_done = total_trials_done + length(responses);
+        end
+
+        if options.n_trials > total_trials_done
+            options.n_trials = inf;
+        end
     end
 
     % Load target sound if not passed as an argument but is in config.
@@ -65,8 +69,12 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
     Fs = stimgen.get_fs();
     
     %% Make reconstructions
-    reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
-        'use_n_trials', options.n_trials, 'data_dir', data_dir);
+    if ~isempty(options.recon)
+        reconstruction = options.recon;
+    else
+        reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
+            'use_n_trials', options.n_trials, 'data_dir', data_dir);
+    end
 
     %% Show figure
 
@@ -95,23 +103,6 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
     hFig.CloseRequestFcn = {@closeRequest hFig};
 
     %% Fig contents
-%     xlim([mult_min, mult_max])
-%     ylim([range_min, range_max])
-%     grid on
-% 
-%     play_btn = uicontrol(hFig,'Style','pushbutton', ...
-%         'position', [(screenWidth/2)-(sld_w/2), 150 btn_w, btn_h], ...
-%         'String', 'Play Sounds', 'Callback', @playSounds);
-% 
-%     confirm_btn = uicontrol(hFig,'Style','pushbutton', ...
-%         'position', [(screenWidth/2)+(sld_w/2)-lbl_w, 150, btn_w, btn_h], ...
-%         'String', 'Save Choice', 'Callback', {@closeRequest hFig});
-% 
-%     while ishandle(hFig)
-%         [mult, binrange] = ginput(1);
-%         scatter(mult, binrange);
-%     end
-
     % Two sliders
     sld_mult = uicontrol(hFig, 'Style', 'slider', ...
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(sld_h/2), sld_w, sld_h], ...
@@ -152,6 +143,11 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
 
     waitfor(hFig);
+
+    if options.save
+        writematrix([mult; binrange], ...
+            pathlib.join(options.data_dir, ['mult_binrange_',options.this_hash, '.csv']));
+    end
 
     %% Nested functions
     function getValue(~,~)

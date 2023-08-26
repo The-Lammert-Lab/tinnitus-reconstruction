@@ -1,33 +1,46 @@
 % ### follow_up
 % 
-% Runs the follow up protocol to ask exit survey questions.
+% Runs the follow up protocol to ask exit survey and subjective 
+% reconstruction assessment questions.
 % Questions are included in code/experiment/fixationscreens/FollowUp_vX,
 % where X is the version number.
-% Also asks reconstruction quality assessment. Computes linear reconstruction
+% Computes standard linear reconstruction, 
+% peak-sharpened linear reconstruction,
 % and generates config-informed white noise for comparison against target
 % sound. Responses are saved in the specified data directory. 
 % 
 % **ARGUMENTS:**
 % 
-%   - data_dir: character vector, name-value, default: empty
+%   - data_dir: `character vector`, name-value, default: empty
 %       Directory where data is stored. If blank, config.data_dir is used. 
-%   - project_dir: character vector, name-value, default: empty
+%   - project_dir: `character vector`, name-value, default: empty
 %       Set as an input to reduce tasks if running from `Protocol.m`.
-%   - this_hash: character vector, name-value, default: empty
+%   - this_hash: `character vector`, name-value, default: empty
 %       Hash to use for output file. Generates from config if blank.
-%   - target_sound: numeric vector, name-value, default: empty
+%   - target_sound: `numeric vector`, name-value, default: empty
 %       Target sound for comparison. Generates from config if blank.
-%   - target_fs: Positive scalar, name-value, default: empty
+%   - target_fs: `Positive scalar`, name-value, default: empty
 %       Frequency associated with target_sound
-%   - n_trials: Positive number, name-value, default: inf
+%   - n_trials: `Positive number`, name-value, default: inf
 %       Number of trials to use for reconstruction. Uses all data if `inf`.
-%   - version: Positive number, name-value, default: 0
+%   - mult: `Positive number`, name-value, default: 0.01
+%       The peak-sharpening `mult` parameter.
+%   - binrange: `Positive number`, name-value, default: 60,
+%       must be between [1, 100], the upper bound of the [0, binrange]
+%       dynamic range of the peak-sharpened reconstruction.
+%   - version:`Positive number`, name-value, default: 0
 %       Question version number. Must be passed or in config.
-%   - config_file: character vector, name-value, default: ``''``
+%   - config_file: `character vector`, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
-%   - fig: matlab.ui.Figure, name-value.
+%   - survey: `logical`, name-value, default: `true`
+%       Flag to run static/survey questions. If `false`, only sound
+%       comarison is shown.
+%   - recon: `numeric vector`, name-value, default: `[]`
+%       Allows user to supply a specific reconstruction to use, 
+%       rather than generating from config. 
+%   - fig: `matlab.ui.Figure`, name-value.
 %       Handle to open figure on which to display questions.
-%   - verbose: logical, name-value, default: `true`
+%   - verbose: `logical`, name-value, default: `true`
 %       Flag to print information and warnings. 
 % 
 % **OUTPUTS:**
@@ -44,13 +57,15 @@ function follow_up(options)
         options.target_sound (:,1) {mustBeNumeric} = []
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
-        options.version (1,1) {mustBePositive} = 0
+        options.version (1,1) = 0
         options.config_file (1,:) char = ''
         options.mult (1,1) {mustBePositive} = 0.01
         options.binrange (1,1) {mustBeGreaterThanOrEqual(options.binrange,1), ...
-        mustBeLessThanOrEqual(options.binrange,100)} = 60
-        options.fig matlab.ui.Figure
+            mustBeLessThanOrEqual(options.binrange,100)} = 60
+        options.recon (:,1) {mustBeNumeric} = []
+        options.survey (1,1) logical = true
         options.verbose (1,1) logical = true
+        options.fig matlab.ui.Figure
     end
 
     %% Input handling
@@ -71,21 +86,21 @@ function follow_up(options)
 
     % Hash config if necessary
     if isempty(options.this_hash)
-        this_datetime = datetime('now', 'Timezone', 'local');
-        posix_time = num2str(floor(posixtime(this_datetime)));
-        options.this_hash = [get_hash(config), '_', posix_time];
+        options.this_hash = get_hash(config);
     end
 
     % n_trials can't be more than total data
-    total_trials_done = 0;
-    dir_responses = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
-    for ii = 1:length(dir_responses)
-        responses = readmatrix(pathlib.join(dir_responses(ii).folder, dir_responses(ii).name));
-        total_trials_done = total_trials_done + length(responses);
-    end
-    
-    if options.n_trials > total_trials_done
-        options.n_trials = inf;
+    if isempty(options.recon)
+        total_trials_done = 0;
+        dir_responses = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
+        for ii = 1:length(dir_responses)
+            responses = readmatrix(pathlib.join(dir_responses(ii).folder, dir_responses(ii).name));
+            total_trials_done = total_trials_done + length(responses);
+        end
+
+        if options.n_trials > total_trials_done
+            options.n_trials = inf;
+        end
     end
 
     % Load target sound if not passed as an argument but is in config.
@@ -106,7 +121,7 @@ function follow_up(options)
         error('No version supplied and no version available in config.')
     end
 
-    %% Setup
+    %% Sound Comparison Setup
     if options.version == 1
         n_sounds = 2;
     else
@@ -117,8 +132,12 @@ function follow_up(options)
     comparison = cell(n_sounds,2);
 
     % Generate reconstruction
-    reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
-        'use_n_trials', options.n_trials, 'data_dir', data_dir);
+    if ~isempty(options.recon)
+        reconstruction = options.recon;
+    else
+        reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
+            'use_n_trials', options.n_trials, 'data_dir', data_dir);
+    end
 
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
@@ -151,16 +170,18 @@ function follow_up(options)
     final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
 
     % Question screens
-    if isempty(options.target_sound)
-        d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
-    else
-        d = dir(pathlib.join(img_dir, '*Q*_healthy.png'));
-    end
-
-    static_qs = cell(length(d),1);
-
-    for i = 1:length(static_qs)
-        static_qs{i} = imread(pathlib.join(img_dir, d(i).name));
+    if options.survey
+        if isempty(options.target_sound)
+            d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
+        else
+            d = dir(pathlib.join(img_dir, '*Q*_healthy.png'));
+        end
+        
+        static_qs = cell(length(d),1);
+        
+        for i = 1:length(static_qs)
+            static_qs{i} = imread(pathlib.join(img_dir, d(i).name));
+        end
     end
     
     % Sound screens
@@ -200,18 +221,22 @@ function follow_up(options)
                 fprintf(fid_survey, 'noise-recon\n');
         end
     else
-        % Auto-fill static question headers
-        % Either "QX," or "QXX,"
-        if length(static_qs) < 10
-            inds = 1:3:(3*length(static_qs))+1;
-            staticqs_header = blanks(3*length(static_qs));
+        if options.survey
+            % Auto-fill static question headers
+            % Either "QX," or "QXX,"
+            if length(static_qs) < 10
+                inds = 1:3:(3*length(static_qs))+1;
+                staticqs_header = blanks(3*length(static_qs));
+            else
+                inds = [1:3:28, 32:4:33+(4*(length(static_qs)-10))];
+                staticqs_header = blanks(4*(length(static_qs)-9)+27);
+            end
+    
+            for i = 1:length(static_qs)
+                staticqs_header(inds(i):inds(i+1)-1) = ['Q', num2str(i), ','];
+            end
         else
-            inds = [1:3:28, 32:4:33+(4*(length(static_qs)-10))];
-            staticqs_header = blanks(4*(length(static_qs)-9)+27);
-        end
-
-        for i = 1:length(static_qs)
-            staticqs_header(inds(i):inds(i+1)-1) = ['Q', num2str(i), ','];
+            staticqs_header = '';
         end
 
         % Put sounds in a random order
@@ -260,20 +285,22 @@ function follow_up(options)
     end
 
     %% Ask questions
-    % Static questions
-    for i = 1:length(static_qs)
-        disp_fullscreen(static_qs{i})
-        value = readkeypress(49:53, 'verbose', options.verbose); % 1-5 = 49-53
-        if value < 0
-            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
-            return
-        end
-
-        % Write the response to file
-        if options.version == 1
-            fprintf(fid_survey, [char(value), '\n']);
-        else
-            fprintf(fid_survey, [char(value), ',']);
+    if options.survey
+        % Static questions
+        for i = 1:length(static_qs)
+            disp_fullscreen(static_qs{i})
+            value = readkeypress(49:53, 'verbose', options.verbose); % 1-5 = 49-53
+            if value < 0
+                corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
+                return
+            end
+    
+            % Write the response to file
+            if options.version == 1
+                fprintf(fid_survey, [char(value), '\n']);
+            else
+                fprintf(fid_survey, [char(value), ',']);
+            end
         end
     end
 
@@ -317,7 +344,6 @@ function follow_up(options)
             corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
             return
         end
-
     end
 
     disp_fullscreen(final_screen);

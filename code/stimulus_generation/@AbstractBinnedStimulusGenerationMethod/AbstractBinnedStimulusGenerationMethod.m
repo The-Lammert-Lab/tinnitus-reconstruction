@@ -175,7 +175,6 @@ methods
 
         % Setup
         nfft = self.get_nfft();
-        Fs = self.get_fs();
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Rescale dynamic range of audio signal by adjusting bin heights
@@ -187,14 +186,15 @@ methods
         binidx2 = linspace(1,self.n_bins,new_n_bins);
         binned_rep = interp1(binidx,binned_rep,binidx2,'spline');
 
-        bintops = round(mels2hz(linspace(hz2mels(self.min_freq),hz2mels(self.max_freq),new_n_bins+1)));
-        binst = bintops(1:end-1);
-        binnd = bintops(2:end);
-        binnum = NaN(nfft/2, 1);
-        frequency_vector = linspace(0, Fs/2, nfft/2)';
-        for itor = 1:new_n_bins
-            binnum(frequency_vector <= binnd(itor) & frequency_vector >= binst(itor)) = itor;
-        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Get bin numbers for the new number of bins
+        old_n_bins = self.n_bins;
+        self.n_bins = new_n_bins;
+
+        binnum = self.get_freq_bins();
+
+        % Reset n_bins
+        self.n_bins = old_n_bins;
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Sharpen peaks in interpolated spectrum
@@ -211,7 +211,6 @@ methods
         for itor = 1:new_n_bins
             X(binnum==itor) = binned_rep(itor);
         end
-        X(isnan(binnum)) = 0;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         % Synthesize audio
