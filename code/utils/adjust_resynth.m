@@ -1,3 +1,53 @@
+% ### adjust_resynth
+% 
+% Runs interactive adjustment of `mult` and `binrange` parameters
+% for reconstruction resynthesis. Plays target sound as comparison
+% if one is provided or included in config.
+% 
+% **ARGUMENTS:**
+% 
+%   - mult: `1 x 1` positive scalar, default: 0.001
+%       initial value for the peak-sharpening `mult` parameter.
+%    - binrange: `1 x 1` scalar, default: 60,
+%       must be between [1, 100]. The initial value for the 
+%       upper bound of the [0, binrange] dynamic range of 
+%       the peak-sharpened reconstruction.
+%   - data_dir: `character vector`, name-value, default: empty
+%       Directory where data is stored. If blank, config.data_dir is used. 
+%   - project_dir: `character vector`, name-value, default: empty
+%       Set as an input to reduce tasks if running from `Protocol.m`.
+%   - this_hash: `character vector`, name-value, default: empty
+%       Hash to use for output file. Generates from config if blank.
+%   - target_sound: `numeric vector`, name-value, default: empty
+%       Target sound for comparison. Generates from config if blank.
+%   - target_fs: `Positive scalar`, name-value, default: empty
+%       Frequency associated with target_sound
+%   - n_trials: `Positive number`, name-value, default: inf
+%       Number of trials to use for reconstruction. Uses all data if `inf`.
+%   - version:`Positive number`, name-value, default: 0
+%       Question version number. Must be passed or in config.
+%   - config_file: `character vector`, name-value, default: ``''``
+%       A path to a YAML-spec configuration file.
+%   - survey: `logical`, name-value, default: `true`
+%       Flag to run static/survey questions. If `false`, only sound
+%       comarison is shown.
+%   - recon: `numeric vector`, name-value, default: `[]`
+%       Allows user to supply a specific reconstruction to use, 
+%       rather than generating from config. 
+%   - fig: `matlab.ui.Figure`, name-value.
+%       Handle to open figure on which to display questions.
+%   - save: `logical`, name-value, default: `false`.
+%       Flag to save the `mult` and `binrange` outputs to a `.csv` file.
+%   - verbose: `logical`, name-value, default: `true`
+%       Flag to print information and warnings. 
+% 
+% **OUTPUTS:**
+% 
+%   - mult: `1 x 1` scalar, the last selected value for this parameter.
+%   - binrange: `1 x 1` scalar, the last selected value for this parameter.
+%   - mult_binrange_XXX.csv: csv file, where XXX is the config hash.
+%       In the data directory. ONLY IF `save` param is `true`.
+
 function [mult, binrange] = adjust_resynth(mult, binrange, options)
     arguments
         mult (1,1) {mustBePositive} = 0.001
