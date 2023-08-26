@@ -47,6 +47,9 @@
 %   - binrange: `1 x 1` scalar, the last selected value for this parameter.
 %   - mult_binrange_XXX.csv: csv file, where XXX is the config hash.
 %       In the data directory. ONLY IF `save` param is `true`.
+% 
+% See also:
+% AbstractBinnedStimulusGenerationMethod.binnedrepr2wav
 
 function [mult, binrange] = adjust_resynth(mult, binrange, options)
     arguments
