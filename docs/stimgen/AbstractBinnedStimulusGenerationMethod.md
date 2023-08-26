@@ -88,6 +88,7 @@ for each trial
 !!! info "See Also"
     * [binnedrepr2spect](../../utils/#binnedrepr2spect)
     * [spect2binnedrepr](../../utils/#spect2binnedrepr)
+    * [AbstractStimulusGenerationMethod.binnedrepr2wav](../AbstractStimulusGenerationMethod/#binnedrepr2wav)
 
 
 
@@ -107,6 +108,38 @@ for each trial
 
 - T: `n_frequencies x n_trials`
 representing the stimulus spectra
+
+
+
+!!! info "See Also"
+    * [binnedrepr2spect](../../utils/#binnedrepr2spect)
+    * [spect2binnedrepr](../../utils/#spect2binnedrepr)
+    * [AbstractStimulusGenerationMethod.binnedrepr2wav](../AbstractStimulusGenerationMethod/#binnedrepr2wav)
+
+
+
+
+
+### binnedrepr2wav
+
+Get the peak-sharpened waveform of a binned representation 
+
+**ARGUMENTS:**
+
+- binned_repr: `n_bins x 1` numerical vector
+representing the amplitude in each frequency bin.
+- mult: `1 x 1` scalar, the peak sharpening factor.
+- binrange: `1 x 1` scalar, must be between [1, 100],
+the upper bound of the dynamic range of the 
+stimuli from [0, binrange]
+- new_n_bins: `1 x 1` scalar, default: 256,
+the number of bins to upsample to before synthesis.
+
+**OUTPUTS:**
+
+- wav: `nfft+1 x 1` numerical vector
+representing the upsampled, peak-sharpened, 
+wavform of the binned representation.
 
 
 
