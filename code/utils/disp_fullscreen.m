@@ -2,13 +2,14 @@
 % 
 % Fill full screen figure with new image.
 % 
-% **Arguments:**
+% **ARGUMENTS:**
 % 
-%   - img: image loaded via imread()
+%   - img: `n x m x 3` array representing an 
+%       image. Typically loaded via imread().
 %   - hFig: handle to maximized figure. 
 %       Defaults to current figure handle.
 % 
-% **Outputs:**
+% **OUTPUTS:**
 % 
 %   - hFig now displays an image.
 

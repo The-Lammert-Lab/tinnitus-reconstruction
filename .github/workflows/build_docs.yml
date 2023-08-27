@@ -1,0 +1,30 @@
+name: Build docs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Build docs
+        run: python code/build_docs.py
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: '🤖 Auto-update doc files'
+          title: '🤖 Auto-update doc files'
+          branch: auto-docs-pr
+          delete-branch: true
+          labels: documentation, automated pr

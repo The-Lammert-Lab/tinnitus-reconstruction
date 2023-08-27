@@ -116,11 +116,16 @@ function Protocol(options)
     end
 
     %% Load Presentations Screens
-
+if is_two_afc
+    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png'));
+    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
+else
     Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
     Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
+end
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
+
     
     %% Generate initial files and stimuli
 
@@ -236,8 +241,6 @@ function Protocol(options)
         meta = {expID, this_hash, this_datetime, total_trials_done};
         meta_labels = {'expID', 'hash', 'datetime', 'total_trials_done'};
         writetable(cell2table(meta, 'VariableNames', meta_labels), filename_meta);
-
-        pause(length(stimuli_matrix(:, counter)) / Fs - 0.3)
             
         % Decide How To Continue
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
@@ -245,10 +248,14 @@ function Protocol(options)
             % end, all trials complete
             corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
             if isfield(config, 'follow_up') && config.follow_up
-                follow_up('config_file', config_path, ...
+                [mult, binrange] = adjust_resynth('config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'fig', hFig);
+                follow_up('config_file', config_path, ...
+                    'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
+                    'target_sound', target_sound, 'target_fs', target_fs, ...
+                    'mult', mult, 'binrange', binrange, 'fig', hFig);
             else
                 disp_fullscreen(Screen4);
             end
@@ -286,7 +293,12 @@ function Protocol(options)
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
-            % pause(1)
+            % Pause before playing next stimuli  
+            if is_two_afc
+                pause(length(stimuli_matrix_1(:,counter)) / Fs - 0.3)
+            else
+                pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
+            end
         end
         
     end

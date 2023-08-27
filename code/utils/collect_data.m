@@ -105,8 +105,8 @@ function [responses, stimuli] = collect_data(options)
         for ii = 1:length(files_responses)
             filepath_responses = pathlib.join(files_responses(ii).folder, files_responses(ii).name);
             splits = split(files_responses(ii).name, '_'); % split into a cell array at "_"
-            stimulus_hash_1 = splits{3};
-            stimulus_hash_2 = splits{4}(1:end-4); % remove ".csv" from end
+            stimulus_hash_1 = splits{4};
+            stimulus_hash_2 = splits{5}(1:end-4); % remove ".csv" from end
             files_stimuli_1 = dir(pathlib.join(options.data_dir, ['stimuli_', config_hash, '*', stimulus_hash_1,'.csv']));
             files_stimuli_2 = dir(pathlib.join(options.data_dir, ['stimuli_', config_hash, '*', stimulus_hash_2,'.csv']));
             filepath_stimuli_1 = pathlib.join(files_stimuli_1(1).folder, files_stimuli_1(1).name);
@@ -128,21 +128,21 @@ function [responses, stimuli] = collect_data(options)
             else
                 % Combine the stimuli into a single tall matrix.
                 % Initially, a "1" response refers to a "yes" response for stimulus 1
-                % and a "-1" response refers to a "no" response for stimulus 2.
+                % and a "-1" response refers to a "yes" response for stimulus 2.
                 % We want to use both "yes" and "no" stimuli
                 % but change the response vector and stimulus matrix
                 % so that "1" refers to "good" stimuli
                 % and "-1" refers to "bad" stimuli.
-                m = size(stimulus_block_1);
+                m = size(stimulus_block_1,1);
                 n = length(responses{ii});
 
                 correct_stimuli = NaN(m, n);
                 incorrect_stimuli = NaN(m, n);
 
-                correct_stimuli(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
-                correct_stimuli(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
-                incorrect_stimuli(:, responses{ii} == 1) = stimulus_block_2(:, responses{ii} == 1);
-                incorrect_stimuli(:, responses{ii} == -1) = stimulus_block_1(:, responses{ii} == -1);
+                incorrect_stimuli(:, responses{ii} == 1) = stimulus_block_1(:, responses{ii} == 1);
+                incorrect_stimuli(:, responses{ii} == -1) = stimulus_block_2(:, responses{ii} == -1);
+                correct_stimuli(:, responses{ii} == 1) = stimulus_block_2(:, responses{ii} == 1);
+                correct_stimuli(:, responses{ii} == -1) = stimulus_block_1(:, responses{ii} == -1);
 
                 stimulus_block_fused = NaN(m, 2 * n);
                 stimulus_block_fused(:, 1:2:end) = correct_stimuli;

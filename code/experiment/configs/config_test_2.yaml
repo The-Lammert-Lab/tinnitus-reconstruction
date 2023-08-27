@@ -4,7 +4,7 @@
 # fields mean. 
 
 experiment_name: pilot
-subject_ID: AH2
+subject_ID: JB
 
 # These fields describe the number of trials in the experiment.
 
@@ -12,13 +12,13 @@ subject_ID: AH2
 # A block is a set of contiguous trials without a break a break.
 # Subjects get a break between blocks.
 # These are both required fields.
-n_trials_per_block: 3
+n_trials_per_block: 80
 n_blocks: 3
 
 # The total trials should be the number of trials per block
 # times the number of blocks.
 # This is not a required field.
-total_trials: 9
+total_trials: 240
 
 # These "freq" fields describe the frequency range of the stimuli,
 # including the minimum frequency and maximum frequency,

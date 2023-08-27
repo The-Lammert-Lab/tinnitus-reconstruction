@@ -2,6 +2,67 @@
 
 This folder stores many helpful, and in some cases critical utilities. This folder as added to the path via `setup.m`. Some files are not original to this project, in which case documentation and credit is clearly maintained.
 
+### adjust_resynth
+
+Runs interactive adjustment of `mult` and `binrange` parameters
+for reconstruction resynthesis. Plays target sound as comparison
+if one is provided or included in config.
+
+**ARGUMENTS:**
+
+- mult: `1 x 1` positive scalar, default: 0.001
+initial value for the peak-sharpening `mult` parameter.
+- binrange: `1 x 1` scalar, default: 60,
+must be between [1, 100]. The initial value for the 
+upper bound of the [0, binrange] dynamic range of 
+the peak-sharpened reconstruction.
+- data_dir: `character vector`, name-value, default: empty
+Directory where data is stored. If blank, config.data_dir is used. 
+- project_dir: `character vector`, name-value, default: empty
+Set as an input to reduce tasks if running from `Protocol.m`.
+- this_hash: `character vector`, name-value, default: empty
+Hash to use for output file. Generates from config if blank.
+- target_sound: `numeric vector`, name-value, default: empty
+Target sound for comparison. Generates from config if blank.
+- target_fs: `Positive scalar`, name-value, default: empty
+Frequency associated with target_sound
+- n_trials: `Positive number`, name-value, default: inf
+Number of trials to use for reconstruction. Uses all data if `inf`.
+- version:`Positive number`, name-value, default: 0
+Question version number. Must be passed or in config.
+- config_file: `character vector`, name-value, default: ``''``
+A path to a YAML-spec configuration file.
+- survey: `logical`, name-value, default: `true`
+Flag to run static/survey questions. If `false`, only sound
+comarison is shown.
+- recon: `numeric vector`, name-value, default: `[]`
+Allows user to supply a specific reconstruction to use, 
+rather than generating from config. 
+- fig: `matlab.ui.Figure`, name-value.
+Handle to open figure on which to display questions.
+- save: `logical`, name-value, default: `false`.
+Flag to save the `mult` and `binrange` outputs to a `.csv` file.
+- verbose: `logical`, name-value, default: `true`
+Flag to print information and warnings. 
+
+**OUTPUTS:**
+
+- mult: `1 x 1` scalar, the last selected value for this parameter.
+- binrange: `1 x 1` scalar, the last selected value for this parameter.
+- mult_binrange_XXX.csv: csv file, where XXX is the config hash.
+In the data directory. ONLY IF `save` param is `true`.
+
+
+
+!!! info "See Also"
+    * [AbstractBinnedStimulusGenerationMethod.binnedrepr2wav](../stimgen/AbstractBinnedStimulusGenerationMethod/#binnedrepr2wav)
+
+
+
+
+
+-------
+
 ### adjust_volume
 
 For use in A-X experimental protocols.
@@ -303,6 +364,458 @@ Write the stimuli into the stimuli file.
 
 -------
 
+### crossval_knn
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using K-Nearest Neighbors.
+
+```matlab
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_knn(folds, k, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_knn(folds, k, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- k: `1 x p` numerical vector or `scalar`,
+number of nearest neighbors to consider.
+If there are multiple values, 
+it will be optimized in the development section.
+- method: `char`, name-value, default: 'mode',
+class determination style to be passed to knn function.
+- percent: `scalar`, name-value, default: 75,
+Target percent passed to knn function if `knn_method` is 'percent'.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- norm_stim: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,
+
+
+
+
+
+-------
+
+### crossval_lda
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using linear discriminant analysis.
+
+
+```matlab
+[pred_resps, true_resps] = crossval_lda(folds, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_lda(folds, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [fitcdiscr](https://mathworks.com/help/stats/fitcdiscr.html)
+
+
+
+
+
+-------
+
+### crossval_lwlr
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using locally weighted linear regression.
+
+```matlab
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_lwlr(folds, h, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_lwlr(folds, h, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- h: `1 x p` numerical vector or `scalar`,
+representing the width parameter(s) for the Gaussian kernel.
+If there are multiple values, 
+it will be optimized in the development section.
+- thresh: `1 x q` numerical vector or `scalar`, 
+representing the threshold value in the estimate to response
+conversion: `sign(X*b + threshold)`.
+If there are multiple values,
+it will be optimized in the development section.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- norm_stim: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,
+
+
+
+
+
+-------
+
+### crossval_pnr
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using polynomial regression.
+
+```matlab
+[pred_resps, true_resps] = crossval_pnr(folds, ords, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_pnr(folds, ords, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- ords: `1 x p` numerical vector or `scalar`,
+representing the polynomial order(s) on which to perform regression.
+If there are multiple values, 
+it will be optimized in the development section.
+- thresh: `1 x q` numerical vector or `scalar`,
+representing the percentile threshold value(s).
+If there are multiple values, 
+it will be optimized in the development section.
+Values must be on (0,100].
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- norm_stimuli: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [polyfitn](https://mathworks.com/matlabcentral/fileexchange/34765-polyfitn)
+
+
+
+
+
+-------
+
+### crossval_predicted_responses
+
+Generate response predictions for a given 
+config file or pair of stimuli and responses
+using stratified cross validation and either
+the subject response model or KNN.
+
+```matlab
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'config', config, 'data_dir', data_dir)
+[given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- normalize: `bool`, name-value, default: `false`,
+flag to normalize the stimuli after loading.
+- gamma: `1 x 1` scalar, name-value, default: `8`,
+- mean_zero: `bool`, name-value, default: `false`,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.
+- from_responses: `bool`, name-value, default: `false`,
+flag to determine the threshold from the given responses. 
+Overwrites `threshold_values` and does not run threshold
+development cycle.
+- ridge_reg: `bool`, name-value, default: `false`,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.
+- threshold_values: `1 x m` numerical vector, name-value, default:
+`linspace(10,90,200)`, representing the percentile threshold values
+on which to perform development to identify optimum. 
+Values must be on (0,100].
+representing the gamma value to use in 
+compressed sensing reconstructions if `config` is empty.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.       
+
+**OUTPUTS:**
+
+- given_resps: `p x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector. `p` is the number of original responses.
+- training_resps: `(folds-2)*p x 1` vector,
+the original subject responses used in the training phase.
+The training data is partially repeated between folds.
+- on_test: `struct` with `p x 1` vectors in fields
+`cs`, `lr`, and if `knn = true`, `knn`.
+Predicted responses on testing data.
+- on_train: `struct` with `(folds-2)*p x 1` vectors in fields
+`cs`, `lr`, and if `knn = true`, `knn`.
+Predicted responses on training data.
+
+
+
+!!! info "See Also"
+    * [subject_selection_process](./#subject_selection_process)
+    * [knn_classify](./#knn_classify)
+
+
+
+
+
+-------
+
+### crossval_rc
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using the classical reverse correlation model 
+y = sign(Psi * x) or y = sign(Psi * x + thresh).
+
+```matlab
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- thresh: `1 x p` numerical vector or `scalar`, 
+representing the threshold value in the estimate to response
+conversion: `sign(X*b + threshold)`.
+If there are multiple values,
+it will be optimized in the development section.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- ridge: `bool`, name-value, default: `false`,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.
+- mean_zero: `bool`, name-value, default: `false`,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,
+
+
+
+
+
+-------
+
+### crossval_svm
+
+Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using support vector machines.
+
+
+```matlab
+[pred_resps, true_resps] = crossval_svm(folds, 'config', config, 'data_dir', data_dir)
+[pred_resps, true_resps] = crossval_svm(folds, 'responses', responses, 'stimuli', stimuli)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the 
+config structis stored.
+- responses: `n x 1` array, name-value, default: `[]`
+responses to use in reconstruction, 
+where `n` is the number of responses.
+Only used if passed with `stimuli`.
+- stimuli: `m x n` array, name-value, default: `[]`
+stimuli to use in reconstruction,
+where `m` is the number of bins.
+Only used if passed with `responses`.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.    
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.
+
+
+
+!!! info "See Also"
+    * [fitclinear](https://mathworks.com/help/stats/fitclinear.html)
+
+
+
+
+
+-------
+
 ### cs  
 
 ```matlab
@@ -318,8 +831,24 @@ Write the stimuli into the stimuli file.
 where `n` is the number of trials/samples
 and `m` is the dimensionality of the stimuli/spectrum/bins
 
+- Gamma: Positive scalar, default: 32
+optional value for zhangpassivegamma function.
+
+- mean_zero: `bool`, name-value, default: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
+
 **OUTPUTS:**
-- x: compressed sensing reconstruction of the signal.
+
+- x: `m x 1` vector,
+representing the compressed sensing reconstruction of the signal.
+
+
+
+!!! info "See Also"
+    * [cs_no_basis](./#cs_no_basis)
 
 
 
@@ -331,13 +860,14 @@ and `m` is the dimensionality of the stimuli/spectrum/bins
 
 Fill full screen figure with new image.
 
-**Arguments:**
+**ARGUMENTS:**
 
-- img: image loaded via imread()
+- img: `n x m x 3` array representing an 
+image. Typically loaded via imread().
 - hFig: handle to maximized figure. 
 Defaults to current figure handle.
 
-**Outputs:**
+**OUTPUTS:**
 
 - hFig now displays an image.
 
@@ -375,38 +905,83 @@ Example:
 
 ### follow_up
 
-Runs the follow up protocol to ask exit survey questions
-Questions are included in code/experiment/fixationscreens/FollowUp_vX
-Where X is the version number.
-Also asks reconstruction quality assessment. Computes linear reconstruction
+Runs the follow up protocol to ask exit survey and subjective 
+reconstruction assessment questions.
+Questions are included in code/experiment/fixationscreens/FollowUp_vX,
+where X is the version number.
+Computes standard linear reconstruction, 
+peak-sharpened linear reconstruction,
 and generates config-informed white noise for comparison against target
 sound. Responses are saved in the specified data directory. 
 
 **ARGUMENTS:**
-- data_dir: character vector, name-value, default: empty
+
+- data_dir: `character vector`, name-value, default: empty
 Directory where data is stored. If blank, config.data_dir is used. 
-- project_dir: character vector, name-value, default: empty
+- project_dir: `character vector`, name-value, default: empty
 Set as an input to reduce tasks if running from `Protocol.m`.
-- this_hash: character vector, name-value, default: empty
+- this_hash: `character vector`, name-value, default: empty
 Hash to use for output file. Generates from config if blank.
-- target_sound: numeric vector, name-value, default: empty
+- target_sound: `numeric vector`, name-value, default: empty
 Target sound for comparison. Generates from config if blank.
-- target_fs: Positive scalar, name-value, default: empty
+- target_fs: `Positive scalar`, name-value, default: empty
 Frequency associated with target_sound
-- n_trials: Positive number, name-value, default: inf
+- n_trials: `Positive number`, name-value, default: inf
 Number of trials to use for reconstruction. Uses all data if `inf`.
-- version: Positive number, name-value, default: 1
-Question version number.
-- config_file: character vector, name-value, default: ``''``
+- mult: `Positive number`, name-value, default: 0.01
+The peak-sharpening `mult` parameter.
+- binrange: `Positive number`, name-value, default: 60,
+must be between [1, 100], the upper bound of the [0, binrange]
+dynamic range of the peak-sharpened reconstruction.
+- version:`Positive number`, name-value, default: 0
+Question version number. Must be passed or in config.
+- config_file: `character vector`, name-value, default: ``''``
 A path to a YAML-spec configuration file.
-- fig: matlab.ui.Figure, name-value.
+- survey: `logical`, name-value, default: `true`
+Flag to run static/survey questions. If `false`, only sound
+comarison is shown.
+- recon: `numeric vector`, name-value, default: `[]`
+Allows user to supply a specific reconstruction to use, 
+rather than generating from config. 
+- fig: `matlab.ui.Figure`, name-value.
 Handle to open figure on which to display questions.
-- verbose: logical, name-value, default: `true`
+- verbose: `logical`, name-value, default: `true`
 Flag to print information and warnings. 
 
 **OUTPUTS:**
+
 - survey_XXX.csv: csv file, where XXX is the config hash.
 In the data directory. 
+
+
+
+
+
+-------
+
+### get_accuracy_measures
+
+Computes standard accuracy measures between true and predicted labels.
+Values greater than or equal to 1 are considered positives,
+and values less than 1 are considered negative.
+
+**ARGUMENTS:**
+
+- y: `m x p` numerical matrix,
+representing true labels.
+- y_hat: `m x n` numerical matrix,
+representing predicted labels.
+
+**OUTPUTS:**
+
+- accuracy: `scalar` or `1 x max(n,p)` vector,
+the correct prediction rate. 
+- balanced_accuracy: `scalar` or `1 x max(n,p)` vector,
+the average of `sensitivity` and `specificity`.
+- sensitivity: `scalar` or `1 x max(n,p)` vector,
+the true positive rate.
+- specificity: `scalar` or `1 x max(n,p)` vector,
+the true negative rate.
 
 
 
@@ -426,9 +1001,11 @@ n = get_highest_power_of_2(N);
 ```
 
 **ARGUMENTS:**
+
 - N: a 1x1 scalar, positive, real integer
 
 **OUTPUTS:**
+
 - n: a 1x1 scalar, positive, real power of 2
 
 
@@ -441,6 +1018,11 @@ n = get_highest_power_of_2(N);
 
 Compute reconstructions using data specified
 by a configuration file.
+
+```matlab
+[x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
+x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
+```
 
 **ARGUMENTS:**
 
@@ -455,18 +1037,14 @@ A list of preprocessing steps to take.
 Currently, the only supported preprocessing step is ``'bit flip'``,
 which flips the sign on all responses before computing the reconstruction.
 - method: character vector, name-value, default: ``'cs'``
-Which reconstruction algorithm to use.
+Which reconstruction algorithm to use. 
+Options: ``'cs'``, ``'cs_nb'``, ``'linear'`, ``'linear_ridge'``.
 - use_n_trials: Positive scalar, name-value, default: `inf`
 Indicates how many trials to use of data. `inf` uses all data.
 - bootstrap: Positive scalar, name-value, deafult: 0
 Number of bootstrap iterations to perform.
 
-```matlab
-[x, responses_output, stimuli_matrix_output] = get_reconstruction('key', value, ...)
-x = get_reconstruction('config_file', 'path_to_config', 'preprocessing', {'bit_flip'}, 'method', 'cs', 'verbose', true)
-```
 
-Compute the reconstruction, given the response vector and the stimuli matrix with a preprocessing step and a method chosen from {'cs', 'cs_nb', 'linear'}
 
 
 
@@ -481,20 +1059,70 @@ Compute the reconstruction, given the response vector and the stimuli matrix wit
 
 -------
 
-### get_weighted_sample
+### gs
+
+Returns the linear reconstruction of stimuli and responses.
 
 ```matlab
-y = get_weighted_sample(weights, values)
+x = gs(responses, Phi)
+x = gs(responses, Phi, 'ridge', true, 'mean_zero', true)
 ```
-Sample from a discrete distribution with weights `weights`
-for values `values`.
 
-**ARGUMENTS**
-- weights: `n x 1` vector of probability weights
-- values: `n x 1` vector of values with corresponding weights
+**ARGUMENTS:**
 
-**OUTPUTS**
-y: `1x1` scalar, the sampled value
+- responses: `n x 1` vector of 1 and -1 values,
+representing the subject's responses.
+
+- Phi: `n x m` numerical matrix,
+where m is the length of each stimulus 
+and n is the same length as the responses
+
+- ridge: `boolean`, name-value, default: `false`,
+a flag to for using ridge regression.
+
+- mean_zero: `boolean`, name-value, defaut: `false`,
+a flag for setting the mean of `Phi` to zero.
+
+**OUTPUTS:**
+
+- x: `m x 1` vector,
+representing the linear reconstruction of the signal, 
+where m is the length of a stimulus. 
+
+
+
+
+
+-------
+
+### knn_classify
+
+Returns the estimated class labels for a matrix of 
+reference points T, given data points X and labels y.
+
+**ARGUMENTS:**
+
+- y: `n x 1` vector,
+representing class labels that correspond to data points in `X`.
+- X: `n x p` numerical matrix,
+labelled data points.
+- T: `m x p` numerical matrix,
+representing reference points without/needing class labels
+- k: `scalar`,
+indicating the number of nearest neighbors to be considered.
+- method: `char`, name-value, default: 'mode',
+method by which to determine the class label.
+Valid methods are 'mode', which takes the most common neighbor label
+'min_class', which takes the least common, 
+and 'percent', which takes the class with the closest percent occurrance.
+- percent: `scalar`, name-value, default: 75,
+if method is 'percent', label is assigned based on the class with 
+the closest percent occurrance to this argument.
+
+**OUTPUTS:**
+
+- z_hat: `m x 1` vector,
+estimated class labels for data points in T.
 
 
 
@@ -503,10 +1131,14 @@ y: `1x1` scalar, the sampled value
 -------
 
 ### munge_hashes
+
 Processes config files, correcting errors.
 Then, fixes the hashes for saved data files
 associated with changed config files.
 
+```matlab
+munge_hashes("file_string", "config*.yaml", "verbose", true)
+```
 
 **Arguments:**
 
@@ -524,11 +1156,6 @@ Whether to print informative text.
 - data_dir: ``string`` or ``character vector``, name-value, default: ``"."``  
 Path to the directory where the data files to-be-munged are.
 
-**Example:**
-
-```matlab
-munge_hashes("file_string", "config*.yaml", "verbose", true)
-```
 
 
 !!! info "See Also"
@@ -546,13 +1173,13 @@ Read a config file and perform any special parsing that is required.
 
 **ARGUMENTS:**
 
-config_file: character vector, default: []
+- config_file: character vector, default: []
 Path to the config file to be used.
 If empty, opens a GUI to find the file using a file browser.
 
 **OUTPUTS:**
 
-varargout: `1 x 2` cell array:
+- varargout: `1 x 2` cell array:
 varargout{1} = config: `struct`, the parsed config file.
 varargout{2} = config_file OR abs_path, `char`,
 if path provided, return the path, else return path chosen
@@ -561,7 +1188,7 @@ from GUI.
 
 
 !!! info "See Also"
-    * [* yaml.loadFile](../stimgen/* yaml/#loadfile)
+    * [yaml.loadFile](../stimgen/yaml/#loadfile)
 
 
 
@@ -570,6 +1197,10 @@ from GUI.
 -------
 
 ### prop2str
+
+```matlab
+stringified_properties = prop2str(obj, [], '&&')
+```
 
 Converts the property names and values of a struct or object
 into a character vector.
@@ -594,12 +1225,6 @@ What separator to use between parameter statements.
 
 - stringified_properties: character vector
 
-Example:
-
-```matlab
-stringified_properties = prop2str(obj, [], '&&')
-```
-
 
 
 !!! info "See Also"
@@ -621,6 +1246,7 @@ A separate figure is made for each subject.
 - T: `table` that includes r values of interest
 
 **OUTPUTS:**
+
 - n figures, where n is the number of subjects included
 in the table.
 
@@ -717,26 +1343,47 @@ obj = str2prop(prop_string, [], '&&')
 Returns a response vector and the stimuli
 where the response vector is made of up -1 and 1 values
 corresponding to yes and no statements
-about how well the stimuli correspond to the target signal.
+about how well the stimuli correspond to the representation.
 
 ```matlab
-y = subject_selection_process(target_signal, stimuli)
-[y, X] = subject_selection_process(target_signal, [], n_samples)
+y = subject_selection_process(representation, stimuli)
+y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
+[y, X] = subject_selection_process(representation, [], n_samples)
 ```
 
 **ARGUMENTS:**
 
-- target_signal: `n x 1` numerical vector,
+- representation: `n x 1` numerical vector,
 the signal to compare against (e.g., the tinnitus signal).
 
 - stimuli: numerical matrix,
 an `m x n` matrix where m is the number of samples/trials
-and n is the same length as the target signal.
+and n is the same length as the representation.
 If stimuli is empty, a random Bernoulli matrix (p = 0.5) is used.
 
 - n_samples: integer scalar
 representing how many samples are used when generating the Bernoulli matrix default
 for stimuli, if the stimuli argument is empty.
+
+- responses: `m x 1` numerical vector, 
+which contains only `-1` and `1` values,
+used to determine the threshold if using one of the custom options.
+
+- mean_zero: `bool`, default: false, 
+representing a flag that centers the mean of the stimuli and representation.
+
+- from_responses: `bool`, name-value, default: `false`,
+a flag to determine the threshold from the given responses. 
+The default results in 50% threshold. 
+If using this option, `responses` must be passed as well.
+
+- threshold: Positive scalar, name-value, default: 50,
+representing a variable by which to manually set the response
+threshold. If `from_responses` is true, this will be ignored.
+
+- verbose: `bool`, name-value, default: `true`,
+a flag to print information messages
 
 **OUTPUTS:**
 
@@ -777,6 +1424,7 @@ by updating the hashes.
 pointing to the directory where the data files are stored.
 
 **Outputs:**
+
 - None
 
 
@@ -796,9 +1444,11 @@ Filters data table from `pilot_reconstructions.m`
 and generates a figure with a uitable for easy viewing.
 
 **Arguments:**
+
 - T: `table` generated by pilot_reconstructions
 
 **OUTPUTS:**
+
 - 1 figure
 
 
@@ -827,6 +1477,7 @@ in terms of magnitudes, s, and frequencies, f, in Hz.
 Generate a white noise stimulus based on a config file's settings.
 
 **ARGUMENTS:**
+
 - config_file: string or character array, name-value, default: ``''``
 A path to a YAML-spec configuration file.
 Either this argument or ``config`` is required.
@@ -835,7 +1486,8 @@ A configuration file struct
 (e.g., one created by ``parse_config``).
 
 **OUTPUTS:**
-- white_waveform: `n x 1` white noise waveform
+
+- white_waveform: `n x 1` white noise waveform.
 - fs: `1 x 1` Associated frequency of waveform.
 
 
