@@ -254,7 +254,7 @@ function follow_up(options)
             comparison{1,2},',',comparison{2,2},',',comparison{3,2},'\n']);
 
         % Write config hash, version, mult, and binrange params to file.
-        fprintf(fid_survey, [get_hash(config),',',num2str(options.version),',', ...
+        fprintf(fid_survey, [options.this_hash,',',num2str(options.version),',', ...
             num2str(options.mult),',',num2str(options.binrange),',']);
     end
 

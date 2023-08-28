@@ -4,7 +4,7 @@
 %%%
 
 %% Data setup
-data_dir = '~/Desktop/tmp';
+data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data';
 d = dir(pathlib.join(data_dir, 'survey_*.csv'));
 
 %% Load
@@ -22,6 +22,10 @@ for ii = 2:length(d)
     T2.user_id = {user_id};
     T = [T; T2];
 end
+
+% Add r-scores
+T_rvals = readtable(fullfile(data_dir,'rvals.csv'));
+T = outerjoin(T,T_rvals,'MergeKeys',true);
 
 %% Plot setup
 user_ids = unique(T.user_id);
@@ -41,7 +45,7 @@ for ii = 1:length(unique_hashes)
     nexttile
     bar(y)
     set(gca, 'XTickLabel', lbl, 'XTick', 1:length(lbl), 'YTick', 1:7)
-    title(this_hash, 'FontSize', 16)
+    title(['hash: ', this_hash{:}, '. r: ', num2str(T.r_lr(ind,:))], 'FontSize', 16)
     grid on
     legend(user_ids)
 end
