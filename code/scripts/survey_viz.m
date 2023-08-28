@@ -28,7 +28,7 @@ T_rvals = readtable(fullfile(data_dir,'rvals.csv'));
 T = outerjoin(T,T_rvals,'MergeKeys',true);
 
 %% Plot setup
-uniqe_ids = unique(T.user_id);
+unique_ids = unique(T.user_id);
 unique_hashes = unique(T.hash);
 lbl = {'white noise', 'standard', 'sharpened'};
 
@@ -46,18 +46,19 @@ for ii = 1:length(unique_hashes)
     nexttile
     bar(y)
     set(gca, 'XTickLabel', lbl, 'XTick', 1:length(lbl), 'YTick', 1:7)
+    ylim([0,7])
     title(['hash: ', this_hash{:}, '. r: ', num2str(r(1))], 'FontSize', 16)
     grid on
-    legend(uniqe_ids)
+    legend(unique_ids)
 end
 
 %% Scatter params
 figure
-for ii = 1:length(uniqe_ids)
-    ind = strcmp(T.user_id,uniqe_ids(ii));
+for ii = 1:length(unique_ids)
+    ind = strcmp(T.user_id,unique_ids(ii));
     scatter(T.mult(ind,:), T.binrange(ind,:), 'filled');
     hold on
 end
-legend(uniqe_ids)
+legend(unique_ids)
 xlabel('Mult param', 'FontSize', 16)
 ylabel('Binrange param', 'FontSize', 16)
