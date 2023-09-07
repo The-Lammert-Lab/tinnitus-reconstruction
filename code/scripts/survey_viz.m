@@ -5,13 +5,14 @@
 
 %% Data setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data';
-d = dir(pathlib.join(data_dir, 'survey_*.csv'));
+d = dir(fullfile(data_dir, 'survey_*.csv'));
+d_configs = dir(fullfile(data_dir, 'config*.yaml'));
 
 %% Load
 fname = d(1).name;
 underscores = find(fname == '_');
 user_id = fname(underscores(end)+1:end-4);
-T = readtable(fullfile(d(1).folder, d(1).name));
+T = readtable(fullfile(data_dir, d(1).name));
 T.user_id = {user_id};
 
 for ii = 2:length(d)
@@ -23,9 +24,19 @@ for ii = 2:length(d)
     T = [T; T2];
 end
 
-% Add r-scores
+% Collect target signal names
+hash = cell(length(d_configs), 1);
+tsn = cell(length(d_configs), 1);
+for ii = 1:length(d_configs)
+    config = parse_config(fullfile(data_dir, d_configs(ii).name));
+    hash{ii} = get_hash(config);
+    tsn{ii} = config.target_signal_name;
+end
+
+% Add r-scores and target signal names
 T_rvals = readtable(fullfile(data_dir,'rvals.csv'));
 T = outerjoin(T,T_rvals,'MergeKeys',true);
+T = outerjoin(T,table(hash,tsn),'MergeKeys',true);
 
 %% Plot setup
 unique_ids = unique(T.user_id);
@@ -42,12 +53,13 @@ for ii = 1:length(unique_hashes)
         T.recon_standard(ind, :), ...
         T.recon_adjusted(ind, :)]';
     r = T.r_lr(ind,:);
+    target_name = T.tsn(ind,:);
 
     nexttile
     bar(y)
     set(gca, 'XTickLabel', lbl, 'XTick', 1:length(lbl), 'YTick', 1:7)
     ylim([0,7])
-    title(['hash: ', this_hash{:}, '. r: ', num2str(r(1))], 'FontSize', 16)
+    title([target_name{1}, '. hash: ', this_hash{:}, '. r: ', num2str(r(1))], 'FontSize', 16)
     grid on
     legend(unique_ids)
 end

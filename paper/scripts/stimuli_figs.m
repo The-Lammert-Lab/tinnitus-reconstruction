@@ -4,6 +4,8 @@ n = 3;
 my_normalize = @(x) normalize(x, 'zscore', 'std');
 linewidth = 6;
 fontweight = 'bold';
+light_color = [1, 1, 1];
+dark_color = [0.898, 0.898, 0.898];
 
 config = parse_config(pathlib.join(data_dir, '5_config_JM.yaml'));
 [responses, stimuli_matrix] = collect_data('config', config, 'verbose', false, 'data_dir', data_dir);
@@ -29,15 +31,17 @@ for i = 1:n
     
     nexttile(t_yes);
     plot(freqs(indices_to_plot,1), unbinned(indices_to_plot), 'LineWidth', linewidth)
+    color = get(gca,'Color');
     set(gca, 'XTickLabels', [], ...
         'YTickLabels', [], 'TickLength', [0,0], ...
-        'XLim', [stimgen.min_freq, stimgen.max_freq])
+        'XLim', [stimgen.min_freq, stimgen.max_freq], ...
+        'XColor', light_color, 'YColor', light_color)
 
     nexttile(t_yes);
     plot(plot_yes(:,i), 'LineWidth', linewidth);
     set(gca, 'XTickLabels', [], 'YTickLabels', [], ...
         'TickLength', [0,0], 'XLim', [1, stimgen.n_bins], ...
-        'color', [0.898, 0.898, 0.898])
+        'color', dark_color, 'XColor', dark_color, 'YColor', dark_color)
 
     spectrum = stimgen.binnedrepr2spect(plot_no(:,i));
     freqs = linspace(1, floor(stimgen.Fs/2), length(spectrum))';
@@ -48,11 +52,12 @@ for i = 1:n
     plot(freqs(indices_to_plot,1), unbinned(indices_to_plot), 'LineWidth', linewidth)
     set(gca, 'XTickLabels', [], ...
         'YTickLabels', [], 'TickLength', [0,0], ...
-        'XLim', [stimgen.min_freq, stimgen.max_freq])
+        'XLim', [stimgen.min_freq, stimgen.max_freq], ...
+        'XColor', light_color, 'YColor', light_color)
 
     nexttile(t_no);
     plot(plot_no(:,i), 'LineWidth', linewidth);
     set(gca, 'XTickLabels', [], 'YTickLabels', [], ...
         'TickLength', [0,0], 'XLim', [1, stimgen.n_bins], ...
-        'color', [0.898, 0.898, 0.898])
+        'color', dark_color, 'XColor', dark_color, 'YColor', dark_color)
 end

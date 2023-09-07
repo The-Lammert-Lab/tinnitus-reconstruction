@@ -9,7 +9,7 @@
 
 % Change these as appropriate
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data/';
-USER_ID = 'NB';
+USER_ID = 'TS';
 
 % Setup variables
 d = dir(pathlib.join(data_dir, '*.yaml'));
