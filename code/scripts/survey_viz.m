@@ -37,10 +37,11 @@ end
 T_rvals = readtable(fullfile(data_dir,'rvals.csv'));
 T = outerjoin(T,T_rvals,'MergeKeys',true);
 T = outerjoin(T,table(hash,tsn),'MergeKeys',true);
+T = sortrows(T, 'tsn');
 
 %% Plot setup
 unique_ids = unique(T.user_id);
-unique_hashes = unique(T.hash);
+unique_hashes = unique(T.hash, 'stable');
 lbl = {'white noise', 'standard', 'sharpened'};
 
 %% Bar ratings
@@ -54,14 +55,20 @@ for ii = 1:length(unique_hashes)
         T.recon_adjusted(ind, :)]';
     r = T.r_lr(ind,:);
     target_name = T.tsn(ind,:);
+    
+    if ~isempty(target_name{1})
+        ttl = [target_name{1}, '. hash: ', this_hash{:}, '. r: ', num2str(r(1))];
+    else
+        ttl = this_hash{:};
+    end
 
     nexttile
     bar(y)
     set(gca, 'XTickLabel', lbl, 'XTick', 1:length(lbl), 'YTick', 1:7)
     ylim([0,7])
-    title([target_name{1}, '. hash: ', this_hash{:}, '. r: ', num2str(r(1))], 'FontSize', 16)
+    title(ttl, 'FontSize', 16)
     grid on
-    legend(unique_ids)
+    legend(unique_ids,'Location','northwest')
 end
 
 %% Scatter params
