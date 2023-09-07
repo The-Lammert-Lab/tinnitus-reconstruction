@@ -125,12 +125,18 @@ end
 
 %% Local functions
 function [unbinned_recon, indices_to_plot, freqs] = unbin(binned_recon, stimgen, max_freq, min_freq)
-    recon_binrep = rescale(binned_recon, -20, 0);
-    recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
-    
-    freqs = linspace(1, floor(stimgen.Fs/2), length(recon_spectrum))';
-    indices_to_plot = freqs(:,1) <= max_freq & freqs(:,1) >= min_freq;
-    
     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
     unbinned_recon(unbinned_recon == 0) = NaN;
+
+    freqs = linspace(1, floor(stimgen.Fs/2), length(unbinned_recon))';
+    indices_to_plot = freqs(:,1) <= max_freq & freqs(:,1) >= min_freq;
+
+%     recon_binrep = rescale(binned_recon, -20, 0);
+%     recon_spectrum = stimgen.binnedrepr2spect(recon_binrep);
+%     
+%     freqs = linspace(1, floor(stimgen.Fs/2), length(recon_spectrum))';
+%     indices_to_plot = freqs(:,1) <= max_freq & freqs(:,1) >= min_freq;
+%     
+%     unbinned_recon = stimgen.binnedrepr2spect(binned_recon);
+%     unbinned_recon(unbinned_recon == 0) = NaN;
 end
