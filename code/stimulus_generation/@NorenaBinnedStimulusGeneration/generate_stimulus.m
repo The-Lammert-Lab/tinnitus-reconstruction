@@ -3,8 +3,9 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     [binnum, Fs, nfft, frequency_vector] = self.get_freq_bins();
     spect = self.get_empty_spectrum();
 
-    % Pick a random index (i.e., frequency) and get bin number
-    bin_to_fill = binnum(randi(length(binnum(binnum > 0))));
+    % Pick a random index (frequency) and get bin number
+    valid_inds = find(frequency_vector >= self.min_freq & frequency_vector <= self.max_freq);
+    bin_to_fill = binnum(randi([min(valid_inds), max(valid_inds)]));
 
     % Fill the bin
     spect(binnum==bin_to_fill) = 0;

@@ -42,6 +42,10 @@
 %       representing a variable by which to manually set the response
 %       threshold. If `from_responses` is true, this will be ignored.
 % 
+%   - ten_scale: `bool`, name-value, default: `false`,
+%       a flag to return responses from 1-10 instead of 1 or -1.
+%       Scale used in Norena paper.
+% 
 %   - verbose: `bool`, name-value, default: `true`,
 %       a flag to print information messages
 % 
@@ -66,6 +70,7 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         options.mean_zero (1,1) logical = false
         options.from_responses (1,1) logical = false
         options.threshold (1,1) {mustBePositive} = 50
+        options.ten_scale (1,1) logical = false
         options.verbose (1,1) logical = true
     end
 
@@ -82,15 +87,24 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         e = X * representation(:);
     end
 
-    % Threshold is percent of "no" answers in given responses or 50%.
-    % Thresh is percent of "no" answers in predicted resopnse.
-    if options.from_responses
-        if options.verbose
-            corelib.verb(options.verbose, 'INFO: subject_selection_process', 'setting threshold from responses')
+    % Set threshold    
+    if options.ten_scale
+        N = 10;
+        resp_vals = 1:N;
+        thresholds = [quantile(e,0:1/N:1-(1/N)), inf];
+        y = zeros(length(e), 1);
+        for i = 1:length(resp_vals)
+            y(e >= thresholds(i) & e < thresholds(i + 1)) = resp_vals(i);
         end
-        thresh = 100 * sum(responses == -1)/length(responses);
     else
-        thresh = options.threshold;
+        if options.from_responses
+            if options.verbose
+                corelib.verb(options.verbose, 'INFO: subject_selection_process', 'setting threshold from responses')
+            end
+            thresh = 100 * sum(responses == -1)/length(responses);
+        else
+            thresh = options.threshold;
+        end
     end
 
     % Make selection

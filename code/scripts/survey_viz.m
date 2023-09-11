@@ -37,7 +37,7 @@ end
 T_rvals = readtable(fullfile(data_dir,'rvals.csv'));
 T = outerjoin(T,T_rvals,'MergeKeys',true);
 T = outerjoin(T,table(hash,tsn),'MergeKeys',true);
-T = sortrows(T, 'tsn');
+T = sortrows(T, {'tsn', 'r_lr'}, 'ascend');
 
 %% Plot setup
 unique_ids = unique(T.user_id);
@@ -68,8 +68,10 @@ for ii = 1:length(unique_hashes)
     ylim([0,7])
     title(ttl, 'FontSize', 16)
     grid on
-    legend(unique_ids,'Location','northwest')
 end
+
+leg = legend(unique_ids,'Orientation','horizontal','Fontsize',14);
+leg.Layout.Tile = 'north';
 
 %% Scatter params
 figure
