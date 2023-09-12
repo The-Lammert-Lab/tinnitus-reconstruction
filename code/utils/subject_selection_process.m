@@ -30,8 +30,14 @@
 %       which contains only `-1` and `1` values,
 %       used to determine the threshold if using one of the custom options.
 % 
-%   - mean_zero: `bool`, default: false, 
+%   - mean_zero: `bool`, default: `false`, 
 %       representing a flag that centers the mean of the stimuli and representation.
+% 
+%   - method: `character vector`, default: `percentile`,
+%       the method to use to convert estimations into response values.
+%       Options are: `percentile`, which uses the whole estimation vector
+%       and `threshold`, `sign` which computes `sign(e + lambda)`,
+%       and `ten_scale`, which returns values from 0-10 using.
 % 
 %   - from_responses: `bool`, name-value, default: `false`,
 %       a flag to determine the threshold from the given responses. 
@@ -67,10 +73,11 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         stimuli (:,:) {mustBeReal}
         n_samples {mustBePositive, mustBeInteger} = []
         responses (:,1) {mustBeNumeric} = []
+        options.threshold (1,1) {mustBePositive} = 50
+        options.method (1,:) char = 'percentile' 
+        options.lambda (1,1) {mustBeGreaterThanOrEqual(options.lambda,0)} = 0;
         options.mean_zero (1,1) logical = false
         options.from_responses (1,1) logical = false
-        options.threshold (1,1) {mustBePositive} = 50
-        options.ten_scale (1,1) logical = false
         options.verbose (1,1) logical = true
     end
 
@@ -87,16 +94,18 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         e = X * representation(:);
     end
 
-    % Set threshold    
-    if options.ten_scale
+    % Make selection
+    if strcmp(options.method,'ten_scale')
         N = 10;
-        resp_vals = 1:N;
-        thresholds = [quantile(e,0:1/N:1-(1/N)), inf];
+        resp_vals = 0:N;
+%         thresholds = [quantile(e,0:1/(N+1):1-(1/(N+1))), inf];
+        thresholds = [quantile([min(e), max(e)],0:1/(N+1):1-(1/(N+1))), inf];
         y = zeros(length(e), 1);
         for i = 1:length(resp_vals)
             y(e >= thresholds(i) & e < thresholds(i + 1)) = resp_vals(i);
         end
-    else
+    elseif strcmp(options.method,'percentile')
+        % Set threshold
         if options.from_responses
             if options.verbose
                 corelib.verb(options.verbose, 'INFO: subject_selection_process', 'setting threshold from responses')
@@ -105,9 +114,11 @@ function [y, X] = subject_selection_process(representation, stimuli, n_samples, 
         else
             thresh = options.threshold;
         end
+        y = double(e >= prctile(e, thresh));
+        y(y == 0) = -1;
+    elseif strcmp(options.method,'sign')
+        y = sign(e + options.lambda);
+    else
+        error('Unknown method to convert continuous estimation to responses')
     end
-
-    % Make selection
-    y = double(e >= prctile(e, thresh));
-    y(y == 0) = -1;
 end
