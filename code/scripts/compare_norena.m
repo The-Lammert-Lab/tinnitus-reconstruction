@@ -18,7 +18,7 @@ targets = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav', ...
 
 bins = [8, 16, 32, 64, 100];
 min_max_bins = [2,7; 4,10; 6,16; 12,32; 30,40];
-method = 'ten_scale';
+method = 'sign';
 
 for ii = 1:length(targets)
     figure
@@ -53,8 +53,8 @@ for ii = 1:length(targets)
         plot(freqs(indices_to_plot,1), normalize(binned_target_spect(indices_to_plot), 'zscore', 'std'), 'k', 'LineWidth', 1.5);
         plot(freqs(indices_to_plot,1), normalize(recon_spect(indices_to_plot), 'zscore', 'std'), 'b', 'LineWidth', 1.5);
         title(['Uniform Prior. ', num2str(bins(jj)), ' bins. min: ' ...
-            num2str(stimgenUniform.min_bins), ' max: ', num2str(stimgenUniform.max_bins), ...
-            ' corr = ', num2str(c,4)], 'FontSize', 14)
+            num2str(stimgenUniform.min_bins), ', max: ', num2str(stimgenUniform.max_bins), ...
+            '. corr = ', num2str(c,4)], 'FontSize', 14)
         
         %%%%%%%%%%%
         stimgenNorena.n_bins = bins(jj);
@@ -70,7 +70,7 @@ for ii = 1:length(targets)
     leg = legend({'Target Signal','Binned Target Signal','Reconstruction'},'Orientation','horizontal','Fontsize',14);
     leg.Layout.Tile = 'north';
 
-    title(t, [targets(ii), ' method: ', method], 'FontSize', 16, 'Interpreter','none')
+    title(t, [targets(ii), [' method: ', method]], 'FontSize', 16, 'Interpreter','none')
 end
 
 function [freqs, indices_to_plot, recon_spect, binned_target_spect, c] = compare(stimgen, target_signal, method)
