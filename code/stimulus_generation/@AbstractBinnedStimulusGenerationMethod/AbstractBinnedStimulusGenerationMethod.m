@@ -139,7 +139,7 @@ methods
         end
     end
 
-    function wav = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
+    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
         % ### binnedrepr2wav
         %
         % Get the peak-sharpened waveform of a binned representation 
