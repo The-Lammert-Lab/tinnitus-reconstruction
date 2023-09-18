@@ -106,7 +106,7 @@ methods
 
         for bin_num = 1:self.n_bins
             a = T(B == bin_num, :);
-            binned_repr(bin_num, :) = a(1, :);
+            binned_repr(bin_num, :) = mean(a,1);
         end
 
     end % function
