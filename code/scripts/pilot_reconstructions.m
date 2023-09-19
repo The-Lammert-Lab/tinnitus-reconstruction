@@ -109,7 +109,7 @@ end
 
 %% Compute the reconstructions
 
-n_trials = inf; % set to inf if using all available data
+n_trials = 200; % set to inf if using all available data
 trial_fractions = 1; %0.1:0.1:1;
 
 if ~isinf(n_trials)
