@@ -172,7 +172,7 @@ methods
             self (1,1) AbstractBinnedStimulusGenerationMethod
             binned_rep (:,1) {mustBeReal}
             mult (1,1) {mustBePositive}
-            binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), mustBeLessThanOrEqual(binrange,100)}
+            binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), mustBeLessThanOrEqual(binrange,1000)}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
         end
 

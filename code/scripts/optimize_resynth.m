@@ -7,16 +7,18 @@ data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data/';
 d = dir(pathlib.join(data_dir, '*.yaml'));
 project_dir = pathlib.strip(mfilename('fullpath'), 3);
 n_trials = 200;
-metric = 'rmse';
+metric = 'corr';
 skip_subject_data = true;
 n_bins_target = 32;
 
-mult = linspace(0.001,3,100);
+mult = linspace(0.001,1,100);
 binrange = linspace(1,100,100);
 hparams = allcomb(mult, binrange);
 
 [buzzing_spect, ~] = wav2spect(fullfile(project_dir,'code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav'));
 [roaring_spect, ~] = wav2spect(fullfile(project_dir,'code/experiment/ATA/ATA_Tinnitus_Roaring_Tone_1sec.wav'));
+buzzing_spect = 10*log10(buzzing_spect);
+roaring_spect = 10*log10(roaring_spect);
 
 target_spects = {buzzing_spect, 'buzzing'; roaring_spect, 'roaring'};
 
@@ -90,4 +92,5 @@ for ii = 1:length(d)+length(target_spects)
         title(['name: ', target_spects{target_ind,2}, '. hash: ', get_hash(config), ...
             '.', metric, ': ', num2str(val), '. mult: ', num2str(hparams(ind,1)), '. binrange: ', num2str(hparams(ind,2))])
     end
+    legend('target','binned target','optimized resynth')
 end
