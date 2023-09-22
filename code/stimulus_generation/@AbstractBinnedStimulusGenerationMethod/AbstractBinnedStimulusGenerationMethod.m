@@ -106,7 +106,7 @@ methods
 
         for bin_num = 1:self.n_bins
             a = T(B == bin_num, :);
-            binned_repr(bin_num, :) = a(1, :);
+            binned_repr(bin_num, :) = mean(a,1);
         end
 
     end % function
@@ -139,7 +139,7 @@ methods
         end
     end
 
-    function wav = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
+    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
         % ### binnedrepr2wav
         %
         % Get the peak-sharpened waveform of a binned representation 
@@ -158,9 +158,12 @@ methods
         % **OUTPUTS:**
         %
         %   - wav: `nfft+1 x 1` numerical vector
-        %       representing the upsampled, peak-sharpened, 
+        %       representing the upsampled, peak-sharpened
         %       wavform of the binned representation.
-        %
+        %   - X: `nfft/2 x 1` numerical vector,
+        %       the upsampled, peak-sparpened 
+        %       spectrum of the binned representation.
+        % 
         % See Also:
         % binnedrepr2spect
         % spect2binnedrepr
@@ -168,17 +171,16 @@ methods
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod
             binned_rep (:,1) {mustBeReal}
-            mult (1,1) {mustBePositive}
-            binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), mustBeLessThanOrEqual(binrange,100)}
+            mult (1,1) {mustBeReal}
+            binrange (1,1) {mustBeReal}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
         end
 
         % Setup
         nfft = self.get_nfft();
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Rescale dynamic range of audio signal by adjusting bin heights
-        binned_rep = binrange*rescale(binned_rep);
+        % Set interval to [0 1] 
+        binned_rep = rescale(binned_rep);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Interpolate to `new_n_bins` bins via spline interpolation
@@ -204,7 +206,11 @@ methods
         thing2([1:2,end-1:end]) = 0;
         binned_rep = binned_rep - (mult*(50^2)/40)*thing + (mult*(50^4)/600)*thing2;
         binned_rep = binned_rep-min(binned_rep);
-        
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Rescale dynamic range of audio signal by adjusting bin heights
+        binned_rep = binrange*rescale(binned_rep);
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Assign power to bins
         X = zeros(nfft/2,1);
@@ -214,9 +220,7 @@ methods
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         % Synthesize audio
-        stim = self.synthesize_audio(X,nfft);
-        stim = stim./max(abs(stim));
-        wav = stim./(8*sqrt(mean(stim.^2)));
+        wav = self.synthesize_audio(X,nfft);
     end
 
     function W = bin_signal(self, W, Fs)
