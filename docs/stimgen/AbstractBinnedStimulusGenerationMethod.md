@@ -138,8 +138,11 @@ the number of bins to upsample to before synthesis.
 **OUTPUTS:**
 
 - wav: `nfft+1 x 1` numerical vector
-representing the upsampled, peak-sharpened, 
+representing the upsampled, peak-sharpened
 wavform of the binned representation.
+- X: `nfft/2 x 1` numerical vector,
+the upsampled, peak-sparpened 
+spectrum of the binned representation.
 
 
 
