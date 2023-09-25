@@ -1346,9 +1346,10 @@ corresponding to yes and no statements
 about how well the stimuli correspond to the representation.
 
 ```matlab
-y = subject_selection_process(representation, stimuli)
-y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
-y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
+[y, X] = subject_selection_process(representation, stimuli)
+[y, X] = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+[y, X] = subject_selection_process(representation, stimuli, 'method', 'sign', 'lambda', 0.5)
+[y, X] = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
 [y, X] = subject_selection_process(representation, [], n_samples)
 ```
 
@@ -1370,8 +1371,14 @@ for stimuli, if the stimuli argument is empty.
 which contains only `-1` and `1` values,
 used to determine the threshold if using one of the custom options.
 
-- mean_zero: `bool`, default: false, 
+- mean_zero: `bool`, name-value, default: `false`, 
 representing a flag that centers the mean of the stimuli and representation.
+
+- method: `character vector`, name-value, default: `percentile`,
+the method to use to convert estimations into response values.
+Options are: `percentile`, which uses the whole estimation vector
+and `threshold`, `sign` which computes `sign(e + lambda)`,
+and `ten_scale`, which returns values from 0-10 using.
 
 - from_responses: `bool`, name-value, default: `false`,
 a flag to determine the threshold from the given responses. 
@@ -1381,6 +1388,9 @@ If using this option, `responses` must be passed as well.
 - threshold: Positive scalar, name-value, default: 50,
 representing a variable by which to manually set the response
 threshold. If `from_responses` is true, this will be ignored.
+
+- lambda: Scalar >= 0, name-value, default: 0,
+value for use in `sign(e + lambda)` if `method` is `sign`.
 
 - verbose: `bool`, name-value, default: `true`,
 a flag to print information messages
