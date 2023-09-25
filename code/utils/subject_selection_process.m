@@ -6,9 +6,10 @@
 % about how well the stimuli correspond to the representation.
 % 
 % ```matlab
-%   y = subject_selection_process(representation, stimuli)
-%   y = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
-%   y = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
+%   [y, X] = subject_selection_process(representation, stimuli)
+%   [y, X] = subject_selection_process(representation, stimuli, [], responses, 'mean_zero', true, 'from_responses', true)
+%   [y, X] = subject_selection_process(representation, stimuli, 'method', 'sign', 'lambda', 0.5)
+%   [y, X] = subject_selection_process(representation, stimuli, [], [], 'threshold', 90, 'verbose', false)
 %   [y, X] = subject_selection_process(representation, [], n_samples)
 % ```
 % 
@@ -30,10 +31,10 @@
 %       which contains only `-1` and `1` values,
 %       used to determine the threshold if using one of the custom options.
 % 
-%   - mean_zero: `bool`, default: `false`, 
+%   - mean_zero: `bool`, name-value, default: `false`, 
 %       representing a flag that centers the mean of the stimuli and representation.
 % 
-%   - method: `character vector`, default: `percentile`,
+%   - method: `character vector`, name-value, default: `percentile`,
 %       the method to use to convert estimations into response values.
 %       Options are: `percentile`, which uses the whole estimation vector
 %       and `threshold`, `sign` which computes `sign(e + lambda)`,
@@ -48,9 +49,8 @@
 %       representing a variable by which to manually set the response
 %       threshold. If `from_responses` is true, this will be ignored.
 % 
-%   - ten_scale: `bool`, name-value, default: `false`,
-%       a flag to return responses from 1-10 instead of 1 or -1.
-%       Scale used in Norena paper.
+%   - lambda: Scalar >= 0, name-value, default: 0,
+%       value for use in `sign(e + lambda)` if `method` is `sign`.
 % 
 %   - verbose: `bool`, name-value, default: `true`,
 %       a flag to print information messages
