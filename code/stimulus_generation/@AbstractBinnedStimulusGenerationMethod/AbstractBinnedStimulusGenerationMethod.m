@@ -8,6 +8,13 @@ end % abstract properties
 
 methods
 
+    function [y, spect, binned_repr] = subject_selection_process(self,representation)
+        [~, ~, spect, binned_repr] = self.generate_stimuli_matrix();
+        e = binned_repr' * representation(:);
+        y = double(e >= prctile(e, 50));
+        y(y == 0) = -1;
+    end
+
     function [binnum, Fs, nfft, frequency_vector, bin_starts, bin_stops] = get_freq_bins(self)
         % ### get_freq_bins
         % 

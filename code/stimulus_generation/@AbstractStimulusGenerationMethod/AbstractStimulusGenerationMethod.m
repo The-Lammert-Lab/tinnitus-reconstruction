@@ -30,7 +30,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % 
             % Model of a subject performing the task.
             % Takes in a signal (the gold standard)
-            % and returns an `n_samples x 1` vector
+            % and returns a `self.n_trials x 1` vector
             % of `-1` for "no"
             % and `1` for "yes".
             [~, ~, spect, binned_repr] = self.generate_stimuli_matrix();
