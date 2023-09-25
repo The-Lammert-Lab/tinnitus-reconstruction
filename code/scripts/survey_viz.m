@@ -56,19 +56,30 @@ for ii = 1:length(unique_hashes)
     r = T.r_lr(ind,:);
     target_name = T.tsn(ind,:);
     
+    [~,p12] = ttest(y(1,:),y(2,:));
+    [~,p23] = ttest(y(2,:),y(3,:));
+    [~,p13] = ttest(y(1,:),y(3,:));
+
     if ~isempty(target_name{1})
-        ttl = [target_name{1}, '. hash: ', this_hash{:}, '. r: ', num2str(r(1))];
+        ttl = {[target_name{1}, '. hash: ', this_hash{:}, '. r: ', num2str(r(1))], ...
+            ['p(w-st): ', num2str(p12,3), '. p(w-sh): ', num2str(p13,3), '. p(st-sh): ', num2str(p23,3)]};
     else
-        ttl = this_hash{:};
+        ttl = {[this_hash{:}], ...
+            ['p(w-st): ', num2str(p12,3), '. p(w-sh): ', num2str(p13,3), '. p(st-sh): ', num2str(p23,3)]};
     end
 
     nexttile
     bar(y)
+    hold on
+    scatter(1:size(y,1),mean(y,2),'k','filled')
     set(gca, 'XTickLabel', lbl, 'XTick', 1:length(lbl), 'YTick', 1:7)
     ylim([0,7])
     title(ttl, 'FontSize', 16)
     grid on
+%     legend(unique_ids,'Location','northwestoutside')
 end
+leg = legend(unique_ids,'Orientation','horizontal');
+leg.Layout.Tile = 'north';
 
 leg = legend(unique_ids,'Orientation','horizontal','Fontsize',14);
 leg.Layout.Tile = 'north';

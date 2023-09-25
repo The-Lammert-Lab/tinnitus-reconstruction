@@ -5,6 +5,10 @@
 % Set rng seed
 rng(112358, 'twister');
 
+% set target signal dir so funcs can find the .wav files
+target_signal_dir = '~/repos/tinnitus-reconstruction/code/experiment/ATA';
+fontsize = 16;
+
 %% Collect and analyze the data
 
 % Run the collection and analysis script (run the following line)
@@ -17,12 +21,16 @@ summary(T2);
 
 %% Violin plots with buzzing and roaring 
 
-if ~exist('data_container', 'var')
-    load('data_container.mat', 'data_container');
-end
-[ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false, 'data_container', data_container);
+% if ~exist('data_container', 'var')
+%     load('data_container_old.mat', 'data_container');
+% end
+% [ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false, 'data_container', data_container);
+% [ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false, 'data_dir', DATA_DIR, 'target_signal_dir', target_signal_dir);
+[ax, data_container] = plot_violin(T2, 'N', 1000, 'parallel', false, ...
+    'data_container', data_container, 'data_dir', DATA_DIR, 'target_signal_dir', target_signal_dir);
 
-figlib.pretty('FontSize', 48, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
+
+figlib.pretty('FontSize', fontsize, 'PlotBuffer', 0.2, 'AxisBox', 'off', 'YMinorTicks', 'on');
 axlib.equalize(ax(:), 'x', 'y');
 % figlib.tight();
 % figlib.label('XOffset', 0.15, 'YOffset', -0.25, 'FontSize', 48);
@@ -153,7 +161,7 @@ ylim(ax(2, 2), [-2.1, 2.1])
 % legend(ax(2, 2), {'ground truth', 'bin-transformed g.t.' 'subject #1', 'subject #2', 'subject #3'})
 
 
-figlib.pretty('FontSize', 48, 'PlotBuffer', 0.05, 'AxisBox', 'off', 'YMinorTicks', 'on');
+figlib.pretty('FontSize', fontsize, 'PlotBuffer', 0.05, 'AxisBox', 'off', 'YMinorTicks', 'on');
 axlib.equalize(ax(1, 1:2), 'x', 'y');
 axlib.equalize(ax(2, 1:2), 'x', 'y');
 % axlib.equalize(ax(2, 1:2), 'x', 'y');

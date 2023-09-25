@@ -10,6 +10,7 @@ function [r] = bootstrap_reconstruction_synth(options)
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
         options.N (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 100
         options.strategy (1,:) {mustBeText} = 'synth' % or 'rand'
+        options.target_signal_dir (1,:) char = ''
         options.legacy = false
         options.parallel = true
     end
@@ -55,7 +56,12 @@ function [r] = bootstrap_reconstruction_synth(options)
     stimgen.n_trials = config.total_trials;
 
     % Load and preprocess the target signal
-    [target_signal, ~] = wav2spect(config.target_signal_filepath);
+    if ~isempty(options.target_signal_dir)
+        [~, target_signal_filename, target_signal_ext] = fileparts(config.target_signal_filepath);
+        [target_signal, ~] = wav2spect(fullfile(options.target_signal_dir, [target_signal_filename, target_signal_ext]));
+    else
+        [target_signal, ~] = wav2spect(config.target_signal_filepath);
+    end
     target_signal = 10 * log10(target_signal);
     binned_target_signal = stimgen.spect2binnedrepr(target_signal);
     

@@ -4,6 +4,7 @@ function [ax, data_container] = plot_violin(T, options)
         T table
         options.figure = []
         options.data_dir = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper'
+        options.target_signal_dir = ''
         options.N = 100
         options.parallel = true
         options.data_container = {}
@@ -50,7 +51,8 @@ function [ax, data_container] = plot_violin(T, options)
 
     % Plot the 1 to m-1 subplots
     % categories = {'subject', 'synthetic', 'random'};
-    categories = {{'Random'; 'Subject'}, {'Human'; 'Subject'}, {'Ideal'; 'Subject'}};
+%     categories = {{'Random'; 'Subject'}, {'Human'; 'Subject'}, {'Ideal'; 'Subject'}};
+    categories = {{'Ideal'; 'Subject'}, {'Random'; 'Subject'}, {'Human'; 'Subject'}};
     order = [3, 1, 2]; %[1, 2, 3];
     counter = 0;
 
@@ -68,13 +70,15 @@ function [ax, data_container] = plot_violin(T, options)
                 'method', 'linear', ...
                 'strategy', 'synth', ...
                 'N', options.N, ...
-                'parallel', options.parallel);
+                'parallel', options.parallel, ...
+                'target_signal_dir', options.target_signal_dir);
             data_to_plot{1} = bootstrap_reconstruction_synth(...
                 'config_file', pathlib.join(options.data_dir, config_filename), ...
                 'method', 'linear', ...
                 'strategy', 'rand', ...
                 'N', options.N, ...
-                'parallel', false);
+                'parallel', false, ...
+                'target_signal_dir', options.target_signal_dir);
         else
             data_to_plot = data_container{ii};
         end
