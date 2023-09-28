@@ -62,7 +62,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
         bin_to_fill = frequency_bin_list(random_bin_index);
         filled_bins(ii) = bin_to_fill;
         % fill that bin
-        spect(binnum==bin_to_fill) = 0;
+        spect(binnum==bin_to_fill) = self.filled_dB;
         % remove that bin from the master list
         frequency_bin_list(frequency_bin_list==bin_to_fill) = [];
     end
@@ -72,7 +72,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
-    binned_repr = -100 * ones(self.n_bins, 1);
-    binned_repr(filled_bins) = 0;
+    binned_repr = self.unfilled_dB * ones(self.n_bins, 1);
+    binned_repr(filled_bins) = self.filled_dB;
 
 end

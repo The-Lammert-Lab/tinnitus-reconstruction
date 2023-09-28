@@ -8,11 +8,11 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     bin_to_fill = binnum(randi([min(valid_inds), max(valid_inds)]));
 
     % Fill the bin
-    spect(binnum==bin_to_fill) = 0;
+    spect(binnum==bin_to_fill) = self.filled_dB;
 
     % Create a vector of unfilled bins and fill the selected one.
-    binned_repr = -100*ones(self.n_bins,1);
-    binned_repr(bin_to_fill) = 0;
+    binned_repr = self.unfilled_dB*ones(self.n_bins,1);
+    binned_repr(bin_to_fill) = self.filled_dB;
 
     stim = self.synthesize_audio(spect, nfft);
 end

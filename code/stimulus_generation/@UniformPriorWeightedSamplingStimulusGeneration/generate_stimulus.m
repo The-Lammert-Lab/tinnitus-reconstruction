@@ -47,14 +47,14 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
 
     % fill those bins
     for ii = 1:length(filled_bins)
-        spect(binnum == filled_bins(ii)) = 0;
+        spect(binnum == filled_bins(ii)) = self.filled_dB;
     end
 
     % Synthesize Audio
     stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
-    binned_repr = -20 * ones(self.n_bins, 1);
-    binned_repr(filled_bins) = 0;
+    binned_repr = self.unfilled_dB * ones(self.n_bins, 1);
+    binned_repr(filled_bins) = self.filled_dB;
 
 end
