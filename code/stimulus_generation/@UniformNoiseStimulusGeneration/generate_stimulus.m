@@ -7,7 +7,7 @@
 % 
 % Generate a vector of stimuli where
 % the bin amplitudes are chosen randomly
-% from a uniform distribution over [-20, 0] dB.
+% from a uniform distribution over [`self.unfilled_dB`, 0] dB.
 % 
 % **OUTPUTS:**
 % 
@@ -45,7 +45,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     binned_repr = zeros(self.n_bins, 1);
 
     for ii = 1:self.n_bins
-        this_amplitude_value = -20 * rand();
+        this_amplitude_value = self.unfilled_dB * rand();
         binned_repr(ii) = this_amplitude_value;
         spect(binnum==ii) = this_amplitude_value;
     end

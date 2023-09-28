@@ -73,12 +73,12 @@ methods
         % 
         %   - spect: `n x 1` numerical vector,
         %   where `n` is equal to the number of fft points (nfft)
-        %   and all values are set to -100 dB.
+        %   and all values are set to `unfilled_dB`.
         % 
         % See Also:
         % AbstractBinnedStimulusGenerationMethod.get_freq_bins
 
-        spect = -100 * ones(self.get_nfft() / 2, 1);
+        spect = self.unfilled_dB * ones(self.get_nfft() / 2, 1);
 
     end % function
 
@@ -140,7 +140,7 @@ methods
         % AbstractBinnedStimulusGenerationMethod.binnedrepr2wav
 
         B = self.get_freq_bins();
-        T = -100 * ones(length(B), size(binned_repr, 2));
+        T = self.unfilled_dB * ones(length(B), size(binned_repr, 2));
         for bin_num = 1:self.n_bins
             T(B == bin_num, :) = repmat(binned_repr(bin_num, :), sum(B == bin_num), 1);
         end

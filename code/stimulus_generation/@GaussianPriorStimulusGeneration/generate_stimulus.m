@@ -6,8 +6,8 @@
 % 
 % 
 % Generate a vector of stimuli where
-% the bin amplitudes are -20 dB for an unfilled bin
-% and 0 dB for a filled bin.
+% the bin amplitudes are `self.unfilled_dB` for an unfilled bin
+% and `self.filled_dB` for a filled bin.
 % Filled bins are chosen uniformly from unfilled bins, one at a time.
 % The total number of bins-to-be-filled is chosen from a Gaussian distribution.
 % 
@@ -34,6 +34,8 @@
 %   - n_bins
 %   - n_bins_filled_mean
 %   - n_bins_filled_var
+%   - unfilled_dB
+%   - filled_dB
 % ```
 % 
 % See Also: 
@@ -79,7 +81,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
         bin_to_fill = frequency_bin_list(random_bin_index);
         % fill that bin
         filled_bins(ii) = bin_to_fill;
-        spect(binnum==bin_to_fill) = 0;
+        spect(binnum==bin_to_fill) = self.filled_dB;
         % remove that bin from the master list
         frequency_bin_list(frequency_bin_list==bin_to_fill) = [];
     end
@@ -88,7 +90,7 @@ function [stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(se
     stim = self.synthesize_audio(spect, nfft);
 
     % get the binned representation
-    binned_repr = -20 * ones(self.n_bins, 1);
-    binned_repr(filled_bins) = 0;
+    binned_repr = self.unfilled_dB * ones(self.n_bins, 1);
+    binned_repr(filled_bins) = self.filled_dB;
 
 end
