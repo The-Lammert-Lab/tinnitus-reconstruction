@@ -17,7 +17,7 @@ This stimulus generation method *does not* have any unique properties in additio
 
 Generate a vector of stimuli where
 the bin amplitudes are chosen randomly
-from a uniform distribution over [-20, 0] dB.
+from a uniform distribution over [`self.unfilled_dB`, 0] dB.
 
 **OUTPUTS:**
 

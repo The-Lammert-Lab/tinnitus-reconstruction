@@ -21,8 +21,8 @@ This stimulus generation method has two properties in addition to those inherete
 
 
 Generate a vector of stimuli where
-the bin amplitudes are -20 dB for an unfilled bin
-and 0 dB for a filled bin.
+the bin amplitudes are `self.unfilled_dB` for an unfilled bin
+and `self.filled_dB` for a filled bin.
 Filled bins are chosen uniformly from unfilled bins, one at a time.
 The total number of bins-to-be-filled is chosen from a Gaussian distribution.
 
@@ -49,6 +49,8 @@ in Hz.
 - n_bins
 - n_bins_filled_mean
 - n_bins_filled_var
+- unfilled_dB
+- filled_dB
 ```
 
 
