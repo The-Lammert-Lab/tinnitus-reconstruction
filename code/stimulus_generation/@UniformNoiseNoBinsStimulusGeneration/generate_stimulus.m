@@ -10,7 +10,7 @@
 function [stim, Fs, X, binned_repr] = generate_stimulus(self)
 
     Fs = self.get_fs();
-    nfft = self.get_nfft();
+    nfft = self.nfft;
     
     % generate spectrum completely randomly
     % without bins

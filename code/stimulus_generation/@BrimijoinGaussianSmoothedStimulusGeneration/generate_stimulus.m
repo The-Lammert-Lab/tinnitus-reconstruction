@@ -10,14 +10,14 @@
 % 
 %   stim: `n x 1` numerical vector,
 %       the stimulus waveform,
-%       where `n` is `self.get_nfft() + 1`.
+%       where `n` is `self.nfft + 1`.
 % 
 %   Fs: `1x1` numerical scalar,
 %       the sample rate in Hz.
 % 
 %   spect: `m x 1` numerical vector,
 %       the half-spectrum,
-%       where m is `self.get_nfft() / 2`,
+%       where m is `self.nfft / 2`,
 %       in dB.
 % 
 %   binned_repr: `self.n_bins x 1` numerical vector,
@@ -25,7 +25,7 @@
 % 
 %   frequency_vector: `m x 1` numerical vector,
 %       the frequencies associated with the spectrum,
-%       where `m` is `self.get_nfft() / 2`,
+%       where `m` is `self.nfft / 2`,
 %       in Hz.
 % 
 % Class Properties Used:

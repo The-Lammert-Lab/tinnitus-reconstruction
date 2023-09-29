@@ -14,6 +14,10 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         unfilled_dB (1,1) {mustBeReal} = -100
         filled_dB (1,1) {mustBeReal} = 0
     end % abstract properties
+    
+    properties (Dependent)
+        nfft (1,1) {mustBePositive, mustBeInteger}
+    end
 
     methods (Abstract)
         % Abstract methods common to all stimulus generation methods
@@ -45,10 +49,9 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             Fs = self.Fs;
         end % function
 
-        function nfft = get_nfft(self)
+        function nfft = get.nfft(self)
             nfft = self.get_fs() * self.duration;
         end % function
-
 
         function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
             % ### generate_stimuli_matrix
@@ -65,14 +68,14 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % 
             %   - stimuli_matrix: `n x self.n_trials` numerical vector,
             %       the stimulus waveform,
-            %       where `n` is `self.get_nfft() + 1`.
+            %       where `n` is `self.nfft + 1`.
             % 
             %   - Fs: `1x1` numerical scalar,
             %       the sample rate in Hz.
             % 
             %   - spect_matrix: `m x self.n_trials` numerical vector,
             %       the half-spectrum,
-            %       where `m` is `self.get_nfft() / 2`,
+            %       where `m` is `self.nfft / 2`,
             %       in dB.
             % 
             %   - binned_repr_matrix: `self.n_bins x self.n_trials` numerical vector,
@@ -121,7 +124,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         end % function
 
         function freq = get_freq(self)
-            freq = linspace(self.min_freq, self.max_freq, self.get_nfft() / 2);
+            freq = linspace(self.min_freq, self.max_freq, self.nfft / 2);
         end % function
 
         function self = from_config(self, options)
@@ -181,13 +184,12 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             arguments
                 self (1,1) AbstractStimulusGenerationMethod
             end
-            nfft = self.get_nfft();
             % Create frequency vector
-            freqs = linspace(0, floor(self.Fs/2), length(nfft/2))';
+            freqs = linspace(0, floor(self.Fs/2), length(self.nfft/2))';
 
             % Flatten out of range freqs and synthesize
             spect(freqs > self.max_freq & freqs < self.min_freq) = -100;
-            wav = self.synthesize_audio(spect, nfft);
+            wav = self.synthesize_audio(spect, self.nfft);
         end
     end
 
