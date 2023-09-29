@@ -43,10 +43,10 @@ methods
         % 
         % See Also: 
         % AbstractStimulusGenerationMethod.get_fs
-        % AbstractStimulusGenerationMethod.get_nfft
+        % AbstractStimulusGenerationMethod.get.nfft
 
         Fs = self.get_fs(); % sampling rate of waveform
-        nfft = self.get_nfft(); % number of samples for Fourier transform
+        nfft = self.nfft; % number of samples for Fourier transform
         % nframes = floor(totaldur/self.bin_duration); % number of temporal frames
 
         % Define Frequency Bin Indices 1 through self.n_bins
@@ -78,7 +78,7 @@ methods
         % See Also:
         % AbstractBinnedStimulusGenerationMethod.get_freq_bins
 
-        spect = self.unfilled_dB * ones(self.get_nfft() / 2, 1);
+        spect = self.unfilled_dB * ones(self.nfft / 2, 1);
 
     end % function
 
@@ -184,7 +184,7 @@ methods
         end
 
         % Setup
-        nfft = self.get_nfft();
+        nfft = self.nfft;
         
         % Set interval to [0 1] 
         binned_rep = rescale(binned_rep);
@@ -305,7 +305,7 @@ methods
 
         % Flatten out of range freqs and synthesize
         spect(freqs > self.max_freq & freqs < self.min_freq) = -20;
-        wav = self.synthesize_audio(spect, self.get_nfft());
+        wav = self.synthesize_audio(spect, self.nfft);
     end
         
 end % methods

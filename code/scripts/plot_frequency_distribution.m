@@ -17,7 +17,7 @@ stimgen.max_freq = 13e3;
 filled_freqs = spect_matrix == 0;
 freq_counts = mean(filled_freqs, 2);
 
-freq_vec = linspace(stimgen.min_freq, 22e3, stimgen.get_nfft() / 2);
+freq_vec = linspace(stimgen.min_freq, 22e3, stimgen.nfft() / 2);
 
 fig1 = new_figure();
 
@@ -41,7 +41,7 @@ stimgen.max_freq = 13e3;
 filled_freqs = spect_matrix == 0;
 freq_counts = mean(filled_freqs, 2);
 
-freq_vec = linspace(stimgen.min_freq, 22e3, stimgen.get_nfft() / 2);
+freq_vec = linspace(stimgen.min_freq, 22e3, stimgen.nfft() / 2);
 
 ax(2) = subplot(2, 1, 2);
 stem(ax(2), 1e-3 * freq_vec, freq_counts);

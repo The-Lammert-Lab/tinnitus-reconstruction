@@ -153,7 +153,7 @@ function follow_up(options)
     freqs = linspace(1, floor(Fs/2), length(recon_spectrum))' - 1; 
 
     recon_spectrum(freqs > config.max_freq & freqs < config.min_freq) = -20;
-    recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.get_nfft());
+    recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.nfft);
 
     % Make adjusted (peak sharpened, etc.) waveform from reconstruction
     recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);

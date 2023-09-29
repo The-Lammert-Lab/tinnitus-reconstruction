@@ -294,7 +294,7 @@ if PUBLISH
         this_binrep = rescale(T.reconstructions_cs_1{ii}, -20, 0);
         this_spectrum = stimgen.binnedrepr2spect(this_binrep);
         this_spectrum(f(1:length(this_spectrum),1) > 13e3) = -20;
-        this_waveform = stimgen.synthesize_audio(this_spectrum, stimgen.get_nfft());
+        this_waveform = stimgen.synthesize_audio(this_spectrum, stimgen.nfft());
         audiowrite(this_filepath, this_waveform, stimgen.Fs);
     end
 end
