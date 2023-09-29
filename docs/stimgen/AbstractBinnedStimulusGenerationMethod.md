@@ -39,7 +39,7 @@ the frequencies that `binnum` maps to bin numbers
 
 !!! info "See Also"
     * [AbstractStimulusGenerationMethod.get_fs](../AbstractStimulusGenerationMethod/#get_fs)
-    * [AbstractStimulusGenerationMethod.get_nfft](../AbstractStimulusGenerationMethod/#get_nfft)
+    * [AbstractStimulusGenerationMethod.get.nfft](../AbstractStimulusGenerationMethod/#get)
 
 
 
