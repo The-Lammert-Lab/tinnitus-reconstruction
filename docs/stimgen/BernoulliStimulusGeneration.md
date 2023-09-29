@@ -20,7 +20,7 @@ This stimulus generation method has one property in addition to those inhereted 
 
 Generate a matrix of stimuli
 where the matrix is of size nfft x n_trials.
-Bins are filled with an an amplitude of -20 or 0.
+Bins are filled with an an amplitude of `self.unfilled_dB` or `self.filled_dB`.
 Each bin is randomly filled with a change of being filled
 (amplitude = 0) with a probability of `self.bin_prob`.
 
@@ -51,6 +51,8 @@ Class Properties Used:
 ```
 n_bins
 bin_prob
+unfilled_dB
+filled_dB
 ```
 
 

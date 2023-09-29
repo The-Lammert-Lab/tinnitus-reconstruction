@@ -55,7 +55,7 @@ the frequencies that `binnum` maps to bin numbers
 
 - spect: `n x 1` numerical vector,
 where `n` is equal to the number of fft points (nfft)
-and all values are set to -100 dB.
+and all values are set to `unfilled_dB`.
 
 
 
@@ -178,6 +178,21 @@ the sample rate
     * [AbstractBinnedStimulusGenerationMethod.binnedrepr2spect](../AbstractBinnedStimulusGenerationMethod/#binnedrepr2spect)
     * [AbstractBinnedStimulusGenerationMethod.spect2binnedrepr](../AbstractBinnedStimulusGenerationMethod/#spect2binnedrepr)
     * [signal2spect](../../utils/#signal2spect)
+
+
+
+
+
+### white_noise
+Generate a white noise sound.
+
+**ARGUMENTS:**
+
+- self: `1 x 1` `AbstractBinnedStimulusGenerationMethod`
+
+**OUTPUTS:**
+
+- wav: `n x 1` white noise waveform.
 
 
 

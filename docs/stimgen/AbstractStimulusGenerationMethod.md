@@ -88,6 +88,21 @@ Set properties from a struct holding config options.
 
 
 
+### white_noise
+Generate a white noise sound.
+
+**ARGUMENTS:**
+
+- self: `1 x 1` `AbstractStimulusGenerationMethod`
+
+**OUTPUTS:**
+
+- wav: `n x 1` white noise waveform.
+
+
+
+
+
 ### synthesize_audio
 Synthesize audio from spectrum, X.
 
