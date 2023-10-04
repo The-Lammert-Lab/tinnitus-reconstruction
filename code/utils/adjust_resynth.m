@@ -27,13 +27,20 @@
 %   - version:`Positive number`, name-value, default: 0
 %       Question version number. Must be passed or in config.
 %   - config_file: `character vector`, name-value, default: ``''``
-%       A path to a YAML-spec configuration file.
+%       A path to a YAML-spec configuration file. 
+%       Can be `'none'` if passing other relevant arguments.
 %   - survey: `logical`, name-value, default: `true`
 %       Flag to run static/survey questions. If `false`, only sound
 %       comarison is shown.
+%   - stimgen: Any `StimulusGenerationMethod`, name-value, default: `[]`,
+%       Stimgen object to use. `options.config` must be `'none'`. 
 %   - recon: `numeric vector`, name-value, default: `[]`
 %       Allows user to supply a specific reconstruction to use, 
 %       rather than generating from config. 
+%   - mult_range: `1 x 2 numerical vector, name-value, default: `[0, 1]`,
+%       The min (1,1) and max (1,2) values for mult parameter.
+%   - binrange_range: `1 x 2 numerical vector, name-value, default: `[1, 100]`,
+%       The min (1,1) and max (1,2) values for binrange parameter.
 %   - fig: `matlab.ui.Figure`, name-value.
 %       Handle to open figure on which to display questions.
 %   - save: `logical`, name-value, default: `false`.
@@ -63,31 +70,36 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         options.target_fs {mustBeNonnegative} = 0
         options.n_trials (1,1) {mustBePositive} = inf
         options.config_file (1,:) char = ''
+        options.stimgen = []
         options.recon (:,1) {mustBeNumeric} = []
+        options.mult_range (1,2) = [0, 1]
+        options.binrange_range (1,2) = [1, 100]
         options.save (1,1) logical = false
         options.verbose (1,1) logical = true
     end
 
-    %% Environment variables
-    mult_min = 0;
-    mult_max = 1;
-    range_min = 1;
-    range_max = 100;
+    %% Unpack options
+    mult_min = options.mult_range(1,1);
+    mult_max = options.mult_range(1,2);
+    range_min = options.binrange_range(1,1);
+    range_max = options.binrange_range(1,2);
 
     %% Input handling
 
     % If no config file path is provided,
     % open a UI to load the config
-    [config, ~] = parse_config(options.config_file);
+    if ~strcmp(options.config_file,'none')
+        [config, ~] = parse_config(options.config_file);
+    end
 
-    if isempty(options.data_dir)
+    if ~strcmp(options.config_file,'none') && isempty(options.data_dir)
         data_dir = config.data_dir;
     else
         data_dir = options.data_dir;
     end
 
     % Hash config if necessary
-    if isempty(options.this_hash)
+    if ~strcmp(options.config_file,'none') && isempty(options.this_hash)
         options.this_hash = get_hash(config);
     end
 
@@ -117,8 +129,12 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
     end
 
     % Create stimgen obj
-    stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-    stimgen = stimgen.from_config(config);
+    if ~strcmp(options.config_file,'none')
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
+    else
+        stimgen = options.stimgen;
+    end
     Fs = stimgen.get_fs();
     
     %% Make reconstructions
