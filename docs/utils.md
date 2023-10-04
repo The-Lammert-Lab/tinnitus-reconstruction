@@ -31,13 +31,20 @@ Number of trials to use for reconstruction. Uses all data if `inf`.
 - version:`Positive number`, name-value, default: 0
 Question version number. Must be passed or in config.
 - config_file: `character vector`, name-value, default: ``''``
-A path to a YAML-spec configuration file.
+A path to a YAML-spec configuration file. 
+Can be `'none'` if passing other relevant arguments.
 - survey: `logical`, name-value, default: `true`
 Flag to run static/survey questions. If `false`, only sound
 comarison is shown.
+- stimgen: Any `StimulusGenerationMethod`, name-value, default: `[]`,
+Stimgen object to use. `options.config` must be `'none'`. 
 - recon: `numeric vector`, name-value, default: `[]`
 Allows user to supply a specific reconstruction to use, 
 rather than generating from config. 
+- mult_range: `1 x 2 numerical vector, name-value, default: `[0, 1]`,
+The min (1,1) and max (1,2) values for mult parameter.
+- binrange_range: `1 x 2 numerical vector, name-value, default: `[1, 100]`,
+The min (1,1) and max (1,2) values for binrange parameter.
 - fig: `matlab.ui.Figure`, name-value.
 Handle to open figure on which to display questions.
 - save: `logical`, name-value, default: `false`.
