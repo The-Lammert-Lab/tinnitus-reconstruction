@@ -22,7 +22,7 @@ function [s, f] = wav2spect(audio_file, duration)
     % nfft = length(audio).
     [s, f] = spectrogram(audio, [], [], length(audio)-1, fs);
 
-    % remove complex component
+    % remove complex component, convert to dB, average out temporal info
     s = mean(convert_to_db(abs(s).^2),2);
 
     return
