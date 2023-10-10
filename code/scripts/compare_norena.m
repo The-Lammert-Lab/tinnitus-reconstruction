@@ -30,7 +30,6 @@ for ii = 1:length(targets)
     t = tiledlayout(length(bins),3);
 
     [target_signal, ~] = wav2spect(fullfile('~/repos/tinnitus-reconstruction/code/experiment/ATA',targets{ii}));
-    target_signal = 10*log10(target_signal);
 
     for jj = 1:length(bins)
         stimgenUniform.n_bins = bins(jj);

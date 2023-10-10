@@ -1,7 +1,7 @@
 % ### wav2spect 
 % 
 % Reads an audio file (e.g., a .wav file) and returns a spectrum
-% in terms of magnitudes, s, and frequencies, f, in Hz.
+% in terms of magnitudes, s (in dB), and frequencies, f (in Hz).
 
 function [s, f] = wav2spect(audio_file, duration)
 
@@ -22,8 +22,8 @@ function [s, f] = wav2spect(audio_file, duration)
     % nfft = length(audio).
     [s, f] = spectrogram(audio, [], [], length(audio)-1, fs);
 
-    % average out temporal information
-    s = mean(abs(s), 2);
+    % remove complex component
+    s = mean(convert_to_db(abs(s).^2),2);
 
     return
 end
