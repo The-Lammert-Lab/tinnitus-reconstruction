@@ -5,6 +5,7 @@ function [responses, stimuli] = collect_data(options)
         options.config = []
         options.verbose (1,1) logical = true
         options.data_dir (1, :) char = ''
+        options.phase (1,1) {mustBeInteger, mustBePositive} = 1
     end
 
     % If no config file path is provided,
@@ -40,18 +41,29 @@ function [responses, stimuli] = collect_data(options)
         is_two_afc = false;
     end
 
+    if is_two_afc && options.phase > 1
+        error('Multiple phases not yet supported for 2AFC');
+    end
+
     %% Find the files containing the data
 
+    % Data from phases after initial experiment have 'phaseN' prefix
+    if options.phase > 1
+        phase_prefix = ['phase', num2str(options.phase), '_'];
+    else
+        phase_prefix = '';
+    end
+
     % These variables are the same size regardless of 2-afc status
-    glob_meta = pathlib.join(options.data_dir, ['meta_', config_hash, '*.csv']);
+    glob_meta = pathlib.join(options.data_dir, [phase_prefix, 'meta_', config_hash, '*.csv']);
     files_meta = dir(glob_meta);
     
     % These variables are the same size regardless of 2-afc status
-    glob_responses = pathlib.join(options.data_dir, ['responses_', config_hash, '*.csv']);
+    glob_responses = pathlib.join(options.data_dir, [phase_prefix, 'responses_', config_hash, '*.csv']);
     files_responses = dir(glob_responses);
 
     % These variables are only for non-2-afc experiments
-    glob_stimuli = pathlib.join(options.data_dir, ['stimuli_', config_hash, '*.csv']);
+    glob_stimuli = pathlib.join(options.data_dir, [phase_prefix, 'stimuli_', config_hash, '*.csv']);
     files_stimuli = dir(glob_stimuli);
     
     % If in a 2AFC regime, there are two stimuli files for each meta file with file names of the form:
