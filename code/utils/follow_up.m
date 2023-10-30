@@ -59,9 +59,8 @@ function follow_up(options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) = 0
         options.config_file (1,:) char = ''
-        options.mult (1,1) {mustBePositive} = 0.01
-        options.binrange (1,1) {mustBeGreaterThanOrEqual(options.binrange,1), ...
-            mustBeLessThanOrEqual(options.binrange,100)} = 60
+        options.mult (1,1) {mustBeReal} = 0.01
+        options.binrange (1,1) {mustBeReal} = 60
         options.recon (:,1) {mustBeNumeric} = []
         options.survey (1,1) logical = true
         options.verbose (1,1) logical = true
