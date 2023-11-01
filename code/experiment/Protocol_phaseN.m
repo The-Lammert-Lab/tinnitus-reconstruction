@@ -89,7 +89,7 @@ function Protocol_phaseN(options)
     
     %% Generate initial files and stimuli
     % Maximum percent perturbation of reconstructed bins.
-    pert_bounds = [0.2,0.8];
+    pert_bounds = [-0.8,0.8];
 
     [stimuli_matrix, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli_phaseN(config, options.phase, pert_bounds, data_dir, hash_prefix);
     Fs = stimuli_object.get_fs();
