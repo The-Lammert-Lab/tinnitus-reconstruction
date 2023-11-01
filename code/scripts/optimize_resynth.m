@@ -11,15 +11,18 @@ project_dir = pathlib.strip(mfilename('fullpath'), 3);
 ATA_path = 'code/experiment/ATA';
 n_trials = 200;
 metric = 'dtw';
-skip_subject_data = false;
+skip_subject_data = true;
 n_bins_target = 32;
-target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Roaring_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Screeching_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav'};
+% target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Roaring_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Screeching_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav'};
 
-mult = linspace(0.001,0.5,100);
-binrange = linspace(1,80,80);
+target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
+    'ATA_Tinnitus_Roaring_Tone_1sec.wav'};
+
+mult = linspace(0.001,0.5,80);
+binrange = linspace(1,60,60);
 
 stimgen = UniformPriorStimulusGeneration;
 stimgen.max_freq = 13000;
