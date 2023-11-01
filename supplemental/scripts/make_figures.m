@@ -71,8 +71,6 @@ for ii = 1:length(data_files)
     [s{ii}, f{ii}] = wav2spect(pathlib.join(sound_dir, data_files{ii}));
 end
 target_signal = [s{:}];
-% convert to dB
-target_signal = 10 * log10(target_signal);
 f = [f{:}];
 
 % Get the binned representation for the target signals

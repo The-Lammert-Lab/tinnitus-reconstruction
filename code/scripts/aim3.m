@@ -55,9 +55,6 @@ noise_magnitude = 20;
 labels = repmat(1:length(data_files), n_data_points_per_cluster, 1)';
 y = repmat(s, 1, n_data_points_per_cluster);
 
-% convert to dB
-y = 10 * log10(y);
-
 % add Gaussian noise
 y = y + noise_magnitude * randn(size(y));
 
