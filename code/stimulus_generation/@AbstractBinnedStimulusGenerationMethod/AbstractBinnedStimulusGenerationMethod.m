@@ -182,7 +182,7 @@ methods
             binrange (:,1) {mustBeReal}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
             options.filter logical = false
-            options.cutoff (1,2) = [2000, self.max_freq]
+            options.cutoff (:,2) = [2000, self.max_freq]
             options.order (1,1) {mustBePositive, mustBeInteger} = 5
         end
 
@@ -193,7 +193,9 @@ methods
         end
 
         % Check inputs
-        assert((length(mult) == length(binrange)) && (length(binrange) == size(binned_rep,2)), ...
+        assert((length(mult) == length(binrange)) ...
+            && (length(binrange) == size(binned_rep,2)) ...
+            && (size(options.cutoff,1) == size(binned_rep,2)), ...
             ['Number of mult and binrange values must be the same as ' ...
             'the number of binned representations (second dimension of binned_rep).']);
 
@@ -255,14 +257,17 @@ methods
         % be applied (used in adjust_resynth.m, so users can move slider to
         % end to turn off filter)
         if options.filter && ~(min(options.cutoff) <= 0 && max(options.cutoff) >= self.max_freq)
-            if min(options.cutoff) > 0 && max(options.cutoff) < self.max_freq
-                [b,a] = butter(options.order, options.cutoff ./ nfft, 'bandpass');
-            elseif min(options.cutoff) > 0
-                [b,a] = butter(options.order, min(options.cutoff)/nfft, 'high');
-            else
-                [b,a] = butter(options.order, max(options.cutoff)/nfft, 'low');
+            for ii = 1:size(options.cutoff,1)
+                cf = options.cutoff(ii,:);
+                if min(cf) > 0 && max(cf) < self.max_freq
+                    [b,a] = butter(options.order, cf ./ nfft, 'bandpass');
+                elseif min(cf) > 0
+                    [b,a] = butter(options.order, min(cf)/nfft, 'high');
+                else
+                    [b,a] = butter(options.order, max(cf)/nfft, 'low');
+                end
+                wav(:,ii) = filter(b,a,wav(:,ii));
             end
-            wav = filter(b,a,wav);
         end
     end
 

@@ -32,11 +32,21 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
     if modify_spectrum
-
-        mult = min(options.mult_range) + (max(options.mult_range)-min(options.mult_range))*rand(config.n_trials_per_block,1);
-        binrange = min(options.binrange_range) + (max(options.binrange_range)-min(options.binrange_range))*rand(config.n_trials_per_block,1);
-
-        [stimuli_matrix, spect_matrix] = stimgen.binnedrepr2wav(binned_repr_matrix,mult,binrange,)
+        flt = false;
+        lp = zeros(size(binned_repr_matrix,2),1);
+        hp = stimgen.max_freq*ones(size(binned_repr_matrix,2));
+        if ~isempty(options.mult_range)
+            mult = min(options.mult_range) + (max(options.mult_range)-min(options.mult_range))*rand(config.n_trials_per_block,1);
+        elseif ~isempty(options.binrange_range)
+            binrange = min(options.binrange_range) + (max(options.binrange_range)-min(options.binrange_range))*rand(config.n_trials_per_block,1);
+        elseif ~isempty(lowpass_range)
+            lp = min(options.lowpass_range) + (max(options.lowpass_range)-min(options.lowpass_range))*rand(config.n_trials_per_block,1);
+            flt = true;
+        elseif ~isempty(highpass_range)
+            hp = min(options.highpass_range) + (max(options.highpass_range)-min(options.highpass_range))*rand(config.n_trials_per_block,1);
+            flt = true;
+        end
+        [stimuli_matrix, spect_matrix] = stimgen.binnedrepr2wav(binned_repr_matrix,mult,binrange,'filter',flt,'cutoff',[lp, hp]);
     else
         % Otherwise just get spectrum and synthesize audio
         spect_matrix = stimgen.binnedrepr2spect(binned_repr_matrix);
