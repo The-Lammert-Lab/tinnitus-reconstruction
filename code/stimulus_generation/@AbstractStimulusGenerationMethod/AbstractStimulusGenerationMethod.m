@@ -53,7 +53,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             nfft = self.get_fs() * self.duration;
         end % function
 
-        function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+        function [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix, W] = generate_stimuli_matrix(self)
             % ### generate_stimuli_matrix
             % 
             % ```matlab
@@ -93,7 +93,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % UniformPriorStimulusGeneration.generate_stimulus
             % WeightedPriorStimulusGeneration.generate_stimulus
 
-            if any(strcmp('n_bins', properties(self)))
+            if isa(self,'AbstractBinnedStimulusGenerationMethod')
                 % generate first stimulus
                 binned_repr_matrix = zeros(self.n_bins, self.n_trials);
                 [stim1, Fs, spect, binned_repr_matrix(:, 1)] = self.generate_stimulus();
@@ -106,17 +106,34 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 for ii = 2:self.n_trials
                     [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), binned_repr_matrix(:, ii)] = self.generate_stimulus();
                 end
+                W = [];
             else
-                % generate first stimulus
-                [stim1, Fs, spect, ~] = self.generate_stimulus();
+                if isa(self,'HierarchicalGaussianStimulusGeneration')
+                    [stim1, Fs, spect, ~, w1] = self.generate_stimulus();
 
-                % instantiate stimuli matrix
-                stimuli_matrix = zeros(length(stim1), self.n_trials);
-                spect_matrix = zeros(length(spect), self.n_trials);
-                stimuli_matrix(:, 1) = stim1;
-                spect_matrix(:, 1) = spect;
-                for ii = 2:self.n_trials
-                    [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), ~] = self.generate_stimulus();
+                    % instantiate stimuli matrix
+                    stimuli_matrix = zeros(length(stim1), self.n_trials);
+                    spect_matrix = zeros(length(spect), self.n_trials);
+                    W = zeros(length(w1), self.n_trials);
+                    stimuli_matrix(:, 1) = stim1;
+                    spect_matrix(:, 1) = spect;
+                    W(:,1) = w1;
+                    for ii = 2:self.n_trials
+                        [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), ~, W(:,ii)] = self.generate_stimulus();
+                    end
+                else
+                    % generate first stimulus
+                    [stim1, Fs, spect, ~] = self.generate_stimulus();
+
+                    % instantiate stimuli matrix
+                    stimuli_matrix = zeros(length(stim1), self.n_trials);
+                    spect_matrix = zeros(length(spect), self.n_trials);
+                    stimuli_matrix(:, 1) = stim1;
+                    spect_matrix(:, 1) = spect;
+                    for ii = 2:self.n_trials
+                        [stimuli_matrix(:, ii), ~, spect_matrix(:, ii), ~] = self.generate_stimulus();
+                    end
+                    W = [];
                 end
                 binned_repr_matrix = [];
             end
