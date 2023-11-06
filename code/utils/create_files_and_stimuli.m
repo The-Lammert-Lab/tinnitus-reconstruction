@@ -40,14 +40,14 @@ function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_met
 
     % Write the stimuli to file
     switch config.stimuli_save_type
-    case 'waveform'
-        writematrix(stimuli_matrix, filename_stimuli);
-    case 'spectrum'
-        writematrix(spect_matrix, filename_stimuli);
-    case 'bins'
-        writematrix(binned_repr_matrix, filename_stimuli);
-    otherwise
-        error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
+        case 'waveform'
+            writematrix(stimuli_matrix, filename_stimuli);
+        case 'spectrum'
+            writematrix(spect_matrix, filename_stimuli);
+        case 'bins'
+            writematrix(binned_repr_matrix, filename_stimuli);
+        otherwise
+            error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
     end
 
 end % create_files_and_stimuli

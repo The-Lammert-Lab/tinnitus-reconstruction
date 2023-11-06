@@ -177,17 +177,28 @@ methods
 
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod
-            binned_rep (:,1) {mustBeReal}
-            mult (1,1) {mustBeReal}
-            binrange (1,1) {mustBeReal}
+            binned_rep (:,:) {mustBeReal}
+            mult (:,1) {mustBeReal}
+            binrange (:,1) {mustBeReal}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
         end
+
+        % Force binned_rep to be a column vector 
+        % to avoid trouble with interpolation loop 
+        if size(binned_rep,1) == 1
+            binned_rep = binned_rep';
+        end
+
+        % Check inputs
+        assert((length(mult) == length(binrange)) && (length(binrange) == size(binned_rep,2)), ...
+            ['Number of mult and binrange values must be the same as ' ...
+            'the number of binned representations (second dimension of binned_rep).']);
 
         % Setup
         nfft = self.nfft;
         
         % Set interval to [0 1] 
-        binned_rep = rescale(binned_rep);
+        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep));
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Interpolate to `new_n_bins` bins via spline interpolation
@@ -207,22 +218,24 @@ methods
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Sharpen peaks in interpolated spectrum
-        thing = conv(binned_rep,[1 -2 1],'same');
-        thing([1,end]) = 0;
-        thing2 = conv(thing,[1 -2 1],'same');
-        thing2([1:2,end-1:end]) = 0;
-        binned_rep = binned_rep - (mult*(50^2)/40)*thing + (mult*(50^4)/600)*thing2;
-        binned_rep = binned_rep-min(binned_rep);
+        for ii = 1:size(binned_rep,2)
+            thing = conv(binned_rep(:,ii),[1 -2 1],'same');
+            thing([1,end]) = 0;
+            thing2 = conv(thing,[1 -2 1],'same');
+            thing2([1:2,end-1:end]) = 0;
+            binned_rep(:,ii) = binned_rep(:,ii) - (mult(ii)*(50^2)/40)*thing + (mult(ii)*(50^4)/600)*thing2;
+            binned_rep(:,ii) = binned_rep(:,ii)-min(binned_rep(:,ii));
+        end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Rescale dynamic range of audio signal by adjusting bin heights
-        binned_rep = binrange*rescale(binned_rep);
+        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep)) .* binrange;
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Assign power to bins
-        X = zeros(nfft/2,1);
+        X = zeros(nfft/2,size(binned_rep,2));
         for itor = 1:new_n_bins
-            X(binnum==itor) = binned_rep(itor);
+            X(binnum==itor,:) = binned_rep(itor,:);
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
