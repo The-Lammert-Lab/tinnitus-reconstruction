@@ -71,11 +71,4 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
                 error(['Stimuli save type: ', config.stimuli_save_type, ' not recognized.'])
         end
     end
-
-
-    if isempty(options.modifiers)
-        writematrix(binned_repr_matrix, filename_stimuli);
-    else
-        writematrix(binned_repr_matrix, filename_stimuli);
-    end
 end

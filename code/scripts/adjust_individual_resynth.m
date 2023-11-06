@@ -1,6 +1,7 @@
 
-data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data/';
-config_path = fullfile(data_dir,'4_config_ER.yaml');
+data_dir = '~/Desktop/Lammert_Lab/Tinnitus/NB_consistency_experiments/';
+% config_path = fullfile(data_dir,'4_config_ER.yaml');
+config_path = fullfile(data_dir,'config_NB_consistency2.yaml');
 project_dir = pathlib.strip(mfilename('fullpath'), 3);
 
 [mult, binrange] = adjust_resynth('config_file', config_path, ...

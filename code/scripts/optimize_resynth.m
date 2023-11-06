@@ -11,15 +11,18 @@ project_dir = pathlib.strip(mfilename('fullpath'), 3);
 ATA_path = 'code/experiment/ATA';
 n_trials = 200;
 metric = 'dtw';
-skip_subject_data = false;
+skip_subject_data = true;
 n_bins_target = 32;
-target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Roaring_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Screeching_Tone_1sec.wav'; ...
-    'ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav'};
+% target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Roaring_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Screeching_Tone_1sec.wav'; ...
+%     'ATA_Tinnitus_Tea_Kettle_Tone_1sec.wav'};
 
-mult = linspace(0.001,0.5,100);
-binrange = linspace(1,80,80);
+target_signal_files = {'ATA_Tinnitus_Buzzing_Tone_1sec.wav'; ...
+    'ATA_Tinnitus_Roaring_Tone_1sec.wav'};
+
+mult = linspace(0.001,0.5,80);
+binrange = linspace(1,60,60);
 
 stimgen = UniformPriorStimulusGeneration;
 stimgen.max_freq = 13000;
@@ -27,16 +30,15 @@ stimgen.min_freq = 100;
 stimgen.n_bins = n_bins_target;
 
 % Collect target spectra in a cell array
-target_spects2 = cell(length(target_signal_files),2);
+target_spects = cell(length(target_signal_files),2);
 for ii = 1:length(target_signal_files)
     curr_spect = wav2spect(fullfile(project_dir,ATA_path,target_signal_files{ii}));
     if ii == 1
         freqs = linspace(1, floor(stimgen.Fs/2), length(curr_spect))';
         indices_to_plot = freqs(:,1) <= stimgen.max_freq & freqs(:,1) >= stimgen.min_freq;
     end
-    curr_spect = 10*log10(curr_spect);
-    target_spects2{ii,1} = curr_spect - min(curr_spect(indices_to_plot));
-    target_spects2{ii,2} = lower(extractBetween(target_signal_files{ii}, 'Tinnitus_', '_Tone'));
+    target_spects{ii,1} = curr_spect - min(curr_spect(indices_to_plot));
+    target_spects{ii,2} = lower(extractBetween(target_signal_files{ii}, 'Tinnitus_', '_Tone'));
 end
 
 % Collect hyperparameters

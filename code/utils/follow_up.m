@@ -61,6 +61,8 @@ function follow_up(options)
         options.config_file (1,:) char = ''
         options.mult (1,1) {mustBeReal} = 0.01
         options.binrange (1,1) {mustBeReal} = 60
+        options.filter (1,1) logical = false
+        options.cutoff_freqs (1,2) {mustBeReal} = []
         options.recon (:,1) {mustBeNumeric} = []
         options.survey (1,1) logical = true
         options.verbose (1,1) logical = true
@@ -68,7 +70,7 @@ function follow_up(options)
     end
 
     %% Input handling
-    % If not called from Protocol, get path to use for loading images. 
+    % If not called from Protocol, get path to use for loading images.
     if isempty(options.project_dir)
         project_dir = pathlib.strip(mfilename('fullpath'), 2);
     end
@@ -155,7 +157,8 @@ function follow_up(options)
     recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.nfft);
 
     % Make adjusted (peak sharpened, etc.) waveform from reconstruction
-    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);
+    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange, ...
+        'filter',options.filter,'cutoff',options.cutoff_freqs);
 
     % Generate white noise
     noise_waveform = stimgen.white_noise();

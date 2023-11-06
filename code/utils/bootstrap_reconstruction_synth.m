@@ -62,7 +62,6 @@ function [r] = bootstrap_reconstruction_synth(options)
     else
         [target_signal, ~] = wav2spect(config.target_signal_filepath);
     end
-    target_signal = 10 * log10(target_signal);
     binned_target_signal = stimgen.spect2binnedrepr(target_signal);
     
     % Run the synthetic subject selection process N times

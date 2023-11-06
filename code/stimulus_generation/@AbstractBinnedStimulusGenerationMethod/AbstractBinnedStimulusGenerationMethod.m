@@ -146,7 +146,7 @@ methods
         end
     end
 
-    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
+    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)
         % ### binnedrepr2wav
         %
         % Get the peak-sharpened waveform of a binned representation 
@@ -181,6 +181,9 @@ methods
             mult (:,1) {mustBeReal}
             binrange (:,1) {mustBeReal}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
+            options.filter logical = false
+            options.cutoff (1,2) = [2000, self.max_freq]
+            options.order (1,1) {mustBePositive, mustBeInteger} = 5
         end
 
         % Force binned_rep to be a column vector 
@@ -196,6 +199,9 @@ methods
 
         % Setup
         nfft = self.nfft;
+
+        assert(options.cutoff(1) ~= options.cutoff(2), ...
+            'Low cutoff frequency must be less than high cutoff frequency') 
         
         % Set interval to [0 1] 
         binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep));
@@ -241,6 +247,23 @@ methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         % Synthesize audio
         wav = self.synthesize_audio(X,nfft);
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+        % Apply filters to waveform
+
+        % Check allows for options.filter to be true but no filter to
+        % be applied (used in adjust_resynth.m, so users can move slider to
+        % end to turn off filter)
+        if options.filter && ~(min(options.cutoff) <= 0 && max(options.cutoff) >= self.max_freq)
+            if min(options.cutoff) > 0 && max(options.cutoff) < self.max_freq
+                [b,a] = butter(options.order, options.cutoff ./ nfft, 'bandpass');
+            elseif min(options.cutoff) > 0
+                [b,a] = butter(options.order, min(options.cutoff)/nfft, 'high');
+            else
+                [b,a] = butter(options.order, max(options.cutoff)/nfft, 'low');
+            end
+            wav = filter(b,a,wav);
+        end
     end
 
     function W = bin_signal(self, W, Fs)
