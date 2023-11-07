@@ -193,17 +193,20 @@ methods
         end
 
         % Check inputs
-        assert((length(mult) == length(binrange)) ...
-            && (length(binrange) == size(binned_rep,2)) ...
-            && (size(options.cutoff,1) == size(binned_rep,2)), ...
-            ['Number of mult and binrange values must be the same as ' ...
-            'the number of binned representations (second dimension of binned_rep).']);
+        assert((isscalar(binrange) || length(binrange) == size(binned_rep,2)) ...
+            && (isscalar(mult) || length(mult) == size(binned_rep,2)) ...
+            && (size(options.cutoff,1) == 1 || size(options.cutoff,1) == size(binned_rep,2)), ...
+            ['Number of mult, binrange, and cutoff values must be the same as ' ...
+            'the number of binned representations ' ...
+            '(second dimension of binned_rep) or scalar ([1,2] for cutoff).']);
+
+        if size(options.cutoff,1) == 1
+            assert(options.cutoff(1) ~= options.cutoff(2), ...
+                'Cutoff frequencies must be different')
+        end
 
         % Setup
         nfft = self.nfft;
-
-        assert(options.cutoff(1) ~= options.cutoff(2), ...
-            'Low cutoff frequency must be less than high cutoff frequency') 
         
         % Set interval to [0 1] 
         binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep));
@@ -237,13 +240,14 @@ methods
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Rescale dynamic range of audio signal by adjusting bin heights
-        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep)) .* binrange;
+        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep)) .* binrange';
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Assign power to bins
-        X = zeros(nfft/2,size(binned_rep,2));
+        X = self.unfilled_dB*ones(nfft/2,size(binned_rep,2));
         for itor = 1:new_n_bins
-            X(binnum==itor,:) = binned_rep(itor,:);
+            inds = binnum == itor;
+            X(inds,:) = repmat(binned_rep(itor,:), sum(inds), 1);
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -256,9 +260,15 @@ methods
         % Check allows for options.filter to be true but no filter to
         % be applied (used in adjust_resynth.m, so users can move slider to
         % end to turn off filter)
-        if options.filter && ~(min(options.cutoff) <= 0 && max(options.cutoff) >= self.max_freq)
-            for ii = 1:size(options.cutoff,1)
-                cf = options.cutoff(ii,:);
+        if options.filter && ~(min(options.cutoff,[],'all') <= 0 && max(options.cutoff,[],'all') >= self.max_freq)
+            for ii = 1:size(binned_rep,2)
+                % Allow for same single setting to be applied to all
+                if size(options.cutoff,1) == 1
+                    cf = options.cutoff;
+                else
+                    cf = options.cutoff(ii,:);
+                end
+
                 if min(cf) > 0 && max(cf) < self.max_freq
                     [b,a] = butter(options.order, cf ./ nfft, 'bandpass');
                 elseif min(cf) > 0

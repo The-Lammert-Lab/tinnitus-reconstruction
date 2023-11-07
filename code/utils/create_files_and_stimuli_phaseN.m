@@ -5,10 +5,10 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
         pert_bounds (1,2) {mustBePositive}
         data_dir (1,:) char
         hash_prefix (1,:) char = ''
-        options.mult_range (:,1) {mustBeReal} = []
-        options.binrange_range (:,1) {mustBeReal} = []
-        options.lowpass_range (:,1) {mustBePositive} = []
-        options.highpass_range (:,1) {mustBePositive} = []
+        options.mult_range (1,2) {mustBeReal} = []
+        options.binrange_range (1,2) {mustBePositive} = []
+        options.lowpass_range (1,2) {mustBePositive} = []
+        options.highpass_range (1,2) {mustBePositive} = []
     end
 
     modify_spectrum = all(structfun(@isempty,options));
@@ -32,21 +32,30 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
     if modify_spectrum
-        flt = false;
+        filt = false;
         lp = zeros(size(binned_repr_matrix,2),1);
-        hp = stimgen.max_freq*ones(size(binned_repr_matrix,2));
+        hp = stimgen.max_freq*ones(size(binned_repr_matrix,2),1);
+        mult = 0;
+        binrange = 1;
         if ~isempty(options.mult_range)
             mult = min(options.mult_range) + (max(options.mult_range)-min(options.mult_range))*rand(config.n_trials_per_block,1);
-        elseif ~isempty(options.binrange_range)
-            binrange = min(options.binrange_range) + (max(options.binrange_range)-min(options.binrange_range))*rand(config.n_trials_per_block,1);
-        elseif ~isempty(lowpass_range)
-            lp = min(options.lowpass_range) + (max(options.lowpass_range)-min(options.lowpass_range))*rand(config.n_trials_per_block,1);
-            flt = true;
-        elseif ~isempty(highpass_range)
-            hp = min(options.highpass_range) + (max(options.highpass_range)-min(options.highpass_range))*rand(config.n_trials_per_block,1);
-            flt = true;
         end
-        [stimuli_matrix, spect_matrix] = stimgen.binnedrepr2wav(binned_repr_matrix,mult,binrange,'filter',flt,'cutoff',[lp, hp]);
+
+        if ~isempty(options.binrange_range)
+            binrange = min(options.binrange_range) + (max(options.binrange_range)-min(options.binrange_range))*rand(config.n_trials_per_block,1);
+        end
+
+        if ~isempty(options.lowpass_range)
+            lp = min(options.lowpass_range) + (max(options.lowpass_range)-min(options.lowpass_range))*rand(config.n_trials_per_block,1);
+            filt = true;
+        end
+
+        if ~isempty(options.highpass_range)
+            hp = min(options.highpass_range) + (max(options.highpass_range)-min(options.highpass_range))*rand(config.n_trials_per_block,1);
+            filt = true;
+        end
+        
+        [stimuli_matrix, spect_matrix] = stimgen.binnedrepr2wav(binned_repr_matrix,mult,binrange,'filter',filt,'cutoff',[lp, hp]);
     else
         % Otherwise just get spectrum and synthesize audio
         spect_matrix = stimgen.binnedrepr2spect(binned_repr_matrix);
@@ -54,7 +63,7 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
     end
 
     % Hash the stimuli
-    stimuli_hash = get_hash(stimuli_matrix);
+    stimuli_hash = get_hash(spect_matrix);
 
     % Create the files needed for saving the data
     phase_prefix = ['phase', num2str(phase), '_'];
