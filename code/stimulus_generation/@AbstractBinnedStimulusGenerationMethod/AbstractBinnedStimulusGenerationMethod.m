@@ -193,12 +193,12 @@ methods
         end
 
         % Check inputs
-        assert((isscalar(binrange) || length(binrange) == size(binned_rep,2)) ...
-            && (isscalar(mult) || length(mult) == size(binned_rep,2)) ...
-            && (size(options.cutoff,1) == 1 || size(options.cutoff,1) == size(binned_rep,2)), ...
-            ['Number of mult, binrange, and cutoff values must be the same as ' ...
-            'the number of binned representations ' ...
-            '(second dimension of binned_rep) or scalar ([1,2] for cutoff).']);
+        assert(isscalar(binrange) || length(binrange) == size(binned_rep,2), ...
+            'Binrange must be a scalar or equal length to the number of binned representations')
+        assert(isscalar(mult) || length(mult) == size(binned_rep,2), ...
+            'Mult must be a scalar or equal length to the number of binned representations')
+        assert(size(options.cutoff,1) == 1 || size(options.cutoff,1) == size(binned_rep,2), ...
+            'Size of cutoff must be [1,2] or equal to the number of binned representations')
 
         if size(options.cutoff,1) == 1
             assert(options.cutoff(1) ~= options.cutoff(2), ...
@@ -230,11 +230,17 @@ methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Sharpen peaks in interpolated spectrum
         for ii = 1:size(binned_rep,2)
+            if isscalar(mult)
+                m = mult;
+            else
+                m = mult(ii);
+            end
+
             thing = conv(binned_rep(:,ii),[1 -2 1],'same');
             thing([1,end]) = 0;
             thing2 = conv(thing,[1 -2 1],'same');
             thing2([1:2,end-1:end]) = 0;
-            binned_rep(:,ii) = binned_rep(:,ii) - (mult(ii)*(50^2)/40)*thing + (mult(ii)*(50^4)/600)*thing2;
+            binned_rep(:,ii) = binned_rep(:,ii) - (m*(50^2)/40)*thing + (m*(50^4)/600)*thing2;
             binned_rep(:,ii) = binned_rep(:,ii)-min(binned_rep(:,ii));
         end
 
