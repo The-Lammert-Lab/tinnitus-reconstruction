@@ -1482,7 +1482,7 @@ and generates a figure with a uitable for easy viewing.
 ### wav2spect 
 
 Reads an audio file (e.g., a .wav file) and returns a spectrum
-in terms of magnitudes, s, and frequencies, f, in Hz.
+in terms of magnitudes, s (in dB), and frequencies, f (in Hz).
 
 
 
