@@ -48,6 +48,7 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
         options.bootstrap (1,1) {mustBeInteger, mustBeNonnegative} = 0
         options.target (:,1) = []
         options.data_dir (1,:) char = ''
+        options.phase (1,1) {mustBeInteger, mustBePositive} = 1
         options.legacy (1,1) {mustBeNumericOrLogical} = false
         options.gamma (1,1) {mustBeReal, mustBeNonnegative, mustBeInteger} = 0
     end
@@ -75,7 +76,7 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
     end
     
     % collect the data from files
-    [responses, stimuli_matrix] = collect_data('config', config, 'verbose', options.verbose, 'data_dir', char(options.data_dir));
+    [responses, stimuli_matrix] = collect_data('config', config, 'phase', options.phase, 'verbose', options.verbose, 'data_dir', char(options.data_dir));
 
     % bin preprocessing
     if strcmp(config.stimuli_save_type, 'bins') || any(contains(options.preprocessing, 'bins'))
@@ -110,7 +111,8 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
     n_trials = round(options.fraction * size(stimuli_matrix, 2));
 
     corelib.verb(options.verbose, 'INFO: get_reconstruction', ...
-        ['Computing reconstructions using ' num2str(n_trials), ' trials.'])
+        ['Computing phase ', num2str(options.phase), ...
+        ' reconstructions using ' num2str(n_trials), ' trials.'])
 
     responses_output = responses(1:n_trials);
     stimuli_matrix_output = stimuli_matrix(:, 1:n_trials);

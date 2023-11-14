@@ -146,7 +146,7 @@ methods
         end
     end
 
-    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins)
+    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)
         % ### binnedrepr2wav
         %
         % Get the peak-sharpened waveform of a binned representation 
@@ -177,17 +177,39 @@ methods
 
         arguments
             self (1,1) AbstractBinnedStimulusGenerationMethod
-            binned_rep (:,1) {mustBeReal}
-            mult (1,1) {mustBeReal}
-            binrange (1,1) {mustBeReal}
+            binned_rep (:,:) {mustBeReal}
+            mult (:,1) {mustBeReal}
+            binrange (:,1) {mustBeReal}
             new_n_bins (1,1) {mustBeInteger, mustBePositive} = 256
+            options.filter logical = false
+            options.cutoff (:,2) = [2000, self.max_freq]
+            options.order (1,1) {mustBePositive, mustBeInteger} = 5
+        end
+
+        % Force binned_rep to be a column vector 
+        % to avoid trouble with interpolation loop 
+        if size(binned_rep,1) == 1
+            binned_rep = binned_rep';
+        end
+
+        % Check inputs
+        assert(isscalar(binrange) || length(binrange) == size(binned_rep,2), ...
+            'Binrange must be a scalar or equal length to the number of binned representations')
+        assert(isscalar(mult) || length(mult) == size(binned_rep,2), ...
+            'Mult must be a scalar or equal length to the number of binned representations')
+        assert(size(options.cutoff,1) == 1 || size(options.cutoff,1) == size(binned_rep,2), ...
+            'Size of cutoff must be [1,2] or equal to the number of binned representations')
+
+        if size(options.cutoff,1) == 1
+            assert(options.cutoff(1) ~= options.cutoff(2), ...
+                'Cutoff frequencies must be different')
         end
 
         % Setup
         nfft = self.nfft;
         
         % Set interval to [0 1] 
-        binned_rep = rescale(binned_rep);
+        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep));
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Interpolate to `new_n_bins` bins via spline interpolation
@@ -207,27 +229,62 @@ methods
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Sharpen peaks in interpolated spectrum
-        thing = conv(binned_rep,[1 -2 1],'same');
-        thing([1,end]) = 0;
-        thing2 = conv(thing,[1 -2 1],'same');
-        thing2([1:2,end-1:end]) = 0;
-        binned_rep = binned_rep - (mult*(50^2)/40)*thing + (mult*(50^4)/600)*thing2;
-        binned_rep = binned_rep-min(binned_rep);
+        for ii = 1:size(binned_rep,2)
+            if isscalar(mult)
+                m = mult;
+            else
+                m = mult(ii);
+            end
+
+            thing = conv(binned_rep(:,ii),[1 -2 1],'same');
+            thing([1,end]) = 0;
+            thing2 = conv(thing,[1 -2 1],'same');
+            thing2([1:2,end-1:end]) = 0;
+            binned_rep(:,ii) = binned_rep(:,ii) - (m*(50^2)/40)*thing + (m*(50^4)/600)*thing2;
+            binned_rep(:,ii) = binned_rep(:,ii)-min(binned_rep(:,ii));
+        end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Rescale dynamic range of audio signal by adjusting bin heights
-        binned_rep = binrange*rescale(binned_rep);
+        binned_rep = rescale(binned_rep,'InputMin',min(binned_rep),'InputMax',max(binned_rep)) .* binrange';
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Assign power to bins
-        X = zeros(nfft/2,1);
+        X = self.unfilled_dB*ones(nfft/2,size(binned_rep,2));
         for itor = 1:new_n_bins
-            X(binnum==itor) = binned_rep(itor);
+            inds = binnum == itor;
+            X(inds,:) = repmat(binned_rep(itor,:), sum(inds), 1);
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         % Synthesize audio
         wav = self.synthesize_audio(X,nfft);
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+        % Apply filters to waveform
+
+        % Check allows for options.filter to be true but no filter to
+        % be applied (used in adjust_resynth.m, so users can move slider to
+        % end to turn off filter)
+        if options.filter && ~(min(options.cutoff,[],'all') <= 0 && max(options.cutoff,[],'all') >= self.max_freq)
+            for ii = 1:size(binned_rep,2)
+                % Allow for same single setting to be applied to all
+                if size(options.cutoff,1) == 1
+                    cf = options.cutoff;
+                else
+                    cf = options.cutoff(ii,:);
+                end
+
+                if min(cf) > 0 && max(cf) < self.max_freq
+                    [b,a] = butter(options.order, cf ./ nfft, 'bandpass');
+                elseif min(cf) > 0
+                    [b,a] = butter(options.order, min(cf)/nfft, 'high');
+                else
+                    [b,a] = butter(options.order, max(cf)/nfft, 'low');
+                end
+                wav(:,ii) = filter(b,a,wav(:,ii));
+            end
+        end
     end
 
     function W = bin_signal(self, W, Fs)

@@ -59,9 +59,10 @@ function follow_up(options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) = 0
         options.config_file (1,:) char = ''
-        options.mult (1,1) {mustBePositive} = 0.01
-        options.binrange (1,1) {mustBeGreaterThanOrEqual(options.binrange,1), ...
-            mustBeLessThanOrEqual(options.binrange,100)} = 60
+        options.mult (1,1) {mustBeReal} = 0.01
+        options.binrange (1,1) {mustBeReal} = 60
+        options.filter (1,1) logical = false
+        options.cutoff_freqs (1,2) {mustBeReal} = []
         options.recon (:,1) {mustBeNumeric} = []
         options.survey (1,1) logical = true
         options.verbose (1,1) logical = true
@@ -69,7 +70,7 @@ function follow_up(options)
     end
 
     %% Input handling
-    % If not called from Protocol, get path to use for loading images. 
+    % If not called from Protocol, get path to use for loading images.
     if isempty(options.project_dir)
         project_dir = pathlib.strip(mfilename('fullpath'), 2);
     end
@@ -152,11 +153,12 @@ function follow_up(options)
     % Create frequency vector 
     freqs = linspace(1, floor(Fs/2), length(recon_spectrum))' - 1; 
 
-    recon_spectrum(freqs > config.max_freq & freqs < config.min_freq) = -20;
+    recon_spectrum(freqs > config.max_freq & freqs < config.min_freq) = stimgen.unfilled_dB;
     recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.nfft);
 
     % Make adjusted (peak sharpened, etc.) waveform from reconstruction
-    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange);
+    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange, ...
+        'filter',options.filter,'cutoff',options.cutoff_freqs);
 
     % Generate white noise
     noise_waveform = stimgen.white_noise();

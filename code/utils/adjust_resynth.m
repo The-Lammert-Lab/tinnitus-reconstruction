@@ -58,11 +58,13 @@
 % See also:
 % AbstractBinnedStimulusGenerationMethod.binnedrepr2wav
 
-function [mult, binrange] = adjust_resynth(mult, binrange, options)
+function [mult, binrange, lowcf, highcf] = adjust_resynth(mult, binrange, lowcf, highcf, options)
     arguments
         mult (1,1) {mustBePositive} = 0.001
         binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), ...
         mustBeLessThanOrEqual(binrange,100)} = 60
+        lowcf (1,1) {mustBeGreaterThanOrEqual(lowcf,0)} = 0
+        highcf (1,1) {mustBePositive} = 13000
         options.fig matlab.ui.Figure
         options.data_dir char = ''
         options.this_hash char = ''
@@ -74,6 +76,7 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         options.recon (:,1) {mustBeNumeric} = []
         options.mult_range (1,2) = [0, 1]
         options.binrange_range (1,2) = [1, 100]
+        options.filter (1,1) logical = false
         options.save (1,1) logical = false
         options.verbose (1,1) logical = true
     end
@@ -136,6 +139,7 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         stimgen = options.stimgen;
     end
     Fs = stimgen.get_fs();
+    highcf = stimgen.max_freq;
     
     %% Make reconstructions
     if ~isempty(options.recon)
@@ -170,9 +174,10 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         hFig = options.fig;
     end
     hFig.CloseRequestFcn = {@closeRequest hFig};
+    clf(hFig)
 
     %% Fig contents
-    % Two sliders
+    % Sliders
     sld_mult = uicontrol(hFig, 'Style', 'slider', ...
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(sld_h/2), sld_w, sld_h], ...
         'min', mult_min, 'max', mult_max, ...
@@ -182,14 +187,26 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(1.5*sld_h), sld_w, sld_h], ...
         'min', range_min, 'max', range_max, ...
         'Value', binrange, 'Callback', @getValue);
-    
+
+    if options.filter
+        sld_lowcf = uicontrol(hFig, 'Style', 'slider', ...
+            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(2.5*sld_h), sld_w, sld_h], ...
+            'min', 0, 'max', stimgen.max_freq/2, ...
+            'Value', lowcf, 'Callback', @getValue);
+
+        sld_highcf = uicontrol(hFig, 'Style', 'slider', ...
+            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(3.5*sld_h), sld_w, sld_h], ...
+            'min', (stimgen.max_freq/2) + 1, 'max', stimgen.max_freq, ...
+            'Value', highcf, 'Callback', @getValue);
+    end
+
     % Two buttons
     play_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)-(sld_w/2), 150 btn_w, btn_h], ...
+        'position', [(screenWidth/2)-(sld_w/2), 125, btn_w, btn_h], ...
         'String', 'Play Sounds', 'Callback', @playSounds);
 
     confirm_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)+(sld_w/2)-lbl_w, 150, btn_w, btn_h], ...
+        'position', [(screenWidth/2)+(sld_w/2)-lbl_w, 125, btn_w, btn_h], ...
         'String', 'Save Choice', 'Callback', {@closeRequest hFig});
 
     % Instructions
@@ -199,29 +216,51 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)+(sld_h), sld_w, sld_h])
 
     % Labels
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(mult_min), ... 
+    uicontrol(hFig, 'Style', 'text', 'String', 'min', ... 
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)+(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(mult_max), ... 
+    uicontrol(hFig, 'Style', 'text', 'String', 'max', ... 
         'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)+(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(range_min), ...
+    uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
         'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(range_max), ...
+    uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
         'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
+
+    if options.filter
+        uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
+            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(1.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
+
+        uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
+            'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(1.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
+
+        uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
+            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(2.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
+
+        uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
+            'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(2.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
+    end
 
     waitfor(hFig);
 
     if options.save
-        writematrix([mult; binrange], ...
-            pathlib.join(options.data_dir, ['mult_binrange_',options.this_hash, '.csv']));
+        if options.filter
+            params = [mult; binrange; lowcf; highcf];
+        else
+            params = [mult; binrange];
+        end
+        writematrix(params, fullfile(options.data_dir, ['resynth_params',options.this_hash, '.csv']));
     end
 
     %% Nested functions
     function getValue(~,~)
         mult = sld_mult.Value;
         binrange = sld_range.Value;
+        if options.filter
+            lowcf = sld_lowcf.Value;
+            highcf = sld_highcf.Value;
+        end
     end % getValue
     
     function playSounds(~, ~)
@@ -229,7 +268,9 @@ function [mult, binrange] = adjust_resynth(mult, binrange, options)
             soundsc(options.target_sound, options.target_fs);
             pause(length(options.target_sound) / options.target_fs + 0.3);
         end
-        recon_wav = stimgen.binnedrepr2wav(reconstruction, mult, binrange);
+        recon_wav = stimgen.binnedrepr2wav(reconstruction, mult, binrange, ...
+                                            'filter', options.filter, ...
+                                            'cutoff', [lowcf, highcf]);
         soundsc(recon_wav, Fs);
     end % playSounds
 
