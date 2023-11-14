@@ -104,7 +104,8 @@ Generate a white noise sound.
 
 
 ### synthesize_audio
-Synthesize audio from spectrum, X.
+Synthesize audio from spectrum, `X`.
+If `X` is an array, each column is treated as a spectrum.
 
 
 

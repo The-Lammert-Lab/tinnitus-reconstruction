@@ -1393,8 +1393,8 @@ The default results in 50% threshold.
 If using this option, `responses` must be passed as well.
 
 - threshold: Positive scalar, name-value, default: 50,
-representing a variable by which to manually set the response
-threshold. If `from_responses` is true, this will be ignored.
+representing the percent of -1 responses in `y`.
+If `from_responses` is true, this will be ignored.
 
 - lambda: Scalar >= 0, name-value, default: 0,
 value for use in `sign(e + lambda)` if `method` is `sign`.
