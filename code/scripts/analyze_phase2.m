@@ -65,8 +65,8 @@ n_trials = 800;
 ridge = [true, false];
 extra_phases = [true, false];
 use_phase_1 = [true, false];
-% pert_bounds = [0, 2; 0.2, 1.8; 0.5, 1.5; 0.8, 1.2];
-pert_bounds = [0.5, 1.5; 0.8, 1.2];
+pert_bounds = [0, 2; 0.2, 1.8; 0.5, 1.5; 0.8, 1.2];
+% pert_bounds = [0.5, 1.5; 0.8, 1.2];
 
 %%%%% Non-varying parameters
 
@@ -139,6 +139,89 @@ fprintf(['Mean correlation after ', num2str(n_phases), ' phases w/best params an
     num2str(n_trials/2), ' trials each: ', num2str(mean(c_best_p2(:,2))) ...
     '. \nMean correlation after 1 phase w/best params and ', num2str(n_trials), ' trials: ', ...
      num2str(mean(c_phase1)), '\n'])
+
+
+%% Simulate adaptive learning stimgen\
+
+% Setup
+n_init = 500;
+n_active = 800;
+percent_no = 95;
+
+stimgen = UniformPriorStimulusGeneration;
+stimgen.n_trials = n_init;
+stimgen.n_bins = 32;
+stimgen.min_bins = 6;
+stimgen.max_bins = 16;
+
+% Target
+target_filename = '~/repos/tinnitus-reconstruction/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav';
+target_spect = wav2spect(target_filename);
+binned_target_signal = stimgen.spect2binnedrepr(target_spect);
+    
+% Initial comparisons
+[~, ~, ~, binned_stimuli] = stimgen.generate_stimuli_matrix();
+responses = subject_selection_process(binned_target_signal,binned_stimuli', 'method','percentile','threshold',percent_no);
+
+% responses = [responses; zeros(n_active,1)];
+% binned_stimuli = [binned_stimuli, zeros(size(binned_stimuli,1),n_active)];
+% for ii = 1:n_active
+%     curr_ind = floor((n_init+ii)/3);
+% 
+%     X_no = binned_stimuli(:,responses(1:curr_ind-1) == -1)';
+%     [V_no, ~] = eigs(inv(X_no'*X_no));
+% 
+%     X_yes = binned_stimuli(:,responses(1:curr_ind-1) == 1)';
+%     [V_yes, ~] = eigs(inv(X_yes'*X_yes));
+% 
+%     X_all = binned_stimuli(:,1:curr_ind-1)';
+%     [V_all, ~] = eigs(inv(X_all'*X_all));
+% 
+%     next_stims = [V_no(:,1) V_yes(:,1) V_all(:,1)] ;
+%     binned_stimuli(:,curr_ind:curr_ind+2) = next_stims;
+% 
+% %     responses(curr_ind) = subject_selection_process(binned_target_signal,next_stim','method','sign');
+% 
+% %     new_responses = subject_selection_process(binned_target_signal,binned_stimuli(:,1:curr_ind+2)','method','percentile','threshold',percent_no);
+% 
+%     new_responses = subject_selection_process(binned_target_signal,binned_stimuli(:,1:curr_ind+2)','method','sign');
+% 
+%     responses(curr_ind+2) = new_responses(end);
+% end
+
+
+for ii = 1:n_active
+    curr_ind = floor((n_init+ii)/3);
+
+    X_no = binned_stimuli(:,responses == -1)';
+    [V_no, ~] = eigs(inv(X_no'*X_no));
+
+    X_yes = binned_stimuli(:,responses == 1)';
+    [V_yes, ~] = eigs(inv(X_yes'*X_yes));
+
+    X_all = binned_stimuli';
+    [V_all, ~] = eigs(inv(X_all'*X_all));
+
+    next_stims = [V_no(:,1) V_yes(:,1) V_all(:,1)] ;
+    binned_stimuli = [binned_stimuli next_stims];
+
+%     responses(curr_ind) = subject_selection_process(binned_target_signal,next_stim','method','sign');
+
+%     new_responses = subject_selection_process(binned_target_signal,binned_stimuli(:,1:curr_ind+2)','method','percentile','threshold',percent_no);
+
+%     new_responses = subject_selection_process(binned_target_signal,binned_stimuli','method','sign');
+
+    new_responses = subject_selection_process(binned_target_signal,next_stims','method','sign');
+
+    responses = [responses; new_responses];
+end
+
+
+recon = gs(responses,binned_stimuli');
+C = corr(binned_target_signal, recon)
+
+%%
+%%%%%%%%% FUNCTIONS %%%%%%%%%
 
 %% Run multiple phases in bin space
 function C = run_multiple_phases(n_phases, n_trials, pert_bounds, no_percents, options)
@@ -244,7 +327,7 @@ function C = run_multiple_phases(n_phases, n_trials, pert_bounds, no_percents, o
     end
 end
 
-%%
+%% Boilerplate code to run one phase with a given stimgen
 function C = run_phase_1(stimgen, thresh, target_filename)
     arguments
         stimgen (1,1) AbstractStimulusGenerationMethod
@@ -256,14 +339,14 @@ function C = run_phase_1(stimgen, thresh, target_filename)
     target_spect = wav2spect(target_filename);
     binned_target_signal = stimgen.spect2binnedrepr(target_spect);
     
-    [~, ~, ~, binned_repr_matrix_p1] = stimgen.generate_stimuli_matrix();
-    responses_p1 = subject_selection_process(binned_target_signal,binned_repr_matrix_p1', 'method','percentile','threshold',thresh);
-    recon = gs(responses_p1, binned_repr_matrix_p1');
+    [~, ~, ~, binned_repr_matrix] = stimgen.generate_stimuli_matrix();
+    responses = subject_selection_process(binned_target_signal,binned_repr_matrix', 'method','percentile','threshold',thresh);
+    recon = gs(responses, binned_repr_matrix');
     
     C = corr(recon,binned_target_signal);
 end
 
-%% Local functions
+%% Run phaseN. Local because slightly different inputs than would be used otherwise
 function [binned_repr_matrix, spect_matrix, stimuli_matrix] = local_create_files_and_stimuli_phaseN(config, phase, pert_bounds, data_dir, reconstruction, n_trials, stimgen, options)
   arguments
         config (1,1) struct
