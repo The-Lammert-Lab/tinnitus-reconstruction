@@ -6,13 +6,12 @@
 % See also:
 % Protocol
 
-function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_meta, file_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix, exp_phase)
+function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_meta, file_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix)
 
     arguments
         config (1,1) struct
         stimuli_object (1,1) AbstractStimulusGenerationMethod
         hash_prefix (1,:) char = ''
-        exp_phase (1,1) {mustBeInteger} = 1
     end
 
     if isempty(hash_prefix)
@@ -28,15 +27,9 @@ function [stimuli_matrix, Fs, filename_responses, filename_stimuli, filename_met
     % Create the files needed for saving the data
     file_hash = [hash_prefix '_',  stimuli_hash];
 
-    if exp_phase > 1
-        phase_prefix = ['phase', num2str(exp_phase), '_'];
-    else
-        phase_prefix = '';
-    end
-
-    filename_responses  = pathlib.join(config.data_dir, [phase_prefix, 'responses_', file_hash, '.csv']);
-    filename_stimuli    = pathlib.join(config.data_dir, [phase_prefix, 'stimuli_', file_hash, '.csv']);
-    filename_meta       = pathlib.join(config.data_dir, [phase_prefix, 'meta_', file_hash, '.csv']);
+    filename_responses  = pathlib.join(config.data_dir, ['responses_', file_hash, '.csv']);
+    filename_stimuli    = pathlib.join(config.data_dir, ['stimuli_', file_hash, '.csv']);
+    filename_meta       = pathlib.join(config.data_dir, ['meta_', file_hash, '.csv']);
 
     % Write the stimuli to file
     switch config.stimuli_save_type
