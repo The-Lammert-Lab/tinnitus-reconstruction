@@ -120,16 +120,15 @@ function Protocol(options)
     end
 
     %% Load Presentations Screens
-if is_two_afc
-    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png'));
-    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
-else
-    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
-    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
-end
+    if is_two_afc
+        Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png'));
+        Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
+    else
+        Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
+        Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
+    end
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
-
     
     %% Generate initial files and stimuli
 
@@ -351,28 +350,6 @@ function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, 
     pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
     soundsc(stimuli_matrix_2(:, counter), Fs);
 end % function
-
-function k = waitforkeypress(verbose)
-    % Wait for a keypress, ignoring mouse clicks.
-    % Returns 1 when a key is pressed.
-    % Returns -1 when the function encounters an error
-    % which usually happens when the figure is deleted.
-
-    arguments
-        verbose (1,1) {mustBeNumericOrLogical} = true
-    end
-
-    k = 0;
-    while k == 0
-        try
-            k = waitforbuttonpress;
-        catch
-            corelib.verb(verbose, 'INFO waitforkeypress', 'waitforkeypress exited unexpectedly.')
-            k = -1;
-            return
-        end
-    end
-end
 
 function total_trials_done = get_total_trials_done(config, config_hash)
     % Compute the total trials completed.

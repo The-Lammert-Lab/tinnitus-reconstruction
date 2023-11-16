@@ -353,28 +353,6 @@ function follow_up(options)
 
 end % function
 
-function k = waitforkeypress(verbose)
-    % Wait for a keypress, ignoring mouse clicks.
-    % Returns 1 when a key is pressed.
-    % Returns -1 when the function encounters an error
-    % which usually happens when the figure is deleted.
-
-    arguments
-        verbose (1,1) {mustBeNumericOrLogical} = true
-    end
-
-    k = 0;
-    while k == 0
-        try
-            k = waitforbuttonpress;
-        catch
-            corelib.verb(verbose, 'INFO waitforkeypress', 'waitforkeypress exited unexpectedly.')
-            k = -1;
-            return
-        end
-    end
-end % function
-
 function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
     if ~isempty(target_sound)
         soundsc(target_sound, target_fs);
