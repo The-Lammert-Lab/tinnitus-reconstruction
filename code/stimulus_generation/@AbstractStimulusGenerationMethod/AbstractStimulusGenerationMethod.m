@@ -202,7 +202,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 self (1,1) AbstractStimulusGenerationMethod
             end
             % Create frequency vector
-            freqs = linspace(0, floor(self.Fs/2), length(self.nfft/2))';
+            freqs = linspace(0, floor(self.Fs/2), self.nfft/2)';
 
             % Flatten out of range freqs and synthesize
             spect(freqs > self.max_freq & freqs < self.min_freq) = -100;
