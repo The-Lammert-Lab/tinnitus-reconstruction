@@ -218,7 +218,12 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                nfft (1,1) {mustBePositive, mustBeInteger} = self.nfft
             end
             spectrum = self.unfilled_dB*ones(nfft/2,1);
-            spectrum(tone_freq) = self.filled_dB;
+            freqs = linspace(0, floor(self.Fs/2), nfft/2)';
+            
+            % Get closest freq to target tone
+            [~, ind] = min(abs(freqs-tone_freq));
+
+            spectrum(ind) = self.filled_dB;
             stim = self.synthesize_audio(spectrum,nfft);
         end
     end
