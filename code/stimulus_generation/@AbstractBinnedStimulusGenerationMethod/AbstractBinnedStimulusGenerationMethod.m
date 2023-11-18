@@ -361,7 +361,7 @@ methods
         freqs = linspace(0, floor(self.Fs/2), length(spect))';
 
         % Flatten out of range freqs and synthesize
-        spect(freqs > self.max_freq & freqs < self.min_freq) = -20;
+        spect(freqs > self.max_freq | freqs < self.min_freq) = self.unfilled_dB;
         wav = self.synthesize_audio(spect, self.nfft);
     end
         

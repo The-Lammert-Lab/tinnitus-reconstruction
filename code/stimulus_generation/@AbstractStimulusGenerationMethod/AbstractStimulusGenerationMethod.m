@@ -201,12 +201,25 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             arguments
                 self (1,1) AbstractStimulusGenerationMethod
             end
+            spect = zeros(self.nfft/2,1);
+
             % Create frequency vector
             freqs = linspace(0, floor(self.Fs/2), self.nfft/2)';
 
             % Flatten out of range freqs and synthesize
-            spect(freqs > self.max_freq & freqs < self.min_freq) = -100;
+            spect(freqs > self.max_freq | freqs < self.min_freq) = self.unfilled_dB;
             wav = self.synthesize_audio(spect, self.nfft);
+        end
+
+        function stim = pure_tone(self, tone_freq, nfft)
+            arguments
+               self (1,1) AbstractStimulusGenerationMethod
+               tone_freq (1,1) {mustBePositive, mustBeInteger}
+               nfft (1,1) {mustBePositive, mustBeInteger} = self.nfft
+            end
+            spectrum = self.unfilled_dB*ones(nfft/2,1);
+            spectrum(tone_freq) = self.filled_dB;
+            stim = self.synthesize_audio(spectrum,nfft);
         end
     end
 
