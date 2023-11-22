@@ -73,9 +73,9 @@ function [stimuli_matrix, filename_responses, filename_stimuli, filename_meta, f
     phase_prefix = ['phase', num2str(phase), '_'];
     file_hash = [hash_prefix '_',  stimuli_hash];
 
-    filename_responses  = pathlib.join(config.data_dir, [phase_prefix, file_hash, '.csv']);
-    filename_stimuli    = pathlib.join(config.data_dir, [phase_prefix, file_hash, '.csv']);
-    filename_meta       = pathlib.join(config.data_dir, [phase_prefix, file_hash, '.csv']);
+    filename_responses  = pathlib.join(config.data_dir, [phase_prefix, 'responses_', file_hash, '.csv']);
+    filename_stimuli    = pathlib.join(config.data_dir, [phase_prefix, 'stimuli_', file_hash, '.csv']);
+    filename_meta       = pathlib.join(config.data_dir, [phase_prefix, 'meta_', file_hash, '.csv']);
 
     % Write the stimuli to file
     if modify_spectrum && strcmp(config.stimuli_save_type,'bins')

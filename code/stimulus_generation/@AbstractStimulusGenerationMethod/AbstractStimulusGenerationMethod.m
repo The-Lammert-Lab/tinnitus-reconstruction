@@ -214,7 +214,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         function stim = pure_tone(self, tone_freq, nfft)
             arguments
                self (1,1) AbstractStimulusGenerationMethod
-               tone_freq (1,1) {mustBePositive, mustBeInteger}
+               tone_freq (1,1) {mustBePositive}
                nfft (1,1) {mustBePositive, mustBeInteger} = self.nfft
             end
             spectrum = self.unfilled_dB*ones(nfft/2,1);
