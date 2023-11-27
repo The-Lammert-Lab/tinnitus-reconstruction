@@ -210,22 +210,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             spect(freqs > self.max_freq | freqs < self.min_freq) = self.unfilled_dB;
             wav = self.synthesize_audio(spect, self.nfft);
         end
-
-        function stim = pure_tone(self, tone_freq, nfft)
-            arguments
-               self (1,1) AbstractStimulusGenerationMethod
-               tone_freq (1,1) {mustBePositive}
-               nfft (1,1) {mustBePositive, mustBeInteger} = self.nfft
-            end
-            spectrum = self.unfilled_dB*ones(nfft/2,1);
-            freqs = linspace(0, floor(self.Fs/2), nfft/2)';
-            
-            % Get closest freq to target tone
-            [~, ind] = min(abs(freqs-tone_freq));
-
-            spectrum(ind) = self.filled_dB;
-            stim = self.synthesize_audio(spectrum,nfft);
-        end
     end
 
     methods (Static)

@@ -42,20 +42,19 @@ function PitchMatch(options)
     end
     %% Setup
     
-    % Get a stimgen object 
-    % This protocol only uses generic methods so class doesn't matter
-    stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-    stimgen = stimgen.from_config(config);
-    
     % Useful variables
     project_dir = pathlib.strip(mfilename('fullpath'), 3);
-    Fs = stimgen.Fs;
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
+    Fs = 44100;
 
-    % Break octave up by X'rds (3 = thirds)
-    oct_frac = 3;
+    % Break octave up into how many steps?
+    if isfield(config,'in_oct_steps') && ~isempty(config.in_oct_steps)
+        in_oct_steps = config.in_oct_steps;
+    else
+        in_oct_steps = 10;
+    end
 
     % Starting frequencies
     freqL = 3180;
@@ -118,8 +117,8 @@ function PitchMatch(options)
     %% Run 2AFC PM using Henry's Binary method
     while (true)
         % Generate stimuli
-        stimL = stimgen.pure_tone(freqL);
-        stimH = stimgen.pure_tone(freqH);
+        stimL = pure_tone(freqL,config.duration,Fs);
+        stimH = pure_tone(freqH,config.duration,Fs);
 
         % Show first pitch screen
         disp_fullscreen(ScreenA, hFig);
@@ -178,7 +177,7 @@ function PitchMatch(options)
          % Make sure stimuli are within bounds
          % If not, their choise is irrelevant b/c min or max is hit
          % Switch if reversal, too
-         if freqL / 2 < stimgen.min_freq || freqH * 2 > stimgen.max_freq || (counter > 1 && prev_respnum ~= respnum)
+         if freqL / 2 < config.min_freq || freqH * 2 > config.max_freq || (counter > 1 && prev_respnum ~= respnum)
              if in_oct
                  % This only hits on reversal
                  break
@@ -188,10 +187,10 @@ function PitchMatch(options)
                  % TODO: consider octave bounds
                  % (oct_min = (freqL+freqH)/2;
                  % oct_max = oct_min*2;)?
-                 oct_max = freqH;
+%                  oct_max = freqH;
 
                  % Take the octave and break it into set fractions
-                 in_oct_freqs = linspace(freqL,oct_max,oct_frac+1);
+                 in_oct_freqs = linspace(freqL,freqH,in_oct_steps+1);
                  freqH = in_oct_freqs(2);
 
                  %  Move to in-octave phase
@@ -203,7 +202,7 @@ function PitchMatch(options)
                  % and will be caught in above logic
 
                  % Reached the high end of possible in octave stimuli
-                 if in_oct_counter == oct_frac
+                 if in_oct_counter == in_oct_steps
                      break
                  else
                      % This is > 1st in-octave stimulus
@@ -243,8 +242,8 @@ function PitchMatch(options)
     writematrix(oct_conf_tones,filename_octave);
 
     for ii = 1:size(oct_conf_tones,1)
-        stimA = stimgen.pure_tone(oct_conf_tones(ii,1));
-        stimB = stimgen.pure_tone(oct_conf_tones(ii,2));
+        stimA = pure_tone(oct_conf_tones(ii,1),config.duration,Fs);
+        stimB = pure_tone(oct_conf_tones(ii,2),config.duration,Fs);
 
         % Show first pitch screen
         disp_fullscreen(ScreenA, hFig);
