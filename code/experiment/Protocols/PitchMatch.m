@@ -187,7 +187,15 @@ function PitchMatch(options)
 %                  oct_max = freqH;
 
                  % Take the octave and break it into set fractions
-                 in_oct_freqs = linspace(freqL,freqH,in_oct_steps+1);
+
+                 %%%%% CHANGE TO WHOLE STEPS
+                 in_oct_freqs = zeros(13,1);
+                 in_oct_freqs(1) = freqL;
+                 for ii = 2:13
+                    in_oct_freqs(ii) = 2^(1/12)*in_oct_freqs(ii-1);
+                 end
+                 in_oct_freqs = in_oct_freqs(1:2:end);
+
                  freqH = in_oct_freqs(2);
 
                  %  Move to in-octave phase
