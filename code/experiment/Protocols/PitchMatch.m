@@ -28,9 +28,6 @@ function PitchMatch(options)
     % Get the hash prefix for file naming
     hash_prefix = [config_hash, '_', posix_time];
     
-    % Add additional config fields here
-    config.n_trials = config.n_trials_per_block;
-    
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
     
@@ -295,17 +292,6 @@ function PitchMatch(options)
 end % PitchMatch
 
 %% Local functions
-% Generates a random string of length len
-% with numbers 0-9 and letters Aa-Zz
-function str = rand_str(len)
-    arguments
-        len (1,1) {mustBePositive, mustBeInteger} = 8
-    end
-    symbols = ['a':'z' 'A':'Z' '0':'9'];
-    nums = randi(numel(symbols),[1 len]);
-    str = symbols(nums);
-end % rand_str
-
 % Present confirmation box on figure exit 
 function closeRequest(~,~,hFig)
     ButtonName = questdlg('Are you sure you want to end the experiment?',...
