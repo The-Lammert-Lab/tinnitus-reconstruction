@@ -46,13 +46,6 @@ function PitchMatch(options)
     screenHeight = screenSize(4);
     Fs = 44100;
 
-    % Break octave up into how many steps?
-    if isfield(config,'in_oct_steps') && ~isempty(config.in_oct_steps)
-        in_oct_steps = config.in_oct_steps;
-    else
-        in_oct_steps = 10;
-    end
-
     % Starting frequencies
     freqL = 3180;
     freqH = 4000;
@@ -147,7 +140,7 @@ function PitchMatch(options)
         end
 
         % Save previous response to check for reversal
-        if counter > 1
+        if counter > 0
             if in_oct_counter == 1
                 % Set previous response such that if curr respnum is 0
                 % and first in_oct respnum is 1, the exp doesn't end
@@ -174,7 +167,7 @@ function PitchMatch(options)
          % Make sure stimuli are within bounds
          % If not, their choise is irrelevant b/c min or max is hit
          % Switch if reversal, too
-         if freqL / 2 < config.min_freq || freqH * 2 > config.max_freq || (counter > 1 && prev_respnum ~= respnum)
+         if freqL / 2 < config.min_freq || freqH * 2 > config.max_freq || (counter > 0 && prev_respnum ~= respnum)
              if in_oct
                  % This only hits on reversal
                  break
@@ -186,19 +179,19 @@ function PitchMatch(options)
                  % oct_max = oct_min*2;)?
 %                  oct_max = freqH;
 
-                 % Take the octave and break it into set fractions
-
-                 %%%%% CHANGE TO WHOLE STEPS
-                 in_oct_freqs = zeros(13,1);
-                 in_oct_freqs(1) = freqL;
-                 for ii = 2:13
-                    in_oct_freqs(ii) = 2^(1/12)*in_oct_freqs(ii-1);
+                 % Take the octave and break it into semitones
+                 semitones = zeros(13,1);
+                 semitones(1) = freqL;
+                 for ii = 2:length(semitones)
+                    semitones(ii) = 2^(1/12)*semitones(ii-1);
                  end
-                 in_oct_freqs = in_oct_freqs(1:2:end);
+                 % Take the wole steps
+                 in_oct_freqs = semitones(1:2:end);
 
+                 % Set new freqH
                  freqH = in_oct_freqs(2);
 
-                 %  Move to in-octave phase
+                 % Move to in-octave phase
                  in_oct = true;
              end
          else
@@ -207,7 +200,7 @@ function PitchMatch(options)
                  % and will be caught in above logic
 
                  % Reached the high end of possible in octave stimuli
-                 if in_oct_counter == in_oct_steps
+                 if in_oct_counter == length(in_oct_freqs)-1
                      break
                  else
                      % This is > 1st in-octave stimulus
