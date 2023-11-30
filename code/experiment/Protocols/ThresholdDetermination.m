@@ -1,9 +1,8 @@
 function ThresholdDetermination(cal_dB, options)
     arguments
         cal_dB (1,1) {mustBeReal}
-        options.cal_tone (:,1) {mustBeReal} = []
+        options.fig matlab.ui.Figure
         options.config_file char = []
-        options.fig matlab.ui.Figure = []
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
@@ -36,27 +35,36 @@ function ThresholdDetermination(cal_dB, options)
 
     %% Setup
     Fs = 44100;
-    test_tone = pure_tone(1000,1,Fs);
-    apm_min = -100;
-    amp_max = 100;
-    n_repeats = 2;
+    amp_min = 0;
+    amp_max = 5;
+    duration = 1; % seconds to play the tone for
+    
+    min_test_freq = 1000;
+    max_test_freq = 16000;
+    n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
 
-    % Setup and calibrate SPL meter
-    SPL = splMeter();
+    % Define scale factor so it can be referenced in figure creation
+    scale_factor = amp_min;
 
-    if isempty(options.cal_tone)
-        options.cal_tone = test_tone;
+    % Generate test frequencies
+    n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
+    oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
+
+    test_freqs = zeros(length(oct_vals)+(n_in_oct*n_octs),1);
+    oct_marks = 1:n_in_oct+1:length(test_freqs);
+    for ii = 1:n_octs
+        test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
     end
 
-    calibrate(SPL,options.cal_tone,cal_dB)
-    
-    % Figure out initial scale factor 
-    % such that sound is presented at 60dB
-    scale_factor = 10^((60-cal_dB)/20);
-
+    % Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
     filename_dB  = fullfile(config.data_dir, ['threshold_dB_', file_hash, '.csv']);
     fid_dB = fopen(filename_dB,'w');
+
+    % Save test frequencies 
+    % Double each b/c protocol is 60dB -> jn, jn+10dB -> jn
+    filename_testfreqs = fullfile(config.data_dir, ['threshold_tones_', file_hash, '.csv']);
+    writematrix(repelem(test_freqs,2,1), filename_testfreqs);
 
     %% Show figure
 
@@ -79,53 +87,75 @@ function ThresholdDetermination(cal_dB, options)
     clf(hFig)
 
     %% Fig contents
+    sldWidth = 500;
+    sldHeight = 20;
     sld = uicontrol(hFig, 'Style', 'slider', ...
-        'Position', [120 100 300 100], ...
-        'min', apm_min, 'max', amp_max, ...
+        'Position', [(screenWidth/2)-(sldWidth/2), ...
+                    (screenHeight/2)-sldHeight, ...
+                    sldWidth sldHeight], ...
+        'min', amp_min, 'max', amp_max, ...
         'Value', scale_factor, 'Callback', @getValue);
 
-    uicontrol(hFig,'Style','pushbutton', ...
-        'position', [130 150 80 20], ...
-        'String', 'Play Tone', 'Callback', @playTone);
-
-    uicontrol(hFig,'Style','pushbutton', ...
-        'position', [330 150 80 20], ...
-        'String', 'Save Choice', 'Callback', {@saveChoice hFig});
-
-    instruction_txt = uicontrol(hFig, 'Style', 'text', 'String', ...
+    instrWidth = 300;
+    instrHeight = 100;
+    instr_txt = uicontrol(hFig, 'Style', 'text', 'String', ...
         ['Adjust the volume of the ' ...
         'audio via the slider until it is "just audible". Press "Play Tone" ' ...
         'to hear the adjusted audio. Press "Save Choice" when satisfied.'], ...
-        'Position', [120 200 300 100]);
+        'Position', [(screenWidth/2)-(instrWidth/2), ...
+                    (2*screenHeight/3)-instrHeight, ...
+                    instrWidth instrHeight]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(apm_min), ...
-        'Position', [60 180 60 20]);
+    btnWidth = 80;
+    btnHeight = 20;
+    uicontrol(hFig,'Style','pushbutton', ...
+        'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
+                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
+                    btnWidth btnHeight], ...
+        'String', 'Play Tone', 'Callback', @playTone);
 
-    uicontrol(hFig, 'Style', 'text', 'String', num2str(amp_max), ...
-        'Position', [420 180 60 20]);
+    uicontrol(hFig,'Style','pushbutton', ...
+        'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
+                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
+                    btnWidth btnHeight], ...
+        'String', 'Save Choice', 'Callback', {@saveChoice hFig});
+
+    lblWidth = 60;
+    lblHeight = 20;
+    uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
+        'Position', [(screenWidth/2)-(sldWidth/2)-lblWidth-10, ...
+                    (screenHeight/2)-sldHeight-lblHeight, ...
+                    lblWidth lblHeight]);
+
+    uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
+        'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
+                    (screenHeight/2)-sldHeight-lblHeight, ...
+                    lblWidth lblHeight]);
 
     %% Allow adjusting to happen
-    for ii = 1:n_repeats
-        just_noticable = false;
-        while ~just_noticable
-            continue
-        end
+    for ii = 1:length(test_freqs)
+        curr_tone = pure_tone(test_freqs(ii),duration,Fs);
+        % Set scale factor such that first tone is presented at 60dB
+        scale_factor = 10^((60-cal_dB)/20);
+        sld.Value = scale_factor;
 
-        % Save the just noticable value
-        jn_amp = scale_factor;
-        jn_dB = 20*log10(jn_amp);
+        instr_txt.String = ['Adjust the volume of the ' ...
+            'audio via the slider until it is "just audible". Press "Play Tone" ' ...
+            'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
 
-        fprintf(fid_dB, [num2str(jn_dB), '\n']);
+        uiwait(hFig)
 
-        % Update the scale factor such that tone is presented at (jn + 10) dB
-        % Could just add 3.1623
-        scale_factor = jn_amp + 10^(1/2);
+        % Update the scale factor to present tone at (jn + 10)dB
+        scale_factor = scale_factor + 10^(1/2);
+        sld.Value = scale_factor;
 
         % Update instructions
-        instruction_txt.String = ['Please repeat the same steps as before: \n' ...
+        instr_txt.String = ['Please repeat the same steps as before:' ...
             'Adjust the volume of the ' ...
             'audio via the slider until it is "just audible". Press "Play Tone" ' ...
             'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
+
+        uiwait(hFig)
     end
 
     fclose(fid_dB);
@@ -136,23 +166,26 @@ function ThresholdDetermination(cal_dB, options)
     end % getValue
 
     function playTone(~, ~)
-        sound(scale_factor*test_tone,Fs)
+        sound(scale_factor*curr_tone,Fs)
     end % playTone
 
-    function saveChoice(~,~)
-        just_noticable = true;
+    function saveChoice(~,~,hFig)
+        % Save the just noticable value
+        jn_amp = scale_factor;
+        jn_dB = 20*log10(jn_amp);
+        fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
+        uiresume(hFig)
     end
-
-    function closeRequest(~,~,hFig)
-        ButtonName = questdlg('Confirm volume setting and continue protocol?',...
-            'Confirm Volume', ...
-            'Yes', 'No', 'Yes');
-        switch ButtonName
-            case 'Yes'
-                delete(hFig);
-            case 'No'
-                return
-        end
-    end % closeRequest
-
 end % ThresholdDetermination
+
+function closeRequest(~,~,hFig)
+    ButtonName = questdlg('Confirm volume setting and continue protocol?',...
+        'Confirm Volume', ...
+        'Yes', 'No', 'Yes');
+    switch ButtonName
+        case 'Yes'
+            delete(hFig);
+        case 'No'
+            return
+    end
+end % closeRequest
