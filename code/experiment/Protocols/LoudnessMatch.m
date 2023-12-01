@@ -35,7 +35,7 @@ function LoudnessMatch(cal_dB, options)
 
     %% Setup
     % Load just noticable dBs and test freqs from threshold data
-    [jn_vals, test_freqs] = collect_data_threshold('config',config);
+    [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
 
     if isempty(jn_vals) || isempty(test_freqs)
         corelib.verb(options.verbose,'INFO: LoudnessMatch','Generating test frequencies and starting at 60dB')
