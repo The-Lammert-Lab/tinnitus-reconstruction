@@ -34,19 +34,22 @@ function ThresholdDetermination(cal_dB, options)
     end
 
     %% Setup
+
+    %%% Important variables
     Fs = 44100;
-    amp_min = 0;
-    amp_max = 5;
+    init_dB = 60;
+    dB_min = -100;
+    dB_max = init_dB-cal_dB+20;
     duration = 1; % seconds to play the tone for
+
+    % Define dB value so it can be referenced in slider creation
+    dB_val = init_dB-cal_dB;
     
+    %%% Build test frequencies
     min_test_freq = 1000;
     max_test_freq = 16000;
     n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
 
-    % Define scale factor so it can be referenced in figure creation
-    scale_factor = amp_min;
-
-    % Generate test frequencies
     n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
     oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
 
@@ -56,7 +59,7 @@ function ThresholdDetermination(cal_dB, options)
         test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
     end
 
-    % Create and open data file
+    %%% Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
     filename_dB  = fullfile(config.data_dir, ['threshold_dB_', file_hash, '.csv']);
     fid_dB = fopen(filename_dB,'w');
@@ -93,8 +96,9 @@ function ThresholdDetermination(cal_dB, options)
         'Position', [(screenWidth/2)-(sldWidth/2), ...
                     (screenHeight/2)-sldHeight, ...
                     sldWidth sldHeight], ...
-        'min', amp_min, 'max', amp_max, ...
-        'Value', scale_factor, 'Callback', @getValue);
+        'min', dB_min, 'max', dB_max, ...
+        'SliderStep', [1/150 1/150], ...
+        'Value', dB_val, 'Callback', @getValue);
 
     instrWidth = 300;
     instrHeight = 100;
@@ -135,9 +139,10 @@ function ThresholdDetermination(cal_dB, options)
     %% Allow adjusting to happen
     for ii = 1:length(test_freqs)
         curr_tone = pure_tone(test_freqs(ii),duration,Fs);
-        % Set scale factor such that first tone is presented at 60dB
-        scale_factor = 10^((60-cal_dB)/20);
-        sld.Value = scale_factor;
+
+        % Reset slider value to 60dB
+        dB_val = init_dB-cal_dB;
+        sld.Value = dB_val;
 
         instr_txt.String = ['Adjust the volume of the ' ...
             'audio via the slider until it is "just audible". Press "Play Tone" ' ...
@@ -145,9 +150,9 @@ function ThresholdDetermination(cal_dB, options)
 
         uiwait(hFig)
 
-        % Update the scale factor to present tone at (jn + 10)dB
-        scale_factor = scale_factor + 10^(1/2);
-        sld.Value = scale_factor;
+        % Play tone again at "just noticable" + 10 dB
+        dB_val = dB_val + 10;
+        sld.Value = dB_val;
 
         % Update instructions
         instr_txt.String = ['Please repeat the same steps as before:' ...
@@ -163,17 +168,19 @@ function ThresholdDetermination(cal_dB, options)
     
     %% Callback Functions
     function getValue(~,~)
-        scale_factor = sld.Value;
+        dB_val = sld.Value;
     end % getValue
 
     function playTone(~, ~)
-        sound(scale_factor*curr_tone,Fs)
+        % Convert dB to gain and play sound
+        amp_scale = 10^(dB_val/20);
+        sound(amp_scale*curr_tone,Fs)
     end % playTone
 
     function saveChoice(~,~,hFig)
         % Save the just noticable value
-        jn_amp = scale_factor;
-        jn_dB = 20*log10(jn_amp);
+        jn_dB = dB_val+cal_dB;
+        jn_amp = 10^(jn_dB/20);
         fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
         uiresume(hFig)
     end
