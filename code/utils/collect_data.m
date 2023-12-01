@@ -11,12 +11,11 @@ function [responses, stimuli] = collect_data(options)
     % If no config file path is provided,
     % open a UI to load the config
     if isempty(options.config) && isempty(options.config_file)
-        [file, abs_path] = uigetfile();
-        config = parse_config(pathlib.join(abs_path, file), options.verbose);
-        corelib.verb(options.verbose, 'INFO: collect_data', ['config file [', file, '] loaded from GUI'])
+        config = parse_config(options.config_file);
+        corelib.verb(options.verbose, 'INFO: collect_data', 'config file loaded from GUI')
     elseif isempty(options.config)
-        config = parse_config(options.config_file, options.verbose);
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config object loaded from provided file [', options.config_file, ']')
+        config = parse_config(options.config_file);
+        corelib.verb(options.verbose, 'INFO: collect_data', ['config object loaded from provided file [', options.config_file, ']'])
     else
         config = options.config;
         corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')

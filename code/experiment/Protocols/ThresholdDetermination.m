@@ -159,6 +159,7 @@ function ThresholdDetermination(cal_dB, options)
     end
 
     fclose(fid_dB);
+    delete(hFig)
     
     %% Callback Functions
     function getValue(~,~)
