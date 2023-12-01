@@ -10,13 +10,13 @@ function [mean_dBs, unique_tones] = collect_data_threshold(options)
     % open a UI to load the config
     if isempty(options.config) && isempty(options.config_file)
         config = parse_config(options.config_file);
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config file loaded from GUI')
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', 'config file loaded from GUI')
     elseif isempty(options.config)
         config = parse_config(options.config_file);
-        corelib.verb(options.verbose, 'INFO: collect_data', ['config object loaded from provided file [', options.config_file, ']'])
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', ['config object loaded from provided file [', options.config_file, ']'])
     else
         config = options.config;
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', 'config object provided')
     end
     
     config_hash = get_hash(config);
@@ -24,14 +24,21 @@ function [mean_dBs, unique_tones] = collect_data_threshold(options)
     % If no data directory is provided, use the one from the config file
     if isempty(options.data_dir)
         options.data_dir = config.data_dir;
-        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from config: ' char(config.data_dir)])
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', ['using data directory from config: ' char(config.data_dir)])
     else
-        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from function arguments: ' options.data_dir])
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', ['using data directory from function arguments: ' options.data_dir])
     end
 
     % Get all full file names
-    files_thresholds = dir(fullfile(options.data_dir, ['threshold_dB_', config_hash, '*.csv']));
+    files_thresholds = dir(fullfile(options.data_dir, ['threshold_dBs_', config_hash, '*.csv']));
     files_tones = dir(fullfile(options.data_dir, ['threshold_tones_', config_hash, '*.csv']));
+
+    if isempty(files_thresholds) || isempty(files_tones)
+        mean_dBs = [];
+        unique_tones = [];
+        corelib.verb(options.verbose, 'INFO: collect_data_threshold', 'No threshold data found.')
+        return
+    end
 
     % Collect
     dBs = cell(length(files_thresholds),1);

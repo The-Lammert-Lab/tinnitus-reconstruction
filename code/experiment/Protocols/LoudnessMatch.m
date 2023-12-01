@@ -1,4 +1,4 @@
-function ThresholdDetermination(cal_dB, options)
+function LoudnessMatch(cal_dB, options)
     arguments
         cal_dB (1,1) {mustBeReal}
         options.fig matlab.ui.Figure
@@ -22,7 +22,7 @@ function ThresholdDetermination(cal_dB, options)
 
     % Get the hash prefix for file naming
     hash_prefix = [config_hash, '_', posix_time];
-
+ 
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
 
@@ -34,43 +34,46 @@ function ThresholdDetermination(cal_dB, options)
     end
 
     %% Setup
+    % Load just noticable dBs and test freqs from threshold data
+    [jn_vals, test_freqs] = collect_data_threshold('config',config);
 
-    %%% Important variables
-    Fs = 44100;
-    init_dB = 60;
-    dB_min = -100;
-    dB_max = init_dB-cal_dB+20;
-    duration = 1; % seconds to play the tone for
+    if isempty(jn_vals) || isempty(test_freqs)
+        corelib.verb(options.verbose,'INFO: LoudnessMatch','Generating test frequencies and starting at 60dB')
 
-    % Define dB value so it can be referenced in slider creation
-    curr_dB = init_dB-cal_dB;
+        min_test_freq = 1000;
+        max_test_freq = 16000;
+        n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
     
-    %%% Build test frequencies
-    min_test_freq = 1000;
-    max_test_freq = 16000;
-    n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
+        n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
+        oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
+    
+        test_freqs = zeros(length(oct_vals)+(n_in_oct*n_octs),1);
+        oct_marks = 1:n_in_oct+1:length(test_freqs);
+        for ii = 1:n_octs
+            test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
+        end
 
-    n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
-    oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
-
-    test_freqs = zeros(length(oct_vals)+(n_in_oct*n_octs),1);
-    oct_marks = 1:n_in_oct+1:length(test_freqs);
-    for ii = 1:n_octs
-        test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
+        init_dBs = 60*ones(length(test_freqs),1);
+    else
+        init_dBs = jn_vals(:,1) + 10;
     end
 
     %%% Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
-    filename_dB  = fullfile(config.data_dir, ['threshold_dBs_', file_hash, '.csv']);
+    filename_dB  = fullfile(config.data_dir, ['loudness_dBs_', file_hash, '.csv']);
     fid_dB = fopen(filename_dB,'w');
 
     % Save test frequencies 
-    % Double each b/c protocol is 60dB -> jn, jn+10dB -> jn
-    filename_testfreqs = fullfile(config.data_dir, ['threshold_tones_', file_hash, '.csv']);
+    % Double each b/c protocol is jndB -> jn, jn+10dB -> jn
+    filename_testfreqs = fullfile(config.data_dir, ['loudness_tones_', file_hash, '.csv']);
     writematrix(repelem(test_freqs,2,1), filename_testfreqs);
 
-    %% Show figure
+    %%% Slider values
+    dB_min = -100;
+    dB_max = 60;
+    curr_dB = init_dBs(1);
 
+    %% Show figure
     % Useful vars
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
@@ -94,8 +97,8 @@ function ThresholdDetermination(cal_dB, options)
     sldHeight = 20;
     sld = uicontrol(hFig, 'Style', 'slider', ...
         'Position', [(screenWidth/2)-(sldWidth/2), ...
-                    (screenHeight/2)-sldHeight, ...
-                    sldWidth sldHeight], ...
+        (screenHeight/2)-sldHeight, ...
+        sldWidth sldHeight], ...
         'min', dB_min, 'max', dB_max, ...
         'SliderStep', [1/150 1/150], ...
         'Value', curr_dB, 'Callback', @getValue);
@@ -103,69 +106,73 @@ function ThresholdDetermination(cal_dB, options)
     instrWidth = 300;
     instrHeight = 100;
     instr_txt = uicontrol(hFig, 'Style', 'text', 'String', ...
-        ['Adjust the volume of the ' ...
-        'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-        'to hear the adjusted audio. Press "Save Choice" when satisfied.'], ...
+        ['Adjust the volume of the audio via the slider ' ...
+        'until it matches the loudness of your tinnitus. ' ...
+        'Press "Play Tone" to hear the adjusted audio. ' ...
+        'Press "Save Choice" when satisfied.'], ...
         'Position', [(screenWidth/2)-(instrWidth/2), ...
-                    (2*screenHeight/3)-instrHeight, ...
-                    instrWidth instrHeight]);
+        (2*screenHeight/3)-instrHeight, ...
+        instrWidth, instrHeight]);
 
     btnWidth = 80;
     btnHeight = 20;
     uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth btnHeight], ...
+        (screenHeight/2)-sldHeight-(2*btnHeight), ...
+        btnWidth, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
     uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth btnHeight], ...
+        (screenHeight/2)-sldHeight-(2*btnHeight), ...
+        btnWidth, btnHeight], ...
         'String', 'Save Choice', 'Callback', {@saveChoice hFig});
 
     lblWidth = 60;
     lblHeight = 20;
     uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
         'Position', [(screenWidth/2)-(sldWidth/2)-lblWidth-10, ...
-                    (screenHeight/2)-sldHeight-lblHeight, ...
-                    lblWidth lblHeight]);
+        (screenHeight/2)-sldHeight-lblHeight, ...
+        lblWidth, lblHeight]);
 
     uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
         'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
-                    (screenHeight/2)-sldHeight-lblHeight, ...
-                    lblWidth lblHeight]);
+        (screenHeight/2)-sldHeight-lblHeight, ...
+        lblWidth lblHeight]);
 
     %% Run protocol
     for ii = 1:length(test_freqs)
         curr_tone = pure_tone(test_freqs(ii),duration,Fs);
+        curr_init_dB = init_dBs(ii);
 
-        % Reset slider value to 60dB
-        curr_dB = init_dB-cal_dB;
+        % Reset slider value to just noticable + 10 ( == init_dB)
+        curr_dB = curr_init_dB-cal_dB;
         sld.Value = curr_dB;
 
-        instr_txt.String = ['Adjust the volume of the ' ...
-            'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-            'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
+        instr_txt.String =  ['Adjust the volume of the audio via the slider ' ...
+            'until it matches the loudness of your tinnitus. ' ...
+            'Press "Play Tone" to hear the adjusted audio. ' ...
+            'Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
 
-        % Play tone again at "just noticable" + 10 dB
-        curr_dB = curr_dB + 10;
+        % Repeat
+        curr_dB = curr_init_dB-cal_dB;
         sld.Value = curr_dB;
 
         % Update instructions
         instr_txt.String = ['Please repeat the same steps as before:' ...
-            'Adjust the volume of the ' ...
-            'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-            'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
+            'Adjust the volume of the audio via the slider ' ...
+            'until it matches the loudness of your tinnitus. ' ...
+            'Press "Play Tone" to hear the adjusted audio. ' ...
+            'Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
     end
 
     fclose(fid_dB);
     delete(hFig)
-    
+
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
@@ -184,7 +191,7 @@ function ThresholdDetermination(cal_dB, options)
         fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
         uiresume(hFig)
     end
-end % ThresholdDetermination
+end
 
 function closeRequest(~,~,hFig)
     ButtonName = questdlg('Confirm volume setting and continue protocol?',...
