@@ -61,6 +61,9 @@ function [mean_dBs, unique_tones] = collect_data_thresh_or_loud(exp_type, option
     tones = vertcat(tones{:});
     dBs = vertcat(dBs{:});
 
+    % Remove any tones that do not have a corresponding decibel level
+    tones = tones(1:size(dBs,1));
+
     % Get unique tones in sorted order
     [unique_tones, ~, group_inds] = unique(tones,'sorted');
 
