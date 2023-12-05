@@ -186,30 +186,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
                 error('unknown type for "options", should be a character vector or a struct')
             end
         end % function
-
-        function wav = white_noise(self)
-            % ### white_noise
-            % Generate a white noise sound.
-            %
-            % **ARGUMENTS:**
-            %
-            % - self: `1 x 1` `AbstractStimulusGenerationMethod`
-            %
-            % **OUTPUTS:**
-            %
-            %   - wav: `n x 1` white noise waveform.
-            arguments
-                self (1,1) AbstractStimulusGenerationMethod
-            end
-            spect = zeros(self.nfft/2,1);
-
-            % Create frequency vector
-            freqs = linspace(0, floor(self.Fs/2), self.nfft/2)';
-
-            % Flatten out of range freqs and synthesize
-            spect(freqs > self.max_freq | freqs < self.min_freq) = self.unfilled_dB;
-            wav = self.synthesize_audio(spect, self.nfft);
-        end
     end
 
     methods (Static)
