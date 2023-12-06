@@ -3,6 +3,7 @@ function LoudnessMatch(cal_dB, options)
         cal_dB (1,1) {mustBeReal}
         options.fig matlab.ui.Figure
         options.config_file char = []
+        options.del_fig logical = true
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
@@ -34,23 +35,20 @@ function LoudnessMatch(cal_dB, options)
     end
 
     %% Setup
+    Fs = 44100;
+
     % Load just noticable dBs and test freqs from threshold data
     [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
 
     if isempty(jn_vals) || isempty(test_freqs)
         corelib.verb(options.verbose,'INFO: LoudnessMatch','Generating test frequencies and starting at 60dB')
 
-        min_test_freq = 1000;
-        max_test_freq = 16000;
-        n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
-    
-        n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
-        oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
-    
-        test_freqs = zeros(length(oct_vals)+(n_in_oct*n_octs),1);
-        oct_marks = 1:n_in_oct+1:length(test_freqs);
-        for ii = 1:n_octs
-            test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
+        test_freqs = gen_octaves(config.min_tone_freq,config.max_tone_freq,2,'semitone');
+
+        % config.max_tone_freq might not always be in test_freqs, but
+        % config.min_tone_freq will (start from min freq and double)
+        if ~ismember(config.max_tone_freq,test_freqs)
+            test_freqs(end+1) = config.max_tone_freq;
         end
 
         init_dBs = 60*ones(length(test_freqs),1);
@@ -58,9 +56,14 @@ function LoudnessMatch(cal_dB, options)
         init_dBs = jn_vals(:,1) + 10;
     end
 
+    % Subtract calibraiton dB so that sounds are presented at correct level
+    init_dBs = init_dBs - cal_dB;
+    duration = 1; % seconds to play the tone for
+
     %%% Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
     filename_dB  = fullfile(config.data_dir, ['loudness_dBs_', file_hash, '.csv']);
+    filename_noise_dB  = fullfile(config.data_dir, ['loudness_noise_dB_', file_hash, '.csv']);
     fid_dB = fopen(filename_dB,'w');
 
     % Save test frequencies 
@@ -69,9 +72,14 @@ function LoudnessMatch(cal_dB, options)
     writematrix(repelem(test_freqs,2,1), filename_testfreqs);
 
     %%% Slider values
-    dB_min = -100;
-    dB_max = 60;
+    dB_min = -100-cal_dB;
+    dB_max = 100-cal_dB;
     curr_dB = init_dBs(1);
+
+    % Load error and end screens
+    project_dir = pathlib.strip(mfilename('fullpath'), 3);
+    ScreenError = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideError.png'));
+    ScreenEnd = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideExpEnd.png'));
 
     %% Show figure
     % Useful vars
@@ -141,12 +149,18 @@ function LoudnessMatch(cal_dB, options)
         lblWidth lblHeight]);
 
     %% Run protocol
-    for ii = 1:length(test_freqs)
-        curr_tone = pure_tone(test_freqs(ii),duration,Fs);
-        curr_init_dB = init_dBs(ii);
+    for ii = 1:length(test_freqs)+1
+        if ii == length(test_freqs)+1
+            curr_tone = white_noise(duration,Fs);
+            curr_init_dB = 60-cal_dB;
+            noise_trial = true;
+        else
+            curr_tone = pure_tone(test_freqs(ii),duration,Fs);
+            curr_init_dB = init_dBs(ii);
+        end
 
         % Reset slider value to just noticable + 10 ( == init_dB)
-        curr_dB = curr_init_dB-cal_dB;
+        curr_dB = curr_init_dB;
         sld.Value = curr_dB;
 
         instr_txt.String =  ['Adjust the volume of the audio via the slider ' ...
@@ -157,11 +171,11 @@ function LoudnessMatch(cal_dB, options)
         uiwait(hFig)
 
         % Repeat
-        curr_dB = curr_init_dB-cal_dB;
+        curr_dB = curr_init_dB;
         sld.Value = curr_dB;
 
         % Update instructions
-        instr_txt.String = ['Please repeat the same steps as before:' ...
+        instr_txt.String = ['Please repeat the same steps as before: ' ...
             'Adjust the volume of the audio via the slider ' ...
             'until it matches the loudness of your tinnitus. ' ...
             'Press "Play Tone" to hear the adjusted audio. ' ...
@@ -171,8 +185,19 @@ function LoudnessMatch(cal_dB, options)
     end
 
     fclose(fid_dB);
-    delete(hFig)
 
+    % Show completion screen
+    disp_fullscreen(ScreenEnd, hFig);
+    k = waitforkeypress();
+    if k < 0
+        corelib.verb(options.verbose, 'INFO PitchMatch', 'Exiting...')
+        return
+    end
+
+    if options.del_fig
+        delete(hFig)
+    end
+    
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
@@ -181,14 +206,25 @@ function LoudnessMatch(cal_dB, options)
     function playTone(~, ~)
         % Convert dB to gain and play sound
         gain = 10^(curr_dB/20);
-        sound(gain*curr_tone,Fs)
+        tone_to_play = gain*curr_tone;
+        if min(tone_to_play) < -1 || max(tone_to_play) > 1
+            disp_fullscreen(ScreenError, hFig);
+            warning('Sound is clipping. Recalibrate dB level.')
+            keyboard
+            return
+        end
+        sound(tone_to_play,Fs)
     end % playTone
 
     function saveChoice(~,~,hFig)
         % Save the just noticable value
         jn_dB = curr_dB+cal_dB;
         jn_amp = 10^(jn_dB/20);
-        fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
+        if noise_trial
+            writematrix([jn_dB, jn_amp], filename_noise_dB);
+        else
+            fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
+        end
         uiresume(hFig)
     end
 end

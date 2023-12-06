@@ -19,7 +19,7 @@
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
 
-function Protocol_2AFC(options)
+function RevCorr_2AFC(options)
 
     arguments
         options.config_file char = []

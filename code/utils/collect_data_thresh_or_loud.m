@@ -1,10 +1,11 @@
-function [mean_dBs, unique_tones] = collect_data_thresh_or_loud(exp_type, options)
+function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
     arguments
-        exp_type (1,:) char 
+        exp_type (1,:) char
         options.config_file (1,:) = ''
+        options.data_dir (1, :) char = ''
         options.config = []
         options.verbose (1,1) logical = true
-        options.data_dir (1, :) char = ''
+        options.average logical = true
     end
 
     if ~ismember(exp_type,{'threshold','loudness'})
@@ -40,8 +41,8 @@ function [mean_dBs, unique_tones] = collect_data_thresh_or_loud(exp_type, option
     files_tones = dir(fullfile(options.data_dir, [exp_type, '_tones_', config_hash, '*.csv']));
 
     if isempty(files_thresholds) || isempty(files_tones)
-        mean_dBs = [];
-        unique_tones = [];
+        dBs = [];
+        tones = [];
         corelib.verb(options.verbose, 'INFO: collect_data_thresh_or_loud', ['No ', exp_type, ' data found.'])
         return
     end
@@ -64,9 +65,11 @@ function [mean_dBs, unique_tones] = collect_data_thresh_or_loud(exp_type, option
     % Remove any tones that do not have a corresponding decibel level
     tones = tones(1:size(dBs,1));
 
-    % Get unique tones in sorted order
-    [unique_tones, ~, group_inds] = unique(tones,'sorted');
-
-    % Average dBs and amplitudes grouping by tone frequency
-    mean_dBs = splitapply(@mean,dBs,group_inds);
+    if options.average
+        % Get unique tones in sorted order
+        [tones, ~, group_inds] = unique(tones,'sorted');
+    
+        % Average dBs and amplitudes grouping by tone frequency
+        dBs = splitapply(@mean,dBs,group_inds);
+    end
 end

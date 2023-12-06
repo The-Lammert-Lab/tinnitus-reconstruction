@@ -3,6 +3,7 @@ function ThresholdDetermination(cal_dB, options)
         cal_dB (1,1) {mustBeReal}
         options.fig matlab.ui.Figure
         options.config_file char = []
+        options.del_fig logical = true
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
@@ -38,25 +39,21 @@ function ThresholdDetermination(cal_dB, options)
     %%% Important variables
     Fs = 44100;
     init_dB = 60;
-    dB_min = -100;
-    dB_max = init_dB-cal_dB+20;
+    dB_min = -100-cal_dB;
+    dB_max = 100-cal_dB;
+    sld_incr = 1/200;
     duration = 1; % seconds to play the tone for
 
     % Define dB value so it can be referenced in slider creation
     curr_dB = init_dB-cal_dB;
     
     %%% Build test frequencies
-    min_test_freq = 1000;
-    max_test_freq = 16000;
-    n_in_oct = 2; % Number of points inside each octave (2 points = split octave into thirds)
+    test_freqs = gen_octaves(config.min_tone_freq,config.max_tone_freq,2,'semitone');
 
-    n_octs = floor(log2(max_test_freq/min_test_freq)); % Number of octaves between min and max
-    oct_vals = min_test_freq * 2.^(0:n_octs); % Octave frequency values
-
-    test_freqs = zeros(length(oct_vals)+(n_in_oct*n_octs),1);
-    oct_marks = 1:n_in_oct+1:length(test_freqs);
-    for ii = 1:n_octs
-        test_freqs(oct_marks(ii):oct_marks(ii)+n_in_oct+1) = linspace(oct_vals(ii),oct_vals(ii+1),n_in_oct+2);
+    % config.max_tone_freq might not always be in test_freqs, but
+    % config.min_tone_freq will (start from min freq and double)
+    if ~ismember(config.max_tone_freq,test_freqs)
+        test_freqs(end+1) = config.max_tone_freq;
     end
 
     %%% Create and open data file
@@ -68,6 +65,11 @@ function ThresholdDetermination(cal_dB, options)
     % Double each b/c protocol is 60dB -> jn, jn+10dB -> jn
     filename_testfreqs = fullfile(config.data_dir, ['threshold_tones_', file_hash, '.csv']);
     writematrix(repelem(test_freqs,2,1), filename_testfreqs);
+
+    % Load error and end screens
+    project_dir = pathlib.strip(mfilename('fullpath'), 3);
+    ScreenError = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideError.png'));
+    ScreenEnd = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideExpEnd.png'));
 
     %% Show figure
 
@@ -95,9 +97,9 @@ function ThresholdDetermination(cal_dB, options)
     sld = uicontrol(hFig, 'Style', 'slider', ...
         'Position', [(screenWidth/2)-(sldWidth/2), ...
                     (screenHeight/2)-sldHeight, ...
-                    sldWidth sldHeight], ...
+                    sldWidth, sldHeight], ...
         'min', dB_min, 'max', dB_max, ...
-        'SliderStep', [1/150 1/150], ...
+        'SliderStep', [sld_incr, sld_incr], ...
         'Value', curr_dB, 'Callback', @getValue);
 
     instrWidth = 300;
@@ -108,20 +110,20 @@ function ThresholdDetermination(cal_dB, options)
         'to hear the adjusted audio. Press "Save Choice" when satisfied.'], ...
         'Position', [(screenWidth/2)-(instrWidth/2), ...
                     (2*screenHeight/3)-instrHeight, ...
-                    instrWidth instrHeight]);
+                    instrWidth, instrHeight]);
 
     btnWidth = 80;
     btnHeight = 20;
     uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
                     (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth btnHeight], ...
+                    btnWidth, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
     uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
                     (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth btnHeight], ...
+                    btnWidth, btnHeight], ...
         'String', 'Save Choice', 'Callback', {@saveChoice hFig});
 
     lblWidth = 60;
@@ -129,12 +131,13 @@ function ThresholdDetermination(cal_dB, options)
     uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
         'Position', [(screenWidth/2)-(sldWidth/2)-lblWidth-10, ...
                     (screenHeight/2)-sldHeight-lblHeight, ...
-                    lblWidth lblHeight]);
+                    lblWidth, lblHeight]);
 
     uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
         'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
                     (screenHeight/2)-sldHeight-lblHeight, ...
-                    lblWidth lblHeight]);
+                    lblWidth, lblHeight]);
+
 
     %% Run protocol
     for ii = 1:length(test_freqs)
@@ -164,7 +167,18 @@ function ThresholdDetermination(cal_dB, options)
     end
 
     fclose(fid_dB);
-    delete(hFig)
+
+    % Show completion screen 
+    disp_fullscreen(ScreenEnd, hFig);
+    k = waitforkeypress();
+    if k < 0
+        corelib.verb(options.verbose, 'INFO PitchMatch', 'Exiting...')
+        return
+    end
+
+    if options.del_fig
+        delete(hFig)
+    end
     
     %% Callback Functions
     function getValue(~,~)
@@ -174,7 +188,14 @@ function ThresholdDetermination(cal_dB, options)
     function playTone(~, ~)
         % Convert dB to gain and play sound
         gain = 10^(curr_dB/20);
-        sound(gain*curr_tone,Fs)
+        tone_to_play = gain*curr_tone;
+        if min(tone_to_play) < -1 || max(tone_to_play) > 1
+            disp_fullscreen(ScreenError, hFig);
+            warning('Sound is clipping. Recalibrate dB level.')
+            keyboard
+            return
+        end
+        sound(tone_to_play,Fs)
     end % playTone
 
     function saveChoice(~,~,hFig)

@@ -161,7 +161,7 @@ function follow_up(options)
         'filter',options.filter,'cutoff',options.cutoff_freqs);
 
     % Generate white noise
-    noise_waveform = stimgen.white_noise();
+    noise_waveform = white_noise(stimgen.duration);
 
     %% Load Screens
     % Load Protocol completion/follow up intro screen
