@@ -1,4 +1,37 @@
-function [stimuli, responses, octave_stimuli, octave_responses] = collect_data_pitch_match(options)
+% ### collect_data_pitch_match
+% 
+% Returns the saved responses and stimuli 
+% from pitch matching experiments for a given config file.
+% 
+% **ARGUMENTS:**
+% 
+%   - config_file: `char`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - config: `struct`, name-value, default: `[]`
+%       An already-loaded config struct.
+%   - data_dir: `char`, name-value, default: `''`
+%       Filepath to directory in which data is stored. 
+%       `config.data_dir` is used if left empty. 
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+% 
+% **OUTPUTS:**
+% 
+%   - responses: `n x 1` cell of vectors containing responses on {0,1},
+%       where `n` is the number of PitchMatch experiments run with this config file.
+%       Each row contains the responses from separate experiments.
+%   - stimuli: `n x 1` cell of vectors containing frequency values 
+%       corresponding to the responses. 
+%       Each row contains the responses from separate experiments.
+%   - octave_responses: `n x 1` cell of vectors containing responses 
+%       on {0,1} to the "octave confusion" section of the PitchMatch experiment. 
+%       Each row contains the responses of separate experiments.
+%   - octave_stimuli: `n x 1` cell of vectors containing frequency values
+%       from the "octave confusion" section of the PitchMatch experiment. 
+%       Each row contains the responses of separate experiments.
+
+function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_pitch_match(options)
     arguments
         options.config_file (1,:) = ''
         options.config = []

@@ -1,3 +1,37 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ### LoudnessMatch
+% 
+% Protocol for matching perceived loudness of tones to tinnitus level.
+% 
+% ```matlab
+%   LoudnessMatch(cal_dB) 
+%   LoudnessMatch(cal_dB, 'config', 'path2config')
+%   LoudnessMatch(cal_dB, 'verbose', false, 'fig', gcf, 'del_fig', false)
+% ```
+% 
+% **ARGUMENTS:**
+% 
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
+%   - config_file, `character vector`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+%   - del_fig, `logical`, name-value, default: `true`,
+%       Flag to delete figure at the end of the experiment.
+%   - fig, `matlab.ui.Figure`, name-value.
+%       Handle to figure window in which to display instructions
+%       Function will create a new figure if none is supplied.
+% 
+% **OUTPUTS:**
+% 
+%   - Three `CSV` files: `loudness_dBs`, `loudness_noise_dB`, `loudness_tones`
+%       saved to config.data_dir.
+
 function LoudnessMatch(cal_dB, options)
     arguments
         cal_dB (1,1) {mustBeReal}

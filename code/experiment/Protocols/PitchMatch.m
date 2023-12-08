@@ -1,3 +1,46 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ### PitchMatch
+% 
+% Protocol for matching tinnitus to a single tone.
+% 
+% Based on the Binary method from:
+% Henry, James A., et al. 
+% "Comparison of manual and computer-automated procedures for tinnitus pitch-matching." 
+% Journal of Rehabilitation Research & Development 41.2 (2004).
+% 
+% Henry, James A., et al. 
+% "Comparison of two computer-automated procedures for tinnitus pitch matching." 
+% Journal of Rehabilitation Research & Development 38.5 (2001).
+% 
+% ```matlab
+%   PitchMatch(cal_dB) 
+%   PitchMatch(cal_dB, 'config', 'path2config')
+%   PitchMatch(cal_dB, 'verbose', false, 'fig', gcf, 'del_fig', false)
+% ```
+% 
+% **ARGUMENTS:**
+% 
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
+%   - config_file, `character vector`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+%   - del_fig, `logical`, name-value, default: `true`,
+%       Flag to delete figure at the end of the experiment.
+%   - fig, `matlab.ui.Figure`, name-value.
+%       Handle to figure window in which to display instructions
+%       Function will create a new figure if none is supplied.
+% 
+% **OUTPUTS:**
+% 
+%   - Three `CSV` files: `loudness_dBs`, `loudness_noise_dB`, `loudness_tones`
+%       saved to config.data_dir.
+
 function PitchMatch(cal_dB, options)
     arguments
         cal_dB (1,1) {mustBeReal}
@@ -365,3 +408,25 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
+
+% function value = readkeypress(target, options)
+%     % Wait for a key press and return the value
+%     % only if the pressed key was in `target`. 
+% 
+%     arguments
+%         target {mustBeNumeric}
+%         options.verbose (1,1) {mustBeNumericOrLogical} = true
+%     end
+% 
+%     value = double(get(gcf,'CurrentCharacter'));
+%     while isempty(value) || ~ismember(value, target)
+%         k = waitforkeypress(options.verbose);
+%         if k < 0
+%             value = -1;
+%             return
+%         end
+%         value = double(get(gcf,'CurrentCharacter'));
+%     end
+% 
+%     return
+% end % function

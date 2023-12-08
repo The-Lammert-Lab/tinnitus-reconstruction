@@ -377,7 +377,7 @@ function value = readkeypress(target, options)
     end
 
     value = double(get(gcf,'CurrentCharacter'));
-    while isempty(value) || ~any(ismember(target, value))
+    while isempty(value) || ~ismember(value, target)
         k = waitforkeypress(options.verbose);
         if k < 0
             value = -1;

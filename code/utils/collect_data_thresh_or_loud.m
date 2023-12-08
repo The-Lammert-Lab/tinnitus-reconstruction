@@ -1,3 +1,33 @@
+% ### collect_data_thresh_or_loud
+% 
+% Returns the saved dB levels and corresponding tones
+% from either threshold determination or loudness matching
+% experiments for a given config file.
+% 
+% **ARGUMENTS:**
+% 
+%   - exp_type: `char`, valid values: 'threshold' or 'loudness',
+%       the type of experimental data to collect.
+%   - config_file: `char`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - config: `struct`, name-value, default: `[]`
+%       An already-loaded config struct.
+%   - data_dir: `char`, name-value, default: `''`
+%       Filepath to directory in which data is stored. 
+%       `config.data_dir` is used if left empty. 
+%   - average: `logical`, name-value, default: `true`,
+%       Flag to average dB values for all repeated tones.
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+% 
+% **OUTPUTS:**
+% 
+%   - dBs: `n x 1` vector containing dB values,
+%       where `n` is the number of unique tones if `average` is `true`,
+%       or is the number of presented stimuli if `average` is `false.
+%   - tones: `n x 1` vector containing frequency values for each response.
+
 function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
     arguments
         exp_type (1,:) char

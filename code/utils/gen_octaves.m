@@ -1,5 +1,28 @@
+% ### gen_octaves 
+% 
+% Returns a vector of doubled values from 
+% min_freq to as close to max_freq as possible 
+% with optional, equally spaced in-octave values.
+% 
+% **ARGUMENTS:**
+% 
+%   - min_freq: `1 x 1` scalar, the minimum and initial frequency
+%   - max_freq: `1 x 1` scalar, the maximum possible frequency, 
+%       not guaranteed to be in the final array.
+%   - n_in_oct: `1 x 1` integer, the number of points inside each octave.
+%       If `spacing_type` == `'semitone'`, 
+%       `n_in_oct` must be in {1,2,3,5,11}. 
+%       Otherwise, can be any integer >= 0.
+%   - spacing_type: `char`, default: `'semitone'`, 
+%       the in-octave spacing method. 
+%       `'linear'` returns linearly spaced spaced values
+%       `'semitone'` splits the octave into half notes 
+%       then chooses `n_in_oct` evenly spaced values.
+% 
+%   **OUTPUTS:**
+% 
+%   - freqs: `n x 1` numerical vector of octaves starting at `min_freq`.
 
-% n_in_oct: Number of points inside each octave (2 points = split octave into thirds)
 function freqs = gen_octaves(min_freq, max_freq, n_in_oct, spacing_type)
     arguments
         min_freq (1,1) {mustBeReal}

@@ -5,16 +5,20 @@
 % **ARGUMENTS:**
 % 
 %   - config_file: character vector, default: []
-%         Path to the config file to be used.
-%         If empty, opens a GUI to find the file using a file browser.
+%       Path to the config file to be used.
+%       If empty, opens a GUI to find the file using a file browser.
+%   - legacy: `logical`, name-value, default: `false`,
+%       flag to indicate use of legacy `ReadYaml` package. 
+%   - verbose: `logical`, name-value, default: `true`,
+%       flag to show informational messages.
 % 
 % **OUTPUTS:**
 % 
 %   - varargout: `1 x 2` cell array:
-%         varargout{1} = config: `struct`, the parsed config file.
-%         varargout{2} = config_file OR abs_path, `char`,
-%             if path provided, return the path, else return path chosen
-%             from GUI.
+%       varargout{1} = config: `struct`, the parsed config file.
+%       varargout{2} = config_file OR abs_path, `char`,
+%           if path provided, return the path, else return path chosen
+%           from GUI.
 % 
 % See Also: 
 % yaml.loadFile
