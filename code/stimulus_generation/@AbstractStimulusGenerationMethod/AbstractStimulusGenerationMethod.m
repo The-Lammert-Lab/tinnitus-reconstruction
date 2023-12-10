@@ -11,8 +11,6 @@ classdef (Abstract) AbstractStimulusGenerationMethod
         duration (1,1) {mustBePositive, mustBeReal} = 0.5
         n_trials (1,1) {mustBePositive, mustBeReal} = 100
         Fs (1,1) {mustBePositive, mustBeReal} = 44.1e3
-        unfilled_dB (1,1) {mustBeReal} = -100
-        filled_dB (1,1) {mustBeReal} = 0
     end % abstract properties
     
     properties (Dependent)

@@ -4,6 +4,8 @@ classdef (Abstract) AbstractBinnedStimulusGenerationMethod < AbstractStimulusGen
 
 properties
     n_bins (1,1) {mustBePositive, mustBeInteger} = 100
+    unfilled_dB (1,1) {mustBeReal} = -100
+    filled_dB (1,1) {mustBeReal} = 0
 end % abstract properties
 
 methods
