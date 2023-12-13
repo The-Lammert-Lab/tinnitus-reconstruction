@@ -7,9 +7,9 @@
 % This function runs the main experimental procedure of this project.
 % 
 % ```matlab
-%   Protocol(cal_dB) 
-%   Protocol(cal_dB, 'config', 'path2config')
-%   Protocol(cal_dB, 'verbose', false, 'fig', gcf)
+%   RevCorr(cal_dB) 
+%   RevCorr(cal_dB, 'config', 'path2config')
+%   RevCorr(cal_dB, 'verbose', false, 'fig', gcf)
 % ```
 % 
 % **ARGUMENTS:**
