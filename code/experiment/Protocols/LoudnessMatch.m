@@ -70,6 +70,7 @@ function LoudnessMatch(cal_dB, options)
 
     %% Setup
     Fs = 44100;
+    err = 0; % Shared error flag variable
 
     % Load just noticable dBs and test freqs from threshold data
     [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
@@ -203,6 +204,9 @@ function LoudnessMatch(cal_dB, options)
             'Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
+        if err
+            return
+        end
 
         % Repeat
         curr_dB = curr_init_dB;
@@ -216,6 +220,9 @@ function LoudnessMatch(cal_dB, options)
             'Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
+        if err
+            return
+        end
     end
 
     fclose(fid_dB);
@@ -244,7 +251,8 @@ function LoudnessMatch(cal_dB, options)
         if min(tone_to_play) < -1 || max(tone_to_play) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            keyboard
+            err = 1;
+            uiresume(hFig)
             return
         end
         sound(tone_to_play,Fs,24)

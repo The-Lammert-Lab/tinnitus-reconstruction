@@ -76,6 +76,7 @@ function ThresholdDetermination(cal_dB, options)
     dB_max = 0;
     sld_incr = 1/200;
     duration = 1; % seconds to play the tone for
+    err = 0; % Shared error flag variable
 
     % Define dB value so it can be referenced in slider creation
     curr_dB = init_dB-cal_dB;
@@ -186,6 +187,9 @@ function ThresholdDetermination(cal_dB, options)
             'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
+        if err
+            return
+        end
 
         % Play tone again at "just noticable" + 10 dB
         curr_dB = curr_dB + 10;
@@ -198,6 +202,9 @@ function ThresholdDetermination(cal_dB, options)
             'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
 
         uiwait(hFig)
+        if err
+            return
+        end
     end
 
     fclose(fid_dB);
@@ -226,7 +233,8 @@ function ThresholdDetermination(cal_dB, options)
         if min(tone_to_play) < -1 || max(tone_to_play) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            keyboard
+            err = 1;
+            uiresume(hFig)
             return
         end
         sound(tone_to_play,Fs,24)

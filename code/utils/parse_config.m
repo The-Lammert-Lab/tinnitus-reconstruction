@@ -14,16 +14,14 @@
 % 
 % **OUTPUTS:**
 % 
-%   - varargout: `1 x 2` cell array:
-%       varargout{1} = config: `struct`, the parsed config file.
-%       varargout{2} = config_file OR abs_path, `char`,
-%           if path provided, return the path, else return path chosen
-%           from GUI.
+%   - config: `struct`, the parsed config file.
+%   - config_file: `char`, 
+%       the provided path or else the full path chosen from GUI.
 % 
 % See Also: 
 % yaml.loadFile
 
-function varargout = parse_config(config_file,legacy, verbose)
+function [config, config_file] = parse_config(config_file, legacy, verbose)
 
     arguments
         config_file (1,:) = []
@@ -41,10 +39,9 @@ function varargout = parse_config(config_file,legacy, verbose)
     if isempty(config_file)
         [file, abs_path] = uigetfile('*.yaml');
         config = read_yaml(pathlib.join(abs_path, file));
-        varargout{2} = pathlib.join(abs_path, file);
+        config_file = pathlib.join(abs_path, file);
     else
         config = read_yaml(config_file);
-        varargout{2} = config_file;
     end
 
     % Convert strings to character vectors for compatibility
@@ -99,8 +96,5 @@ function varargout = parse_config(config_file,legacy, verbose)
         end
     end
     
-
-    varargout{1} = config;
-
 end % function
 

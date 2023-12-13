@@ -179,7 +179,6 @@ function PitchMatch(cal_dB, options)
         if min([stimL; stimH]) < -1 || max([stimL; stimH]) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            keyboard
             return
         end
 
@@ -332,7 +331,6 @@ function PitchMatch(cal_dB, options)
         if min([stimA; stimB]) < -1 || max([stimA; stimB]) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            keyboard
             return
         end
 

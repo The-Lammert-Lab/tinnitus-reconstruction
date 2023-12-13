@@ -150,9 +150,17 @@ function RevCorr(cal_dB, options)
         [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
         stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
         stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
+        if any(min([stimuli_matrix_1, stimuli_matrix_2]) < -1) || any(max([stimuli_matrix_1, stimuli_matrix_1]) > 1)
+            warning('Sound is clipping. Recalibrate dB level.')
+            return
+        end
     else
         [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
         stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
+        if any(min(stimuli_matrix) < -1) || any(max(stimuli_matrix) > 1)
+            warning('Sound is clipping. Recalibrate dB level.')
+            return
+        end
     end
 
     fid_responses = fopen(filename_responses, 'w');
@@ -279,11 +287,11 @@ function RevCorr(cal_dB, options)
                     mult_range = [0,0.1];
                 end
 
-                [mult, binrange] = adjust_resynth('config_file', config_path, ...
+                [mult, binrange] = adjust_resynth(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'fig', hFig, 'mult_range', mult_range);
-                follow_up('config_file', config_path, ...
+                follow_up(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'mult', mult, 'binrange', binrange, 'fig', hFig);
@@ -320,9 +328,17 @@ function RevCorr(cal_dB, options)
                 [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
                 stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
                 stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
+                if any(min([stimuli_matrix_1, stimuli_matrix_2]) < -1) || any(max([stimuli_matrix_1, stimuli_matrix_1]) > 1)
+                    warning('Sound is clipping. Recalibrate dB level.')
+                    return
+                end
             else
                 [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
                 stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
+                if any(min(stimuli_matrix) < -1) || any(max(stimuli_matrix) > 1)
+                    warning('Sound is clipping. Recalibrate dB level.')
+                    return
+                end
             end
             fid_responses = fopen(filename_responses, 'w');
 

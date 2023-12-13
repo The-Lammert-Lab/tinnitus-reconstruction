@@ -11,6 +11,9 @@
 % 
 % **ARGUMENTS:**
 % 
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
 %   - data_dir: `character vector`, name-value, default: empty
 %       Directory where data is stored. If blank, config.data_dir is used. 
 %   - project_dir: `character vector`, name-value, default: empty
@@ -48,9 +51,10 @@
 %   - survey_XXX.csv: csv file, where XXX is the config hash.
 %       In the data directory. 
 
-function follow_up(options)
+function follow_up(cal_dB, options)
 
     arguments
+        cal_dB (1,1) {mustBeReal}
         options.data_dir char = ''
         options.project_dir char = ''
         options.this_hash char = ''
@@ -111,7 +115,7 @@ function follow_up(options)
     end
 
     % Truncate sound if necessary
-    if length(options.target_sound) > floor(0.5 * options.target_fs)
+    if ~isempty(options.target_sound) && length(options.target_sound) > floor(0.5 * options.target_fs)
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
@@ -162,6 +166,9 @@ function follow_up(options)
 
     % Generate white noise
     noise_waveform = white_noise(stimgen.duration);
+
+    % Calculate gain to present at 65dB
+    gain = 10^((65-cal_dB)/20);
 
     %% Load Screens
     % Load Protocol completion/follow up intro screen
@@ -260,6 +267,10 @@ function follow_up(options)
             num2str(options.mult),',',num2str(options.binrange),',']);
     end
 
+    % Scale waveforms to play at desired level
+    comparison(:,1) = cellfun(@(x) gain*(x./rms(x)), comparison(:,1), 'UniformOutput', false);
+    options.target_sound = gain*(options.target_sound ./ rms(options.target_sound));
+
     %% Figure
     % Open full screen figure if none provided or the provided was deleted
     if ~isfield(options, 'fig') || ~ishandle(options.fig)
@@ -355,10 +366,10 @@ end % function
 
 function play_sounds(target_sound, target_fs, comp_sound, comp_fs)
     if ~isempty(target_sound)
-        soundsc(target_sound, target_fs);
+        sound(target_sound, target_fs, 24);
         pause(length(target_sound) / target_fs + 0.3);
     end
-    soundsc(comp_sound, comp_fs);
+    sound(comp_sound, comp_fs, 24);
 end % function
 
 function value = readkeypress(target, options)
