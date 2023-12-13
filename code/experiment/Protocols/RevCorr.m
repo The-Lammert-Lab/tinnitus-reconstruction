@@ -3,26 +3,38 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ### RevCorr
 % 
-% Reverse Correlation Protocol for Cognitive Representations of Speech
-%
-% This function runs the experimental procedure of this project.
+% Reverse Correlation Protocol for Cognitive Representations of Tinnitus
+% This function runs the main experimental procedure of this project.
 % 
-% It can be called in two ways:
 % ```matlab
-% Protocol() or Protocol('config', 'path2config')
+%   Protocol(cal_dB) 
+%   Protocol(cal_dB, 'config', 'path2config')
+%   Protocol(cal_dB, 'verbose', false, 'fig', gcf)
 % ```
-% Where `'path2config'` is the file path to the desired config file.
 % 
-% If `Protocol()` is invoked, a GUI is automatically opened for the user to select the proper config file.
+% **ARGUMENTS:**
 % 
-% End of documentation
-% Author: Adam C. Lammert
-% Begun: 29.JAN.2021
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
+%   - config_file, `character vector`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+%   - fig, `matlab.ui.Figure`, name-value.
+%       Handle to figure window in which to display instructions
+%       Function will create a new figure if none is supplied.
+% 
+% **OUTPUTS:**
+% 
+%   - Two `CSV` files (`responses` and `stimuli`) saved to `config.data_dir`.
 
-function RevCorr(options)
+function RevCorr(cal_dB, options)
 
     arguments
-        options.config_file char = []
+        cal_dB (1,1) {mustBeReal}
+        options.config_file (1,:) char = ''
         options.verbose (1,1) {mustBeNumericOrLogical} = true
         options.fig matlab.ui.Figure
     end
@@ -64,6 +76,7 @@ function RevCorr(options)
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
+    gain = 10^((65-cal_dB)/20); % Amplitude value such that presentation level is 65dB
     
     % Determine the stimulus generation function
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
@@ -135,8 +148,11 @@ function RevCorr(options)
 
     if is_two_afc
         [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+        stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
+        stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
     else
         [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+        stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
     end
 
     fid_responses = fopen(filename_responses, 'w');
@@ -199,11 +215,11 @@ function RevCorr(options)
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
             if contains(config.target_signal_name,'resynth')
-                sound(target_sound*scale_factor, target_fs)
+                sound(target_sound*scale_factor,target_fs,24)
             else
-                soundsc(target_sound,target_fs)
+                sound(target_sound,target_fs,24)
             end
-            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
+            pause(length(target_sound) / target_fs + 0.3) % 300ms pause between target and stimulus
         end
 
         % Present Stimulus
@@ -302,8 +318,11 @@ function RevCorr(options)
             % Generate new stimuli and files
             if is_two_afc
                 [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+                stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
+                stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
             else
                 [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+                stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
             end
             fid_responses = fopen(filename_responses, 'w');
 
@@ -340,7 +359,7 @@ end % function
 
 function present_stimulus(stimuli_matrix, counter, Fs)
     % Play the correct stimulus to the subject.
-    soundsc(stimuli_matrix(:, counter), Fs)
+    sound(stimuli_matrix(:, counter), Fs, 24)
     pause(length(stimuli_matrix(:, counter)) / Fs)
 end % function
 
@@ -352,9 +371,9 @@ function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, 
         pause_duration = 0.3;
     end
 
-    soundsc(stimuli_matrix_1(:, counter), Fs);
+    sound(stimuli_matrix_1(:, counter), Fs, 24);
     pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
-    soundsc(stimuli_matrix_2(:, counter), Fs);
+    sound(stimuli_matrix_2(:, counter), Fs, 24);
 end % function
 
 function total_trials_done = get_total_trials_done(config, config_hash)

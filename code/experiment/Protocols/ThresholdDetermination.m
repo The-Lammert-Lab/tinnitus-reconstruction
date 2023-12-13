@@ -73,7 +73,7 @@ function ThresholdDetermination(cal_dB, options)
     Fs = 44100;
     init_dB = 60;
     dB_min = -100-cal_dB;
-    dB_max = 100-cal_dB;
+    dB_max = 0;
     sld_incr = 1/200;
     duration = 1; % seconds to play the tone for
 
@@ -85,7 +85,8 @@ function ThresholdDetermination(cal_dB, options)
 
     % config.max_tone_freq might not always be in test_freqs, but
     % config.min_tone_freq will (start from min freq and double)
-    if ~ismember(config.max_tone_freq,test_freqs)
+    % Check for exact match or rounded match
+    if ~ismember(ceil(config.max_tone_freq),ceil(test_freqs))
         test_freqs(end+1) = config.max_tone_freq;
     end
 
@@ -228,7 +229,7 @@ function ThresholdDetermination(cal_dB, options)
             keyboard
             return
         end
-        sound(tone_to_play,Fs)
+        sound(tone_to_play,Fs,24)
     end % playTone
 
     function saveChoice(~,~,hFig)

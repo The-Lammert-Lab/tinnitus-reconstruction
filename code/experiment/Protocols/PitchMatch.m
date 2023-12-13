@@ -185,13 +185,13 @@ function PitchMatch(cal_dB, options)
 
         % Show first pitch screen
         disp_fullscreen(ScreenA, hFig);
-        sound(stimL,Fs);
+        sound(stimL,Fs,24);
 
         pause(1);
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
-        sound(stimH,Fs);
+        sound(stimH,Fs,24);
 
         % Show response screen
         disp_fullscreen(ScreenChoose, hFig);
@@ -338,13 +338,13 @@ function PitchMatch(cal_dB, options)
 
         % Show first pitch screen
         disp_fullscreen(ScreenA, hFig);
-        sound(stimA,Fs);
+        sound(stimA,Fs,24);
 
         pause(1);
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
-        sound(stimB,Fs);
+        sound(stimB,Fs,24);
 
         % Show response screen
         disp_fullscreen(ScreenChoose, hFig);

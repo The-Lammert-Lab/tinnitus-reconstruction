@@ -153,7 +153,7 @@ function follow_up(options)
     % Create frequency vector 
     freqs = linspace(1, floor(Fs/2), length(recon_spectrum))' - 1; 
 
-    recon_spectrum(freqs > config.max_freq & freqs < config.min_freq) = stimgen.unfilled_dB;
+    recon_spectrum(freqs > config.max_freq | freqs < config.min_freq) = stimgen.unfilled_dB;
     recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.nfft);
 
     % Make adjusted (peak sharpened, etc.) waveform from reconstruction

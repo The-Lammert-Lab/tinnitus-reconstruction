@@ -81,7 +81,7 @@ function LoudnessMatch(cal_dB, options)
 
         % config.max_tone_freq might not always be in test_freqs, but
         % config.min_tone_freq will (start from min freq and double)
-        if ~ismember(config.max_tone_freq,test_freqs)
+        if ~ismember(ceil(config.max_tone_freq),ceil(test_freqs))
             test_freqs(end+1) = config.max_tone_freq;
         end
 
@@ -247,7 +247,7 @@ function LoudnessMatch(cal_dB, options)
             keyboard
             return
         end
-        sound(tone_to_play,Fs)
+        sound(tone_to_play,Fs,24)
     end % playTone
 
     function saveChoice(~,~,hFig)
