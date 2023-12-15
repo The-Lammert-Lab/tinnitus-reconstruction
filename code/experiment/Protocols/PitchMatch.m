@@ -38,7 +38,9 @@
 % 
 % **OUTPUTS:**
 % 
-%   - Three `CSV` files: `loudness_dBs`, `loudness_noise_dB`, `loudness_tones`
+%   - Six `CSV` files: `PM_tone_responses`, `PM_tones`, 
+%       `PM_octave_responses`, `PM_octaves`,  
+%       `PM_tone_dBs`, `PM_octave_dBs`
 %       saved to config.data_dir.
 
 function PitchMatch(cal_dB, options)
@@ -84,6 +86,7 @@ function PitchMatch(cal_dB, options)
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
     Fs = 44100;
+    duration = 1; % Seconds for sound to be played
 
     % Starting frequencies
     freqL = 3180;
@@ -96,34 +99,38 @@ function PitchMatch(cal_dB, options)
 
     % Load loudness-matched dBs
     [loudness_dBs, loudness_tones] = collect_data_thresh_or_loud('loudness','config',config);
+    loudness_dBs = loudness_dBs(:,1);
 
     % Interpolate gains
-    n_octs_high = floor(log2(config.max_tone_freq/freqH)); % Number of octaves between freqH and config.max_tone_freq
-    n_octs_low = floor(log2(freqL/config.min_tone_freq)); % Number of octaves between config.min_tone_freq and freqL
+    n_octs_high   = floor(log2(config.max_tone_freq/freqH)); % Number of octaves between freqH and config.max_tone_freq
+    n_octs_low    = floor(log2(freqL/config.min_tone_freq)); % Number of octaves between config.min_tone_freq and freqL
     possible_octs = [fliplr(freqL*0.5.^(0:n_octs_low)), freqH*2.^(0:n_octs_high)]'; % All possible octave values 
-    oct_dBs = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
-    oct_gains = 10.^(oct_dBs/20);
+    oct_dBs       = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
+    oct_gains     = 10.^(oct_dBs/20);
 
     % Generate filenames
     file_hash = [hash_prefix '_', rand_str()];
 
-    filename_responses  = fullfile(config.data_dir, ['PM_responses_', file_hash, '.csv']);
-    filename_stimuli    = fullfile(config.data_dir, ['PM_stimuli_', file_hash, '.csv']);
-    filename_octave     = fullfile(config.data_dir, ['PM_octave_', file_hash, '.csv']);
+    filename_tone_resps = fullfile(config.data_dir, ['PM_tone_responses_', file_hash, '.csv']);
+    filename_tones      = fullfile(config.data_dir, ['PM_tones_', file_hash, '.csv']);
     filename_oct_resp   = fullfile(config.data_dir, ['PM_octave_responses_', file_hash, '.csv']);
+    filename_octave     = fullfile(config.data_dir, ['PM_octaves_', file_hash, '.csv']);
+    filename_tone_dBs   = fullfile(config.data_dir, ['PM_tone_dBs_', file_hash, '.csv']);
+    filename_oct_dBs    = fullfile(config.data_dir, ['PM_octave_dBs_', file_hash, '.csv']);
 
     % Open files
-    fid_responses = fopen(filename_responses,'w');
-    fid_stimuli = fopen(filename_stimuli,'w');
-    fid_oct_resp = fopen(filename_oct_resp,'w');
+    fid_tone_resps = fopen(filename_tone_resps,'w');
+    fid_tones      = fopen(filename_tones,'w');
+    fid_oct_resp   = fopen(filename_oct_resp,'w');
+    fid_tone_dBs   = fopen(filename_tone_dBs,'w');
     
     %% Load Presentations Screens
-    ScreenInit = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideInit.png'));
-    ScreenA = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideA.png'));
-    ScreenB = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideB.png'));
+    ScreenInit   = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideInit.png'));
+    ScreenA      = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideA.png'));
+    ScreenB      = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideB.png'));
     ScreenChoose = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'PitchMatch', 'SlideC.png'));
-    ScreenError = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideError.png'));
-    ScreenEnd = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideExpEnd.png'));
+    ScreenError  = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideError.png'));
+    ScreenEnd    = imread(fullfile(project_dir, 'experiment', 'fixationscreen', 'SlideExpEnd.png'));
     
     %% Intro Screen & Start
     
@@ -162,19 +169,32 @@ function PitchMatch(cal_dB, options)
     %% Run 2AFC PM using Henry's Binary method
     while (true)
         % Generate stimuli
-        stimL = pure_tone(freqL,config.duration,Fs);
-        stimH = pure_tone(freqH,config.duration,Fs);
+        stimL = pure_tone(freqL,duration,Fs);
+        stimH = pure_tone(freqH,duration,Fs);
+
+        if counter == 0
+            % Window to apply to stimuli
+            win = tukeywin(length(stimL),0.08);
+        end
         
         if in_oct
+            % Values to save
+            perceived_dBL = in_oct_dBs(in_oct_freqs==freqL)+cal_dB;
+            perceived_dBH = in_oct_dBs(in_oct_freqs==freqH)+cal_dB;
+            % Values to use
             gainL = in_oct_gains(in_oct_freqs==freqL);
             gainH = in_oct_gains(in_oct_freqs==freqH);
         else
+            % Values to save
+            perceived_dBL = oct_dBs(possible_octs==freqL)+cal_dB;
+            perceived_dBH = oct_dBs(possible_octs==freqH)+cal_dB;
+            % Values to use
             gainL = oct_gains(possible_octs==freqL);
             gainH = oct_gains(possible_octs==freqH);
         end
 
-        stimL = gainL*stimL;
-        stimH = gainH*stimH;
+        stimL = gainL * win .* stimL;
+        stimH = gainH * win .* stimH;
 
         if min([stimL; stimH]) < -1 || max([stimL; stimH]) > 1
             disp_fullscreen(ScreenError, hFig);
@@ -186,7 +206,7 @@ function PitchMatch(cal_dB, options)
         disp_fullscreen(ScreenA, hFig);
         sound(stimL,Fs,24);
 
-        pause(1);
+        pause(1.5*duration);
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
@@ -231,23 +251,20 @@ function PitchMatch(cal_dB, options)
                 respnum = 0;
         end
 
-        % TODO: SAVE PRESENTED DB LEVEL
-
         % write stimuli and response to file
-        fprintf(fid_stimuli, [num2str(freqL), ',', num2str(freqH), '\n']);
-        fprintf(fid_responses, [num2str(respnum), '\n']);
+        fprintf(fid_tones, [num2str(freqL), ',', num2str(freqH), '\n']);
+        fprintf(fid_tone_resps, [num2str(respnum), '\n']);
+        fprintf(fid_tone_dBs, [num2str(perceived_dBL), ',', num2str(perceived_dBH), '\n']);
 
          % Decide on next 2AFC stimuli frequencies
          % Make sure stimuli are within bounds
          % If not, their choise is irrelevant b/c min or max is hit
          % Switch if reversal, too
-         if freqL / 2 < config.min_tone_freq || freqH * 2 > config.max_tone_freq || (counter > 0 && prev_respnum ~= respnum)
+         if ~in_oct && (freqL / 2 < config.min_tone_freq || freqH * 2 > config.max_tone_freq) || (counter > 0 && prev_respnum ~= respnum)
              if in_oct
                  % This only hits on reversal
                  break
              else
-                 % Can hit on any condition
-
                  % TODO: consider octave bounds
                  % (oct_min = (freqL+freqH)/2;
                  % oct_max = oct_min*2;)?
@@ -307,26 +324,25 @@ function PitchMatch(cal_dB, options)
         case 1
             chosen_tone = freqH;
     end
-    oct_conf_tones = [chosen_tone, chosen_tone / 2; ...
+    oct_conf_tones = [chosen_tone / 2, chosen_tone; ...
                       chosen_tone, chosen_tone * 2];
 
-    oct_conf_dBs = interp1(loudness_tones,loudness_dBs,oct_conf_tones)-cal_dB;
-    oct_conf_gains = 10.^(oct_conf_dBs/20);
+    % Get dB/gain for this portion of experiment
+    % Add 10 to dBs because octave tone might be really high & hard to hear
+    % Chosen tone is guaranteed to be in in_oct_freqs. 
+    this_dB = in_oct_dBs(in_oct_freqs == chosen_tone) + 10;
+    this_gain = 10^(this_dB/20);
 
-    % TODO: SAVE PRESENTED DB LEVEL
-
-    % Save octave confusion stimuli
+    % Save octave confusion stimuli and presentation level
     writematrix(oct_conf_tones,filename_octave);
+    writematrix(repelem(this_dB+cal_dB,2,2),filename_oct_dBs);
 
     for ii = 1:size(oct_conf_tones,1)
-        stimA = pure_tone(oct_conf_tones(ii,1),config.duration,Fs);
-        stimB = pure_tone(oct_conf_tones(ii,2),config.duration,Fs);
+        stimA = pure_tone(oct_conf_tones(ii,1),duration,Fs);
+        stimB = pure_tone(oct_conf_tones(ii,2),duration,Fs);
 
-        gainA = oct_conf_gains(ii,1);
-        gainB = oct_conf_gains(ii,2);
-
-        stimA = gainA*stimA;
-        stimB = gainB*stimB;
+        stimA = this_gain * win .* stimA;
+        stimB = this_gain * win .* stimB;
 
         if min([stimA; stimB]) < -1 || max([stimA; stimB]) > 1
             disp_fullscreen(ScreenError, hFig);
@@ -338,7 +354,7 @@ function PitchMatch(cal_dB, options)
         disp_fullscreen(ScreenA, hFig);
         sound(stimA,Fs,24);
 
-        pause(1);
+        pause(1.5*duration);
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
@@ -376,8 +392,8 @@ function PitchMatch(cal_dB, options)
     end % for
 
     %% Close files and figure
-    fclose(fid_stimuli);
-    fclose(fid_responses);
+    fclose(fid_tones);
+    fclose(fid_tone_resps);
     fclose(fid_oct_resp);
 
     % Show completion screen
@@ -406,25 +422,3 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
-
-% function value = readkeypress(target, options)
-%     % Wait for a key press and return the value
-%     % only if the pressed key was in `target`. 
-% 
-%     arguments
-%         target {mustBeNumeric}
-%         options.verbose (1,1) {mustBeNumericOrLogical} = true
-%     end
-% 
-%     value = double(get(gcf,'CurrentCharacter'));
-%     while isempty(value) || ~ismember(value, target)
-%         k = waitforkeypress(options.verbose);
-%         if k < 0
-%             value = -1;
-%             return
-%         end
-%         value = double(get(gcf,'CurrentCharacter'));
-%     end
-% 
-%     return
-% end % function

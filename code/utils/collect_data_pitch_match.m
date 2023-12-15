@@ -63,10 +63,10 @@ function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_p
     end
 
     % 
-    files_responses = dir(fullfile(options.data_dir, ['PM_responses_', config_hash, '*.csv']));
-    files_stimuli = dir(fullfile(options.data_dir, ['PM_stimuli_', config_hash, '*.csv']));
-    files_octave = dir(fullfile(options.data_dir, ['PM_octave_', config_hash, '*.csv']));
+    files_responses = dir(fullfile(options.data_dir, ['PM_tone_responses_', config_hash, '*.csv']));
+    files_stimuli = dir(fullfile(options.data_dir, ['PM_tones_', config_hash, '*.csv']));
     files_octave_responses = dir(fullfile(options.data_dir, ['PM_octave_responses_', config_hash, '*.csv']));
+    files_octave = dir(fullfile(options.data_dir, ['PM_octaves_', config_hash, '*.csv']));
     
     responses = cell(length(files_responses),1);
     stimuli = cell(length(files_stimuli),1);

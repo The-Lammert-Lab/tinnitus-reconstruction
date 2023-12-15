@@ -75,7 +75,7 @@ function ThresholdDetermination(cal_dB, options)
     dB_min = -100-cal_dB;
     dB_max = 0;
     sld_incr = 1/200;
-    duration = 1; % seconds to play the tone for
+    duration = 2; % seconds to play the tone for
     err = 0; % Shared error flag variable
 
     % Define dB value so it can be referenced in slider creation
@@ -155,11 +155,12 @@ function ThresholdDetermination(cal_dB, options)
                     btnWidth, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
-    uicontrol(hFig,'Style','pushbutton', ...
+    save_btn = uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
                     (screenHeight/2)-sldHeight-(2*btnHeight), ...
                     btnWidth, btnHeight], ...
-        'String', 'Save Choice', 'Callback', {@saveChoice hFig});
+        'String', 'Save Choice', 'Enable', 'off', ...
+        'Callback', {@saveChoice hFig});
 
     lblWidth = 60;
     lblHeight = 20;
@@ -176,7 +177,15 @@ function ThresholdDetermination(cal_dB, options)
 
     %% Run protocol
     for ii = 1:length(test_freqs)
+        set(save_btn, 'Enable', 'off')
         curr_tone = pure_tone(test_freqs(ii),duration,Fs);
+
+        % Apply tukey window to tone
+        % Length and window is same every time so only compute once
+        if ii == 1 
+            win = tukeywin(length(curr_tone),0.08);
+        end
+        curr_tone = win .* curr_tone;
 
         % Reset slider value to 60dB
         curr_dB = init_dB-cal_dB;
@@ -192,6 +201,7 @@ function ThresholdDetermination(cal_dB, options)
         end
 
         % Play tone again at "just noticable" + 10 dB
+        set(save_btn, 'Enable', 'off')
         curr_dB = curr_dB + 10;
         sld.Value = curr_dB;
 
@@ -224,9 +234,14 @@ function ThresholdDetermination(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
+        if strcmp(save_btn.Enable, 'off')
+            set(save_btn, 'Enable', 'on')
+        end
     end % getValue
 
     function playTone(~, ~)
+        % Stop the sound
+        clear sound
         % Convert dB to gain and play sound
         gain = 10^(curr_dB/20);
         tone_to_play = gain*curr_tone;
@@ -241,6 +256,8 @@ function ThresholdDetermination(cal_dB, options)
     end % playTone
 
     function saveChoice(~,~,hFig)
+        % Stop the sound
+        clear sound
         % Save the just noticable value
         jn_dB = curr_dB+cal_dB;
         jn_amp = 10^(jn_dB/20);

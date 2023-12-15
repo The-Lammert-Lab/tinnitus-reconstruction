@@ -70,7 +70,8 @@ function LoudnessMatch(cal_dB, options)
 
     %% Setup
     Fs = 44100;
-    err = 0; % Shared error flag variable
+    err = false; % Shared error flag variable
+    noise_trial = false; % Flag for if trial was noise
 
     % Load just noticable dBs and test freqs from threshold data
     [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
@@ -93,7 +94,7 @@ function LoudnessMatch(cal_dB, options)
 
     % Subtract calibraiton dB so that sounds are presented at correct level
     init_dBs = init_dBs - cal_dB;
-    duration = 1; % seconds to play the tone for
+    duration = 2; % seconds to play the tone for
 
     %%% Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
@@ -108,7 +109,7 @@ function LoudnessMatch(cal_dB, options)
 
     %%% Slider values
     dB_min = -100-cal_dB;
-    dB_max = 100-cal_dB;
+    dB_max = 0;
     curr_dB = init_dBs(1);
 
     % Load error and end screens
@@ -161,15 +162,16 @@ function LoudnessMatch(cal_dB, options)
     btnHeight = 20;
     uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
-        (screenHeight/2)-sldHeight-(2*btnHeight), ...
-        btnWidth, btnHeight], ...
+                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
+                    btnWidth, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
-    uicontrol(hFig,'Style','pushbutton', ...
+    save_btn = uicontrol(hFig,'Style','pushbutton', ...
         'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
-        (screenHeight/2)-sldHeight-(2*btnHeight), ...
-        btnWidth, btnHeight], ...
-        'String', 'Save Choice', 'Callback', {@saveChoice hFig});
+                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
+                    btnWidth, btnHeight], ...
+        'String', 'Save Choice', 'Enable', 'off', ...
+        'Callback', {@saveChoice hFig});
 
     lblWidth = 60;
     lblHeight = 20;
@@ -185,14 +187,25 @@ function LoudnessMatch(cal_dB, options)
 
     %% Run protocol
     for ii = 1:length(test_freqs)+1
+        set(save_btn, 'Enable', 'off')
         if ii == length(test_freqs)+1
-            curr_tone = white_noise(duration,Fs);
-            curr_init_dB = 60-cal_dB;
+            noise = white_noise(duration,Fs);
+            curr_tone = noise / rms(noise);
+            win = tukeywin(length(curr_tone),0.08);
+            curr_init_dB = 40-cal_dB;
             noise_trial = true;
         else
             curr_tone = pure_tone(test_freqs(ii),duration,Fs);
             curr_init_dB = init_dBs(ii);
         end
+
+        % Length and window is same every time so only compute once
+        if ii == 1
+            win = tukeywin(length(curr_tone),0.08);
+        end
+
+        % Apply tukey window to tone
+        curr_tone = win .* curr_tone;
 
         % Reset slider value to just noticable + 10 ( == init_dB)
         curr_dB = curr_init_dB;
@@ -209,6 +222,7 @@ function LoudnessMatch(cal_dB, options)
         end
 
         % Repeat
+        set(save_btn,'Enable','off')
         curr_dB = curr_init_dB;
         sld.Value = curr_dB;
 
@@ -242,16 +256,21 @@ function LoudnessMatch(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
+        if strcmp(save_btn.Enable,'off')
+            set(save_btn,'Enable','on')
+        end
     end % getValue
 
     function playTone(~, ~)
+        % Stop the sound
+        clear sound
         % Convert dB to gain and play sound
         gain = 10^(curr_dB/20);
         tone_to_play = gain*curr_tone;
         if min(tone_to_play) < -1 || max(tone_to_play) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            err = 1;
+            err = true;
             uiresume(hFig)
             return
         end
@@ -259,6 +278,8 @@ function LoudnessMatch(cal_dB, options)
     end % playTone
 
     function saveChoice(~,~,hFig)
+        % Stop the sound
+        clear sound
         % Save the just noticable value
         jn_dB = curr_dB+cal_dB;
         jn_amp = 10^(jn_dB/20);
