@@ -86,8 +86,7 @@ function ThresholdDetermination(cal_dB, options)
 
     % config.max_tone_freq might not always be in test_freqs, but
     % config.min_tone_freq will (start from min freq and double)
-    % Check for exact match or rounded match
-    if ~ismember(ceil(config.max_tone_freq),ceil(test_freqs))
+    if ~ismember(round(config.max_tone_freq),round(test_freqs))
         test_freqs(end+1) = config.max_tone_freq;
     end
 
@@ -127,6 +126,8 @@ function ThresholdDetermination(cal_dB, options)
     clf(hFig)
 
     %% Fig contents
+
+    %%%%% Slider
     sldWidth = 500;
     sldHeight = 20;
     sld = uicontrol(hFig, 'Style', 'slider', ...
@@ -137,47 +138,62 @@ function ThresholdDetermination(cal_dB, options)
         'SliderStep', [sld_incr, sld_incr], ...
         'Value', curr_dB, 'Callback', @getValue);
 
-    instrWidth = 300;
+    instrWidth = 500;
     instrHeight = 100;
     instr_txt = uicontrol(hFig, 'Style', 'text', 'String', ...
         ['Adjust the volume of the ' ...
         'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-        'to hear the adjusted audio. Press "Save Choice" when satisfied.'], ...
+        'to hear the adjusted audio. Press "Save Choice" when satisfied. ' ...
+        'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'], ...
         'Position', [(screenWidth/2)-(instrWidth/2), ...
                     (2*screenHeight/3)-instrHeight, ...
-                    instrWidth, instrHeight]);
+                    instrWidth, instrHeight], ...
+         'FontSize', 16);
 
-    btnWidth = 80;
+    %%%%% Buttons
+    btnWidthReg = 80;
+    btnWidthLong = 120;
     btnHeight = 20;
-    uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth, btnHeight], ...
+    
+    play_btn = uicontrol(hFig,'Style','pushbutton', ...
+        'position', [(screenWidth/2)-(sldWidth/4)-(btnWidthReg/2), ...
+                    sld.Position(2)-(2*btnHeight), ...
+                    btnWidthReg, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
+    save_btn_pos_1 = [(screenWidth/2)+(sldWidth/4)-(btnWidthLong/2), ...
+                    sld.Position(2)-(2*btnHeight), ...
+                    btnWidthLong, btnHeight];
+
+    save_btn_pos_2 = [(screenWidth/2)+(sldWidth/4)-(btnWidthReg/2), ...
+                    save_btn_pos_1(2), btnWidthReg, save_btn_pos_1(4)];
+
     save_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth, btnHeight], ...
-        'String', 'Save Choice', 'Enable', 'off', ...
+        'position', save_btn_pos_1, ...
+        'String', 'Move slider to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
+    %%%%% Labels
     lblWidth = 60;
     lblHeight = 20;
     uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
-        'Position', [(screenWidth/2)-(sldWidth/2)-lblWidth-10, ...
-                    (screenHeight/2)-sldHeight-lblHeight, ...
+        'Position', [sld.Position(1)-lblWidth-10, ...
+                    sld.Position(2)-lblHeight, ...
                     lblWidth, lblHeight]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
+    max_lbl = uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
         'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
-                    (screenHeight/2)-sldHeight-lblHeight, ...
+                    sld.Position(2)-lblHeight, ...
                     lblWidth, lblHeight]);
+
+    %%%%% Checkbox
+    checkbox = uicontrol(hFig,'Style','checkbox','String','Can''t hear',...
+        'Position',[max_lbl.Position(1), sld.Position(2)+20, ...
+        80, 20], 'Callback', @cantHear);
 
 
     %% Run protocol
     for ii = 1:length(test_freqs)
-        set(save_btn, 'Enable', 'off')
         curr_tone = pure_tone(test_freqs(ii),duration,Fs);
 
         % Apply tukey window to tone
@@ -188,12 +204,14 @@ function ThresholdDetermination(cal_dB, options)
         curr_tone = win .* curr_tone;
 
         % Reset slider value to 60dB
+        resetScreen();
         curr_dB = init_dB-cal_dB;
         sld.Value = curr_dB;
 
         instr_txt.String = ['Adjust the volume of the ' ...
             'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-            'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
+            'to hear the adjusted audio. Press "Save Choice" when satisfied. ' ...
+            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
 
         uiwait(hFig)
         if err
@@ -201,15 +219,18 @@ function ThresholdDetermination(cal_dB, options)
         end
 
         % Play tone again at "just noticable" + 10 dB
-        set(save_btn, 'Enable', 'off')
-        curr_dB = curr_dB + 10;
+        resetScreen();
+        if curr_dB + 10 <= dB_max
+            curr_dB = curr_dB + 10;
+        end
         sld.Value = curr_dB;
 
         % Update instructions
-        instr_txt.String = ['Please repeat the same steps as before:' ...
+        instr_txt.String = ['Please repeat the same steps as before: ' ...
             'Adjust the volume of the ' ...
             'audio via the slider until it is "just audible". Press "Play Tone" ' ...
-            'to hear the adjusted audio. Press "Save Choice" when satisfied.'];
+            'to hear the adjusted audio. Press "Save Choice" when satisfied. ' ...
+            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
 
         uiwait(hFig)
         if err
@@ -235,7 +256,9 @@ function ThresholdDetermination(cal_dB, options)
     function getValue(~,~)
         curr_dB = sld.Value;
         if strcmp(save_btn.Enable, 'off')
-            set(save_btn, 'Enable', 'on')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
         end
     end % getValue
 
@@ -263,6 +286,35 @@ function ThresholdDetermination(cal_dB, options)
         jn_amp = 10^(jn_dB/20);
         fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
         uiresume(hFig)
+    end
+
+    function cantHear(~,~)
+        % Value = 1 if checked, 0 if not
+        if checkbox.Value
+            set(sld,'Enable','off');
+            set(play_btn,'Enable','off');
+            curr_dB = NaN;
+        else
+            set(sld,'Enable','on');
+            set(play_btn,'Enable','on');
+            curr_dB = sld.Value;
+        end
+
+        if strcmp(save_btn.Enable, 'off')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
+        end
+    end
+
+    function resetScreen()
+        curr_dB = sld.Value;
+        set(save_btn, 'Enable', 'off', ...
+            'String', 'Move slider to activate', ...
+            'Position', save_btn_pos_1);
+        set(play_btn,'Enable','on');
+        set(sld,'Enable','on')
+        checkbox.Value = 0;
     end
 end % ThresholdDetermination
 

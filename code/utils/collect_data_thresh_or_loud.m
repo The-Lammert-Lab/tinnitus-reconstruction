@@ -18,6 +18,8 @@
 %       `config.data_dir` is used if left empty. 
 %   - average: `logical`, name-value, default: `true`,
 %       Flag to average dB values for all repeated tones.
+%   - fill_nans: `logical`, name-value, default: `false`,
+%       Flag to fill in NaN values with the previous non-NaN value
 %   - verbose, `logical`, name-value, default: `true`,
 %       Flag to show informational messages.
 % 
@@ -36,6 +38,7 @@ function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
         options.config = []
         options.verbose (1,1) logical = true
         options.average logical = true
+        options.fill_nans logical = false
     end
 
     if ~ismember(exp_type,{'threshold','loudness'})
@@ -95,11 +98,32 @@ function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
     % Remove any tones that do not have a corresponding decibel level
     tones = tones(1:size(dBs,1));
 
+    if all(isnan(dBs))
+        return
+    end
+
+    if options.fill_nans && any(isnan(dBs))
+        % Try to fill with previous first then fill with nearest
+        dBs = fillmissing(dBs,'previous');
+        if any(isnan(dBs))
+            dBs = fillmissing(dBs,'nearest');
+        end
+    end
+
     if options.average
+        % Fill in NaNs
+        if any(isnan(dBs))
+            % Try to fill with previous first then fill with nearest
+            dBs = fillmissing(dBs,'previous');
+            if any(isnan(dBs))
+                dBs = fillmissing(dBs,'nearest');
+            end
+        end
+
         % Get unique tones in sorted order
         [tones, ~, group_inds] = unique(tones,'sorted');
     
         % Average dBs and amplitudes grouping by tone frequency
-        dBs = splitapply(@mean,dBs,group_inds);
+        dBs = splitapply(@(x) mean(x,1),dBs,group_inds);
     end
 end

@@ -72,29 +72,37 @@ function LoudnessMatch(cal_dB, options)
     Fs = 44100;
     err = false; % Shared error flag variable
     noise_trial = false; % Flag for if trial was noise
+    duration = 2; % seconds to play the tone for
+
+    %%% Slider values
+    dB_min = -100-cal_dB;
+    dB_max = 0;
 
     % Load just noticable dBs and test freqs from threshold data
     [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
 
     if isempty(jn_vals) || isempty(test_freqs)
         corelib.verb(options.verbose,'INFO: LoudnessMatch','Generating test frequencies and starting at 60dB')
-
         test_freqs = gen_octaves(config.min_tone_freq,config.max_tone_freq,2,'semitone');
-
-        % config.max_tone_freq might not always be in test_freqs, but
-        % config.min_tone_freq will (start from min freq and double)
-        if ~ismember(ceil(config.max_tone_freq),ceil(test_freqs))
-            test_freqs(end+1) = config.max_tone_freq;
-        end
-
         init_dBs = 60*ones(length(test_freqs),1);
     else
         init_dBs = jn_vals(:,1) + 10;
     end
 
+    % config.max_tone_freq might not always be in test_freqs, but
+    % config.min_tone_freq will (start from min freq and double)
+    if ~ismember(round(config.max_tone_freq),round(test_freqs))
+        test_freqs(end+1) = config.max_tone_freq;
+    end
+
     % Subtract calibraiton dB so that sounds are presented at correct level
     init_dBs = init_dBs - cal_dB;
-    duration = 2; % seconds to play the tone for
+
+    % Make sure nothing went above max playable level
+    init_dBs(init_dBs > dB_max) = dB_max;
+
+    % Set init slider position
+    curr_dB = init_dBs(1);
 
     %%% Create and open data file
     file_hash = [hash_prefix '_', rand_str()];
@@ -106,11 +114,6 @@ function LoudnessMatch(cal_dB, options)
     % Double each b/c protocol is jndB -> jn, jn+10dB -> jn
     filename_testfreqs = fullfile(config.data_dir, ['loudness_tones_', file_hash, '.csv']);
     writematrix(repelem(test_freqs,2,1), filename_testfreqs);
-
-    %%% Slider values
-    dB_min = -100-cal_dB;
-    dB_max = 0;
-    curr_dB = init_dBs(1);
 
     % Load error and end screens
     project_dir = pathlib.strip(mfilename('fullpath'), 3);
@@ -147,47 +150,62 @@ function LoudnessMatch(cal_dB, options)
         'SliderStep', [1/150 1/150], ...
         'Value', curr_dB, 'Callback', @getValue);
 
-    instrWidth = 300;
+    instrWidth = 500;
     instrHeight = 100;
     instr_txt = uicontrol(hFig, 'Style', 'text', 'String', ...
         ['Adjust the volume of the audio via the slider ' ...
         'until it matches the loudness of your tinnitus. ' ...
         'Press "Play Tone" to hear the adjusted audio. ' ...
-        'Press "Save Choice" when satisfied.'], ...
+        'Press "Save Choice" when satisfied.' ...
+        'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'], ...
         'Position', [(screenWidth/2)-(instrWidth/2), ...
         (2*screenHeight/3)-instrHeight, ...
-        instrWidth, instrHeight]);
+        instrWidth, instrHeight], ...
+        'FontSize', 16);
 
-    btnWidth = 80;
+    %%%%% Buttons
+    btnWidthReg = 80;
+    btnWidthLong = 120;
     btnHeight = 20;
-    uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)-(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth, btnHeight], ...
+    
+    play_btn = uicontrol(hFig,'Style','pushbutton', ...
+        'position', [(screenWidth/2)-(sldWidth/4)-(btnWidthReg/2), ...
+                    sld.Position(2)-(2*btnHeight), ...
+                    btnWidthReg, btnHeight], ...
         'String', 'Play Tone', 'Callback', @playTone);
 
+    save_btn_pos_1 = [(screenWidth/2)+(sldWidth/4)-(btnWidthLong/2), ...
+                    sld.Position(2)-(2*btnHeight), ...
+                    btnWidthLong, btnHeight];
+
+    save_btn_pos_2 = [(screenWidth/2)+(sldWidth/4)-(btnWidthReg/2), ...
+                    save_btn_pos_1(2), btnWidthReg, save_btn_pos_1(4)];
+
     save_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)+(sldWidth/4)-(btnWidth/2), ...
-                    (screenHeight/2)-sldHeight-(2*btnHeight), ...
-                    btnWidth, btnHeight], ...
-        'String', 'Save Choice', 'Enable', 'off', ...
+        'position', save_btn_pos_1, ...
+        'String', 'Move slider to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
+    %%%%% Labels
     lblWidth = 60;
     lblHeight = 20;
     uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
-        'Position', [(screenWidth/2)-(sldWidth/2)-lblWidth-10, ...
-        (screenHeight/2)-sldHeight-lblHeight, ...
-        lblWidth, lblHeight]);
+        'Position', [sld.Position(1)-lblWidth-10, ...
+                    sld.Position(2)-lblHeight, ...
+                    lblWidth, lblHeight]);
 
-    uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
+    max_lbl = uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
         'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
-        (screenHeight/2)-sldHeight-lblHeight, ...
-        lblWidth lblHeight]);
+                    sld.Position(2)-lblHeight, ...
+                    lblWidth, lblHeight]);
+
+    %%%%% Checkbox
+    checkbox = uicontrol(hFig,'Style','checkbox','String','Can''t hear',...
+        'Position',[max_lbl.Position(1), sld.Position(2)+20, ...
+        80, 20], 'Callback', @cantHear);
 
     %% Run protocol
     for ii = 1:length(test_freqs)+1
-        set(save_btn, 'Enable', 'off')
         if ii == length(test_freqs)+1
             noise = white_noise(duration,Fs);
             curr_tone = noise / rms(noise);
@@ -198,6 +216,8 @@ function LoudnessMatch(cal_dB, options)
             curr_tone = pure_tone(test_freqs(ii),duration,Fs);
             curr_init_dB = init_dBs(ii);
         end
+
+        resetScreen();
 
         % Length and window is same every time so only compute once
         if ii == 1
@@ -214,7 +234,8 @@ function LoudnessMatch(cal_dB, options)
         instr_txt.String =  ['Adjust the volume of the audio via the slider ' ...
             'until it matches the loudness of your tinnitus. ' ...
             'Press "Play Tone" to hear the adjusted audio. ' ...
-            'Press "Save Choice" when satisfied.'];
+            'Press "Save Choice" when satisfied.' ... 
+            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
 
         uiwait(hFig)
         if err
@@ -222,16 +243,15 @@ function LoudnessMatch(cal_dB, options)
         end
 
         % Repeat
-        set(save_btn,'Enable','off')
-        curr_dB = curr_init_dB;
-        sld.Value = curr_dB;
+        resetScreen();
 
         % Update instructions
         instr_txt.String = ['Please repeat the same steps as before: ' ...
             'Adjust the volume of the audio via the slider ' ...
             'until it matches the loudness of your tinnitus. ' ...
             'Press "Play Tone" to hear the adjusted audio. ' ...
-            'Press "Save Choice" when satisfied.'];
+            'Press "Save Choice" when satisfied.' ...
+            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
 
         uiwait(hFig)
         if err
@@ -257,7 +277,9 @@ function LoudnessMatch(cal_dB, options)
     function getValue(~,~)
         curr_dB = sld.Value;
         if strcmp(save_btn.Enable,'off')
-            set(save_btn,'Enable','on')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
         end
     end % getValue
 
@@ -289,6 +311,36 @@ function LoudnessMatch(cal_dB, options)
             fprintf(fid_dB, [num2str(jn_dB), ',', num2str(jn_amp), '\n']);
         end
         uiresume(hFig)
+    end
+
+    function cantHear(~,~)
+        % Value = 1 if checked, 0 if not
+        if checkbox.Value
+            set(sld,'Enable','off');
+            set(play_btn,'Enable','off');
+            curr_dB = NaN;
+        else
+            set(sld,'Enable','on');
+            set(play_btn,'Enable','on');
+            curr_dB = sld.Value;
+        end
+
+        if strcmp(save_btn.Enable, 'off')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
+        end
+    end
+
+    function resetScreen()
+        set(save_btn, 'Enable', 'off', ...
+            'String', 'Move slider to activate', ...
+            'Position', save_btn_pos_1);
+        set(play_btn,'Enable','on');
+        set(sld,'Enable','on')
+        checkbox.Value = 0;
+        curr_dB = curr_init_dB;
+        sld.Value = curr_dB;
     end
 end
 
