@@ -156,7 +156,7 @@ function LoudnessMatch(cal_dB, options)
         ['Adjust the volume of the audio via the slider ' ...
         'until it matches the loudness of your tinnitus. ' ...
         'Press "Play Tone" to hear the adjusted audio. ' ...
-        'Press "Save Choice" when satisfied.' ...
+        'Press "Save Choice" when satisfied. ' ...
         'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'], ...
         'Position', [(screenWidth/2)-(instrWidth/2), ...
         (2*screenHeight/3)-instrHeight, ...
@@ -186,23 +186,13 @@ function LoudnessMatch(cal_dB, options)
         'String', 'Move slider to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
-    %%%%% Labels
-    lblWidth = 60;
-    lblHeight = 20;
-    uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
-        'Position', [sld.Position(1)-lblWidth-10, ...
-                    sld.Position(2)-lblHeight, ...
-                    lblWidth, lblHeight]);
-
-    max_lbl = uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
-        'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
-                    sld.Position(2)-lblHeight, ...
-                    lblWidth, lblHeight]);
-
     %%%%% Checkbox
+    bxWidth = 80;
+    bxHeight = 20;
     checkbox = uicontrol(hFig,'Style','checkbox','String','Can''t hear',...
-        'Position',[max_lbl.Position(1), sld.Position(2)+20, ...
-        80, 20], 'Callback', @cantHear);
+        'Position',[(screenWidth/2)+(sldWidth/2)+10, sld.Position(2)+(bxHeight/4), ...
+        bxWidth, bxHeight], 'Enable', 'off', 'Callback', @cantHear);
+
 
     %% Run protocol
     for ii = 1:length(test_freqs)+1
@@ -210,7 +200,7 @@ function LoudnessMatch(cal_dB, options)
             noise = white_noise(duration,Fs);
             curr_tone = noise / rms(noise);
             win = tukeywin(length(curr_tone),0.08);
-            curr_init_dB = 40-cal_dB;
+            curr_init_dB = 30-cal_dB;
             noise_trial = true;
         else
             curr_tone = pure_tone(test_freqs(ii),duration,Fs);
@@ -231,12 +221,6 @@ function LoudnessMatch(cal_dB, options)
         curr_dB = curr_init_dB;
         sld.Value = curr_dB;
 
-        instr_txt.String =  ['Adjust the volume of the audio via the slider ' ...
-            'until it matches the loudness of your tinnitus. ' ...
-            'Press "Play Tone" to hear the adjusted audio. ' ...
-            'Press "Save Choice" when satisfied.' ... 
-            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
-
         uiwait(hFig)
         if err
             return
@@ -244,15 +228,6 @@ function LoudnessMatch(cal_dB, options)
 
         % Repeat
         resetScreen();
-
-        % Update instructions
-        instr_txt.String = ['Please repeat the same steps as before: ' ...
-            'Adjust the volume of the audio via the slider ' ...
-            'until it matches the loudness of your tinnitus. ' ...
-            'Press "Play Tone" to hear the adjusted audio. ' ...
-            'Press "Save Choice" when satisfied.' ...
-            'If you cannot hear the sound with the volume at "Max", check the "Can''t hear" box.'];
-
         uiwait(hFig)
         if err
             return
@@ -276,7 +251,13 @@ function LoudnessMatch(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
-        if strcmp(save_btn.Enable,'off')
+        if curr_dB == dB_max
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
+
+        if strcmp(save_btn.Enable, 'off')
             set(save_btn, 'Enable', 'on', ...
                 'String', 'Save Choice', ...
                 'Position',save_btn_pos_2)
@@ -341,6 +322,11 @@ function LoudnessMatch(cal_dB, options)
         checkbox.Value = 0;
         curr_dB = curr_init_dB;
         sld.Value = curr_dB;
+        if curr_dB == dB_max
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
     end
 end
 

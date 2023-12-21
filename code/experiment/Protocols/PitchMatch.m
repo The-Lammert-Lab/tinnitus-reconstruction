@@ -68,7 +68,16 @@ function PitchMatch(cal_dB, options)
 
     % Get the hash prefix for file naming
     hash_prefix = [config_hash, '_', posix_time];
-    
+
+    %% Validate settings then save
+
+    % Starting frequencies
+    freqL = 3180;
+    freqH = 4000;
+
+    assert(config.min_tone_freq <= freqL, ['config.min_tone_freq must be less than or equal to ', num2str(freqL)])
+    assert(config.max_tone_freq >= freqH, ['config.max_tone_freq must be greater than or equal to ', num2str(freqH)])
+
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
     
@@ -87,10 +96,6 @@ function PitchMatch(cal_dB, options)
     screenHeight = screenSize(4);
     Fs = 44100;
     duration = 1; % Seconds for sound to be played
-
-    % Starting frequencies
-    freqL = 3180;
-    freqH = 4000;
 
     % Flag and counter
     in_oct = false;
@@ -206,11 +211,13 @@ function PitchMatch(cal_dB, options)
         disp_fullscreen(ScreenA, hFig);
         sound(stimL,Fs,24);
 
-        pause(1.5*duration);
+        % Pause so screen is up while sound plays and next sound doesn't play too soon
+        pause(1.5*duration); 
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
         sound(stimH,Fs,24);
+        pause(duration); % Pause so screen is up while sound plays
 
         % Show response screen
         disp_fullscreen(ScreenChoose, hFig);
@@ -265,21 +272,25 @@ function PitchMatch(cal_dB, options)
                  % This only hits on reversal
                  break
              else
-                 % TODO: consider octave bounds
-                 % (oct_min = (freqL+freqH)/2;
-                 % oct_max = oct_min*2;)?
+                 % If min or max was the preferred tone
+                 if (freqH == config.max_tone_freq && respnum) || (freqL == config.min_tone_freq && ~respnum)
+                     half_steps = semitones(freqL,12,'up');
+                 else % Reversal
+                     % Center choice freq
+                     hs_down = semitones(freqL,6,'down');
+                     hs_up = semitones(freqL,6,'up');
+                     half_steps = [flipud(hs_down); hs_up(2:end)];
+                 end
 
-                 % Take the octave and break it into semitones
-                 half_steps = semitones(freqL);
-
-                 % Take the whole steps
+                 % Take whole steps
                  in_oct_freqs = half_steps(1:2:end);
 
                  % Interpolate for these values
                  in_oct_dBs = interp1(loudness_tones,loudness_dBs,in_oct_freqs)-cal_dB;
                  in_oct_gains = 10.^(in_oct_dBs/20);
 
-                 % Set new freqH
+                 % Set new freqL and freqH
+                 freqL = in_oct_freqs(1);
                  freqH = in_oct_freqs(2);
 
                  % Move to in-octave phase
@@ -354,11 +365,13 @@ function PitchMatch(cal_dB, options)
         disp_fullscreen(ScreenA, hFig);
         sound(stimA,Fs,24);
 
+        % Pause so screen is up while sound plays and next sound doesn't play too soon
         pause(1.5*duration);
 
         % Show second pitch screen
         disp_fullscreen(ScreenB, hFig);
         sound(stimB,Fs,24);
+        pause(duration); % Pause so screen is up while sound plays
 
         % Show response screen
         disp_fullscreen(ScreenChoose, hFig);

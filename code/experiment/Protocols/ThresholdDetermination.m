@@ -148,7 +148,7 @@ function ThresholdDetermination(cal_dB, options)
         'Position', [(screenWidth/2)-(instrWidth/2), ...
                     (2*screenHeight/3)-instrHeight, ...
                     instrWidth, instrHeight], ...
-         'FontSize', 16);
+         'FontSize', 16, 'HorizontalAlignment', 'left');
 
     %%%%% Buttons
     btnWidthReg = 80;
@@ -173,24 +173,12 @@ function ThresholdDetermination(cal_dB, options)
         'String', 'Move slider to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
-    %%%%% Labels
-    lblWidth = 60;
-    lblHeight = 20;
-    uicontrol(hFig, 'Style', 'text', 'String', 'Min', ...
-        'Position', [sld.Position(1)-lblWidth-10, ...
-                    sld.Position(2)-lblHeight, ...
-                    lblWidth, lblHeight]);
-
-    max_lbl = uicontrol(hFig, 'Style', 'text', 'String', 'Max', ...
-        'Position', [(screenWidth/2)+(sldWidth/2)+10, ...
-                    sld.Position(2)-lblHeight, ...
-                    lblWidth, lblHeight]);
-
     %%%%% Checkbox
+    bxWidth = 80;
+    bxHeight = 20;
     checkbox = uicontrol(hFig,'Style','checkbox','String','Can''t hear',...
-        'Position',[max_lbl.Position(1), sld.Position(2)+20, ...
-        80, 20], 'Callback', @cantHear);
-
+        'Position',[(screenWidth/2)+(sldWidth/2)+10, sld.Position(2)+(bxHeight/4), ...
+        bxWidth, bxHeight], 'Enable', 'off', 'Callback', @cantHear);
 
     %% Run protocol
     for ii = 1:length(test_freqs)
@@ -255,6 +243,12 @@ function ThresholdDetermination(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
+        if curr_dB == dB_max
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
+
         if strcmp(save_btn.Enable, 'off')
             set(save_btn, 'Enable', 'on', ...
                 'String', 'Save Choice', ...
@@ -315,6 +309,11 @@ function ThresholdDetermination(cal_dB, options)
         set(play_btn,'Enable','on');
         set(sld,'Enable','on')
         checkbox.Value = 0;
+        if curr_dB == dB_max
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
     end
 end % ThresholdDetermination
 
