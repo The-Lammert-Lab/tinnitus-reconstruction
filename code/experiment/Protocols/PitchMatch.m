@@ -102,16 +102,22 @@ function PitchMatch(cal_dB, options)
     counter = 0;
     in_oct_counter = 0;
 
-    % Load loudness-matched dBs
-    [loudness_dBs, loudness_tones] = collect_data_thresh_or_loud('loudness','config',config);
-    loudness_dBs = loudness_dBs(:,1);
-
-    % Interpolate gains
+    % Get list of all possible octaves from the starting points
     n_octs_high   = floor(log2(config.max_tone_freq/freqH)); % Number of octaves between freqH and config.max_tone_freq
     n_octs_low    = floor(log2(freqL/config.min_tone_freq)); % Number of octaves between config.min_tone_freq and freqL
-    possible_octs = [fliplr(freqL*0.5.^(0:n_octs_low)), freqH*2.^(0:n_octs_high)]'; % All possible octave values 
-    oct_dBs       = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
-    oct_gains     = 10.^(oct_dBs/20);
+    possible_octs = [fliplr(freqL*0.5.^(0:n_octs_low)), freqH*2.^(0:n_octs_high)]'; % All possible octave values
+
+    % Load loudness-matched dBs
+    [loudness_dBs, loudness_tones] = collect_data_thresh_or_loud('loudness','config',config);
+    if ~isempty(loudness_dBs) && ~isempty(loudness_tones)
+        loudness_dBs = loudness_dBs(:,1);
+        % Interpolate gains
+        oct_dBs = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
+        oct_gains = 10.^(oct_dBs/20);
+    else % If there's no data, set all at 60dB
+        oct_dBs = 60*ones(length(possible_octs),1)-cal_dB;
+        oct_gains = 10.^(oct_dBs/20);
+    end
 
     % Generate filenames
     file_hash = [hash_prefix '_', rand_str()];
@@ -285,9 +291,14 @@ function PitchMatch(cal_dB, options)
                  % Take whole steps
                  in_oct_freqs = half_steps(1:2:end);
 
-                 % Interpolate for these values
-                 in_oct_dBs = interp1(loudness_tones,loudness_dBs,in_oct_freqs)-cal_dB;
-                 in_oct_gains = 10.^(in_oct_dBs/20);
+                 if ~isempty(loudness_dBs) && ~isempty(loudness_tones)
+                     % Interpolate for these values
+                     in_oct_dBs = interp1(loudness_tones,loudness_dBs,in_oct_freqs)-cal_dB;
+                     in_oct_gains = 10.^(in_oct_dBs/20);
+                 else % If there's no data, set all at 60dB
+                     in_oct_dBs = 60*ones(length(in_oct_freqs),1)-cal_dB;
+                     in_oct_gains = 10.^(oct_dBs/20);
+                 end
 
                  % Set new freqL and freqH
                  freqL = in_oct_freqs(1);
