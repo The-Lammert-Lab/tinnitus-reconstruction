@@ -12,7 +12,8 @@ nav:
     - Home: index.md
     - Installation and Setup: install.md
     - Experiment:
-        - Configs and Protocols: experiment.md
+        - Configs: experiment.md
+        - Protocols: Protocols.md
         - Target Sounds: ata.md
     - Stimulus Generation:
         - Abstract classes:
