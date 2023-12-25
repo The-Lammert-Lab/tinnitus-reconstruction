@@ -2,6 +2,7 @@
 % 
 % Parses stimuli and responses into cells 
 % based on number of bins in the stimuli
+% For use with UniformPriorRandNBinsStimulusGeneration stimuli
 % 
 % **ARGUMENTS:**
 % 
