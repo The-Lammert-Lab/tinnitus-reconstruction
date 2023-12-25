@@ -73,6 +73,7 @@ function LoudnessMatch(cal_dB, options)
     err = false; % Shared error flag variable
     noise_trial = false; % Flag for if trial was noise
     duration = 2; % seconds to play the tone for
+    tone_played = false;
 
     %%% Slider values
     dB_min = -100-cal_dB;
@@ -183,7 +184,7 @@ function LoudnessMatch(cal_dB, options)
 
     save_btn = uicontrol(hFig,'Style','pushbutton', ...
         'position', save_btn_pos_1, ...
-        'String', 'Move slider to activate', 'Enable', 'off', ...
+        'String', 'Play sound to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
     %%%%% Checkbox
@@ -196,6 +197,7 @@ function LoudnessMatch(cal_dB, options)
 
     %% Run protocol
     for ii = 1:length(test_freqs)+1
+        %%%%% Setup sound
         if ii == length(test_freqs)+1
             noise = white_noise(duration,Fs);
             curr_tone = noise / rms(noise);
@@ -207,8 +209,6 @@ function LoudnessMatch(cal_dB, options)
             curr_init_dB = init_dBs(ii);
         end
 
-        resetScreen();
-
         % Length and window is same every time so only compute once
         if ii == 1
             win = tukeywin(length(curr_tone),0.08);
@@ -217,10 +217,8 @@ function LoudnessMatch(cal_dB, options)
         % Apply tukey window to tone
         curr_tone = win .* curr_tone;
 
-        % Reset slider value to just noticable + 10 ( == init_dB)
-        curr_dB = curr_init_dB;
-        sld.Value = curr_dB;
-
+        % Reset screen
+        resetScreen();
         uiwait(hFig)
         if err
             return
@@ -251,16 +249,10 @@ function LoudnessMatch(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
-        if curr_dB == dB_max
+        if curr_dB == dB_max && tone_played
             set(checkbox, 'Enable', 'on')
         else
             set(checkbox, 'Enable', 'off')
-        end
-
-        if strcmp(save_btn.Enable, 'off')
-            set(save_btn, 'Enable', 'on', ...
-                'String', 'Save Choice', ...
-                'Position',save_btn_pos_2)
         end
     end % getValue
 
@@ -278,6 +270,22 @@ function LoudnessMatch(cal_dB, options)
             return
         end
         sound(tone_to_play,Fs,24)
+
+        tone_played = true;
+
+        % Activate save button
+        if strcmp(save_btn.Enable, 'off')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
+        end
+
+        % Activate can't hear (needed if tone set to max right away).
+        if curr_dB == dB_max && tone_played
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
     end % playTone
 
     function saveChoice(~,~,hFig)
@@ -315,18 +323,15 @@ function LoudnessMatch(cal_dB, options)
 
     function resetScreen()
         set(save_btn, 'Enable', 'off', ...
-            'String', 'Move slider to activate', ...
+            'String', 'Play sound to activate', ...
             'Position', save_btn_pos_1);
         set(play_btn,'Enable','on');
         set(sld,'Enable','on')
         checkbox.Value = 0;
+        set(checkbox, 'Enable', 'off')
         curr_dB = curr_init_dB;
         sld.Value = curr_dB;
-        if curr_dB == dB_max
-            set(checkbox, 'Enable', 'on')
-        else
-            set(checkbox, 'Enable', 'off')
-        end
+        tone_played = false;
     end
 end
 

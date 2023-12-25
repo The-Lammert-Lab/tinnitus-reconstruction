@@ -76,6 +76,7 @@ function ThresholdDetermination(cal_dB, options)
     dB_max = 0;
     sld_incr = 1/200;
     duration = 2; % seconds to play the tone for
+    tone_played = false;
     err = 0; % Shared error flag variable
 
     % Define dB value so it can be referenced in slider creation
@@ -170,7 +171,7 @@ function ThresholdDetermination(cal_dB, options)
 
     save_btn = uicontrol(hFig,'Style','pushbutton', ...
         'position', save_btn_pos_1, ...
-        'String', 'Move slider to activate', 'Enable', 'off', ...
+        'String', 'Play tone to activate', 'Enable', 'off', ...
         'Callback', {@saveChoice hFig});
 
     %%%%% Checkbox
@@ -231,16 +232,10 @@ function ThresholdDetermination(cal_dB, options)
     %% Callback Functions
     function getValue(~,~)
         curr_dB = sld.Value;
-        if curr_dB == dB_max
+        if curr_dB == dB_max && tone_played
             set(checkbox, 'Enable', 'on')
         else
             set(checkbox, 'Enable', 'off')
-        end
-
-        if strcmp(save_btn.Enable, 'off')
-            set(save_btn, 'Enable', 'on', ...
-                'String', 'Save Choice', ...
-                'Position',save_btn_pos_2)
         end
     end % getValue
 
@@ -258,6 +253,22 @@ function ThresholdDetermination(cal_dB, options)
             return
         end
         sound(tone_to_play,Fs,24)
+
+        tone_played = true;
+
+        % Activate save button
+        if strcmp(save_btn.Enable, 'off')
+            set(save_btn, 'Enable', 'on', ...
+                'String', 'Save Choice', ...
+                'Position',save_btn_pos_2)
+        end
+
+        % Activate can't hear (needed if tone set to max right away).
+        if curr_dB == dB_max && tone_played
+            set(checkbox, 'Enable', 'on')
+        else
+            set(checkbox, 'Enable', 'off')
+        end
     end % playTone
 
     function saveChoice(~,~,hFig)
@@ -292,16 +303,13 @@ function ThresholdDetermination(cal_dB, options)
     function resetScreen()
         curr_dB = sld.Value;
         set(save_btn, 'Enable', 'off', ...
-            'String', 'Move slider to activate', ...
+            'String', 'Play sound to activate', ...
             'Position', save_btn_pos_1);
         set(play_btn,'Enable','on');
         set(sld,'Enable','on')
         checkbox.Value = 0;
-        if curr_dB == dB_max
-            set(checkbox, 'Enable', 'on')
-        else
-            set(checkbox, 'Enable', 'off')
-        end
+        set(checkbox, 'Enable', 'off')
+        tone_played = false;
     end
 end % ThresholdDetermination
 
