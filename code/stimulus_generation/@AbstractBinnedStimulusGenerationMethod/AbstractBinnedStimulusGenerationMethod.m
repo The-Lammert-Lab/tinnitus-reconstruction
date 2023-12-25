@@ -4,6 +4,8 @@ classdef (Abstract) AbstractBinnedStimulusGenerationMethod < AbstractStimulusGen
 
 properties
     n_bins (1,1) {mustBePositive, mustBeInteger} = 100
+    unfilled_dB (1,1) {mustBeReal} = -100
+    filled_dB (1,1) {mustBeReal} = 0
 end % abstract properties
 
 methods
@@ -337,34 +339,7 @@ methods
         W = self.synthesize_audio(W, nfft);
 
         self.duration = dur;
-    end
-
-    function wav = white_noise(self)
-        % ### white_noise
-        % Generate a white noise sound.
-        %
-        % **ARGUMENTS:**
-        %
-        % - self: `1 x 1` `AbstractBinnedStimulusGenerationMethod`
-        %
-        % **OUTPUTS:**
-        %
-        %   - wav: `n x 1` white noise waveform.
-        arguments
-            self (1,1) AbstractBinnedStimulusGenerationMethod
-        end
-        % Generate noise
-        noise = zeros(self.n_bins,1);
-        spect = self.binnedrepr2spect(noise);
-
-        % Create frequency vector
-        freqs = linspace(0, floor(self.Fs/2), length(spect))';
-
-        % Flatten out of range freqs and synthesize
-        spect(freqs > self.max_freq & freqs < self.min_freq) = -20;
-        wav = self.synthesize_audio(spect, self.nfft);
-    end
-        
+    end 
 end % methods
 
 end % classdef

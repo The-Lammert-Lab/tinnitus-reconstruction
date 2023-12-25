@@ -19,7 +19,7 @@
 % Author: Adam C. Lammert
 % Begun: 29.JAN.2021
 
-function Protocol_2AFC(options)
+function RevCorr_2AFC(options)
 
     arguments
         options.config_file char = []
@@ -51,7 +51,7 @@ function Protocol_2AFC(options)
     %% Setup
     
     % Useful variables
-    project_dir = pathlib.strip(mfilename('fullpath'), 2);
+    project_dir = pathlib.strip(mfilename('fullpath'), 3);
     
     % Determine the stimulus generation function
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)

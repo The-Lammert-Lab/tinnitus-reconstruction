@@ -6,6 +6,9 @@
 % 
 % **ARGUMENTS:**
 % 
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
 %   - mult: `1 x 1` positive scalar, default: 0.001
 %       initial value for the peak-sharpening `mult` parameter.
 %    - binrange: `1 x 1` scalar, default: 60,
@@ -58,8 +61,9 @@
 % See also:
 % AbstractBinnedStimulusGenerationMethod.binnedrepr2wav
 
-function [mult, binrange, lowcf, highcf] = adjust_resynth(mult, binrange, lowcf, highcf, options)
+function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange, lowcf, highcf, options)
     arguments
+        cal_dB (1,1) {mustBeReal}
         mult (1,1) {mustBePositive} = 0.001
         binrange (1,1) {mustBeGreaterThanOrEqual(binrange,1), ...
         mustBeLessThanOrEqual(binrange,100)} = 60
@@ -131,6 +135,9 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(mult, binrange, lowcf,
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
+    % Rescale to 65 dB.
+    options.target_sound = gain*(options.target_sound ./ rms(options.target_sound));
+
     % Create stimgen obj
     if ~strcmp(options.config_file,'none')
         stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
@@ -148,6 +155,9 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(mult, binrange, lowcf,
         reconstruction = get_reconstruction('config', config, 'method', 'linear', ...
             'use_n_trials', options.n_trials, 'data_dir', data_dir);
     end
+
+    % Calculate gain to play at 65 dB. 
+    gain = 10^((65-cal_dB)/20);
 
     %% Show figure
 
@@ -265,13 +275,16 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(mult, binrange, lowcf,
     
     function playSounds(~, ~)
         if ~isempty(options.target_sound)
-            soundsc(options.target_sound, options.target_fs);
+            sound(options.target_sound, options.target_fs, 24);
             pause(length(options.target_sound) / options.target_fs + 0.3);
         end
+        % Generate recon with new settings
         recon_wav = stimgen.binnedrepr2wav(reconstruction, mult, binrange, ...
                                             'filter', options.filter, ...
                                             'cutoff', [lowcf, highcf]);
-        soundsc(recon_wav, Fs);
+        % Rescale dB level 
+        recon_wav = gain*(recon_wav ./ rms(recon_wav)); 
+        sound(recon_wav, Fs, 24);
     end % playSounds
 
 end % adjust_resynth

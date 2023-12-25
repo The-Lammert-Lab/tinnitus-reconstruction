@@ -1,28 +1,7 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ### Protocol
-% 
-% Reverse Correlation Protocol for Cognitive Representations of Speech
-%
-% This function runs the experimental procedure of this project.
-% 
-% It can be called in two ways:
-% ```matlab
-% Protocol() or Protocol('config', 'path2config')
-% ```
-% Where `'path2config'` is the file path to the desired config file.
-% 
-% If `Protocol()` is invoked, a GUI is automatically opened for the user to select the proper config file.
-% 
-% End of documentation
-% Author: Adam C. Lammert
-% Begun: 29.JAN.2021
-
-function Protocol(options)
-
+function RevCorr_phaseN(options)
     arguments
         options.config_file char = []
+        options.phase (1,1) {mustBeInteger, mustBeGreaterThan(options.phase,1)} = 2
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
 
@@ -42,9 +21,6 @@ function Protocol(options)
 
     % Get the hash prefix for file naming
     hash_prefix = [config_hash, '_', posix_time];
-
-    % Add additional config fields here
-    config.n_trials = config.n_trials_per_block;
  
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
@@ -55,32 +31,18 @@ function Protocol(options)
     catch
         warning('Config file already exists in data directory');
     end
-    
+
     %% Setup
     
     % Useful variables
-    project_dir = pathlib.strip(mfilename('fullpath'), 2);
+    project_dir = pathlib.strip(mfilename('fullpath'), 3);
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
-    
-    % Determine the stimulus generation function
-    if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
-        % There is a weird feature/bug where putting `stimuli_type: white`
-        % in the config file returns a 256x3 matrix of ones.
-        if strcmpi(config.stimuli_type,'white')
-            config.stimuli_type = "UniformNoiseNoBins";
-        end
-    else
-        % Default to 'custom' stimulus generation
-        config.stimuli_type = "GaussianPrior";
-    end
 
     % Determine if the protocol should be 2-AFC
     if isfield(config, 'two_afc') && ~isempty(config.two_afc)
-        is_two_afc = config.two_afc;
-    else
-        is_two_afc = false;
+        error('2AFC currently not supported for phase2 protocols');
     end
     
     % Generate the experiment ID
@@ -91,7 +53,7 @@ function Protocol(options)
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
-    total_trials_done = get_total_trials_done(config, config_hash);
+    total_trials_done = get_total_trials_done(config, config_hash, options.phase);
     corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
 
     % Is this an A-X experiment protocol?
@@ -120,34 +82,26 @@ function Protocol(options)
     end
 
     %% Load Presentations Screens
-if is_two_afc
-    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png'));
-    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
-else
     Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
     Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
-end
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
-
     
     %% Generate initial files and stimuli
+    % Maximum percent perturbation of reconstructed bins.
+    pert_bounds = [-0.8,0.8];
 
-    if is_two_afc
-        [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
-    else
-        [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
-    end
+    [stimuli_matrix, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli_phaseN(config, options.phase, pert_bounds, data_dir, hash_prefix);
+    Fs = stimuli_object.get_fs();
+ 
+    % Add additional config fields here
+    config.n_trials = config.n_trials_per_block;
 
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
     if ~isempty(target_sound) && contains(config.target_signal_name,'resynth')
-        if is_two_afc
-            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
-        else
-            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
-        end
+        scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
     end
     
     %% Intro Screen & Start
@@ -157,7 +111,7 @@ end
         'Position', [0 0 screenWidth screenHeight],...
         'Color',[0.5 0.5 0.5],...
         'Toolbar','none', ...
-        'MenuBar','none');
+        'MenuBar','none');o
     hFig.CloseRequestFcn = {@closeRequest hFig};
 
     disp_fullscreen(Screen1);
@@ -202,11 +156,7 @@ end
         end
 
         % Present Stimulus
-        if is_two_afc
-            present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs);
-        else
-            present_stimulus(stimuli_matrix, counter, Fs);
-        end
+        present_stimulus(stimuli_matrix, counter, Fs);
             
         % Obtain Response
         k = waitforkeypress();
@@ -295,20 +245,12 @@ end
             end
 
             % Generate new stimuli and files
-            if is_two_afc
-                [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
-            else
-                [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
-            end
+            [stimuli_matrix, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli_phaseN(config, options.phase, pert_bounds, data_dir, hash_prefix);
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
             % Pause before playing next stimuli  
-            if is_two_afc
-                pause(length(stimuli_matrix_1(:,counter)) / Fs - 0.3)
-            else
-                pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
-            end
+            pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
         end
         
     end
@@ -339,19 +281,6 @@ function present_stimulus(stimuli_matrix, counter, Fs)
     pause(length(stimuli_matrix(:, counter)) / Fs)
 end % function
 
-function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, pause_duration)
-    % Play the correct (first) stimulus to the subject.
-    % Pause, then play the second stimulus.
-
-    if nargin < 5
-        pause_duration = 0.3;
-    end
-
-    soundsc(stimuli_matrix_1(:, counter), Fs);
-    pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
-    soundsc(stimuli_matrix_2(:, counter), Fs);
-end % function
-
 function k = waitforkeypress(verbose)
     % Wait for a keypress, ignoring mouse clicks.
     % Returns 1 when a key is pressed.
@@ -374,16 +303,17 @@ function k = waitforkeypress(verbose)
     end
 end
 
-function total_trials_done = get_total_trials_done(config, config_hash)
+function total_trials_done = get_total_trials_done(config, config_hash, phase)
     % Compute the total trials completed.
 
     arguments
         config (1,1) struct
         config_hash (1,:) char
+        phase (1,1) {mustBeInteger}
     end
 
     total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']));
+    d = dir(pathlib.join(config.data_dir, ['phase', num2str(phase), '_responses_', config_hash, '*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));

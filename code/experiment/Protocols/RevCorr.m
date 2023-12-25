@@ -1,8 +1,42 @@
-function Protocol_phaseN(options)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ### RevCorr
+% 
+% Reverse Correlation Protocol for Cognitive Representations of Tinnitus
+% This function runs the main experimental procedure of this project.
+% 
+% ```matlab
+%   RevCorr(cal_dB) 
+%   RevCorr(cal_dB, 'config', 'path2config')
+%   RevCorr(cal_dB, 'verbose', false, 'fig', gcf)
+% ```
+% 
+% **ARGUMENTS:**
+% 
+%   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
+%   - config_file, `character vector`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+%   - fig, `matlab.ui.Figure`, name-value.
+%       Handle to figure window in which to display instructions
+%       Function will create a new figure if none is supplied.
+% 
+% **OUTPUTS:**
+% 
+%   - Two `CSV` files (`responses` and `stimuli`) saved to `config.data_dir`.
+
+function RevCorr(cal_dB, options)
+
     arguments
-        options.config_file char = []
-        options.phase (1,1) {mustBeInteger, mustBeGreaterThan(options.phase,1)} = 2
+        cal_dB (1,1) {mustBeReal}
+        options.config_file (1,:) char = ''
         options.verbose (1,1) {mustBeNumericOrLogical} = true
+        options.fig matlab.ui.Figure
     end
 
     % Get the datetime and posix time
@@ -21,6 +55,9 @@ function Protocol_phaseN(options)
 
     % Get the hash prefix for file naming
     hash_prefix = [config_hash, '_', posix_time];
+
+    % Add additional config fields here
+    config.n_trials = config.n_trials_per_block;
  
     % Try to create the data directory if it doesn't exist
     mkdir(config.data_dir);
@@ -31,18 +68,33 @@ function Protocol_phaseN(options)
     catch
         warning('Config file already exists in data directory');
     end
-
+    
     %% Setup
     
     % Useful variables
-    project_dir = pathlib.strip(mfilename('fullpath'), 2);
+    project_dir = pathlib.strip(mfilename('fullpath'), 3);
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
+    gain = 10^((65-cal_dB)/20); % Amplitude value such that presentation level is 65dB
+    
+    % Determine the stimulus generation function
+    if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
+        % There is a weird feature/bug where putting `stimuli_type: white`
+        % in the config file returns a 256x3 matrix of ones.
+        if strcmpi(config.stimuli_type,'white')
+            config.stimuli_type = "UniformNoiseNoBins";
+        end
+    else
+        % Default to 'custom' stimulus generation
+        config.stimuli_type = "GaussianPrior";
+    end
 
     % Determine if the protocol should be 2-AFC
     if isfield(config, 'two_afc') && ~isempty(config.two_afc)
-        error('2AFC currently not supported for phase2 protocols');
+        is_two_afc = config.two_afc;
+    else
+        is_two_afc = false;
     end
     
     % Generate the experiment ID
@@ -53,7 +105,7 @@ function Protocol_phaseN(options)
     stimuli_object = stimuli_object.from_config(config);
     
     % Compute the total trials done
-    total_trials_done = get_total_trials_done(config, config_hash, options.phase);
+    total_trials_done = get_total_trials_done(config, config_hash);
     corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
 
     % Is this an A-X experiment protocol?
@@ -82,37 +134,60 @@ function Protocol_phaseN(options)
     end
 
     %% Load Presentations Screens
-    Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
-    Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
+    if is_two_afc
+        Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1D.png'));
+        Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2D.png'));
+    else
+        Screen1 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide1C.png'));
+        Screen2 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide2C.png'));
+    end
     Screen3 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide3C.png'));
     Screen4 = imread(pathlib.join(project_dir, 'experiment', 'fixationscreen', 'Slide4.png'));
     
     %% Generate initial files and stimuli
-    % Maximum percent perturbation of reconstructed bins.
-    pert_bounds = [-0.8,0.8];
 
-    [stimuli_matrix, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli_phaseN(config, options.phase, pert_bounds, data_dir, hash_prefix);
-    Fs = stimuli_object.get_fs();
- 
-    % Add additional config fields here
-    config.n_trials = config.n_trials_per_block;
+    if is_two_afc
+        [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+        stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
+        stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
+        if any(min([stimuli_matrix_1, stimuli_matrix_2]) < -1) || any(max([stimuli_matrix_1, stimuli_matrix_1]) > 1)
+            warning('Sound is clipping. Recalibrate dB level.')
+            return
+        end
+    else
+        [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+        stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
+        if any(min(stimuli_matrix) < -1) || any(max(stimuli_matrix) > 1)
+            warning('Sound is clipping. Recalibrate dB level.')
+            return
+        end
+    end
 
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
     if ~isempty(target_sound) && contains(config.target_signal_name,'resynth')
-        scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+        if is_two_afc
+            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
+        else
+            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+        end
     end
     
     %% Intro Screen & Start
 
     % Show the startup screen
-    hFig = figure('Numbertitle','off',...
-        'Position', [0 0 screenWidth screenHeight],...
-        'Color',[0.5 0.5 0.5],...
-        'Toolbar','none', ...
-        'MenuBar','none');o
+    if ~isfield(options, 'fig') || ~ishandle(options.fig)
+        hFig = figure('Numbertitle','off',...
+            'Position', [0 0 screenWidth screenHeight],...
+            'Color',[0.5 0.5 0.5],...
+            'Toolbar','none', ...
+            'MenuBar','none');
+    else
+        hFig = options.fig;
+    end
     hFig.CloseRequestFcn = {@closeRequest hFig};
+    clf(hFig);
 
     disp_fullscreen(Screen1);
 
@@ -148,15 +223,19 @@ function Protocol_phaseN(options)
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
             if contains(config.target_signal_name,'resynth')
-                sound(target_sound*scale_factor, target_fs)
+                sound(target_sound*scale_factor,target_fs,24)
             else
-                soundsc(target_sound,target_fs)
+                sound(target_sound,target_fs,24)
             end
-            pause(length(target_sound) / target_fs + 0.3) % ACL added (5MAY2022) to add 300ms pause between target and stimulus
+            pause(length(target_sound) / target_fs + 0.3) % 300ms pause between target and stimulus
         end
 
         % Present Stimulus
-        present_stimulus(stimuli_matrix, counter, Fs);
+        if is_two_afc
+            present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs);
+        else
+            present_stimulus(stimuli_matrix, counter, Fs);
+        end
             
         % Obtain Response
         k = waitforkeypress();
@@ -208,11 +287,11 @@ function Protocol_phaseN(options)
                     mult_range = [0,0.1];
                 end
 
-                [mult, binrange] = adjust_resynth('config_file', config_path, ...
+                [mult, binrange] = adjust_resynth(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'fig', hFig, 'mult_range', mult_range);
-                follow_up('config_file', config_path, ...
+                follow_up(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'mult', mult, 'binrange', binrange, 'fig', hFig);
@@ -245,12 +324,31 @@ function Protocol_phaseN(options)
             end
 
             % Generate new stimuli and files
-            [stimuli_matrix, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli_phaseN(config, options.phase, pert_bounds, data_dir, hash_prefix);
+            if is_two_afc
+                [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, ~, ~, filename_meta, ~, ~, this_hash] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix);
+                stimuli_matrix_1 = gain*(stimuli_matrix_1 ./ rms(stimuli_matrix_1)); % Set dB of stimuli
+                stimuli_matrix_2 = gain*(stimuli_matrix_2 ./ rms(stimuli_matrix_2)); % Set dB of stimuli
+                if any(min([stimuli_matrix_1, stimuli_matrix_2]) < -1) || any(max([stimuli_matrix_1, stimuli_matrix_1]) > 1)
+                    warning('Sound is clipping. Recalibrate dB level.')
+                    return
+                end
+            else
+                [stimuli_matrix, Fs, filename_responses, ~, filename_meta, this_hash] = create_files_and_stimuli(config, stimuli_object, hash_prefix);
+                stimuli_matrix = gain*(stimuli_matrix ./ rms(stimuli_matrix)); % Set dB of stimuli
+                if any(min(stimuli_matrix) < -1) || any(max(stimuli_matrix) > 1)
+                    warning('Sound is clipping. Recalibrate dB level.')
+                    return
+                end
+            end
             fid_responses = fopen(filename_responses, 'w');
 
         else % continue with block
             % Pause before playing next stimuli  
-            pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
+            if is_two_afc
+                pause(length(stimuli_matrix_1(:,counter)) / Fs - 0.3)
+            else
+                pause(length(stimuli_matrix(:,counter)) / Fs - 0.3)
+            end
         end
         
     end
@@ -277,43 +375,33 @@ end % function
 
 function present_stimulus(stimuli_matrix, counter, Fs)
     % Play the correct stimulus to the subject.
-    soundsc(stimuli_matrix(:, counter), Fs)
+    sound(stimuli_matrix(:, counter), Fs, 24)
     pause(length(stimuli_matrix(:, counter)) / Fs)
 end % function
 
-function k = waitforkeypress(verbose)
-    % Wait for a keypress, ignoring mouse clicks.
-    % Returns 1 when a key is pressed.
-    % Returns -1 when the function encounters an error
-    % which usually happens when the figure is deleted.
+function present_2afc_stimulus(stimuli_matrix_1, stimuli_matrix_2, counter, Fs, pause_duration)
+    % Play the correct (first) stimulus to the subject.
+    % Pause, then play the second stimulus.
 
-    arguments
-        verbose (1,1) {mustBeNumericOrLogical} = true
+    if nargin < 5
+        pause_duration = 0.3;
     end
 
-    k = 0;
-    while k == 0
-        try
-            k = waitforbuttonpress;
-        catch
-            corelib.verb(verbose, 'INFO waitforkeypress', 'waitforkeypress exited unexpectedly.')
-            k = -1;
-            return
-        end
-    end
-end
+    sound(stimuli_matrix_1(:, counter), Fs, 24);
+    pause(length(stimuli_matrix_1(:, counter)) / Fs + pause_duration);
+    sound(stimuli_matrix_2(:, counter), Fs, 24);
+end % function
 
-function total_trials_done = get_total_trials_done(config, config_hash, phase)
+function total_trials_done = get_total_trials_done(config, config_hash)
     % Compute the total trials completed.
 
     arguments
         config (1,1) struct
         config_hash (1,:) char
-        phase (1,1) {mustBeInteger}
     end
 
     total_trials_done = 0;
-    d = dir(pathlib.join(config.data_dir, ['phase', num2str(phase), '_responses_', config_hash, '*.csv']));
+    d = dir(pathlib.join(config.data_dir, ['responses_', config_hash, '*.csv']));
 
     for ii = 1:length(d)
         responses = readmatrix(pathlib.join(d(ii).folder, d(ii).name));

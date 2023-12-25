@@ -16,7 +16,7 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % without bins
     % amplitudes are uniformly-distributed
     % between -20 and 0.
-    X = self.unfilled_dB * rand(nfft/2, 1);
+    X = -20 * rand(nfft/2, 1);
 
     % sythesize audio
     stim = self.synthesize_audio(X, nfft);

@@ -1,3 +1,32 @@
+% ### collect_data
+% 
+% Returns the saved responses and stimuli 
+% from reverse correlation experiments for a given config file.
+% 
+% **ARGUMENTS:**
+% 
+%   - config_file: `char`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - config: `struct`, name-value, default: `[]`
+%       An already-loaded config struct.
+%   - data_dir: `char`, name-value, default: `''`
+%       Filepath to directory in which data is stored. 
+%       `config.data_dir` is used if left empty. 
+%   - phase: `1 x 1` positive integer, name-value, default: `1`
+%       Experiment phase from which to collect data. 
+%   - verbose, `logical`, name-value, default: `true`,
+%       Flag to show informational messages.
+% 
+% **OUTPUTS:**
+% 
+%   - responses: `n x 1` numerical vector of {-1,1}, 
+%       all responses associated with this config file, 
+%       where `n` is the number of trials.
+%   - stimuli: `p x n` numerical array, of `config.stimuli_save_type`,
+%       all of the stimulus vectors associated with this config file,
+%       where `p` is the length of the stimulus vector.
+
 function [responses, stimuli] = collect_data(options)
 
     arguments
@@ -11,12 +40,11 @@ function [responses, stimuli] = collect_data(options)
     % If no config file path is provided,
     % open a UI to load the config
     if isempty(options.config) && isempty(options.config_file)
-        [file, abs_path] = uigetfile();
-        config = parse_config(pathlib.join(abs_path, file), options.verbose);
-        corelib.verb(options.verbose, 'INFO: collect_data', ['config file [', file, '] loaded from GUI'])
+        config = parse_config(options.config_file);
+        corelib.verb(options.verbose, 'INFO: collect_data', 'config file loaded from GUI')
     elseif isempty(options.config)
-        config = parse_config(options.config_file, options.verbose);
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config object loaded from provided file [', options.config_file, ']')
+        config = parse_config(options.config_file);
+        corelib.verb(options.verbose, 'INFO: collect_data', ['config object loaded from provided file [', options.config_file, ']'])
     else
         config = options.config;
         corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')
