@@ -11,8 +11,6 @@ This stimulus generation method has two unique properties in addition to those i
 - max_bins = 50
 ```
 
--------
-
 ### generate_stimulus
 
 ```matlab

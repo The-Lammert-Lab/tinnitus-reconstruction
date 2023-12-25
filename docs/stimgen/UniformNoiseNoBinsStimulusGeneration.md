@@ -6,8 +6,6 @@ This is a stimulus generation method in which each frequency is chosen from a un
 
 This stimulus generation method *does not* have any unique properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) class.
 
--------
-
 ### generate_stimulus
 
 Generate stimuli using a binless white-noise process.
