@@ -6,8 +6,6 @@ This class does not have any unique properties as it's purpose is to generate a 
 
 This stimulus generation method *does not* have any unique properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes.
 
--------
-
 ### generate_stimulus
 
 ```matlab
@@ -17,7 +15,7 @@ This stimulus generation method *does not* have any unique properties in additio
 
 Generate a vector of stimuli where
 the bin amplitudes are chosen randomly
-from a uniform distribution over [`self.unfilled_dB`, 0] dB.
+from a uniform distribution over [`self.unfilled_dB`, `self.filled_dB`] dB.
 
 **OUTPUTS:**
 

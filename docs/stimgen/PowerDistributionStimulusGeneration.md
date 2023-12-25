@@ -11,8 +11,6 @@ distribution = []
 distribution_filepath = ''
 ```
 
--------
-
 ### build_distribution
 
 Builds the default power distribution from ATA tinnitus sample files.

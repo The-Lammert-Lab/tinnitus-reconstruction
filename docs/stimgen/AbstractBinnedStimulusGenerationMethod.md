@@ -181,18 +181,3 @@ the sample rate
 
 
 
-
-
-### white_noise
-Generate a white noise sound.
-
-**ARGUMENTS:**
-
-- self: `1 x 1` `AbstractBinnedStimulusGenerationMethod`
-
-**OUTPUTS:**
-
-- wav: `n x 1` white noise waveform.
-
-
-
