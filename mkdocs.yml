@@ -1,5 +1,5 @@
-site_name: tinnitus-project
-repo_url: https://github.com/alec-hoyland/tinnitus-project
+site_name: tinnitus-reconstruction
+repo_url: https://github.com/alec-hoyland/tinnitus-reconstruction
 site_author: Nelson Barnett
 docs_dir: "docs"
 theme:
