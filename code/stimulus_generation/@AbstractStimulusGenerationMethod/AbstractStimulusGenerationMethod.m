@@ -55,7 +55,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % ### generate_stimuli_matrix
             % 
             % ```matlab
-            % [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix] = generate_stimuli_matrix(self)
+            % [stimuli_matrix, Fs, spect_matrix, binned_repr_matrix, W] = generate_stimuli_matrix(self)
             % ```
             %
             % Generates a matrix of stimuli.
@@ -67,28 +67,33 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             %   - stimuli_matrix: `n x self.n_trials` numerical vector,
             %       the stimulus waveform,
             %       where `n` is `self.nfft + 1`.
-            % 
             %   - Fs: `1x1` numerical scalar,
             %       the sample rate in Hz.
-            % 
             %   - spect_matrix: `m x self.n_trials` numerical vector,
             %       the half-spectrum,
             %       where `m` is `self.nfft / 2`,
             %       in dB.
-            % 
             %   - binned_repr_matrix: `self.n_bins x self.n_trials` numerical vector,
             %       the binned representation.
+            %   - W: `p x self.n_trials` or `[]`,
+            %       where `p` is the size of the weight matrix.
+            %       Only full if `self` is `HierarchicalGaussianStimulusGeneration`.
             % 
             % See Also: 
             % BernoulliStimulusGeneration.generate_stimulus
             % BrimijoinStimulusGeneration.generate_stimulus
+            % BrimijoinGaussianSmoothedStimulusGeneration.generate_stimulus
             % GaussianNoiseNoBinsStimulusGeneration.generate_stimulus
             % GaussianNoiseStimulusGeneration.generate_stimulus
             % GaussianPriorStimulusGeneration.generate_stimulus
+            % HierarchicalGaussianStimulusGeneration.generate_stimulus
+            % NorenaBinnedStimulusGeneration.generate_stimulus
+            % NorenaStimulusGeneration.generate_stimulus
             % PowerDistributionStimulusGeneration.generate_stimulus
             % UniformNoiseNoBinsStimulusGeneration.generate_stimulus
             % UniformNoiseStimulusGeneration.generate_stimulus
             % UniformPriorStimulusGeneration.generate_stimulus
+            % Uniform
             % WeightedPriorStimulusGeneration.generate_stimulus
 
             if isa(self,'AbstractBinnedStimulusGenerationMethod')

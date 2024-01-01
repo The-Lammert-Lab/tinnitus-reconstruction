@@ -1,11 +1,11 @@
 # Bernoulli Stimulus Generation
 
-This is a stimulus generation method in which each tonotopic bin has a probability `p` of being at 0 dB, otherwise it is at -20 dB. 
+This is a stimulus generation class in which each tonotopic bin has a probability `bin_prob` of being filled. 
 
 ### Unique Properties
 
-This stimulus generation method has one property in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Default:
+This stimulus generation class has one property in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Default:
 
 ```
-- bin_prob = 0.3
+- bin_prob = 0.3 % Probability of a bin being filled
 ```
