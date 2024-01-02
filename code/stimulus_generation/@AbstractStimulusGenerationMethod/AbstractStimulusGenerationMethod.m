@@ -93,8 +93,7 @@ classdef (Abstract) AbstractStimulusGenerationMethod
             % UniformNoiseNoBinsStimulusGeneration.generate_stimulus
             % UniformNoiseStimulusGeneration.generate_stimulus
             % UniformPriorStimulusGeneration.generate_stimulus
-            % Uniform
-            % WeightedPriorStimulusGeneration.generate_stimulus
+            % UniformPriorWeightedSampling.generate_stimulus
 
             if isa(self,'AbstractBinnedStimulusGenerationMethod')
                 % generate first stimulus

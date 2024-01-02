@@ -17,7 +17,7 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
     fn_names = []
 
     # Abstract classes need to be handled differently because of multiple functions within the file.
-    if 'abstract' in filename.lower():
+    if 'stimulusgeneration' in filename.lower():
 
         # Get line number and name of all functions within abstract class
         fns = [(ind, line.strip()) for ind, line in enumerate(lines) if line.strip().find('function') == 0]
@@ -140,16 +140,19 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
                 ref = [item for item in glob(f'{root_pth}/code/**/*.m', recursive=True) 
                         if thisline.strip() == os.path.basename(item)[:-2]]
                 
+                # Catch empty ref
+                if not ref:
+                    print(f"[WARN]: 'See also' not formatted properly in {filename} line {i}.")
+                    continue
+
+                # Get path to /code
                 if root_pth == '.':
                     ref_pth = ref[0][7:]
                 else:
                     ref_pth = ref[0][ref[0].find('tinnitus-reconstruction'):].replace('tinnitus-reconstruction/code/','')
 
-                if not ref:
-                    print(f"[WARN]: 'See also' not formatted properly in {filename}.")
-                    continue
-
-                elif os.path.dirname(ref[0]) == os.path.dirname(file):
+                # Format it and write it
+                if os.path.dirname(ref[0]) == os.path.dirname(file):
                     out_file.write(f'    * [{thisline.strip()}]' + 
                                 f'(./#{thisline.strip().lower()})\n')
 

@@ -18,13 +18,6 @@
 %       the half-spectrum, in dB.
 % 
 %   binned_repr: `[]`, empty because this is not a binned class.
-% 
-% **Class Properties Used:**
-% 
-% ```
-% - amplitude_mean
-% - amplitude_var
-% ```
 
 function [stim, Fs, spect, binned_repr] = generate_stimulus(self)
     Fs = self.get_fs();

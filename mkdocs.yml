@@ -24,10 +24,15 @@ nav:
         - Gaussian Noise With No Bins: stimgen/GaussianNoiseNoBinsStimulusGeneration.md
         - Gaussian Noise With Bins: stimgen/GaussianNoiseStimulusGeneration.md
         - Gaussian Prior: stimgen/GaussianPriorStimulusGeneration.md
+        - Hierarchical Gaussian: stimgen/HierarchicalGaussianStimulusGeneration.md
+        - Norena Binned: stimgen/NorenaBinnedStimulusGeneration.md
+        - Norena: stimgen/NorenaStimulusGeneration.md
         - Power Distribution: stimgen/PowerDistributionStimulusGeneration.md
         - Uniform Noise With No Bins: stimgen/UniformNoiseNoBinsStimulusGeneration.md
         - Uniform Noise With Bins: stimgen/UniformNoiseStimulusGeneration.md
+        - Uniform Prior Random N Bins: stimgen/UniformPriorRandomNBinsStimulusGeneration.md
         - Uniform Prior: stimgen/UniformPriorStimulusGeneration.md
+        - Uniform Prior Weighted Sampling: stimgen/UniformPriorWeightedSamplingStimulusGeneration.md
     - Utilities:
         - All utilities: utils.md
     - Data Processing:
