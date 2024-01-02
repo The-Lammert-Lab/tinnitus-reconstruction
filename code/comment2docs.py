@@ -171,7 +171,7 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
     # Recursion for multiple functions within classes.
     if is_class and a < fns[-1][0]:
-        comment2docs(filename, file, out_file, first, root_pth, a)
+        comment2docs(filename, file, out_file, False, root_pth, a)
 
     out_file.close()
 

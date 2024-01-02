@@ -22,6 +22,7 @@ else:
 # Set vars as None initially
 foldername = None
 prev_foldername = None
+headers_written = []
 
 # Loop through every folder and every file within each folder
 for i, file in enumerate(sorted(glob(f"{root_pth}/code/**/*.m", recursive=True), key = str.lower)):
@@ -45,9 +46,10 @@ for i, file in enumerate(sorted(glob(f"{root_pth}/code/**/*.m", recursive=True),
         continue
         
     # Write header file at top of current docs
-    if prev_foldername is not None and prev_foldername != foldername:
+    if header_file not in headers_written and prev_foldername is not None and prev_foldername != foldername:
         first = True
         copyfile(header_file, doc_file)
+        headers_written.append(header_file)
         print(f"[OK] Generating docs for: {foldername}")
     else:
         first = False
