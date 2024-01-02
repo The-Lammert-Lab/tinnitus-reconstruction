@@ -1,14 +1,14 @@
 # Power Distribution Stimulus Generation
 
-This is a stimulus generation method in which the frequencies in each bin are sampled from a power distribution learned from tinnitus examples. 
+This is a stimulus generation class in which the frequencies in each bin are sampled from a power distribution learned from tinnitus examples. 
 
 ### Unique Properties
 
-This stimulus generation method has two properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Defaults:
+This stimulus generation class has two properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Defaults:
 
 ```
-distribution = []
-distribution_filepath = ''
+distribution = [] % The power distribution
+distribution_filepath = '' % Path to the distribution file
 ```
 
 ### build_distribution
@@ -70,23 +70,23 @@ learned from ATA tinnitus examples.
 
 **OUTPUTS:**
 
-- stim: `n x 1` numerical vector,
+stim: `self.nfft + 1 x 1` numerical vector,
 the stimulus waveform,
-where `n` is `self.nfft + 1`.
-- Fs: `1x1` numerical scalar,
+
+Fs: `1x1` numerical scalar,
 the sample rate in Hz.
-- spect: `m x 1` numerical vector,
-the half-spectrum,
-where `m` is `self.nfft / 2`,
-in dB.
-- binned_repr: `self.n_bins x 1` numerical vector,
+
+spect: `self.nfft / 2 x 1` numerical vector,
+the half-spectrum, in dB.
+
+binned_repr: `self.n_bins x 1` numerical vector,
 the binned representation.
-- frequency_vector: `m x 1` numerical vector
-The frequencies associated with the spectrum,
-where `m` is `self.nfft / 2`,
-in Hz.
+
+frequency_vector: `self.nfft / 2 x 1` numerical vector,
+the frequencies associated with the spectrum, in Hz.
 
 **Class Properties Used:**
+
 ```
 - n_bins
 ```
