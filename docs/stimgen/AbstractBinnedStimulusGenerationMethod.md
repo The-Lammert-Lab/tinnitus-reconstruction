@@ -47,6 +47,8 @@ the frequencies that `binnum` maps to bin numbers
 
 
 
+-------
+
 ### get_empty_spectrum
 
 ```matlab
@@ -67,6 +69,8 @@ and all values are set to `unfilled_dB`.
 
 
 
+
+-------
 
 ### spect2binnedrepr
 
@@ -96,6 +100,8 @@ for each trial
 
 
 
+-------
+
 ### binnedrepr2spect
 
 Get the stimuli spectra from a binned representation.
@@ -121,6 +127,8 @@ representing the stimulus spectra
 
 
 
+
+-------
 
 ### binnedrepr2wav
 
@@ -166,6 +174,8 @@ spectrum of the binned representation.
 
 
 
+
+-------
 
 ### bin_signal
 
