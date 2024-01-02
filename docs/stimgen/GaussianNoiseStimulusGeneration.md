@@ -1,46 +1,44 @@
 # Gaussian Noise Stimulus Generation 
 
-This is a stimulus generation method in which each tonotopic bin is filled with amplitude chosen from a Gaussian distribution. This class can work with binned representations of the signals. 
+This is a stimulus generation class in which each tonotopic bin is filled with amplitude chosen from a Gaussian distribution. This class can work with binned representations of the signals. 
 
 ### Unique Properties
 
-This stimulus generation method has two properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Defaults:
+This stimulus generation class has two properties in addition to those inhereted from the [Abstract](../AbstractStimulusGenerationMethod) and [Abstract Binned](../AbstractBinnedStimulusGenerationMethod) classes. Defaults:
 
 ```
-amplitude_mean = -10
-amplitude_var = 3
+amplitude_mean = -10 % Mean of the Gaussian from which the amplitude is chosen
+amplitude_var = 3 % Variance of the Gaussian from which the amplitude is chosen
 ```
 
 -------
 
 ### generate_stimulus
 
-Generate a matrix of stimuli
-where the matrix is of size nfft x n_trials.
+```matlab
+[stim, Fs, spect, binned_repr, frequency_vector] = generate_stimulus(self)
+``` 
+
+Generate a stimulus vector of length `self.nfft+1`.
 Bins are filled with an amplitude value chosen randomly.
 from a Gaussian distribution.
 
 **OUTPUTS:**
 
-stim: `n x 1` numerical vector,
+stim: `self.nfft + 1 x 1` numerical vector,
 the stimulus waveform,
-where `n` is `self.nfft + 1`.
 
 Fs: `1x1` numerical scalar,
 the sample rate in Hz.
 
-spect: `m x 1` numerical vector,
-the half-spectrum,
-where m is `self.nfft / 2`,
-in dB.
+spect: `self.nfft / 2 x 1` numerical vector,
+the half-spectrum, in dB.
 
 binned_repr: `self.n_bins x 1` numerical vector,
 the binned representation.
 
-frequency_vector: `m x 1` numerical vector,
-the frequencies associated with the spectrum,
-where `m` is `self.nfft / 2`,
-in Hz.
+frequency_vector: `self.nfft / 2 x 1` numerical vector,
+the frequencies associated with the spectrum, in Hz.
 
 **Class Properties Used:**
 

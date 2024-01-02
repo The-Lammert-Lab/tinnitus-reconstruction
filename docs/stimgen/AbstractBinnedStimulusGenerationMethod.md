@@ -4,10 +4,12 @@ Abstract class describing all features common to a stimulus generation method th
 
 ### Abstract Properties
 
-This property is automatically instantiated for subclasses, since they are not abstract themselves. Default value is given:
+These properties are automatically instantiated for subclasses, since they are not abstract themselves. Default values are given:
 
 ```
-- n_bins = 100
+- n_bins = 100 % The number of bins to break the frequency spectrum into 
+- unfilled_dB = -100 % The dB value of "unfilled" bins
+- filled_dB = 0 % The dB value of "filled" bins
 ```
 
 ### get_freq_bins
@@ -122,18 +124,29 @@ representing the stimulus spectra
 
 ### binnedrepr2wav
 
-Get the peak-sharpened waveform of a binned representation 
+Get the peak-sharpened waveform of a binned representation.
+Can pass n sounds and the modifications will be applied to all.
 
 **ARGUMENTS:**
 
-- binned_repr: `n_bins x 1` numerical vector
+- binned_repr: `n_bins x n` numerical vector
 representing the amplitude in each frequency bin.
-- mult: `1 x 1` scalar, the peak sharpening factor.
-- binrange: `1 x 1` scalar, must be between [1, 100],
+- mult: `n x 1` vector or scalar, the peak sharpening factor
+corresponding to each `binned_repr`.
+- binrange: `n x 1` vector or scalar, must be between [1, 100],
 the upper bound of the dynamic range of the 
-stimuli from [0, binrange]
-- new_n_bins: `1 x 1` scalar, default: 256,
+stimuli from [0, binrange] corresponding to each `binned_repr`.
+- new_n_bins: `1 x 1` scalar, default: `256`,
 the number of bins to upsample to before synthesis.
+- filter: `logical`, name-value, default: `false`, 
+flag to filter the waveform.
+- cutoff: `n x 2`, name-value, default: `[2000 self.max_freq]`,
+min and max cutoff frequencies corresponding to each `binned_repr`.
+If values satisfy min > 0 && max < self.max_freq, 
+bandpass filter is used. If only min < 0, highpass is used. 
+Otherwise, lowpass.
+- order: `1 x 1` positive integer, name-value, default: `5`,
+the filter order.
 
 **OUTPUTS:**
 
