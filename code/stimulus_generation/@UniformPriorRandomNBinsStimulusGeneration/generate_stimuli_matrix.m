@@ -6,7 +6,7 @@
 %
 % Unique function for `UniformPriorRandomNBinsStimulusGeneration`
 % Since self.n_bins is changed at each `generate_stimulus()` call,
-% This function pads the matrix with NaN values.
+% this function pads the matrix with NaN values.
 % Generates a matrix of stimuli.
 % Explicitly calls the `generate_stimulus()`
 % class method.

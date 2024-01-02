@@ -12,14 +12,14 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
     z = -1
     lastcomment = -1
     z_range_min = 0
-    abstract = False
+    is_class = False
     prev_comment = True
     fn_names = []
 
-    # Abstract classes need to be handled differently because of multiple functions within the file.
-    if 'abstract' in filename.lower():
+    # Classes need to be handled differently because method functions may be in the file.
+    if 'stimulusgeneration' in filename.lower():
 
-        # Get line number and name of all functions within abstract class
+        # Get line number and name of all functions within class
         fns = [(ind, line.strip()) for ind, line in enumerate(lines) if line.strip().find('function') == 0]
 
         # Find exact function name
@@ -43,11 +43,11 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
             thisline = thisline.strip()
 
             if thisline.lower() in fn_names and not prev_comment:
-                abstract = True
+                is_class = True
                 a = i
                 break
 
-    # Non-abstract class files are slightly different. 
+    # Non-class files are slightly different. 
     # If filename is not in comment, no docs will be written. 
     else:
         for i in range(0, len(lines)):
@@ -62,7 +62,7 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
     # Find end of documentation.
     # Author must add 'end of documentation' before any code-specific comments within scripts. 
-    if abstract:
+    if is_class:
         z_range_min = a
         
     for i in range(z_range_min, len(lines)):
@@ -79,7 +79,7 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
             z = lastcomment + 1
             break
 
-    if (a < 0 or z < 0) and not abstract:
+    if (a < 0 or z < 0) and not is_class:
         print(f"No documentation for {filename}. Skipping...")
         return
 
@@ -140,16 +140,19 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
                 ref = [item for item in glob(f'{root_pth}/code/**/*.m', recursive=True) 
                         if thisline.strip() == os.path.basename(item)[:-2]]
                 
+                # Catch empty ref
+                if not ref:
+                    print(f"[WARN]: 'See also' not formatted properly in {filename} line {i}.")
+                    continue
+
+                # Get path to /code
                 if root_pth == '.':
                     ref_pth = ref[0][7:]
                 else:
                     ref_pth = ref[0][ref[0].find('tinnitus-reconstruction'):].replace('tinnitus-reconstruction/code/','')
 
-                if not ref:
-                    print(f"[WARN]: 'See also' not formatted properly in {filename}.")
-                    continue
-
-                elif os.path.dirname(ref[0]) == os.path.dirname(file):
+                # Format it and write it
+                if os.path.dirname(ref[0]) == os.path.dirname(file):
                     out_file.write(f'    * [{thisline.strip()}]' + 
                                 f'(./#{thisline.strip().lower()})\n')
 
@@ -166,8 +169,8 @@ def comment2docs(filename, file, out_file, first, root_pth, a = -1):
 
         out_file.write('\n\n\n')
 
-    # Recursion for multiple functions within abstract classes.
-    if abstract and a < fns[-1][0]:
+    # Recursion for multiple functions within classes.
+    if is_class and a < fns[-1][0]:
         comment2docs(filename, file, out_file, first, root_pth, a)
 
     out_file.close()

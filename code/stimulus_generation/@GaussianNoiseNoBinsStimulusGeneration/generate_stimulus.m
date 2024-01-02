@@ -1,15 +1,32 @@
 % ### generate_stimulus
 % 
-% Generate stimuli using a binless white-noise process.
+% ```matlab
+% [stim, Fs, spect, binned_repr] = generate_stimulus(self)
+% ```
 % 
-% Class Properties Used:
+% Generate a stimulus using a binless white-noise process.
+% 
+% **OUTPUTS:**
+% 
+%   stim: `self.nfft + 1 x 1` numerical vector,
+%       the stimulus waveform,
+% 
+%   Fs: `1x1` numerical scalar,
+%       the sample rate in Hz.
+% 
+%   spect: `self.nfft / 2 x 1` numerical vector,
+%       the half-spectrum, in dB.
+% 
+%   binned_repr: `[]`, empty because this is not a binned class.
+% 
+% **Class Properties Used:**
 % 
 % ```
 % - amplitude_mean
 % - amplitude_var
 % ```
 
-function [stim, Fs, X, binned_repr] = generate_stimulus(self)
+function [stim, Fs, spect, binned_repr] = generate_stimulus(self)
 
     Fs = self.get_fs();
     nfft = self.nfft;
@@ -19,10 +36,10 @@ function [stim, Fs, X, binned_repr] = generate_stimulus(self)
     % amplitudes are gaussian-distributed
     % with mean `self.amplitude_mean`
     % and standard deviation `self.amplitude_var`.
-    X = self.amplitude_mean + sqrt(self.amplitude_var) * randn(nfft/2, 1);
+    spect = self.amplitude_mean + sqrt(self.amplitude_var) * randn(nfft/2, 1);
 
     % sythesize audio
-    stim = self.synthesize_audio(X, nfft);
+    stim = self.synthesize_audio(spect, nfft);
 
     % empty output
     binned_repr = [];
