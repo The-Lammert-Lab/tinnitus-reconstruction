@@ -30,6 +30,8 @@ and `1` for "yes".
 
 
 
+-------
+
 ### generate_stimuli_matrix
 
 ```matlab
@@ -79,6 +81,8 @@ Only full if `self` is `HierarchicalGaussianStimulusGeneration`.
 
 
 
+-------
+
 ### from_config
 
 Set properties from a struct holding config options.
@@ -91,6 +95,8 @@ Set properties from a struct holding config options.
 
 
 
+
+-------
 
 ### synthesize_audio
 Synthesize audio from spectrum, `X`.
