@@ -27,8 +27,8 @@ function create_deployment(options)
     % Create the toolbox
     if options.toolbox
         corelib.verb(options.verbose, 'INFO create_deployment', 'Creating the toolbox...')
-        matlab.addons.toolbox.toolboxVersion('tinnitus-project.prj', options.version);
-        matlab.addons.toolbox.packageToolbox('tinnitus-project.prj', 'tinnitus-project.mltbx');
+        matlab.addons.toolbox.toolboxVersion('tinnitus-reconstruction.prj', options.version);
+        matlab.addons.toolbox.packageToolbox('tinnitus-reconstruction.prj', 'tinnitus-project.mltbx');
         corelib.verb(options.verbose, 'INFO create_deployment', 'Toolbox created.')
     end
 end

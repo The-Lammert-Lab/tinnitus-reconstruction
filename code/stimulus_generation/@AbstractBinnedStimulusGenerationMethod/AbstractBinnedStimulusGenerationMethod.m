@@ -199,12 +199,6 @@ methods
             options.order (1,1) {mustBePositive, mustBeInteger} = 5
         end
 
-        % Force binned_rep to be a column vector 
-        % to avoid trouble with interpolation loop 
-        if size(binned_rep,1) == 1
-            binned_rep = binned_rep';
-        end
-
         % Check inputs
         assert(isscalar(binrange) || length(binrange) == size(binned_rep,2), ...
             'Binrange must be a scalar or equal length to the number of binned representations')
@@ -229,6 +223,12 @@ methods
         binidx = 1:self.n_bins;
         binidx2 = linspace(1,self.n_bins,new_n_bins);
         binned_rep = interp1(binidx,binned_rep,binidx2,'spline');
+
+        % Force binned_rep to be a column vector
+        % to avoid trouble with interpolation loop 
+        if isrow(binned_rep)
+            binned_rep = binned_rep';
+        end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Get bin numbers for the new number of bins

@@ -162,7 +162,7 @@ function LoudnessMatch(cal_dB, options)
         'Position', [(screenWidth/2)-(instrWidth/2), ...
         (2*screenHeight/3)-instrHeight, ...
         instrWidth, instrHeight], ...
-        'FontSize', 16);
+        'FontSize', 16, 'HorizontalAlignment','left');
 
     %%%%% Buttons
     btnWidthReg = 80;
@@ -346,3 +346,10 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
+
+
+
+
+
+
+

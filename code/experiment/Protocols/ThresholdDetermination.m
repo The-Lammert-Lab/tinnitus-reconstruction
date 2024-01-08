@@ -74,7 +74,7 @@ function ThresholdDetermination(cal_dB, options)
     init_dB = 60;
     dB_min = -100-cal_dB;
     dB_max = 0;
-    sld_incr = 1/200;
+    sld_incr = 1/150;
     duration = 2; % seconds to play the tone for
     tone_played = false;
     err = 0; % Shared error flag variable
@@ -206,6 +206,8 @@ function ThresholdDetermination(cal_dB, options)
         resetScreen();
         if curr_dB + 10 <= dB_max
             curr_dB = curr_dB + 10;
+        elseif isnan(curr_dB)
+            curr_dB = init_dB-cal_dB;
         end
         sld.Value = curr_dB;
 
@@ -248,7 +250,7 @@ function ThresholdDetermination(cal_dB, options)
         if min(tone_to_play) < -1 || max(tone_to_play) > 1
             disp_fullscreen(ScreenError, hFig);
             warning('Sound is clipping. Recalibrate dB level.')
-            err = 1;
+            err = true;
             uiresume(hFig)
             return
         end
@@ -301,7 +303,6 @@ function ThresholdDetermination(cal_dB, options)
     end
 
     function resetScreen()
-        curr_dB = sld.Value;
         set(save_btn, 'Enable', 'off', ...
             'String', 'Play sound to activate', ...
             'Position', save_btn_pos_1);
@@ -324,3 +325,11 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
+
+
+
+
+
+
+
+

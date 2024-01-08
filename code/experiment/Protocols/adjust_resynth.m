@@ -44,9 +44,11 @@
 %       The min (1,1) and max (1,2) values for mult parameter.
 %   - binrange_range: `1 x 2 numerical vector, name-value, default: `[1, 100]`,
 %       The min (1,1) and max (1,2) values for binrange parameter.
+%   - del_fig, `logical`, name-value, default: `true`,
+%       Flag to delete figure at the end of the experiment.
 %   - fig: `matlab.ui.Figure`, name-value.
 %       Handle to open figure on which to display questions.
-%   - save: `logical`, name-value, default: `false`.
+%   - save: `logical`, name-value, default: `true`.
 %       Flag to save the `mult` and `binrange` outputs to a `.csv` file.
 %   - verbose: `logical`, name-value, default: `true`
 %       Flag to print information and warnings. 
@@ -81,8 +83,9 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
         options.mult_range (1,2) = [0, 1]
         options.binrange_range (1,2) = [1, 100]
         options.filter (1,1) logical = false
-        options.save (1,1) logical = false
+        options.save (1,1) logical = true
         options.verbose (1,1) logical = true
+        options.del_fig (1,1) logical = true
     end
 
     %% Unpack options
@@ -135,6 +138,9 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
         options.target_sound = options.target_sound(1:floor(0.5 * options.target_fs));
     end
 
+    % Calculate gain to play at 65 dB.
+    gain = 10^((65-cal_dB)/20);
+
     % Rescale to 65 dB.
     options.target_sound = gain*(options.target_sound ./ rms(options.target_sound));
 
@@ -156,9 +162,6 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
             'use_n_trials', options.n_trials, 'data_dir', data_dir);
     end
 
-    % Calculate gain to play at 65 dB. 
-    gain = 10^((65-cal_dB)/20);
-
     %% Show figure
 
     % Useful vars
@@ -168,8 +171,6 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
 
     sld_w = 300;
     sld_h = 100;
-    lbl_w = 60;
-    lbl_h = 20;
     btn_w = 80;
     btn_h = 20;
 
@@ -208,59 +209,41 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
             'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(3.5*sld_h), sld_w, sld_h], ...
             'min', (stimgen.max_freq/2) + 1, 'max', stimgen.max_freq, ...
             'Value', highcf, 'Callback', @getValue);
+
+        btn_bottom = 160;
+    else
+        btn_bottom = 350;
     end
 
     % Two buttons
     play_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)-(sld_w/2), 125, btn_w, btn_h], ...
+        'position', [(screenWidth/2)-(sld_w/2), btn_bottom, btn_w, btn_h], ...
         'String', 'Play Sounds', 'Callback', @playSounds);
 
     confirm_btn = uicontrol(hFig,'Style','pushbutton', ...
-        'position', [(screenWidth/2)+(sld_w/2)-lbl_w, 125, btn_w, btn_h], ...
-        'String', 'Save Choice', 'Callback', {@closeRequest hFig});
+        'position', [(screenWidth/2)+(sld_w/2)-btn_w, btn_bottom, btn_w, btn_h], ...
+        'String', 'Save Choice', 'Callback', {@saveRequest hFig});
 
     % Instructions
     uicontrol(hFig, 'Style', 'text', 'String', ['Adjust both sliders together or ' ...
-        'separately and press "Play" to hear the effect on your reconstruction. ' ...
-        'Choose "confirm" when you are satisfied.'], ...
-        'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)+(sld_h), sld_w, sld_h])
+        'separately and press "Play Sounds" to hear the effect on your reconstruction. ' ...
+        'Choose "Save Choice" when you are satisfied.'], ...
+        'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)+(sld_h), sld_w, sld_h], ... 
+        'FontSize', 16, 'HorizontalAlignment', 'left')
 
-    % Labels
-    uicontrol(hFig, 'Style', 'text', 'String', 'min', ... 
-        'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)+(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
-
-    uicontrol(hFig, 'Style', 'text', 'String', 'max', ... 
-        'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)+(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
-
-    uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
-        'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
-
-    uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
-        'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(sld_h/2)-(2*lbl_h), lbl_w, lbl_h]);
-
-    if options.filter
-        uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
-            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(1.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
-
-        uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
-            'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(1.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
-
-        uicontrol(hFig, 'Style', 'text', 'String', 'min', ...
-            'Position', [(screenWidth/2)-(sld_w/2), (screenHeight/2)-(2.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
-
-        uicontrol(hFig, 'Style', 'text', 'String', 'max', ...
-            'Position', [(screenWidth/2)+(sld_w/2)-lbl_w, (screenHeight/2)-(2.5*sld_h)-(2*lbl_h), lbl_w, lbl_h]);
-    end
-
-    waitfor(hFig);
+    uiwait(hFig);
 
     if options.save
         if options.filter
-            params = [mult; binrange; lowcf; highcf];
+            param_table = table(mult,binrange,lowcf,highcf,'VariableNames',["mult","binrange","lowcutoff","highcutoff"]);
         else
-            params = [mult; binrange];
+            param_table = table(mult,binrange,'VariableNames',["mult","binrange"]);
         end
-        writematrix(params, fullfile(options.data_dir, ['resynth_params',options.this_hash, '.csv']));
+        writetable(param_table, fullfile(data_dir, ['resynth_params_',options.this_hash, '.csv']));
+    end
+
+    if options.del_fig
+        delete(hFig)
     end
 
     %% Nested functions
@@ -301,3 +284,16 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
+
+function saveRequest(~,~,hFig)
+    ButtonName = questdlg(['Do you wish to ' ...
+        'confirm your choices?'],...
+        'Confirm', ...
+        'Yes', 'No', 'No');
+    switch ButtonName
+        case 'Yes'
+            uiresume(hFig);
+        case 'No'
+            return
+    end
+end % saveRequest

@@ -106,7 +106,13 @@ function RevCorr(cal_dB, options)
     
     % Compute the total trials done
     total_trials_done = get_total_trials_done(config, config_hash);
-    corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+    corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
+
+    if total_trials_done >= config.n_trials_per_block * config.n_blocks
+        corelib.verb(options.verbose, 'INFO RevCorr', ['Number of trials completed: ', num2str(total_trials_done), ...
+            ' equals or exceeds total specified in config: ', num2str(config.n_trials_per_block * config.n_blocks) '. Exiting...'])
+        return
+    end
 
     % Is this an A-X experiment protocol?
     %   If it's an A-X experiment protocol,
@@ -166,11 +172,13 @@ function RevCorr(cal_dB, options)
     fid_responses = fopen(filename_responses, 'w');
 
     %% Adjust target audio volume
-    if ~isempty(target_sound) && contains(config.target_signal_name,'resynth')
+    target_sound_scaled = gain*(target_sound ./ rms(target_sound));
+
+    if ~isempty(target_sound) && isfield(config, 'target_signal_name') && contains(config.target_signal_name,'resynth')
         if is_two_afc
-            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix_1(:,1), Fs);
+            scale_factor = adjust_volume(target_sound_scaled, target_fs, stimuli_matrix_1(:,1), Fs);
         else
-            scale_factor = adjust_volume(target_sound, target_fs, stimuli_matrix(:,1), Fs);
+            scale_factor = adjust_volume(target_sound_scaled, target_fs, stimuli_matrix(:,1), Fs);
         end
     end
     
@@ -194,8 +202,8 @@ function RevCorr(cal_dB, options)
     % Press "F" to start
     k = waitforkeypress();
     if k < 0
-        corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-        corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+        corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+        corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
         return
     end
     value = double(get(gcf,'CurrentCharacter')); % f - 102
@@ -204,8 +212,8 @@ function RevCorr(cal_dB, options)
     while (value ~= 102)
         k = waitforkeypress();
         if k < 0
-            corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+            corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
             return
         end
         value = double(get(gcf,'CurrentCharacter'));
@@ -222,10 +230,10 @@ function RevCorr(cal_dB, options)
 
         % Present Target (if A-X protocol)
         if ~isempty(target_sound)
-            if contains(config.target_signal_name,'resynth')
-                sound(target_sound*scale_factor,target_fs,24)
+            if isfield(config, 'target_signal_name') && contains(config.target_signal_name,'resynth')
+                sound(target_sound_scaled*scale_factor,target_fs,24)
             else
-                sound(target_sound,target_fs,24)
+                sound(target_sound_scaled,target_fs,24)
             end
             pause(length(target_sound) / target_fs + 0.3) % 300ms pause between target and stimulus
         end
@@ -240,16 +248,16 @@ function RevCorr(cal_dB, options)
         % Obtain Response
         k = waitforkeypress();
         if k < 0
-            corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+            corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
             return
         end
         value = double(get(gcf,'CurrentCharacter')); % f - 102, j - 106
         while isempty(value) || (value ~= 102) && (value ~= 106)
             k = waitforkeypress();
             if k < 0
-                corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-                corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+                corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
                 return
             end
             value = double(get(gcf,'CurrentCharacter'));
@@ -279,7 +287,7 @@ function RevCorr(cal_dB, options)
         if total_trials_done >= config.n_trials_per_block * config.n_blocks
             fclose(fid_responses);
             % end, all trials complete
-            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
             if isfield(config, 'follow_up') && config.follow_up
                 if isfield(config, 'mult_range') && ~isempty(config.mult_range)
                     mult_range = config.mult_range;
@@ -290,11 +298,11 @@ function RevCorr(cal_dB, options)
                 [mult, binrange] = adjust_resynth(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
-                    'fig', hFig, 'mult_range', mult_range);
+                    'fig', hFig, 'mult_range', mult_range, 'del_fig', false, 'verbose', false);
                 follow_up(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
-                    'mult', mult, 'binrange', binrange, 'fig', hFig);
+                    'mult', mult, 'binrange', binrange, 'fig', hFig, 'verbose', false);
             else
                 disp_fullscreen(Screen4);
             end
@@ -305,19 +313,19 @@ function RevCorr(cal_dB, options)
             % reset counter
             counter = 0;
             disp_fullscreen(Screen3);
-            corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+            corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
             k = waitforkeypress();
             if k < 0
-                corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-                corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+                corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
                 return
             end
             value = double(get(gcf,'CurrentCharacter')); % f - 102
             while (value ~= 102)
                 k = waitforkeypress();
                 if k < 0
-                    corelib.verb(options.verbose, 'INFO Protocol', 'Exiting...')
-                    corelib.verb(options.verbose, 'INFO Protocol', ['# of trials completed: ', num2str(total_trials_done)])
+                    corelib.verb(options.verbose, 'INFO RevCorr', 'Exiting...')
+                    corelib.verb(options.verbose, 'INFO RevCorr', ['# of trials completed: ', num2str(total_trials_done)])
                     return
                 end
                 value = double(get(gcf,'CurrentCharacter'));
