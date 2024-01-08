@@ -49,9 +49,11 @@ rather than generating from config.
 The min (1,1) and max (1,2) values for mult parameter.
 - binrange_range: `1 x 2 numerical vector, name-value, default: `[1, 100]`,
 The min (1,1) and max (1,2) values for binrange parameter.
+- del_fig, `logical`, name-value, default: `true`,
+Flag to delete figure at the end of the experiment.
 - fig: `matlab.ui.Figure`, name-value.
 Handle to open figure on which to display questions.
-- save: `logical`, name-value, default: `false`.
+- save: `logical`, name-value, default: `true`.
 Flag to save the `mult` and `binrange` outputs to a `.csv` file.
 - verbose: `logical`, name-value, default: `true`
 Flag to print information and warnings. 
@@ -102,11 +104,13 @@ Target sound for comparison. Generates from config if blank.
 Frequency associated with target_sound
 - n_trials: `Positive number`, name-value, default: inf
 Number of trials to use for reconstruction. Uses all data if `inf`.
-- mult: `Positive number`, name-value, default: 0.01
-The peak-sharpening `mult` parameter.
+- mult: `Positive number`, name-value, default: `NaN`
+The peak-sharpening `mult` parameter. 
+Must be passed if no `resynth_params` file exists.
 - binrange: `Positive number`, name-value, default: 60,
 must be between [1, 100], the upper bound of the [0, binrange]
 dynamic range of the peak-sharpened reconstruction.
+Must be passed if no `resynth_params` file exists.
 - version:`Positive number`, name-value, default: 0
 Question version number. Must be passed or in config.
 - config_file: `character vector`, name-value, default: ``''``
@@ -116,7 +120,9 @@ Flag to run static/survey questions. If `false`, only sound
 comarison is shown.
 - recon: `numeric vector`, name-value, default: `[]`
 Allows user to supply a specific reconstruction to use, 
-rather than generating from config. 
+rather than generating from config.
+- n_reps: `1 x 1` positive integer, name-value, default: `2`
+Number of times to run the resynthesis rating questions.
 - fig: `matlab.ui.Figure`, name-value.
 Handle to open figure on which to display questions.
 - verbose: `logical`, name-value, default: `true`
