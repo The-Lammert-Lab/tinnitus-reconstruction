@@ -26,11 +26,13 @@
 %       Frequency associated with target_sound
 %   - n_trials: `Positive number`, name-value, default: inf
 %       Number of trials to use for reconstruction. Uses all data if `inf`.
-%   - mult: `Positive number`, name-value, default: 0.01
-%       The peak-sharpening `mult` parameter.
+%   - mult: `Positive number`, name-value, default: `NaN`
+%       The peak-sharpening `mult` parameter. 
+%       Must be passed if no `resynth_params` file exists.
 %   - binrange: `Positive number`, name-value, default: 60,
 %       must be between [1, 100], the upper bound of the [0, binrange]
 %       dynamic range of the peak-sharpened reconstruction.
+%       Must be passed if no `resynth_params` file exists.
 %   - version:`Positive number`, name-value, default: 0
 %       Question version number. Must be passed or in config.
 %   - config_file: `character vector`, name-value, default: ``''``
@@ -40,7 +42,9 @@
 %       comarison is shown.
 %   - recon: `numeric vector`, name-value, default: `[]`
 %       Allows user to supply a specific reconstruction to use, 
-%       rather than generating from config. 
+%       rather than generating from config.
+%   - n_reps: `1 x 1` positive integer, name-value, default: `2`
+%       Number of times to run the resynthesis rating questions.
 %   - fig: `matlab.ui.Figure`, name-value.
 %       Handle to open figure on which to display questions.
 %   - verbose: `logical`, name-value, default: `true`
@@ -63,11 +67,12 @@ function follow_up(cal_dB, options)
         options.n_trials (1,1) {mustBePositive} = inf
         options.version (1,1) = 0
         options.config_file (1,:) char = ''
-        options.mult (1,1) {mustBeReal} = 0.01
-        options.binrange (1,1) {mustBeReal} = 60
+        options.mult (1,1) {mustBeReal} = NaN
+        options.binrange (1,1) {mustBeReal} = NaN
         options.filter (1,1) logical = false
-        options.cutoff_freqs (1,2) {mustBeReal} = []
+        options.cutoff_freqs (1,2) {mustBeReal} = [0,22000]
         options.recon (:,1) {mustBeNumeric} = []
+        options.n_reps (1,1) {mustBePositive, mustBeInteger} = 2
         options.survey (1,1) logical = true
         options.verbose (1,1) logical = true
         options.fig matlab.ui.Figure
@@ -76,7 +81,7 @@ function follow_up(cal_dB, options)
     %% Input handling
     % If not called from Protocol, get path to use for loading images.
     if isempty(options.project_dir)
-        project_dir = pathlib.strip(mfilename('fullpath'), 2);
+        project_dir = pathlib.strip(mfilename('fullpath'), 3);
     end
 
      % If no config file path is provided,
@@ -144,6 +149,23 @@ function follow_up(cal_dB, options)
             'use_n_trials', options.n_trials, 'data_dir', data_dir);
     end
 
+    % Used passed binnedrepr2wav values if both were passed
+    if ~isnan(options.mult) && ~isnan(options.binrange)
+        mult = options.mult;
+        binrange = options.binrange;
+    else
+        % Try to read the binnedrepr2wav parameters from a saved file
+        % If file can't be found, take from passed inputs.
+        try
+            adjustment_params = readtable(fullfile(data_dir,['resynth_params_',options.this_hash,'.csv']));
+            mult = adjustment_params.mult;
+            binrange = adjustment_params.binrange;
+        catch
+            error(['No resynth_params file was found and no mult or binrange parameters were supplied. ' ...
+                'Run adjust_resynth or explicitly pass these parameters.'])
+        end
+    end
+
     stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(config);
 
@@ -161,7 +183,7 @@ function follow_up(cal_dB, options)
     recon_waveform_standard = stimgen.synthesize_audio(recon_spectrum, stimgen.nfft);
 
     % Make adjusted (peak sharpened, etc.) waveform from reconstruction
-    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,options.mult,options.binrange, ...
+    recon_waveform_adjusted = stimgen.binnedrepr2wav(reconstruction,mult,binrange, ...
         'filter',options.filter,'cutoff',options.cutoff_freqs);
 
     % Generate white noise
@@ -188,19 +210,19 @@ function follow_up(cal_dB, options)
         
         static_qs = cell(length(d),1);
         
-        for i = 1:length(static_qs)
-            static_qs{i} = imread(pathlib.join(img_dir, d(i).name));
+        for ii = 1:length(static_qs)
+            static_qs{ii} = imread(pathlib.join(img_dir, d(ii).name));
         end
     end
     
     % Sound screens
     sound_screens = cell(n_sounds,1);
     
-    for i = 1:n_sounds
+    for ii = 1:n_sounds
         if isempty(options.target_sound)
-            sound_screens{i} = imread(pathlib.join(img_dir,['FollowUp_compare_tinnitus', num2str(i), '.png']));
+            sound_screens{ii} = imread(pathlib.join(img_dir,['FollowUp_compare_tinnitus', num2str(ii), '.png']));
         else
-            sound_screens{i} = imread(pathlib.join(img_dir,['FollowUp_compare', num2str(i), '.png']));
+            sound_screens{ii} = imread(pathlib.join(img_dir,['FollowUp_compare', num2str(ii), '.png']));
         end
     end
 
@@ -241,8 +263,8 @@ function follow_up(cal_dB, options)
                 staticqs_header = blanks(4*(length(static_qs)-9)+27);
             end
     
-            for i = 1:length(static_qs)
-                staticqs_header(inds(i):inds(i+1)-1) = ['Q', num2str(i), ','];
+            for ii = 1:length(static_qs)
+                staticqs_header(inds(ii):inds(ii+1)-1) = ['Q', num2str(ii), ','];
             end
         else
             staticqs_header = '';
@@ -258,13 +280,14 @@ function follow_up(cal_dB, options)
         comparison{order(3),2} = 'recon_adjusted';
 
         % Write header
-        fprintf(fid_survey, ['hash,','version,', ...
+        all_headers = ['hash,','version,', ...
             'mult,','binrange,', staticqs_header, ...
-            comparison{1,2},',',comparison{2,2},',',comparison{3,2},'\n']);
+            comparison{1,2},',',comparison{2,2},',',comparison{3,2},'\n'];
+        fprintf(fid_survey, all_headers);
 
         % Write config hash, version, mult, and binrange params to file.
         fprintf(fid_survey, [options.this_hash,',',num2str(options.version),',', ...
-            num2str(options.mult),',',num2str(options.binrange),',']);
+            num2str(mult),',',num2str(binrange),',']);
     end
 
     % Scale waveforms to play at desired level
@@ -300,8 +323,8 @@ function follow_up(cal_dB, options)
     %% Ask questions
     if options.survey
         % Static questions
-        for i = 1:length(static_qs)
-            disp_fullscreen(static_qs{i})
+        for ii = 1:length(static_qs)
+            disp_fullscreen(static_qs{ii})
             value = readkeypress(49:53, 'verbose', options.verbose); % 1-5 = 49-53
             if value < 0
                 corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
@@ -318,44 +341,62 @@ function follow_up(cal_dB, options)
     end
 
     % Sound assessment 
-    for i = 1:length(sound_screens)
-        % Wait for 'F' to play sound
-        disp_fullscreen(sound_screens{i});
-        value = readkeypress(102, 'verbose', options.verbose); % f - 102
-        if value < 0
-            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
-            return
-        end
-
-        play_sounds(options.target_sound, options.target_fs, comparison{i,1}, Fs)
-
-        % Get key press or repeat sounds
-        while ~(value < 0)
-            if options.version == 1
-                value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
+    for jj = 1:options.n_reps
+        for ii = 1:length(sound_screens)
+            % Show the right screen
+            if length(sound_screens) == 1
+                disp_fullscreen(sound_screens{ii})
             else
-                value = readkeypress([49:55, 114], 'verbose', options.verbose); % r - 114
-            end
-            if value == 114
-                play_sounds(options.target_sound, options.target_fs, comparison{i,1}, Fs)
-            else
-                % Write response to file
-                if options.version == 1
-                    fprintf(fid_survey, [char(value), '\n']);
+                if jj == options.n_reps && ii == length(sound_screens)
+                    disp_fullscreen(sound_screens{end})
+                elseif ii == length(sound_screens) % Don't show "Last one" screen until actually last one.
+                    disp_fullscreen(sound_screens{ii-1});
                 else
-                    if i < length(sound_screens)
-                        fprintf(fid_survey, [char(value), ',']);
-                    else
-                        fprintf(fid_survey, char(value));
-                    end
+                    disp_fullscreen(sound_screens{ii});
                 end
-                break
             end
-        end
-
-        if value < 0
-            corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
-            return
+            
+            % Wait for 'F' to play sound
+            value = readkeypress(102, 'verbose', options.verbose); % f - 102
+            if value < 0
+                corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
+                return
+            end
+    
+            play_sounds(options.target_sound, options.target_fs, comparison{ii,1}, Fs)
+    
+            % Get key press or repeat sounds
+            while ~(value < 0)
+                if options.version == 1
+                    value = readkeypress([49:53, 114], 'verbose', options.verbose); % r - 114
+                else
+                    value = readkeypress([49:55, 114], 'verbose', options.verbose); % r - 114
+                end
+                if value == 114
+                    play_sounds(options.target_sound, options.target_fs, comparison{ii,1}, Fs)
+                else
+                    % Write response to file
+                    if options.version == 1
+                        fprintf(fid_survey, [char(value), '\n']);
+                    else
+                        if ii == length(sound_screens) && jj ~= options.n_reps
+                            fprintf(fid_survey, [char(value), '\n']);
+                            % Fill in the static questions section on new line with 'Null'
+                            fprintf(fid_survey, repmat('Null,',1,4+length(static_qs)));
+                        elseif ii == length(sound_screens) && jj == options.n_reps
+                            fprintf(fid_survey, char(value)); % Last entry doesn't need separator
+                        else 
+                            fprintf(fid_survey, [char(value), ',']);
+                        end
+                    end
+                    break
+                end
+            end
+    
+            if value < 0
+                corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
+                return
+            end
         end
     end
 
