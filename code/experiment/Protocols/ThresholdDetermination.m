@@ -325,11 +325,3 @@ function closeRequest(~,~,hFig)
             return
     end
 end % closeRequest
-
-
-
-
-
-
-
-
