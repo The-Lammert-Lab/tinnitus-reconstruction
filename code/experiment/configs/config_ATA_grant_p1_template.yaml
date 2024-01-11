@@ -1,0 +1,23 @@
+# Metadata
+experiment_name: ATA-grant-XX
+subject_ID: XX
+data_dir: 
+
+n_trials_per_block: 100
+n_blocks: 10
+
+# Run the follow up questions
+follow_up: true
+follow_up_version: 2
+
+# Experiment parameters. 
+min_freq: 100 # Minimum frequency for RC protocol
+max_freq: 16000 # Maximum frequency for RC protocol
+min_tone_freq: 500 # Minimum frequency for non-RC protocols
+max_tone_freq: 16000 # Maximum frequency for non-RC protocols 
+duration: 0.5 # Duration RC stimuli is played for (seconds)
+stimuli_type: UniformPrior # Noise generation algorithm
+n_bins: 32 # Number of bins to partition spectrum into
+min_bins: 6 # Min number of bins to fill on a given stimulus
+max_bins: 16 # Max number of bins to fill on a given stimulus
+stimuli_save_type: bins

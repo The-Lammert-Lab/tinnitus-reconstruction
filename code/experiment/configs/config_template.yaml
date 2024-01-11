@@ -36,6 +36,12 @@ min_freq: 100
 max_freq: 13000
 duration: 0.5
 
+# These "freq" fields are only used in non-RC protocols
+# Specifically, ThresholdDetermination, LoudnessMatch, and PitchMatch
+# They indicate the minimum and maximum frequencies for the "test tones"
+min_tone_freq: 500 
+max_tone_freq: 16000  
+
 # For a stimulus type that uses bins,
 # the number of bins are set here.
 # This should be a positive scalar integer.
