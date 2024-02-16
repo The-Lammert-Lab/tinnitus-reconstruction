@@ -39,7 +39,7 @@
 %       A path to a YAML-spec configuration file.
 %   - survey: `logical`, name-value, default: `true`
 %       Flag to run static/survey questions. If `false`, only sound
-%       comarison is shown.
+%       comparison is shown.
 %   - recon: `numeric vector`, name-value, default: `[]`
 %       Allows user to supply a specific reconstruction to use, 
 %       rather than generating from config.
