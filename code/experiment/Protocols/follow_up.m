@@ -37,7 +37,7 @@
 %       Question version number. Must be passed or in config.
 %   - config_file: `character vector`, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
-%   - survey: `logical`, name-value, default: `true`
+%   - survey: `logical`, name-value, default: `false`
 %       Flag to run static/survey questions. If `false`, only sound
 %       comparison is shown.
 %   - recon: `numeric vector`, name-value, default: `[]`
@@ -73,7 +73,7 @@ function follow_up(cal_dB, options)
         options.cutoff_freqs (1,2) {mustBeReal} = [0,22000]
         options.recon (:,1) {mustBeNumeric} = []
         options.n_reps (1,1) {mustBePositive, mustBeInteger} = 2
-        options.survey (1,1) logical = true
+        options.survey (1,1) logical = false
         options.verbose (1,1) logical = true
         options.fig matlab.ui.Figure
     end
