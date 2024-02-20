@@ -115,9 +115,9 @@ Must be passed if no `resynth_params` file exists.
 Question version number. Must be passed or in config.
 - config_file: `character vector`, name-value, default: ``''``
 A path to a YAML-spec configuration file.
-- survey: `logical`, name-value, default: `true`
+- survey: `logical`, name-value, default: `false`
 Flag to run static/survey questions. If `false`, only sound
-comarison is shown.
+comparison is shown.
 - recon: `numeric vector`, name-value, default: `[]`
 Allows user to supply a specific reconstruction to use, 
 rather than generating from config.
