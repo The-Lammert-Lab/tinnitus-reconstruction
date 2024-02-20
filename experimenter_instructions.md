@@ -16,24 +16,13 @@
     - Set the `data_dir` field to the local data storage location.
 
 3. MATLAB setup
-    - Pull the latest git version
+    - Make sure the installed tinnitus-reconstruction toolbox is the correct one.
+    - If none is installed, take the desired version from GitHub.
     - Open MATLAB
     - Place the SPL meter securely in the headphones close to one ear but not touching
-    - Run the following commands in the MATLAB command window:
-
-        ```matlab
-            Fs = 44100;
-            test_tone = pure_tone(1000,1,Fs);
-            sound(test_tone,Fs,24)
-        ```
-
+    - Run `play_calibration_sound()`.
     - Make sure the measured decibel value on the SPL meter is above 65dB. If it is not, raise the system volume and try again.
-    - Save this value as a variable in MATLAB. For example:
-
-        ```matlab
-            cal_dB = 102.6;
-        ```
-
+    - Save this value as a variable in MATLAB. For example, `cal_dB = 102.6;`
     - Call `RunAllExp(cal_dB)` and navigate to the just-created `p1` config file for this experiment.
     - Once the first screen loads, the experiment is fully set up.
 
@@ -62,7 +51,7 @@
 
         > The third experiment seeks to identify the pitch of your tinnitus. Two sounds will play back to back and you will be asked to choose which one was closer to the sound of your tinnitus. This process will continue until the experimental protocol identifies a match. This is a much shorter process than the previous two, so it will be repeated three times.
 
-        > The fourth experiment is different from the previous ones. You will hear a series of complex, carefully constructed random noises. Beacause they're random, it's not likely that you will hear one that sounds exactly like your tinnitus. However, some sounds as a whole might be simliar to your tinnitus or will contain elements or pieces that sound similar your tinnitus. We would like you to answer “yes” to sounds that fit either of those descriptions, and “no” otherwise.
+        > The fourth experiment is different from the previous ones. You will hear a series of noisy sounds, about half of which contain an embedded, tinnitus-like sound. We would like you to answer "yes" to noises in which you notice an underlying, tinnitus sound or that resemble your tinnitus in any way. Otherwise, answer "no".
         After all of the sounds have been completed, you will see a screen with two sliders, a button to play a sound, and a button to save your choice. Similar to the first two experiments, you will alternate between playing the sound and adjusting the sliders until the sound that is played is as close to your tinnitus as you can make it. Once you are satisfied, click "save choice".
         Finally, you will be asked a few questions to answer on a numerical scale.
 
