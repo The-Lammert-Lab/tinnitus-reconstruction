@@ -100,3 +100,7 @@ follow_up: true
 # This field indicates what version of follow up questions to use.
 # If it is unset, it will default to 1.
 follow_up_version: 1
+
+# This field indicates whether to display the "survey" questions
+# in the follow up protocol (reconstruction comparison is still run).
+follow_up_survey: false

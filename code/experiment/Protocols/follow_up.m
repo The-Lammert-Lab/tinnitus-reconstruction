@@ -37,9 +37,9 @@
 %       Question version number. Must be passed or in config.
 %   - config_file: `character vector`, name-value, default: ``''``
 %       A path to a YAML-spec configuration file.
-%   - survey: `logical`, name-value, default: `true`
+%   - survey: `logical`, name-value, default: `false`
 %       Flag to run static/survey questions. If `false`, only sound
-%       comarison is shown.
+%       comparison is shown.
 %   - recon: `numeric vector`, name-value, default: `[]`
 %       Allows user to supply a specific reconstruction to use, 
 %       rather than generating from config.
@@ -73,7 +73,7 @@ function follow_up(cal_dB, options)
         options.cutoff_freqs (1,2) {mustBeReal} = [0,22000]
         options.recon (:,1) {mustBeNumeric} = []
         options.n_reps (1,1) {mustBePositive, mustBeInteger} = 2
-        options.survey (1,1) logical = true
+        options.survey (1,1) logical = false
         options.verbose (1,1) logical = true
         options.fig matlab.ui.Figure
     end
@@ -102,9 +102,9 @@ function follow_up(cal_dB, options)
     % n_trials can't be more than total data
     if isempty(options.recon)
         total_trials_done = 0;
-        dir_responses = dir(pathlib.join(data_dir, ['responses_', options.this_hash, '*.csv']));
+        dir_responses = dir(fullfile(data_dir, ['responses_', options.this_hash, '*.csv']));
         for ii = 1:length(dir_responses)
-            responses = readmatrix(pathlib.join(dir_responses(ii).folder, dir_responses(ii).name));
+            responses = readmatrix(fullfile(dir_responses(ii).folder, dir_responses(ii).name));
             total_trials_done = total_trials_done + length(responses);
         end
 
@@ -157,7 +157,9 @@ function follow_up(cal_dB, options)
         % Try to read the binnedrepr2wav parameters from a saved file
         % If file can't be found, take from passed inputs.
         try
-            adjustment_params = readtable(fullfile(data_dir,['resynth_params_',options.this_hash,'.csv']));
+            % Use dir because the hash on the file may have timestamp and a follow_up rerun won't.
+            params_dir = dir(fullfile(data_dir,['resynth_params_',options.this_hash,'*.csv']));
+            adjustment_params = readtable(fullfile(params_dir.folder,params_dir.name));
             mult = adjustment_params.mult;
             binrange = adjustment_params.binrange;
         catch
@@ -194,41 +196,45 @@ function follow_up(cal_dB, options)
 
     %% Load Screens
     % Load Protocol completion/follow up intro screen
-    img_dir = pathlib.join(project_dir, 'experiment', 'fixationscreen', ...
+    img_dir = fullfile(project_dir, 'experiment', 'fixationscreen', ...
         ['FollowUp_v', num2str(options.version)]);
 
-    intro_screen = imread(pathlib.join(img_dir, 'FollowUp_intro.png'));
-    final_screen = imread(pathlib.join(img_dir, 'FollowUp_end.png'));
+    intro_screen = imread(fullfile(img_dir, 'FollowUp_intro.png'));
+    final_screen = imread(fullfile(img_dir, 'FollowUp_end.png'));
 
     % Question screens
     if options.survey
         if isempty(options.target_sound)
-            d = dir(pathlib.join(img_dir, '*Q*_patient.png'));
+            d = dir(fullfile(img_dir, '*Q*_patient.png'));
         else
-            d = dir(pathlib.join(img_dir, '*Q*_healthy.png'));
+            d = dir(fullfile(img_dir, '*Q*_healthy.png'));
         end
         
         static_qs = cell(length(d),1);
         
         for ii = 1:length(static_qs)
-            static_qs{ii} = imread(pathlib.join(img_dir, d(ii).name));
+            static_qs{ii} = imread(fullfile(img_dir, d(ii).name));
         end
+
+        n_static = length(static_qs);
+    else
+        n_static = 0;
     end
     
     % Sound screens
     sound_screens = cell(n_sounds,1);
     
-    for ii = 1:n_sounds
+    for ii = 1:n_sounds+1
         if isempty(options.target_sound)
-            sound_screens{ii} = imread(pathlib.join(img_dir,['FollowUp_compare_tinnitus', num2str(ii), '.png']));
+            sound_screens{ii} = imread(fullfile(img_dir,['FollowUp_compare_tinnitus', num2str(ii), '.png']));
         else
-            sound_screens{ii} = imread(pathlib.join(img_dir,['FollowUp_compare', num2str(ii), '.png']));
+            sound_screens{ii} = imread(fullfile(img_dir,['FollowUp_compare', num2str(ii), '.png']));
         end
     end
 
     %% Response file
     % Set up response file
-    filename_survey = pathlib.join(data_dir, ['survey_', options.this_hash, '.csv']);
+    filename_survey = fullfile(data_dir, ['survey_', options.this_hash, '.csv']);
     fid_survey = fopen(filename_survey, 'w');
 
     % Version 1 has a different save configuration than future versions.
@@ -313,12 +319,11 @@ function follow_up(cal_dB, options)
 
     %% Press 'F' to start
     disp_fullscreen(intro_screen)
-    
-    value = readkeypress(102, 'verbose', options.verbose); % f - 102
-    if value < 0
-        corelib.verb(options.verbose, 'INFO follow_up', 'Exiting...')
-        return
-    end
+
+    % Use this instead of readkeypress() 
+    % b/c figure becomes inactive for some 
+    % reason when coming from adjust_resynth
+    waitforbuttonpress 
 
     %% Ask questions
     if options.survey
@@ -342,15 +347,15 @@ function follow_up(cal_dB, options)
 
     % Sound assessment 
     for jj = 1:options.n_reps
-        for ii = 1:length(sound_screens)
+        for ii = 1:n_sounds
             % Show the right screen
             if length(sound_screens) == 1
                 disp_fullscreen(sound_screens{ii})
             else
-                if jj == options.n_reps && ii == length(sound_screens)
+                if jj == options.n_reps && ii == n_sounds
                     disp_fullscreen(sound_screens{end})
-                elseif ii == length(sound_screens) % Don't show "Last one" screen until actually last one.
-                    disp_fullscreen(sound_screens{ii-1});
+                elseif ii == n_sounds % Don't show "Last one" screen until actually last one.
+                    disp_fullscreen(sound_screens{end-1});
                 else
                     disp_fullscreen(sound_screens{ii});
                 end
@@ -379,11 +384,11 @@ function follow_up(cal_dB, options)
                     if options.version == 1
                         fprintf(fid_survey, [char(value), '\n']);
                     else
-                        if ii == length(sound_screens) && jj ~= options.n_reps
+                        if ii == n_sounds && jj ~= options.n_reps
                             fprintf(fid_survey, [char(value), '\n']);
                             % Fill in the static questions section on new line with 'Null'
-                            fprintf(fid_survey, repmat('Null,',1,4+length(static_qs)));
-                        elseif ii == length(sound_screens) && jj == options.n_reps
+                            fprintf(fid_survey, repmat('Null,',1,4+n_static));
+                        elseif ii == n_sounds && jj == options.n_reps
                             fprintf(fid_survey, char(value)); % Last entry doesn't need separator
                         else 
                             fprintf(fid_survey, [char(value), ',']);

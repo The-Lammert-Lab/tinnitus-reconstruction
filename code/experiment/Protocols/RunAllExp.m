@@ -21,5 +21,5 @@ function RunAllExp(cal_dB, config_path, n_pm)
         PitchMatch(cal_dB,'config_file',config_path,'fig',gcf,'del_fig',false);
     end
      
-    RevCorr('config_file',config_path,'fig',gcf);
+    RevCorr(cal_dB, 'config_file',config_path,'fig',gcf);
 end

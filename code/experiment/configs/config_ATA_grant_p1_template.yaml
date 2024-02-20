@@ -9,6 +9,7 @@ n_blocks: 10
 # Run the follow up questions
 follow_up: true
 follow_up_version: 2
+follow_up_survey: false
 
 # Experiment parameters. 
 min_freq: 100 # Minimum frequency for RC protocol
