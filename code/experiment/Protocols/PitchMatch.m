@@ -110,7 +110,7 @@ function PitchMatch(cal_dB, options)
     % Load loudness-matched dBs
     [loudness_dBs, loudness_tones] = collect_data_thresh_or_loud('loudness','config',config);
     if ~isempty(loudness_dBs) && ~isempty(loudness_tones)
-        loudness_dBs = loudness_dBs(:,1);
+        loudness_dBs = loudness_dBs(:,1)+5;
         % Interpolate gains
         oct_dBs = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
         oct_gains = 10.^(oct_dBs/20);
