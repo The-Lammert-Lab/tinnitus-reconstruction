@@ -54,7 +54,7 @@ methods
         % Define Frequency Bin Indices 1 through self.n_bins
         bintops = round(mels2hz(linspace(hz2mels(self.min_freq), hz2mels(self.max_freq), self.n_bins+1)));
         bin_starts = bintops(1:end-1);
-        bin_stops = bintops(2:end);
+        bin_stops = bintops(2:end); 
         binnum = zeros(nfft/2, 1);
         frequency_vector = linspace(0, Fs/2, nfft/2)';
 
