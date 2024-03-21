@@ -69,7 +69,7 @@ function [x, r_bootstrap, responses_output, stimuli_matrix_output] = get_reconst
     
     % Set the gamma parameter if not set
     if options.gamma == 0
-        options.gamma = get_gamma_from_config(options.config, options.verbose);
+        options.gamma = get_gamma_from_config(config, options.verbose);
     else
         % Gamma set by user
         corelib.verb(options.verbose, 'INFO: get_reconstruction', ['gamma parameter set to ', num2str(options.gamma), ', as specified by the user.']);
