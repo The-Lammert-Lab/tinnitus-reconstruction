@@ -43,13 +43,13 @@ function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_p
     % open a UI to load the config
     if isempty(options.config) && isempty(options.config_file)
         config = parse_config(options.config_file);
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config file loaded from GUI')
+        corelib.verb(options.verbose, 'INFO: collect_data_pitch_match', 'config file loaded from GUI')
     elseif isempty(options.config)
         config = parse_config(options.config_file);
-        corelib.verb(options.verbose, 'INFO: collect_data', ['config object loaded from provided file [', options.config_file, ']'])
+        corelib.verb(options.verbose, 'INFO: collect_data_pitch_match', ['config object loaded from provided file [', options.config_file, ']'])
     else
         config = options.config;
-        corelib.verb(options.verbose, 'INFO: collect_data', 'config object provided')
+        corelib.verb(options.verbose, 'INFO: collect_data_pitch_match', 'config object provided')
     end
     
     config_hash = get_hash(config);
@@ -57,9 +57,9 @@ function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_p
     % If no data directory is provided, use the one from the config file
     if isempty(options.data_dir)
         options.data_dir = config.data_dir;
-        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from config: ' char(config.data_dir)])
+        corelib.verb(options.verbose, 'INFO: collect_data_pitch_match', ['using data directory from config: ' char(config.data_dir)])
     else
-        corelib.verb(options.verbose, 'INFO: collect_data', ['using data directory from function arguments: ' options.data_dir])
+        corelib.verb(options.verbose, 'INFO: collect_data_pitch_match', ['using data directory from function arguments: ' options.data_dir])
     end
 
     % 
