@@ -12,8 +12,7 @@
 %% Preamble
 % Change the DATA_DIR and PUBLISH flags as you need to.
 
-% DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
-DATA_DIR = '~/Desktop/Lammert_Lab/Tinnitus/paper1-data';
+DATA_DIR = '/home/alec/code/tinnitus-project/code/experiment/Data/data-paper';
 PROJECT_DIR = pathlib.strip(mfilename('fullpath'), 3);
 BOOTSTRAP = 0; % Set to 0 or false if not using.
 PUBLISH = false;
@@ -106,7 +105,7 @@ end
 
 %% Compute the reconstructions
 
-n_trials = 200; % set to inf if using all available data
+n_trials = inf; % set to inf if using all available data
 trial_fractions = 1; %0.1:0.1:1;
 
 if ~isinf(n_trials)
