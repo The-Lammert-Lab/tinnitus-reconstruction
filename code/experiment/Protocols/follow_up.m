@@ -74,11 +74,16 @@ function follow_up(cal_dB, options)
         options.recon (:,1) {mustBeNumeric} = []
         options.n_reps (1,1) {mustBePositive, mustBeInteger} = 2
         options.survey (1,1) logical = false
+        options.presentation_dB_ (1,1) = 65
         options.verbose (1,1) logical = true
         options.fig matlab.ui.Figure
     end
 
     %% Input handling
+
+    assert(cal_dB > options.presentation_dB_, ...
+        ['cal_dB must be greater than ', num2str(options.presentation_dB_), ' dB.'])
+
     % If not called from Protocol, get path to use for loading images.
     if isempty(options.project_dir)
         project_dir = pathlib.strip(mfilename('fullpath'), 3);
@@ -135,7 +140,12 @@ function follow_up(cal_dB, options)
     if options.version == 1
         n_sounds = 2;
     else
-        n_sounds = 3;
+        chosen_freq = get_best_pitch('config',config,'data_dir',data_dir,'verbose',options.verbose);
+        if ~isnan(chosen_freq)
+            n_sounds = 4;
+        else
+            n_sounds = 3;
+        end
     end
 
     % Container for non-target sounds.
@@ -191,8 +201,13 @@ function follow_up(cal_dB, options)
     % Generate white noise
     noise_waveform = white_noise(stimgen.duration);
 
+    % Make pitch matched "recon"
+    if ~isnan(chosen_freq)
+        pitch_waveform = pure_tone(chosen_freq, stimgen.duration, Fs);
+    end
+
     % Calculate gain to present at 65dB
-    gain = 10^((65-cal_dB)/20);
+    gain = 10^((options.presentation_dB_-cal_dB)/20);
 
     %% Load Screens
     % Load Protocol completion/follow up intro screen
@@ -285,10 +300,16 @@ function follow_up(cal_dB, options)
         comparison{order(3),1} = recon_waveform_adjusted;
         comparison{order(3),2} = 'recon_adjusted';
 
+        if ~isnan(chosen_freq)
+            comparison{order(4),1} = pitch_waveform;
+            comparison{order(4),2} = 'pure_tone';
+        end
+
         % Write header
-        all_headers = ['hash,','version,', ...
-            'mult,','binrange,', staticqs_header, ...
-            comparison{1,2},',',comparison{2,2},',',comparison{3,2},'\n'];
+        comp_headers = strjoin(comparison(:,2),',');
+
+        all_headers = ['hash,','version,', 'mult,','binrange,', ...
+                        staticqs_header, comp_headers,'\n'];
         fprintf(fid_survey, all_headers);
 
         % Write config hash, version, mult, and binrange params to file.
