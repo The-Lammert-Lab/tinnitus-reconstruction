@@ -25,6 +25,9 @@
 %   - cal_dB, `1x1` scalar, the externally measured decibel level of a 
 %       1kHz tone at the system volume that will be used during the
 %       protocol.
+%   - max_dB_allowed_, `1x1` scalar, name-value, default: `95`.
+%       The maximum dB value at which tones can be played. 
+%       `cal_dB` must be greater than this value. Not intended to be changed from 95.
 %   - config_file, `character vector`, name-value, default: `''`
 %       Path to the desired config file.
 %       GUI will open for the user to select a config if no path is supplied.
@@ -46,12 +49,16 @@
 function PitchMatch(cal_dB, options)
     arguments
         cal_dB (1,1) {mustBeReal}
+        options.max_dB (1,1) {mustBeReal} = 95
         options.fig matlab.ui.Figure
         options.config_file char = []
         options.del_fig logical = true
         options.verbose (1,1) {mustBeNumericOrLogical} = true
     end
     
+    assert(cal_dB > options.max_dB, ...
+        ['cal_dB must be greater than ', num2str(options.max_dB), ' dB.'])
+
     % Get the datetime and posix time
     % for the start of the experiment
     this_datetime = datetime('now', 'Timezone', 'local');
@@ -282,9 +289,15 @@ function PitchMatch(cal_dB, options)
                  if (freqH == config.max_tone_freq && respnum) || (freqL == config.min_tone_freq && ~respnum)
                      half_steps = semitones(freqL,12,'up');
                  else % Reversal
+                     % Choose frequency to center based on last response
+                     if ~respnum 
+                         center_freq = freqL;
+                     else
+                         center_freq = freqH;
+                     end
                      % Center choice freq
-                     hs_down = semitones(freqL,6,'down');
-                     hs_up = semitones(freqL,6,'up');
+                     hs_down = semitones(center_freq,6,'down');
+                     hs_up = semitones(center_freq,6,'up');
                      half_steps = [flipud(hs_down); hs_up(2:end)];
                  end
 

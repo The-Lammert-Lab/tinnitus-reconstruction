@@ -25,7 +25,7 @@
 % 
 % **OUTPUTS:**
 % 
-%   - dBs: `n x 1` vector containing dB values,
+%   - dBs: `n x 2` vector containing dB values in the first column and amplitudes in the second,
 %       where `n` is the number of unique tones if `average` is `true`,
 %       or is the number of presented stimuli if `average` is `false.
 %   - tones: `n x 1` vector containing frequency values for each response.
@@ -102,7 +102,7 @@ function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
         return
     end
 
-    if options.fill_nans && any(isnan(dBs))
+    if options.fill_nans && all(any(isnan(dBs)))
         % Try to fill with previous first then fill with nearest
         dBs = fillmissing(dBs,'previous');
         if any(isnan(dBs))

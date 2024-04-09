@@ -4,7 +4,8 @@
 %%%%% better but doesn't label figures the same.
 
 %% General setup
-data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data';
+data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/raw';
+% data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data/';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
@@ -12,11 +13,20 @@ CS = true;
 showfigs = false;
 verbose = false;
 
-n = length(config_files);
-skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
 
-% Pre-allocate  
-yesses = zeros(n, 1); 
+% Analysis flags
+corr_thresh_or_loud = 'loudness'; % 'threshold' OR 'loudness'
+rc = true;
+knn = false;
+lda = false;
+lwlr = false;
+pnr = false;
+randguess = false;
+svm = false;
+
+n = length(config_files);
+% skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
+skip_subjects = {};
 
 %% Plot setup
 if showfigs
@@ -41,11 +51,16 @@ if showfigs
     
     f_unbinned = figure;
     t_unbinned = tiledlayout(f_unbinned, rows, cols);
+
+    f_adjusted = figure;
+    t_adjusted = tiledlayout(f_adjusted, 'flow')
     
     %% Loop and plot
     for i = 1:n
         %%%%% Get data %%%%%
-        config = parse_config(pathlib.join(config_files(i).folder, config_files(i).name));
+        config = parse_config(fullfile(config_files(i).folder, config_files(i).name));
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
         
         % Skip deliberate config files or ones with target signals (healthy controls)
         if all(ismember(config.subject_ID, skip_subjects)) || ...
@@ -61,7 +76,7 @@ if showfigs
     
         % Get reconstructions
         [reconstruction_binned_lr, ~, responses, stimuli_matrix] = get_reconstruction('config', config, ...
-                                                                                        'method', 'linear_ridge', ...
+                                                                                        'method', 'linear', ...
                                                                                         'verbose', verbose, ...
                                                                                         'data_dir', data_dir ...
                                                                                     );
@@ -71,7 +86,13 @@ if showfigs
                                                             'verbose', verbose, 'data_dir', data_dir ...
                                                         );
         end
-    
+
+        survey_info = dir(fullfile(config_files(i).folder, ['survey_',get_hash(config),'*.csv']));
+        survey = readtable(fullfile(survey_info.folder, survey_info.name));
+        if all(ismember({'mult','binrange'}, survey.Properties.VariableNames))
+            [~, reconstruction_adjusted] = stimgen.binnedrepr2wav(reconstruction_binned_lr, survey.mult(1), survey.binrange(1));
+        end
+
         %%%%% Binned %%%%%
     
         % Linear
@@ -122,8 +143,6 @@ if showfigs
         end
     
         %%%%% Unbinned %%%%%
-        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
-        stimgen = stimgen.from_config(config);
     
         % Linear
         if i == n-length(skip_subjects)
@@ -179,19 +198,28 @@ if showfigs
             title(['Subject #', ID_num, ' - CS'], 'FontSize', 18);
             set(gca, 'FontWeight', 'bold')
         end
+
+        %%%%% Adjusted %%%%%
+        tile = nexttile(t_adjusted);
+        
+        plot(freqs(indices_to_plot, 1), reconstruction_adjusted(indices_to_plot), ...
+            linecolor, 'LineWidth', linewidth);
+        xlim([0, config.max_freq]);
+
+        title(['Subject #', ID_num, ' - Adjusted'], 'FontSize', 18);
+        set(gca, 'FontWeight', 'bold')
+
     end
 end
+
 %% Predict responses with cross validation
 row_names = cellstr(strcat('Subject', {' '}, string((1:n))));
 
-% Analysis flags
-rc = true;
-knn = false;
-lda = false;
-lwlr = false;
-pnr = false;
-randguess = false;
-svm = false;
+% Pre-allocate  
+yesses = zeros(n, 1);
+IDs = strings(n, 1);
+dB_corrs_lr = NaN(n, 1);
+dB_corrs_cs = NaN(n, 1);
 
 % Global settings
 folds = 5;
@@ -277,6 +305,7 @@ end
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
+    IDs(ii) = config.subject_ID;
     [responses, ~] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
     yesses(ii) = 100 * length(responses(responses == 1))/length(responses);
 
@@ -327,15 +356,56 @@ for ii = 1:n
         [pred_svm, true_svm] = crossval_svm(folds,'config',config,'data_dir',data_dir,'verbose',verbose);
         [pred_acc_svm(ii), pred_bal_acc_svm(ii), ~, ~] = get_accuracy_measures(true_svm, pred_svm);
     end
+
+    [dBs, tones] = collect_data_thresh_or_loud(corr_thresh_or_loud, 'config', config, 'data_dir', data_dir, 'verbose', verbose, 'fill_nans', true);
+    if isempty(dBs)
+        continue
+    else
+        dBs = dBs(:,1);
+        recon_lr = get_reconstruction('config', config, 'method', 'linear', ...
+            'verbose', verbose, 'data_dir', data_dir);
+
+        recon_cs = get_reconstruction('config', config, 'method', 'linear', ...
+            'verbose', verbose, 'data_dir', data_dir);
+
+        % Get bin distribution information for these settings
+        stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+        stimgen = stimgen.from_config(config);
+        [binnum, ~, ~, frequency_vector, bin_starts, bin_stops] = stimgen.get_freq_bins();
+
+        % Initialize
+        tones_bindist = mean([bin_starts; bin_stops])'; % Tones for each bin
+        bins_matched = zeros(length(tones),1); % "Cache" for averaging data points if necessary
+        for jj = 1:length(tones)
+            % Get bin that this tone fits in 
+            ind = find(tones(jj) >= bin_starts & tones(jj) <= bin_stops);
+            if ismember(ind, bins_matched) % Prev tone was in this bin
+                tones_bindist(ind) = (tones_bindist(ind) + tones(jj)) / 2; % Average
+            else % New bin 
+                tones_bindist(ind) = tones(jj); % Take datapoint
+                bins_matched(jj) = ind; % Add to "cache"
+            end
+        end
+        dBs_bindist = interp1(tones,dBs,tones_bindist,'linear','extrap');
+        dB_corrs_lr(ii) = corr(dBs_bindist,recon_lr);
+        dB_corrs_cs(ii) = corr(dBs_bindist,recon_cs);
+    end
 end
 
+T_dB_corrs = table(dB_corrs_lr, dB_corrs_cs, IDs, ...
+    'VariableNames', ["Loudness Corr LR", "Loudness Corr CS", "subject ID"], ...
+    'RowNames', row_names)
+
 if rc
-    T_CV_rc = table(pred_bal_acc_rc, pred_acc_rc, ...
-        'VariableNames', ["RC CV Pred Bal Acc", "RC CV Pred Acc"], ...
+    T_CV_rc = table(pred_bal_acc_rc, pred_acc_rc, IDs, ...
+        'VariableNames', ["RC CV Pred Bal Acc", "RC CV Pred Acc", "subject ID"], ...
         'RowNames', row_names)
-    T_CV_rc_train = table(pred_bal_acc_rc_train, pred_acc_rc_train, ...
-        'VariableNames', ["RC CV Pred Bal Acc On Train", "RC CV Pred Acc On Train"], ...
+    T_CV_rc_train = table(pred_bal_acc_rc_train, pred_acc_rc_train, IDs, ...
+        'VariableNames', ["RC CV Pred Bal Acc On Train", "RC CV Pred Acc On Train", "subject ID"], ...
         'RowNames', row_names)
+    if length(pred_bal_acc_rc) > 1
+        CV_rc_bal_acc_ttest = ttest(pred_bal_acc_rc, 0.5)
+    end
 end
 
 if knn

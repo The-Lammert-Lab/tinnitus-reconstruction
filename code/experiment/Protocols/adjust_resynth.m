@@ -82,6 +82,7 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
         options.recon (:,1) {mustBeNumeric} = []
         options.mult_range (1,2) = [0, 1]
         options.binrange_range (1,2) = [1, 100]
+        options.presentation_dB_ (1,1) {mustBeReal} = 65
         options.filter (1,1) logical = false
         options.save (1,1) logical = true
         options.verbose (1,1) logical = true
@@ -95,6 +96,9 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
     range_max = options.binrange_range(1,2);
 
     %% Input handling
+
+    assert(cal_dB > options.presentation_dB_, ...
+        ['cal_dB must be greater than ', num2str(options.presentation_dB_), ' dB.'])
 
     % If no config file path is provided,
     % open a UI to load the config
@@ -139,7 +143,7 @@ function [mult, binrange, lowcf, highcf] = adjust_resynth(cal_dB, mult, binrange
     end
 
     % Calculate gain to play at 65 dB.
-    gain = 10^((65-cal_dB)/20);
+    gain = 10^((options.presentation_dB_-cal_dB)/20);
 
     % Rescale to 65 dB.
     options.target_sound = gain*(options.target_sound ./ rms(options.target_sound));
