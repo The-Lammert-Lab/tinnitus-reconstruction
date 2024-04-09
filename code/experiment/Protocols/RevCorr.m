@@ -34,10 +34,14 @@ function RevCorr(cal_dB, options)
 
     arguments
         cal_dB (1,1) {mustBeReal}
+        options.presentation_dB_ (1,1) {mustBeReal} = 65
         options.config_file (1,:) char = ''
         options.verbose (1,1) {mustBeNumericOrLogical} = true
         options.fig matlab.ui.Figure
     end
+
+    assert(cal_dB > options.presentation_dB_, ...
+        ['cal_dB must be greater than ', num2str(options.presentation_dB_), ' dB.'])
 
     % Get the datetime and posix time
     % for the start of the experiment
@@ -49,6 +53,7 @@ function RevCorr(cal_dB, options)
     %   If not, open a GUI dialog window to find it.
     [config, config_path] = parse_config(options.config_file);
 
+    
     % Hash the config struct to get a unique string representation
     % Get the hash before modifying the config at all
     config_hash = get_hash(config);
@@ -76,7 +81,7 @@ function RevCorr(cal_dB, options)
     screenSize = get(0, 'ScreenSize');
     screenWidth = screenSize(3);
     screenHeight = screenSize(4);
-    gain = 10^((65-cal_dB)/20); % Amplitude value such that presentation level is 65dB
+    gain = 10^((options.presentation_dB_-cal_dB)/20); % Amplitude value such that presentation level is 65dB
     
     % Determine the stimulus generation function
     if isfield(config, 'stimuli_type') && ~isempty(config.stimuli_type)
@@ -298,13 +303,15 @@ function RevCorr(cal_dB, options)
                 [mult, binrange] = adjust_resynth(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
-                    'fig', hFig, 'mult_range', mult_range, 'del_fig', false, 'verbose', false);
+                    'fig', hFig, 'mult_range', mult_range, 'del_fig', false, 'verbose', false, ...
+                    'presentation_dB_', options.presentation_dB_);
                 
                 follow_up(cal_dB, 'config_file', config_path, ...
                     'data_dir', config.data_dir, 'this_hash', hash_prefix, ...
                     'target_sound', target_sound, 'target_fs', target_fs, ...
                     'mult', mult, 'binrange', binrange, ...
-                    'fig', hFig, 'verbose', false, 'survey', config.follow_up_survey);
+                    'fig', hFig, 'verbose', false, 'survey', config.follow_up_survey, ...
+                    'presentation_dB_', options.presentation_dB_);
             else
                 disp_fullscreen(Screen4);
             end
