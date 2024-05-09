@@ -148,7 +148,7 @@ methods
         end
     end
 
-    function [wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)
+    function [wav, X, binned_rep] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)
         % ### binnedrepr2wav
         %
         % Get the peak-sharpened waveform of a binned representation.
@@ -249,11 +249,11 @@ methods
                 m = mult(ii);
             end
 
-            thing = conv(binned_rep(:,ii),[1 -2 1],'same');
+            thing = conv(binned_rep(:,ii),[1 -2 1],'same'); % 2nd derivative
             thing([1,end]) = 0;
-            thing2 = conv(thing,[1 -2 1],'same');
+            thing2 = conv(thing,[1 -2 1],'same'); % 4th derivative
             thing2([1:2,end-1:end]) = 0;
-            binned_rep(:,ii) = binned_rep(:,ii) - (m*(50^2)/40)*thing + (m*(50^4)/600)*thing2;
+            binned_rep(:,ii) = binned_rep(:,ii) - (m*(50^2)/40)*thing + (m*(50^4)/600)*thing2; % peak sharpening
             binned_rep(:,ii) = binned_rep(:,ii)-min(binned_rep(:,ii));
         end
 

@@ -10,19 +10,21 @@ config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
 % Script parameters
 CS = true;
-showfigs = false;
+showfigs = true;
 verbose = false;
-
+num_from_config = false;
 
 % Analysis flags
 corr_thresh_or_loud = 'loudness'; % 'threshold' OR 'loudness'
 rc = true;
+rc_adjusted = true;
 knn = false;
 lda = false;
 lwlr = false;
 pnr = false;
 randguess = false;
 svm = false;
+thresh_loud = true;
 
 n = length(config_files);
 % skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
@@ -53,7 +55,7 @@ if showfigs
     t_unbinned = tiledlayout(f_unbinned, rows, cols);
 
     f_adjusted = figure;
-    t_adjusted = tiledlayout(f_adjusted, 'flow')
+    t_adjusted = tiledlayout(f_adjusted, 'flow');
     
     %% Loop and plot
     for i = 1:n
@@ -68,10 +70,14 @@ if showfigs
             continue
         end
     
-        % Get subject ID number 
-        ID_num = extractAfter(config.subject_ID, '_');
-        if isempty(ID_num)
-            ID_num = '???';
+        % Get subject ID number
+        if num_from_config
+            ID_num = extractAfter(config.subject_ID, '_');
+            if isempty(ID_num)
+                ID_num = '???';
+            end
+        else
+            ID_num = num2str(i);
         end
     
         % Get reconstructions
@@ -220,11 +226,11 @@ yesses = zeros(n, 1);
 IDs = strings(n, 1);
 dB_corrs_lr = NaN(n, 1);
 dB_corrs_cs = NaN(n, 1);
+dB_pvals_lr = NaN(n, 1);
+dB_pvals_cs = NaN(n, 1);
 
 % Global settings
 folds = 5;
-% thresh_vals = linspace(-1,1,100000);
-% thresh_vals = linspace(-10000,10000,1000000);
 
 % RC
 mean_zero = true;
@@ -248,6 +254,10 @@ norm_stim_pnr = false;
 % randguess
 randtype = 'normal';
 
+% Thresh or Loud
+mean_zero_tl = true;
+thresh_vals_tl = linspace(-5000,1,1000);
+
 % Containers
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
@@ -266,6 +276,13 @@ if rc
     pred_bal_acc_rc = zeros(n,1);
     pred_acc_rc_train = zeros(n,1);
     pred_bal_acc_rc_train = zeros(n,1);
+end
+
+if rc_adjusted
+    pred_acc_rc_adj = zeros(n,1);
+    pred_bal_acc_rc_adj = zeros(n,1);
+    pred_acc_rc_adj_train = zeros(n,1);
+    pred_bal_acc_rc_adj_train = zeros(n,1);
 end
 
 if knn
@@ -302,6 +319,17 @@ if svm
     pred_bal_acc_svm = zeros(n,1);
 end
 
+if thresh_loud
+    pred_acc_tl = zeros(n,1);
+    pred_bal_acc_tl = zeros(n,1);
+end
+
+if showfigs
+    f_dBs = figure;
+    t_dBs = tiledlayout(f_dBs, 'flow');
+    title(t_dBs, [corr_thresh_or_loud, ' dB Values'], 'Fontsize', 18)
+end
+
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
@@ -321,6 +349,15 @@ for ii = 1:n
                                                                             'verbose',verbose);
         [pred_acc_rc(ii), pred_bal_acc_rc(ii), ~, ~] = get_accuracy_measures(true_rc, pred_rc);
         [pred_acc_rc_train(ii), pred_bal_acc_rc_train(ii), ~, ~] = get_accuracy_measures(true_rc_train, pred_rc_train);
+    end
+
+    if rc_adjusted
+        [pred_rc_adj, true_rc_adj, pred_rc_train_adj, true_rc_train_adj] = crossval_rc_adjusted(folds, thresh_vals_rc, ...
+            'config',config,'data_dir',data_dir, ...
+            'mean_zero',mean_zero,'ridge',gs_ridge, ...
+            'verbose',verbose);
+        [pred_acc_rc_adj(ii), pred_bal_acc_rc_adj(ii), ~, ~] = get_accuracy_measures(true_rc_adj, pred_rc_adj);
+        [pred_acc_rc_adj_train(ii), pred_bal_acc_rc_adj_train(ii), ~, ~] = get_accuracy_measures(true_rc_train_adj, pred_rc_train_adj);
     end
 
     if knn
@@ -357,11 +394,10 @@ for ii = 1:n
         [pred_acc_svm(ii), pred_bal_acc_svm(ii), ~, ~] = get_accuracy_measures(true_svm, pred_svm);
     end
 
-    [dBs, tones] = collect_data_thresh_or_loud(corr_thresh_or_loud, 'config', config, 'data_dir', data_dir, 'verbose', verbose, 'fill_nans', true);
+    [dBs, ~, tones] = collect_data_thresh_or_loud(corr_thresh_or_loud, 'config', config, 'data_dir', data_dir, 'verbose', verbose, 'fill_nans', true);
     if isempty(dBs)
         continue
     else
-        dBs = dBs(:,1);
         recon_lr = get_reconstruction('config', config, 'method', 'linear', ...
             'verbose', verbose, 'data_dir', data_dir);
 
@@ -371,29 +407,65 @@ for ii = 1:n
         % Get bin distribution information for these settings
         stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
         stimgen = stimgen.from_config(config);
-        [binnum, ~, ~, frequency_vector, bin_starts, bin_stops] = stimgen.get_freq_bins();
 
-        % Initialize
-        tones_bindist = mean([bin_starts; bin_stops])'; % Tones for each bin
-        bins_matched = zeros(length(tones),1); % "Cache" for averaging data points if necessary
-        for jj = 1:length(tones)
-            % Get bin that this tone fits in 
-            ind = find(tones(jj) >= bin_starts & tones(jj) <= bin_stops);
-            if ismember(ind, bins_matched) % Prev tone was in this bin
-                tones_bindist(ind) = (tones_bindist(ind) + tones(jj)) / 2; % Average
-            else % New bin 
-                tones_bindist(ind) = tones(jj); % Take datapoint
-                bins_matched(jj) = ind; % Add to "cache"
+        % Space tones by bins and interp dBs to those bins
+        tones_bindist = tones_to_binspace(tones, stimgen);
+        dBs_bindist = interp1(tones, dBs, tones_bindist, 'linear', 'extrap');
+
+        dBs_bindist_prime = [0; diff(smoothdata(dBs_bindist,'gaussian'))];
+
+        [dB_corrs_lr(ii), dB_pvals_lr(ii)] = corr(dBs_bindist,recon_lr);
+        [dB_corrs_cs(ii), dB_pvals_cs(ii)] = corr(dBs_bindist,recon_cs);
+
+%         [dB_corrs_lr(ii), dB_pvals_lr(ii)] = corr(dBs_bindist_prime,recon_lr(1:end-1));
+%         [dB_corrs_cs(ii), dB_pvals_cs(ii)] = corr(dBs_bindist_prime,recon_cs(1:end-1));
+         
+%         [dB_corrs_lr(ii), dB_pvals_lr(ii)] = corr(dBs_bindist_prime,recon_lr(2:end));
+%         [dB_corrs_cs(ii), dB_pvals_cs(ii)] = corr(dBs_bindist_prime,recon_cs(2:end));
+
+%         [dB_corrs_lr(ii), dB_pvals_lr(ii)] = corr(dBs_bindist_prime,diff(recon_lr));
+%         [dB_corrs_cs(ii), dB_pvals_cs(ii)] = corr(dBs_bindist_prime,diff(recon_cs));
+
+%         [dB_corrs_lr(ii), dB_pvals_lr(ii)] = corr(dBs_bindist_prime,recon_lr);
+%         [dB_corrs_cs(ii), dB_pvals_cs(ii)] = corr(dBs_bindist_prime,recon_cs);
+
+
+        if thresh_loud
+            [resps, stimuli] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
+            % Projection
+            if mean_zero_tl
+                e = (stimuli' - mean(stimuli,1)') * (dBs_bindist - mean(dBs_bindist));
+            else
+                e = stimuli' * dBs_bindist;
             end
+
+            % Convert to response
+            tl_thresh_dev = zeros(length(thresh_vals_tl),1);
+            for jj = 1:length(thresh_vals_tl)
+                p = sign(e + thresh_vals_tl(jj));
+                [~, tl_thresh_dev(jj), ~, ~] = get_accuracy_measures(resps, p);
+            end
+            [~, thresh_ind] = max(tl_thresh_dev);
+            p = sign(e + thresh_vals_tl(thresh_ind));
+            [pred_acc_tl(ii), pred_bal_acc_tl(ii), ~, ~] = get_accuracy_measures(resps, p);
         end
-        dBs_bindist = interp1(tones,dBs,tones_bindist,'linear','extrap');
-        dB_corrs_lr(ii) = corr(dBs_bindist,recon_lr);
-        dB_corrs_cs(ii) = corr(dBs_bindist,recon_cs);
+        
+        if showfigs
+            nexttile(t_dBs);
+            plot(rescale(recon_lr));
+            hold on;
+            plot(rescale(dBs_bindist));
+            legend('Linear recon', 'dBs', 'Location', 'southeast')
+            xlabel('bins', 'FontSize', 16)
+            ylabel('amplitude', 'FontSize', 16)
+            title(['Subject #', num2str(ii), ' (' config.subject_ID, ')'], 'FontSize', 16)
+        end
     end
 end
 
-T_dB_corrs = table(dB_corrs_lr, dB_corrs_cs, IDs, ...
-    'VariableNames', ["Loudness Corr LR", "Loudness Corr CS", "subject ID"], ...
+T_dB_corrs = table(dB_corrs_lr, dB_pvals_lr, dB_corrs_cs, dB_pvals_cs, IDs, ...
+    'VariableNames', [strcat(corr_thresh_or_loud, " Corr LR"), strcat(corr_thresh_or_loud, " p val LR"), ...
+    strcat(corr_thresh_or_loud, " Corr CS"), strcat(corr_thresh_or_loud, " p val CS"), "subject ID"], ...
     'RowNames', row_names)
 
 if rc
@@ -405,6 +477,18 @@ if rc
         'RowNames', row_names)
     if length(pred_bal_acc_rc) > 1
         CV_rc_bal_acc_ttest = ttest(pred_bal_acc_rc, 0.5)
+    end
+end
+
+if rc_adjusted
+    T_CV_rc_adj = table(pred_bal_acc_rc_adj, pred_acc_rc_adj, IDs, ...
+        'VariableNames', ["RC Adj CV Pred Bal Acc", "RC Adj CV Pred Acc", "subject ID"], ...
+        'RowNames', row_names)
+    T_CV_rc_adj_train = table(pred_bal_acc_rc_adj_train, pred_acc_rc_adj_train, IDs, ...
+        'VariableNames', ["RC Adj CV Pred Bal Acc On Train", "RC Adj CV Pred Acc On Train", "subject ID"], ...
+        'RowNames', row_names)
+    if length(pred_bal_acc_rc) > 1
+        CV_rc_adj_bal_acc_ttest = ttest(pred_bal_acc_rc_adj, 0.5)
     end
 end
 
@@ -448,6 +532,12 @@ end
 if svm
     T_CV_svm = table(pred_bal_acc_svm, pred_acc_svm, ...
         'VariableNames', ["SVM CV Pred Bal Acc", "SVM CV Pred Acc"], ...
+        'RowNames', row_names)
+end
+
+if thresh_loud
+    T_CV_tl = table(pred_bal_acc_tl, pred_acc_tl, IDs, ...
+        'VariableNames', ["dBs Pred Bal Acc", "dBs Pred Acc", "subject ID"], ...
         'RowNames', row_names)
 end
 

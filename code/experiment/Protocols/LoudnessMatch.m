@@ -88,14 +88,14 @@ function LoudnessMatch(cal_dB, options)
 
 
     % Load just noticable dBs and test freqs from threshold data
-    [jn_vals, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
+    [jn_vals, ~, test_freqs] = collect_data_thresh_or_loud('threshold','config',config);
 
     if isempty(jn_vals) || isempty(test_freqs)
         corelib.verb(options.verbose,'INFO: LoudnessMatch','Generating test frequencies and starting at 60dB')
         test_freqs = gen_octaves(config.min_tone_freq,config.max_tone_freq,2,'semitone');
         init_dBs = 60*ones(length(test_freqs),1);
     else
-        init_dBs = jn_vals(:,1) + 10;
+        init_dBs = jn_vals + 10;
     end
 
     % config.max_tone_freq might not always be in test_freqs, but

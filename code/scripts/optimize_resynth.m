@@ -5,7 +5,7 @@
 % Change these as appropriate
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data/';
 
-d = dir(pathlib.join(data_dir, '*.yaml'));
+d = dir(fullfile(data_dir, '*.yaml'));
 project_dir = pathlib.strip(mfilename('fullpath'), 3);
 % project_dir = '~/repos/tinnitus-reconstruction';
 ATA_path = 'code/experiment/ATA';
@@ -25,8 +25,10 @@ mult = linspace(0.001,0.5,80);
 binrange = linspace(1,60,60);
 
 stimgen = UniformPriorStimulusGeneration;
-stimgen.max_freq = 13000;
+stimgen.max_freq = 16000;
 stimgen.min_freq = 100;
+stimgen.min_bins = 6;
+stimgen.max_bins = 16;
 stimgen.n_bins = n_bins_target;
 
 % Collect target spectra in a cell array
@@ -58,7 +60,7 @@ for ii = 1:length(d)+length(target_spects)
             continue
         end
         
-        config_path = pathlib.join(d(ii).folder, d(ii).name);
+        config_path = fullfile(d(ii).folder, d(ii).name);
         config = parse_config(config_path);
         stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
         stimgen = stimgen.from_config(config);
