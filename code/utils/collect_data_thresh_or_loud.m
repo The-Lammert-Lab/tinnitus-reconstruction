@@ -30,7 +30,7 @@
 %       or is the number of presented stimuli if `average` is `false.
 %   - tones: `n x 1` vector containing frequency values for each response.
 
-function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
+function [pres_dBs, amp_dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
     arguments
         exp_type (1,:) char
         options.config_file (1,:) = ''
@@ -126,4 +126,7 @@ function [dBs, tones] = collect_data_thresh_or_loud(exp_type, options)
         % Average dBs and amplitudes grouping by tone frequency
         dBs = splitapply(@(x) mean(x,1),dBs,group_inds);
     end
+
+    pres_dBs = dBs(:,1);
+    amp_dBs = dBs(:,2);
 end
