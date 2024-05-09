@@ -154,6 +154,9 @@ LoudnessMatch(cal_dB, 'verbose', false, 'fig', gcf, 'del_fig', false)
 - cal_dB, `1x1` scalar, the externally measured decibel level of a 
 1kHz tone at the system volume that will be used during the
 protocol.
+- max_dB_allowed_, `1x1` scalar, name-value, default: `95`.
+The maximum dB value at which tones can be played. 
+`cal_dB` must be greater than this value. Not intended to be changed from 95.
 - config_file, `character vector`, name-value, default: `''`
 Path to the desired config file.
 GUI will open for the user to select a config if no path is supplied.
@@ -200,6 +203,9 @@ PitchMatch(cal_dB, 'verbose', false, 'fig', gcf, 'del_fig', false)
 - cal_dB, `1x1` scalar, the externally measured decibel level of a 
 1kHz tone at the system volume that will be used during the
 protocol.
+- max_dB_allowed_, `1x1` scalar, name-value, default: `95`.
+The maximum dB value at which tones can be played. 
+`cal_dB` must be greater than this value. Not intended to be changed from 95.
 - config_file, `character vector`, name-value, default: `''`
 Path to the desired config file.
 GUI will open for the user to select a config if no path is supplied.
@@ -274,6 +280,9 @@ ThresholdDetermination(cal_dB, 'verbose', false, 'fig', gcf, 'del_fig', false
 - cal_dB, `1x1` scalar, the externally measured decibel level of a 
 1kHz tone at the system volume that will be used during the
 protocol.
+- max_dB_allowed_, `1x1` scalar, name-value, default: `95`.
+The maximum dB value at which tones can be played. 
+`cal_dB` must be greater than this value. Not intended to be changed from 95.
 - config_file, `character vector`, name-value, default: `''`
 Path to the desired config file.
 GUI will open for the user to select a config if no path is supplied.
