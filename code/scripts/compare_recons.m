@@ -1,9 +1,9 @@
-%%%
+% ### compare_recons
 % The purpose of this script is to assess the qualitative effect of the
 % peak-sharpening procedure. 
 % Runs adjust_resynth.m followed by follow_up.m on select
 % configs/associated data.
-%%%
+% End of documentation
 
 %% Setup
 

@@ -1,7 +1,8 @@
-% Reconstruct and visualize patient tinnitus
-
-%%%%% NOTE: Figure generation is tempermental. make_figures_paper2 is
-%%%%% better but doesn't label figures the same.
+% ### patient_reconstructions
+% Generate reconstructions and visualizatinos for non-target sound data
+% Includes lots of flags for response prediction analysis
+% NOTE: should also work with make_figures_paper2
+% End of documentation
 
 %% General setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/raw';

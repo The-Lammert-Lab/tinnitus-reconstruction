@@ -1,5 +1,7 @@
-%% Quantify the sparsity of the target signals (ATA tinnitus examples)
-%% in the DCT basis.
+% ## target_signal_sparsity
+% Quantify the sparsity of the target signals (ATA tinnitus examples)
+% in the DCT basis.
+% End of documentation
 
 %% Preamble
 

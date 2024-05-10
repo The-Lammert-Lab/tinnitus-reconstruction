@@ -1,7 +1,6 @@
-%%%
-% This script collects and analyzes subjective rankings from
-% compare_recons.m
-%%%
+% ### survey_viz
+% This script collects and analyzes subjective rankings from ompare_recons.m
+% End of documentation
 
 %% Data setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data';

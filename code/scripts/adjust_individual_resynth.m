@@ -1,6 +1,12 @@
+% ### adjust_individual_resynth
+% A simple script to run the adjustment protocol for a given config file
+% End of documentation
 
+%% Setup
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/NB_consistency_experiments/';
-% config_path = fullfile(data_dir,'4_config_ER.yaml');
+config_name = 'config_NB_consistency2.yaml';
+
+%% Run
 config_path = fullfile(data_dir,'config_NB_consistency2.yaml');
 project_dir = pathlib.strip(mfilename('fullpath'), 3);
 

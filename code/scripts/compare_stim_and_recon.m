@@ -1,6 +1,11 @@
-% Run simulated observer on Norena stimgen and UniformPrior and visualize
-% the results
+% ### compare_stim_and_recon
+% Runs the simulated observer on two UniformPrior options 
+% (1 bin filled and multiple bins filled) and uses several
+% different reconstruction methods (ten scale, ridge regression, linear)
+% and visualizes the results
+% End of documentation
 
+%% Script
 n_trials = 2000;
 min_freq = 100;
 max_freq = 13000;
@@ -73,6 +78,7 @@ for ii = 1:length(targets)
     title(t, targets(ii), 'FontSize', 16, 'Interpreter','none')
 end
 
+%% Local functions
 function [freqs, indices_to_plot, recon_spects, binned_target_spect, c] = compare(stimgen, target_signal)
     binned_target_signal = stimgen.spect2binnedrepr(target_signal);
     binned_target_spect = stimgen.binnedrepr2spect(binned_target_signal);

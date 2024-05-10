@@ -1,3 +1,11 @@
+%% ### analyze_phase2
+% This script contains two different analysis options
+% for assessing the functionality of a "phase 2" in RC experiments.
+% Phase 2 consists of taking the original/standard RC reconstruction
+% and using it as the basis for generating new stimuli.
+% Those options can be seen in the local function `local_create_files_and_stimuli_phaseN`
+% End of documentation
+
 %% Using NB's reconstructions
 
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/NB_consistency_experiments';
@@ -28,10 +36,13 @@ for ii = 1:length(config_files)
 
     target_spect = wav2spect(config.target_signal_filepath);
     binned_target_signal = stimgen.spect2binnedrepr(target_spect);
+
+    % Get new stimuli
     [binned_repr_matrix, spect_matrix, ~] = local_create_files_and_stimuli_phaseN(config, phase, pert_bounds, data_dir, [], n_trials, ...
                                                                                 'mult_range',mult_bounds,'binrange_range',binrange_bounds, ...
                                                                                 'lowcut_range',lowcutoff_bounds,'highcut_range',highcutoff_bounds);
 
+    % Generate responses
     stimgen.n_trials = n_trials;
     [~, ~, spect_matrix_p1, binned_repr_matrix_p1] = stimgen.generate_stimuli_matrix();
     responses_spect_p1 = subject_selection_process(target_spect,spect_matrix_p1', 'method','percentile','threshold',no_percent);
