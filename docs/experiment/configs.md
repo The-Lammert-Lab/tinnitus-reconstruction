@@ -46,7 +46,7 @@ This required parameter gives the stimuli type. The name is the class that defin
 stimuli_type: UniformPrior
 ```
 
-Some stimulus generation methods have other parameters associated with them. For example, the Gaussian Prior stimulus generation method requires an n_bins_filled_mean and n_bins_filled_var property. You can see what extra parameters are required for your method by inspecting the class definition for the method (see "Stimulus Generation" section). If you do not overwrite values in the config, default values are used, which are described in the class definition.
+Some stimulus generation methods have other parameters associated with them. For example, the Gaussian Prior stimulus generation method requires an `n_bins_filled_mean` and `n_bins_filled_var` property. You can see what extra parameters are required for your method by inspecting the class definition for the method (see "Stimulus Generation" section). If you do not overwrite values in the config, default values are used, which are described in the class definition.
 
 ```display
 min_bins: 30
@@ -56,14 +56,14 @@ max_bins: 30
 For an experiment with a target signal (i.e., for pilot subjects) this field describes the full filepath to the target signal audio file.
 
 ```display
-target_audio_filepath: /home/alec/code/tinnitus-project/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
+target_audio_filepath: /home/alec/code/tinnitus-reconstruction/code/experiment/ATA/ATA_Tinnitus_Buzzing_Tone_1sec.wav
 bin_target_signal: true
 ```
 
-This is the path where the output files are saved. This is not a required field. If it is is unset, it will default to `tinnitus-project/code/experiment/Data`.
+This is the path where the output files are saved. This is not a required field. If it is is unset, it will default to `tinnitus-reconstruction/code/experiment/Data`.
 
 ```display
-data_dir: /home/alec/code/tinnitus-project/code/experiment/Data/data_pilot
+data_dir: /home/alec/code/tinnitus-reconstruction/code/experiment/Data/data_pilot
 ```
 
 This field determines in what form the stimuli are saved. The available options are `bins`, `waveform`, or `spectrum`. If not set, it will default to `waveform`.
@@ -81,9 +81,30 @@ follow_up: true
 
 This field indicates what version of follow up questions to use.
 If it is unset, it will default to `1`. Follow up questions can be found in 
-`tinnitus-project/code/experiment/fixationscreen/FollowUp_vX`, where `X` is
+`tinnitus-reconstruction/code/experiment/fixationscreen/FollowUp_vX`, where `X` is
 the version number. 
 
 ```display
 follow_up_version: 1
 ```
+
+This field indicates whether "survey" questinos should be asked in the follow up protocol.
+Survey questions can be seen in `tinnitus-reconstruction/code/experiment/fixationscreen/FollowUP_vX/FollowUp_Q`, where `X` is the version number. 
+These questions ask about the subject's experience during the RC protocol and are usually unnecessary to include. 
+
+```display
+follow_up_survey: false
+```
+
+To run a threshold determination, loudness matching, or pitch matching experiment, 
+the following two fields are additionally required. 
+They indicate the min and max frequencies of the test tones played during LM, TD, and PM protocols. 
+
+```display
+min_tone_freq: 500
+max_tone_freq: 16000
+```
+
+**Note:** `stimuli_type`, `n_trials_per_block`, and `n_blocks` 
+have no effect on non-reverse correlation protocols, 
+but are still required to exist in a config file for the protocols to run.

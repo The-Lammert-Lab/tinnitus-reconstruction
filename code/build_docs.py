@@ -30,13 +30,15 @@ for i, file in enumerate(sorted(glob(f"{root_pth}/code/**/*.m", recursive=True),
     if foldername is not None:
         prev_foldername = foldername
 
-    # Check if file is a class
-    if file.find("@") > 0:
-        foldername = os.path.basename(os.path.dirname(file))[1:]
+    foldername = os.path.basename(os.path.dirname(file))
+    if "@" in foldername: # Class
+        foldername = foldername[1:]
         header_file =  f"{root_pth}/docs/stimgen/{foldername}-head.md"
         doc_file = f"{root_pth}/docs/stimgen/{foldername}.md"
+    elif foldername == "Protocols": # Protocols are nested
+        header_file = f"{root_pth}/docs/experiment/{foldername}-head.md"
+        doc_file = f"{root_pth}/docs/experiment/{foldername}.md"
     else:
-        foldername = os.path.basename(os.path.dirname(file))
         header_file = f"{root_pth}/docs/{foldername}-head.md"
         doc_file = f"{root_pth}/docs/{foldername}.md"
 

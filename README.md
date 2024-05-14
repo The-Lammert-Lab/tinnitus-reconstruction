@@ -103,7 +103,7 @@ the following fields are required to run a reverse correlation experiment:
 * subjectID
 
 To run a threshold determination, loudness matching, or pitch matching experiment, 
-the following two fiels are additionally required. 
+the following two fields are additionally required. 
 
 * min_tone_freq
 * max_tone_freq

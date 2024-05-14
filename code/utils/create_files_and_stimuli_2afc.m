@@ -31,7 +31,7 @@
 % ```
 % 
 % See also:
-% Protocol
+% RevCorr
 
 function [stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta, file_hash_1, file_hash_2, file_hash_combined] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix)
 
