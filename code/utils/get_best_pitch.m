@@ -36,21 +36,21 @@ function [best_freq, oct_agree] = get_best_pitch(options)
         oct_agree = NaN;
         return
     end
+    
+    if ~isempty(octave_responses)
+        % [1; 0] is "correct", i.e., no octave confusion.
+        oct_agree = all(cellfun(@(x) isequal(x,[1;0]), octave_responses));
+    else
+        oct_agree = false;
+    end
 
     %% Find best pitch
     final_freqs = zeros(length(responses),1);
-    oct_agree = zeros(length(responses),1);
     for ii = 1:length(responses)
         if ~responses{ii}(end) % Last choice was a 0 (lower freq preferred)
             final_freqs(ii) = stimuli{ii}(end-1);
         else
-            final_freqs(ii) = stimuli{ii}{end};
-        end
-        % [1; 0] is "correct", i.e., no octave confusion.
-        if isequal(octave_responses{ii}, [1; 0])
-            oct_agree(ii) = true;
-        else
-            oct_agree(ii) = false;
+            final_freqs(ii) = stimuli{ii}(end);
         end
     end
     
@@ -60,6 +60,4 @@ function [best_freq, oct_agree] = get_best_pitch(options)
     else
         best_freq = mode(final_freqs);
     end
-
-    oct_agree = all(oct_agree);
 end
