@@ -25,9 +25,10 @@
 % 
 % **OUTPUTS:**
 % 
-%   - dBs: `n x 2` vector containing dB values in the first column and amplitudes in the second,
+%   - pres_dBs: `n x 1` vector containing dB values,
 %       where `n` is the number of unique tones if `average` is `true`,
 %       or is the number of presented stimuli if `average` is `false.
+%   - amp_dBs: `n x 1` vector containing amplitude values.
 %   - tones: `n x 1` vector containing frequency values for each response.
 
 function [pres_dBs, amp_dBs, tones] = collect_data_thresh_or_loud(exp_type, options)

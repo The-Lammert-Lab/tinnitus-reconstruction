@@ -5,7 +5,7 @@
 % End of documentation
 
 %% General setup
-data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/raw';
+data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/subject 4/';
 % data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data/';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 

@@ -1,3 +1,8 @@
+% Chooses a random vector (normal or uniform dist) as the predicted responses
+% Follows the exact same logic as the other crossval functions.
+% Mostly just unnecessary junk because the vector is random every time.
+% Can delete entirely.
+
 function [pred_resps, true_resps] = crossval_rand(folds,thresh,options)
     arguments
         folds (1,1) {mustBeInteger, mustBePositive}

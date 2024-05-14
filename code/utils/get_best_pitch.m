@@ -1,3 +1,31 @@
+% ### get_best_pitch
+% 
+% Returns the matched pitch for a given config's PM data 
+% and whether or not all any octaves were confused
+% 
+% **ARGUMENTS:**
+% 
+%   - config_file: `character vector`, name-value, default: `''`
+%       Path to the desired config file.
+%       GUI will open for the user to select a config if no path is supplied.
+%   - config: `struct`, name-value, default: `[]`,
+%       the loaded config.
+%   - data_dir: `character vector`, name-value, default: `''`,
+%       the path to the location of the data. 
+%       If none is supplied, config.data_dir will be used.
+%   - verbose: `bool`, name-value, default: `true`,
+%       flag to print information text.
+% 
+% **OUTPUTS:**
+%   
+%   - best_freq: `1x1` scalar, the identified best frequency.
+%   - oct_agree: `bool`, `true` if there was never any octave confusion over all data
+%       `false` if there was ever any octave confusion.
+% 
+% See also:
+% PitchMatch
+% collect_data_pitch_match
+
 function [best_freq, oct_agree] = get_best_pitch(options)
     arguments
         options.config_file (1,:) = ''

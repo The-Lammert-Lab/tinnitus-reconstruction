@@ -1,3 +1,7 @@
+% ### P
+% 
+% Soft threshold operator used in compressed sensing
+
 function beta = P(alpha,gamma)
 
 beta = zeros(length(alpha),1);

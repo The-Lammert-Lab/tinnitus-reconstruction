@@ -3,7 +3,7 @@
 % Generate response predictions for a given 
 % config file or pair of stimuli and responses
 % using stratified cross validation and either
-% the subject response model or KNN.
+% the subject response model.
 % 
 % ```matlab
 %   [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'config', config, 'data_dir', data_dir)
@@ -62,15 +62,12 @@
 %       the original subject responses used in the training phase.
 %       The training data is partially repeated between folds.
 %   - on_test: `struct` with `p x 1` vectors in fields
-%       `cs`, `lr`, and if `knn = true`, `knn`.
-%       Predicted responses on testing data.
+%       `cs`, `lr`, predicted responses on testing data.
 %   - on_train: `struct` with `(folds-2)*p x 1` vectors in fields
-%       `cs`, `lr`, and if `knn = true`, `knn`.
-%       Predicted responses on training data.
+%       `cs`, `lr` predicted responses on training data.
 % 
 % See also:
 % subject_selection_process
-% knn_classify
 
 function [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, options)
 

@@ -1,5 +1,18 @@
-function this_gamma = get_gamma_from_config(config, verbosity)
+% ### get_gamma_from_config
+% 
+% Choose a gamma value to be used in `cs` based on data in the config.
+% 
+% **ARGUMENTS:**
+% 
+%   - config: `struct`, config from which to find gamma
+%   - verbose: `bool`, default: `true`,
+%       flag to print information messages.
+% 
+% **OUTPUTS:**
+% 
+%   - this_gamma: `scalar`, the chosen gamma value.
 
+function this_gamma = get_gamma_from_config(config, verbosity)
     arguments
         config (1,1) struct
         verbosity (1,1) {mustBeNumericOrLogical} = true
@@ -18,3 +31,4 @@ function this_gamma = get_gamma_from_config(config, verbosity)
         this_gamma = 32;
         corelib.verb(verbosity, 'INFO: get_gamma_from_config', ['gamma parameter set to ', num2str(this_gamma), ', which is the default.']);
     end
+end

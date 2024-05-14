@@ -1,6 +1,18 @@
-
+% ### RunAllExp
+% 
 % This function goes one by one through each of the experimental protocols
-% using one config file.
+% using one config file. PitchMatch is repeated 3 times by default. 
+% 
+% **ARGUMENTS:**
+% 
+%   - cal_dB: `1x1` scalar, the externally measured decibel level of a 
+%       1kHz tone at the system volume that will be used during the
+%       protocol.
+%   - config_path: `character vector`, default: ``''``
+%       A path to a YAML-spec configuration file. 
+%       If empty, a GUI is opened to navigate to the file. 
+%   - n_pm: `1x1` positive integer, the number of times to repeat 
+%       the PitchMatch protocol. Default: `3`.
 
 function RunAllExp(cal_dB, config_path, n_pm)
     arguments

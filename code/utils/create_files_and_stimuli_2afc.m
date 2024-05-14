@@ -1,4 +1,4 @@
-% ### create_files_and_stimuli
+% ### create_files_and_stimuli_2afc
 % 
 % Create files for the stimuli, responses, and metadata and create the stimuli
 % for a 2-AFC experiment.

@@ -1,13 +1,13 @@
-% ### crossval_rc
+% ### crossval_rc_adjusted
 %
 % Generate the cross-validated response predictions for a given
-% config file or pair of stimuli and responses
-% using the classical reverse correlation model
+% config file using the upsampled and peak sharpened representation in bin form.
+% Config file must have an associated survey with mult and binrange values.
+% Reconstruction methods can be the classical reverse correlation model
 % y = sign(Psi * x) or y = sign(Psi * x + thresh).
 %
 % ```matlab
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'config', config, 'data_dir', data_dir)
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'responses', responses, 'stimuli', stimuli)
+%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc_adjusted(folds, thresh, 'config', config, 'data_dir', data_dir)
 % ```
 %
 % **ARGUMENTS:**
@@ -26,14 +26,6 @@
 %   - data_dir: `char`, name-value, deafult: `''`
 %       the path to directory in which the data corresponding to the
 %       config structis stored.
-%   - responses: `n x 1` array, name-value, default: `[]`
-%       responses to use in reconstruction,
-%       where `n` is the number of responses.
-%       Only used if passed with `stimuli`.
-%   - stimuli: `m x n` array, name-value, default: `[]`
-%       stimuli to use in reconstruction,
-%       where `m` is the number of bins.
-%       Only used if passed with `responses`.
 %   - ridge: `bool`, name-value, default: `false`,
 %       flag to use ridge regression instead of standard linear regression
 %       for reconstruction.
@@ -67,19 +59,12 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
         thresh (1,:) {mustBeReal}
         options.config struct = []
         options.data_dir char = ''
-        options.responses (:,1) {mustBeReal, mustBeInteger} = []
-        options.stimuli (:,:) {mustBeReal} = []
         options.ridge logical = false
         options.mean_zero logical = false
         options.verbose logical = true
     end
 
-    if isempty(options.responses) && isempty(options.stimuli)
-        [resps, stimuli_matrix] = collect_data('config', options.config, 'verbose', options.verbose, 'data_dir', options.data_dir);
-    else
-        resps = options.responses;
-        stimuli_matrix = options.stimuli;
-    end
+    [resps, stimuli_matrix] = collect_data('config', options.config, 'verbose', options.verbose, 'data_dir', options.data_dir);
 
     survey_info = dir(fullfile(options.data_dir, ['survey_',get_hash(options.config),'*.csv']));
     survey = readtable(fullfile(survey_info.folder, survey_info.name));
