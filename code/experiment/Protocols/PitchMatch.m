@@ -119,12 +119,13 @@ function PitchMatch(cal_dB, options)
     if ~isempty(loudness_dBs) && ~isempty(loudness_tones)
         loudness_dBs = loudness_dBs+5;
         % Interpolate gains
-        oct_dBs = interp1(loudness_tones,loudness_dBs,possible_octs)-cal_dB;
+        oct_dBs = interp1(loudness_tones,loudness_dBs,possible_octs,'linear','extrap')-cal_dB;
         oct_gains = 10.^(oct_dBs/20);
     else % If there's no data, set all at 60dB
         oct_dBs = 60*ones(length(possible_octs),1)-cal_dB;
         oct_gains = 10.^(oct_dBs/20);
     end
+    oct_gains(oct_gains > 1) = 1; % Ensure nothing will clip
 
     % Generate filenames
     file_hash = [hash_prefix '_', rand_str()];
@@ -306,12 +307,13 @@ function PitchMatch(cal_dB, options)
 
                  if ~isempty(loudness_dBs) && ~isempty(loudness_tones)
                      % Interpolate for these values
-                     in_oct_dBs = interp1(loudness_tones,loudness_dBs,in_oct_freqs)-cal_dB;
+                     in_oct_dBs = interp1(loudness_tones,loudness_dBs,in_oct_freqs,'linear','extrap')-cal_dB;
                      in_oct_gains = 10.^(in_oct_dBs/20);
                  else % If there's no data, set all at 60dB
                      in_oct_dBs = 60*ones(length(in_oct_freqs),1)-cal_dB;
-                     in_oct_gains = 10.^(oct_dBs/20);
+                     in_oct_gains = 10.^(in_oct_dBs/20);
                  end
+                 in_oct_gains(in_oct_gains > 1) = 1; % Ensure nothing will clip
 
                  % Set new freqL and freqH
                  freqL = in_oct_freqs(1);
@@ -366,7 +368,7 @@ function PitchMatch(cal_dB, options)
     % Add 10 to dBs because octave tone might be really high & hard to hear
     % Chosen tone is guaranteed to be in in_oct_freqs. 
     this_dB = in_oct_dBs(in_oct_freqs == chosen_tone) + 10;
-    this_gain = 10^(this_dB/20);
+    this_gain = min(10^(this_dB/20),1);
 
     % Save octave confusion stimuli and presentation level
     writematrix(oct_conf_tones,filename_octave);

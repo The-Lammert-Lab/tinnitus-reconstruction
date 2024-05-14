@@ -79,10 +79,17 @@ function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_p
         filepath_stimuli = fullfile(files_stimuli(ii).folder,files_stimuli(ii).name);
         stimuli{ii} = readmatrix(filepath_stimuli);
 
-        filepath_oct_stim = fullfile(files_octave(ii).folder,files_octave(ii).name);
-        octave_stimuli{ii} = readmatrix(filepath_oct_stim);
-
-        filepath_oct_resp = fullfile(files_octave_responses(ii).folder,files_octave_responses(ii).name);
-        octave_responses{ii} = readmatrix(filepath_oct_resp);
+        try
+            filepath_oct_stim = fullfile(files_octave(ii).folder,files_octave(ii).name);
+            octave_stimuli{ii} = readmatrix(filepath_oct_stim);
+    
+            filepath_oct_resp = fullfile(files_octave_responses(ii).folder,files_octave_responses(ii).name);
+            octave_responses{ii} = readmatrix(filepath_oct_resp);
+        catch
+            % Don't add anything to the cell if no octave data exists for some reason
+            if options.verbose
+                warning('No octave confusion files found.')
+            end
+        end
     end
 end
