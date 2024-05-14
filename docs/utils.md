@@ -235,6 +235,12 @@ Each row contains the responses of separate experiments.
 
 
 
+!!! info "See Also"
+    * [PitchMatch](../experiment/Protocols/#pitchmatch)
+    * [get_best_pitch](./#get_best_pitch)
+
+
+
 
 
 -------
@@ -266,9 +272,10 @@ Flag to show informational messages.
 
 **OUTPUTS:**
 
-- dBs: `n x 2` vector containing dB values in the first column and amplitudes in the second,
+- pres_dBs: `n x 1` vector containing dB values,
 where `n` is the number of unique tones if `average` is `true`,
 or is the number of presented stimuli if `average` is `false.
+- amp_dBs: `n x 1` vector containing amplitude values.
 - tones: `n x 1` vector containing frequency values for each response.
 
 
@@ -430,6 +437,48 @@ in which the metadata can be written for this experiment.
 
 !!! info "See Also"
     * [RevCorr](../experiment/Protocols/#revcorr)
+
+
+
+
+
+-------
+
+### create_files_and_stimuli_2afc
+
+Create files for the stimuli, responses, and metadata and create the stimuli
+for a 2-AFC experiment.
+Write the stimuli into the stimuli file.
+
+**Arguments:**
+
+- config: 1x1 `struct` 
+containing a stimulus generation configuration.
+- stimuli_object: 1x1 `AbstractStimulusGenerationMethod`
+- hash_prefix: 1 x n character vector, default value: `get_hash(config)`
+
+**Outputs:**
+
+- stimuli_matrix_1
+- stimuli_matrix_2
+- Fs
+- filename_responses
+- filename_stimuli_1
+- filename_stimuli_2
+- filename_meta
+- file_hash_1
+- file_hash_2
+- file_hash_combined
+
+Example:
+
+```matlab
+[stimuli_matrix_1, stimuli_matrix_2, Fs, filename_responses, filename_stimuli_1, filename_stimuli_2, filename_meta, file_hash_1, file_hash_2, file_hash_combined] = create_files_and_stimuli_2afc(config, stimuli_object, hash_prefix)
+```
+
+
+
+!!! info "See Also"
 
 
 
@@ -754,7 +803,7 @@ original response vector.
 Generate response predictions for a given 
 config file or pair of stimuli and responses
 using stratified cross validation and either
-the subject response model or KNN.
+the subject response model.
 
 ```matlab
 [given_resps, training_resps, on_test, on_train] = crossval_predicted_responses(folds, 'config', config, 'data_dir', data_dir)
@@ -813,17 +862,14 @@ original response vector. `p` is the number of original responses.
 the original subject responses used in the training phase.
 The training data is partially repeated between folds.
 - on_test: `struct` with `p x 1` vectors in fields
-`cs`, `lr`, and if `knn = true`, `knn`.
-Predicted responses on testing data.
+`cs`, `lr`, predicted responses on testing data.
 - on_train: `struct` with `(folds-2)*p x 1` vectors in fields
-`cs`, `lr`, and if `knn = true`, `knn`.
-Predicted responses on training data.
+`cs`, `lr` predicted responses on training data.
 
 
 
 !!! info "See Also"
     * [subject_selection_process](./#subject_selection_process)
-    * [knn_classify](./#knn_classify)
 
 
 
@@ -892,6 +938,67 @@ the predicted responses on the training data.
 OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
 the predicted responses on the training data.
 the original subject responses in the order corresponding 
+to the predicted responses on the training data,
+
+
+
+
+
+-------
+
+### crossval_rc_adjusted
+
+Generate the cross-validated response predictions for a given
+config file using the upsampled and peak sharpened representation in bin form.
+Config file must have an associated survey with mult and binrange values.
+Reconstruction methods can be the classical reverse correlation model
+y = sign(Psi * x) or y = sign(Psi * x + thresh).
+
+```matlab
+[pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc_adjusted(folds, thresh, 'config', config, 'data_dir', data_dir)
+```
+
+**ARGUMENTS:**
+
+- folds: `scalar` positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into `1/folds` for `test` and `dev` sets
+and the remaining for the `train` set.
+- thresh: `1 x p` numerical vector or `scalar`,
+representing the threshold value in the estimate to response
+conversion: `sign(X*b + threshold)`.
+If there are multiple values,
+it will be optimized in the development section.
+- config: `struct`, name-value, deafult: `[]`
+config struct from which to find responses and stimuli
+- data_dir: `char`, name-value, deafult: `''`
+the path to directory in which the data corresponding to the
+config structis stored.
+- ridge: `bool`, name-value, default: `false`,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.
+- mean_zero: `bool`, name-value, default: `false`,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information messages.
+
+**OUTPUTS:**
+
+- pred_resps: `n x 1` vector,
+the predicted responses.
+- true_resps: `n x 1` vector,
+the original subject responses in the order corresponding
+to the predicted responses, i.e., a shifted version of the
+original response vector.
+- pred_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+- true_resps_train: `folds*(n-round(n/folds)) x 1` vector,
+OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding
 to the predicted responses on the training data,
 
 
@@ -1100,6 +1207,62 @@ the true negative rate.
 
 -------
 
+### get_best_pitch
+
+Returns the matched pitch for a given config's PM data 
+and whether or not all any octaves were confused
+
+**ARGUMENTS:**
+
+- config_file: `character vector`, name-value, default: `''`
+Path to the desired config file.
+GUI will open for the user to select a config if no path is supplied.
+- config: `struct`, name-value, default: `[]`,
+the loaded config.
+- data_dir: `character vector`, name-value, default: `''`,
+the path to the location of the data. 
+If none is supplied, config.data_dir will be used.
+- verbose: `bool`, name-value, default: `true`,
+flag to print information text.
+
+**OUTPUTS:**
+
+- best_freq: `1x1` scalar, the identified best frequency.
+- oct_agree: `bool`, `true` if there was never any octave confusion over all data
+`false` if there was ever any octave confusion.
+
+
+
+!!! info "See Also"
+    * [PitchMatch](../experiment/Protocols/#pitchmatch)
+    * [collect_data_pitch_match](./#collect_data_pitch_match)
+
+
+
+
+
+-------
+
+### get_gamma_from_config
+
+Choose a gamma value to be used in `cs` based on data in the config.
+
+**ARGUMENTS:**
+
+- config: `struct`, config from which to find gamma
+- verbose: `bool`, default: `true`,
+flag to print information messages.
+
+**OUTPUTS:**
+
+- this_gamma: `scalar`, the chosen gamma value.
+
+
+
+
+
+-------
+
 ### get_highest_power_of_2
 Compute the highest power of two less than or equal
 to a number.
@@ -1278,6 +1441,16 @@ Path to the directory where the data files to-be-munged are.
 
 -------
 
+### P
+
+Soft threshold operator used in compressed sensing
+
+
+
+
+
+-------
+
 ### parse_config 
 
 Read a config file and perform any special parsing that is required.
@@ -1340,6 +1513,17 @@ Responses organized into arrays within the cell.
 
 -------
 
+### play_calibration_sound
+
+Plays a 1000 Hz tone at system volume with a sample rate of 44100 Hz.
+No arguments.
+
+
+
+
+
+-------
+
 ### prop2str
 
 ```matlab
@@ -1386,15 +1570,15 @@ Generate a sinusoidal pure tone stimuli
 
 **ARGUMENTS:**
 
-tone_freq: `1 x 1` positive scalar, the frequency to play
-dur: `1 x 1` positive scalar, 
+- tone_freq: `1 x 1` positive scalar, the frequency to play
+- dur: `1 x 1` positive scalar, 
 the duration of the sound in seconds, default: 0.5  
-Fs: `1 x 1` positive scalar, 
+- Fs: `1 x 1` positive scalar, 
 the sample rate of the sound in Hz, deafult: 44100
 
 **OUTPUTS:**
 
-stim: `1 x n` numerical vector, the sinusoidal waveform
+- stim: `1 x n` numerical vector, the sinusoidal waveform
 
 
 
@@ -1624,6 +1808,34 @@ the stimuli.
 
 -------
 
+### tones_to_binspace
+
+Spaces the values in a frequency vector into bins 
+determined by the stimgen object.
+
+**ARGUMENTS:**
+
+- tones: `n x 1` vector of frequency values
+- stimgen: Any object that inherets from `AbstractBinnedStimulusGenerationMethod`,
+used to inform the spacing (min and max freqs, number of bins)      
+
+**OUTPUTS:**
+
+- tones_bindist: `n_bins x 1` vector in Hz which contains the values in `tones`
+placed into the appropriate bin (values are averaged if multiple fit into the same bin)
+and the bin center frequency in all bins for which there was no value in `tones`.
+
+
+
+!!! info "See Also"
+    * [AbstractBinnedStimulusGenerationMethod.get_freq_bins](../stimgen/AbstractBinnedStimulusGenerationMethod/#get_freq_bins)
+
+
+
+
+
+-------
+
 ### update_hashes
 
 Updates data files that match an old hash to a new hash.
@@ -1709,6 +1921,17 @@ which usually happens when the figure is deleted.
 Reads an audio file (e.g., a .wav file) and returns a spectrum
 in terms of magnitudes, s (in dB), and frequencies, f (in Hz).
 
+**ARGUMENTS:**
+
+- audio_file: `char`, path to the audio file.
+- duration: `1x1` scalar, default: 0.5,
+the duration to crop the audio file to in seconds.
+
+**OUTPUTS:**
+
+- s: The spectrum in dB
+- f: The associated frequencies in Hz.
+
 
 
 
@@ -1730,6 +1953,16 @@ The sampling rate in Hz.
 
 - wav: `n x 1` numerical vector, where `n` is dur*Fs, 
 the white noise waveform.
+
+
+
+
+
+-------
+
+### zhangpassivegamma
+
+Passive algorithm for 1-bit compressed sensing with no basis.
 
 
 
