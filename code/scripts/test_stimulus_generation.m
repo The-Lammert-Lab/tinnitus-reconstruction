@@ -1,8 +1,9 @@
-%% Test Stimulus Generation
+% ### Test Stimulus Generation
 % Test three types of stimulus generation: Brimijoin, our custom one, and white noise.
 % Do this by generating stimuli, running a synthetic subject through the experiment,
 % and then attempting to reconstruct a test signal using vanilla reverse correlation
 % and compressed sensing.
+% End of documentation
 
 %% Parameters
 

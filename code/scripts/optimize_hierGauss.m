@@ -1,4 +1,6 @@
-
+% ### optimize_hierGauss
+% Run a grid search on HierarchicalGaussian stimgen parameters
+% to determine the best combination of broad, medium, and narrow bases.
 
 target_filename = 'ATA_Tinnitus_Buzzing_Tone_1sec.wav';
 n_trials = 1000;

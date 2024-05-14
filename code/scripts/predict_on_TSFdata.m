@@ -1,4 +1,6 @@
+% ### predict_on_TSFdata
 % Run just the cross validation section on data used to train ML model
+% Uses data formatted to be digestable by the TinnitusStimulusFitter package.
 
 data_path = '~/repos/TinnitusStimulusFitter.jl/data/smote_patient_data';
 data_dir = dir(data_path);

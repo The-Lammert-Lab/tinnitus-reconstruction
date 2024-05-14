@@ -30,6 +30,10 @@
 %   - octave_stimuli: `n x 1` cell of vectors containing frequency values
 %       from the "octave confusion" section of the PitchMatch experiment. 
 %       Each row contains the responses of separate experiments.
+% 
+% See also:
+% PitchMatch
+% get_best_pitch
 
 function [responses, stimuli, octave_responses, octave_stimuli] = collect_data_pitch_match(options)
     arguments

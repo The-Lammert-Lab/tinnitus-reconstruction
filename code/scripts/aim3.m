@@ -1,4 +1,4 @@
-%% Aim #3 Proof-of-Concept
+%% ### Aim #3 Proof-of-Concept
 % The goal here is to get a new reconstruction
 % clustered into existing clusters
 % using the minimum number of trials.

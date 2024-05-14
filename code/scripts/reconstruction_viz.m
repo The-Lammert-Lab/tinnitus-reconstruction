@@ -1,6 +1,7 @@
-
-%% Visualization for reconstructions
-% Run ``pilot_reconstructions.m`` first.
+% ### reconstruction_viz
+% Visualization for reconstructions
+% Run ``pilot_reconstructions.m`` first to generate recons, etc.
+% End of documentation
 
 %% Plotting the bin-representation of the target signal vs. the reconstructions
 

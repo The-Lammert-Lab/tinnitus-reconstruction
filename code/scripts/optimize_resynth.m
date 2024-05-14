@@ -1,7 +1,10 @@
-% Optimize resynthesis using grid search for mult and binrange params
+% ### optimize_resynth
+% Determine the best mult and binrange parameters for resynthesis. 
+% This can be used to extrapolate a good range 
+% to present to subjects for a given bin number.
+% End of documentation
 
 %% Setup
-
 % Change these as appropriate
 data_dir = '~/Desktop/Lammert_Lab/Tinnitus/resynth_test_data/';
 

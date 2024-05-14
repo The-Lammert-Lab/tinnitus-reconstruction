@@ -4,15 +4,15 @@
 % 
 % **ARGUMENTS:**
 % 
-% tone_freq: `1 x 1` positive scalar, the frequency to play
-% dur: `1 x 1` positive scalar, 
-%   the duration of the sound in seconds, default: 0.5  
-% Fs: `1 x 1` positive scalar, 
-%   the sample rate of the sound in Hz, deafult: 44100
+%   - tone_freq: `1 x 1` positive scalar, the frequency to play
+%   - dur: `1 x 1` positive scalar, 
+%       the duration of the sound in seconds, default: 0.5  
+%   - Fs: `1 x 1` positive scalar, 
+%       the sample rate of the sound in Hz, deafult: 44100
 % 
 % **OUTPUTS:**
 % 
-%  stim: `1 x n` numerical vector, the sinusoidal waveform
+%   - stim: `1 x n` numerical vector, the sinusoidal waveform
 
 function stim = pure_tone(tone_freq,dur,Fs)
     arguments

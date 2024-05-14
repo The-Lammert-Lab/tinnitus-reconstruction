@@ -43,35 +43,38 @@ To run any experiment, copy the template configuration file found
 and modify it as you see fit.
 
 Then, using a decibel meter (many are available for smartphones),
-record the decibel output through the headphones of sound that plays after running the following commands:
+record the decibel output through the headphones of sound that plays after running the following function:
 
 ```matlab
-Fs = 44100;
-test_tone = pure_tone(1000,1,Fs);
-sound(test_tone,Fs)
+play_calibration_sound()
 ```
 
-Raise your system volume until the measured dB value is at least 80dB.
-Save this value in the MATLAB workspace. For example `cal_dB = 87.5;`
-Don't worry, no sounds will be played above 60 dB unless made to do so by the user.
+Raise your system volume until the measured dB value is above 95dB.
+Save this value in the MATLAB workspace. For example `cal_dB = 97.8;`
+Don't worry, no sounds will be played above 65 dB unless made to do so by the user.
 
 Then, run any of the Protocol functions with this measured dB value in your MATLAB prompt.
 
 ```matlab
-RevCorr(cal_dB)
 ThresholdDetermination(cal_dB)
 LoudnessMatch(cal_dB)
 PitchMatch(cal_dB)
+RevCorr(cal_dB)
 ```
+
+The function `RunAllExp(cal_dB)` uses one config file 
+to run the protocol functions in the above order, repeating PitchMatch `3` times by default.
 
 ### Results
 
-To inspect reverse correlation results, run:
+To inspect reverse correlation results from AX (template sound) experiments, run:
 
 ```matlab
 pilot_reconstruction
 reconstruction_viz
 ```
+
+Use `patient_reconstructions` to inspect results from non-AX experiments.
 
 Data can be collected from the other protocols by running
 
@@ -123,17 +126,24 @@ data from the experiment should be saved.
 * stimuli hyperparameters specific to each stimulus generation type (see the
 [stimuli](https://github.com/The-Lammert-Lab/tinnitus-reconstruction/tree/main/code/stimulus_generation) class definitions for details)
 
-To set parameters in a stimulus generation object, use the `from_config()` method:
-
-```matlab
-stimgen = GaussianPriorStimulusGeneration();
-stimgen = stimgen.from_config('path/to/config_file.yaml');
-```
-
 You can load a config file into memory:
 
 ```matlab
 config = parse_config('path/to/config_file.yaml');
+```
+
+and generate a stimulus generation object from the config: 
+
+```matlab
+stimgen = eval([char(config.stimuli_type), 'StimulusGeneration()']);
+```
+
+To set parameters in a stimulus generation object, use the `from_config()` method, 
+which takes a path or a config struct:
+
+```matlab
+stimgen = GaussianPriorStimulusGeneration();
+stimgen = stimgen.from_config('path/to/config_file.yaml'); % stimgen.from_config(config); 
 ```
 
 You can generate a serialized experiment ID via:
@@ -188,7 +198,7 @@ Methods:
 * `spect = get_empty_spectrum(self)`
 * `binned_repr = spect2binnedrepr(self, T)`
 * `T = binnedrepr2spect(self, binned_repr)`
-* `[wav, X] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)`
+* `[wav, X, binned_rep] = binnedrepr2wav(self, binned_rep, mult, binrange, new_n_bins, options)`
 * `W = bin_signal(self, W, Fs)`
 
 ### StimulusGeneration classes

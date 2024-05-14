@@ -1,6 +1,6 @@
 % ### pilot_reconstructions
 % 
-% Compute reconstructions for the pilot data experiment.
+% Compute reconstructions for the pilot data experiment (with target signal).
 % This code assumes that each each experiment uses the same number of bins 
 % and that the reconstructions should be done over the bin representation.
 % 

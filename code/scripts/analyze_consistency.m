@@ -1,7 +1,6 @@
-%%% 
-% This script compares data day-to-day consistency in reconstructions
-% From data collected by NB with all settings the same
-%%%
+% ### analyze_consistency 
+% This script compares the consistency in reconstructions from 
+% data collected several days in a row by NB with all settings the same
 
 %% Setup
 DATA_DIR = '~/Desktop/Lammert_Lab/Tinnitus/NB_consistency_experiments';

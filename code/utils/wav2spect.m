@@ -2,6 +2,17 @@
 % 
 % Reads an audio file (e.g., a .wav file) and returns a spectrum
 % in terms of magnitudes, s (in dB), and frequencies, f (in Hz).
+% 
+% **ARGUMENTS:**
+% 
+%   - audio_file: `char`, path to the audio file.
+%   - duration: `1x1` scalar, default: 0.5,
+%       the duration to crop the audio file to in seconds.
+% 
+% **OUTPUTS:**
+% 
+%   - s: The spectrum in dB
+%   - f: The associated frequencies in Hz.
 
 function [s, f] = wav2spect(audio_file, duration)
 

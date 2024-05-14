@@ -1,6 +1,10 @@
-% Run simulated observer on Norena stimgen and UniformPrior and visualize
-% the results
+% ### compare_norena
+% Run simulated observer on Norena stimgen 
+% and two UniformPrior options (1 bin filled and multiple bins filled)
+% and visualize the results
+% End of documentation
 
+%% Script
 n_trials = 2000;
 min_freq = 100;
 max_freq = 13000;
@@ -32,6 +36,7 @@ for ii = 1:length(targets)
     [target_signal, ~] = wav2spect(fullfile('~/repos/tinnitus-reconstruction/code/experiment/ATA',targets{ii}));
 
     for jj = 1:length(bins)
+        %%%%%%%%%%% Using only one bin filled
         stimgenUniform.n_bins = bins(jj);
         stimgenUniform.min_bins = 1;
         stimgenUniform.max_bins = 1;
@@ -39,6 +44,7 @@ for ii = 1:length(targets)
         [freqs, indices_to_plot, recon_spect, binned_target_spect, c] = compare(stimgenUniform, target_signal, ...
                                                                             'method', method, 'mean_zero', mean_zero);
 
+        % Plot
         nexttile
         plot(freqs(indices_to_plot,1), normalize(target_signal(indices_to_plot), 'zscore', 'std'), 'Color', [.7 .7 .7]);
         hold on
@@ -46,13 +52,14 @@ for ii = 1:length(targets)
         plot(freqs(indices_to_plot,1), normalize(recon_spect(indices_to_plot), 'zscore', 'std'), 'b', 'LineWidth', 1.5);
         title(['Uniform Prior. ', num2str(bins(jj)), ' bins. 1 bin filled. corr = ', num2str(c,4)], 'FontSize', 14)
 
-        %%%%%%%%%%%
+        %%%%%%%%%%% Using range of bins filled
         stimgenUniform.min_bins = min_max_bins(jj,1);
         stimgenUniform.max_bins = min_max_bins(jj,2);
 
         [freqs, indices_to_plot, recon_spect, binned_target_spect, c] = compare(stimgenUniform, target_signal, ...
                                                                             'method', method, 'mean_zero', mean_zero);
 
+        % Plot
         nexttile
         plot(freqs(indices_to_plot,1), normalize(target_signal(indices_to_plot), 'zscore', 'std'), 'Color', [.7 .7 .7]);
         hold on
@@ -62,7 +69,7 @@ for ii = 1:length(targets)
             num2str(stimgenUniform.min_bins), ', max: ', num2str(stimgenUniform.max_bins), ...
             '. corr = ', num2str(c,4)], 'FontSize', 14)
         
-        %%%%%%%%%%%
+        %%%%%%%%%%% Norena
         stimgenNorena.n_bins = bins(jj);
         [freqs, indices_to_plot, recon_spect, binned_target_spect, c] = compare(stimgenNorena, target_signal, ...
                                                                             'method', method, 'mean_zero', mean_zero);
@@ -80,6 +87,7 @@ for ii = 1:length(targets)
     title(t, [targets(ii), [' method: ', method]], 'FontSize', 16, 'Interpreter','none')
 end
 
+%% Local Functions
 function [freqs, indices_to_plot, recon_spect, binned_target_spect, c] = compare(stimgen, target_signal, options)
     arguments
         stimgen
