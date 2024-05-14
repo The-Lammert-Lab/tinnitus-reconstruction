@@ -1,8 +1,4 @@
-# Experiment
-
-This folder contains the files necessary to run an experimental protocol. Most important for the majority of users is the config file and the `Protocol` function.
-
-### Configs
+### Configuration files
 
 Config files contain all of the information necessary to run trials and gather data. Configs are in `.yaml` format. These files should be carefully written before beginning any experiment to ensure the desired stimulus is generated and data are labeled and stored as intended. The name of the config file itself does not require a specific format. 
 
