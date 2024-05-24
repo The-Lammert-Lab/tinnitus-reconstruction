@@ -1965,5 +1965,8 @@ the white noise waveform.
 
 Passive algorithm for 1-bit compressed sensing with no basis.
 
+# References
+- Zhang, L., Yi, J. and Jin, R., 2014, June. Efficient algorithms for robust one-bit compressive sensing. In *International Conference on Machine Learning* (pp. 820-828). PMLR.
+
 
 

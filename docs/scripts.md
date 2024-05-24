@@ -108,7 +108,7 @@ to present to subjects for a given bin number.
 ### patient_reconstructions
 Generate reconstructions and visualizatinos for non-target sound data
 Includes lots of flags for response prediction analysis
-NOTE: should also work with make_figures_paper2
+NOTE: should also work with make_figures_paper2 (not recently tested though)
 
 
 
