@@ -75,7 +75,8 @@ function [pres_dBs, amp_dBs, tones] = collect_data_thresh_or_loud(exp_type, opti
     files_tones = dir(fullfile(options.data_dir, [exp_type, '_tones_', config_hash, '*.csv']));
 
     if isempty(files_thresholds) || isempty(files_tones)
-        dBs = [];
+        pres_dBs = [];
+        amp_dBs = [];
         tones = [];
         corelib.verb(options.verbose, 'INFO: collect_data_thresh_or_loud', ['No ', exp_type, ' data found.'])
         return
