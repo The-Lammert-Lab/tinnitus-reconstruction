@@ -2,10 +2,7 @@
 % 
 % Passive algorithm for 1-bit compressed sensing with no basis.
 % 
-<<<<<<< Updated upstream
 % # References
-=======
->>>>>>> Stashed changes
 % - Zhang, L., Yi, J. and Jin, R., 2014, June. Efficient algorithms for robust one-bit compressive sensing. In *International Conference on Machine Learning* (pp. 820-828). PMLR.
 
 function s_hat = zhangpassivegamma(Phi,y,h)

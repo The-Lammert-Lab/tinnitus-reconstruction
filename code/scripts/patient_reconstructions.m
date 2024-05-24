@@ -1,11 +1,11 @@
 % ### patient_reconstructions
 % Generate reconstructions and visualizatinos for non-target sound data
 % Includes lots of flags for response prediction analysis
-% NOTE: should also work with make_figures_paper2
+% NOTE: should also work with make_figures_paper2 (not recently tested though)
 % End of documentation
 
 %% General setup
-data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/subject 4/';
+data_dir = '~/Desktop/Lammert_Lab/Tinnitus/ATA-Data/raw/';
 % data_dir = '~/Desktop/Lammert_Lab/Tinnitus/patient-data/';
 config_files = dir(pathlib.join(data_dir, '*.yaml'));
 
@@ -27,15 +27,25 @@ randguess = false;
 svm = false;
 thresh_loud = true;
 
-n = length(config_files);
+% Subject IDs to skip (ID must be exact match to config.subject_ID)
 % skip_subjects = {'KB_1', 'CH_2', 'JG_3', 'KE_6'};
-skip_subjects = {};
+skip_subjects = {'AM'};
+
+%% Pre-processing: Remove skipped subjects
+skip = false(length(config_files),1);
+for ii = 1:length(config_files)
+    config = parse_config(fullfile(config_files(ii).folder, config_files(ii).name));
+    skip(ii) = ismember(config.subject_ID, skip_subjects);
+end
+
+config_files(skip,:) = [];
+n = length(config_files);
 
 %% Plot setup
 if showfigs
-    rows = ceil((n - length(skip_subjects))/2);
+    rows = ceil(n/2);
     
-    if CS
+    if CS && n > 1
         cols = 4;
     else
         cols = 2;
@@ -66,8 +76,7 @@ if showfigs
         stimgen = stimgen.from_config(config);
         
         % Skip deliberate config files or ones with target signals (healthy controls)
-        if all(ismember(config.subject_ID, skip_subjects)) || ...
-            (isfield(config, 'target_signal') && ~isempty(config.target_signal))
+        if isfield(config, 'target_signal') && ~isempty(config.target_signal)
             continue
         end
     
@@ -103,7 +112,7 @@ if showfigs
         %%%%% Binned %%%%%
     
         % Linear
-        if i == n-length(skip_subjects)
+        if i == n && n > 2
             tile = nexttile(t_binned, [1,2]);
         else
             tile = nexttile(t_binned);
@@ -129,7 +138,7 @@ if showfigs
 
         % CS
         if CS
-            if i == n-length(skip_subjects)
+            if i == n && n > 2
                 tile = nexttile(t_binned, [1,2]);
             else
                 tile = nexttile(t_binned);
@@ -152,7 +161,7 @@ if showfigs
         %%%%% Unbinned %%%%%
     
         % Linear
-        if i == n-length(skip_subjects)
+        if i == n && n > 2
             tile = nexttile(t_unbinned, [1,2]);
         else
             tile = nexttile(t_unbinned);
@@ -182,7 +191,7 @@ if showfigs
 
         % CS
         if CS
-            if i == n-length(skip_subjects)
+            if i == n && n > 2
                 tile = nexttile(t_unbinned, [1,2]);
             else
                 tile = nexttile(t_unbinned);
@@ -338,10 +347,6 @@ for ii = 1:n
     [responses, ~] = collect_data('config', config, 'verbose', verbose, 'data_dir', data_dir);
     yesses(ii) = 100 * length(responses(responses == 1))/length(responses);
 
-    if all(ismember(config.subject_ID, skip_subjects))
-        continue
-    end
-
     % Generate cross-validated predictions
     if rc
         [pred_rc, true_rc, pred_rc_train, true_rc_train] = crossval_rc(folds, thresh_vals_rc, ...
@@ -477,7 +482,7 @@ if rc
         'VariableNames', ["RC CV Pred Bal Acc On Train", "RC CV Pred Acc On Train", "subject ID"], ...
         'RowNames', row_names)
     if length(pred_bal_acc_rc) > 1
-        CV_rc_bal_acc_ttest = ttest(pred_bal_acc_rc, 0.5)
+        [CV_rc_bal_acc_h, CV_rc_bal_acc_p, ~, Cv_rc_bal_acc_tstats] = ttest(pred_bal_acc_rc, 0.5)
     end
 end
 
@@ -489,7 +494,7 @@ if rc_adjusted
         'VariableNames', ["RC Adj CV Pred Bal Acc On Train", "RC Adj CV Pred Acc On Train", "subject ID"], ...
         'RowNames', row_names)
     if length(pred_bal_acc_rc) > 1
-        CV_rc_adj_bal_acc_ttest = ttest(pred_bal_acc_rc_adj, 0.5)
+        [CV_rc_adj_bal_acc_h, CV_rc_adj_bal_acc_p, ~, Cv_rc_adj_bal_acc_tstats] = ttest(pred_bal_acc_rc_adj, 0.5)
     end
 end
 
