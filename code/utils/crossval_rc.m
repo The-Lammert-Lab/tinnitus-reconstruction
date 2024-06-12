@@ -59,9 +59,11 @@
 %       OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
 %       the predicted responses on the training data.
 %       the original subject responses in the order corresponding 
-%       to the predicted responses on the training data,
+%       to the predicted responses on the training data.
+%   - pred_cont_test: `n x 1` vector,
+%       The inner product values on testing data before quantization.
 
-function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, options)
+function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_test] = crossval_rc(folds, thresh, options)
     arguments
         folds (1,1) {mustBeInteger, mustBePositive}
         thresh (1,:) {mustBeReal}
@@ -99,6 +101,7 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
     % Containers
     pred_resps = NaN(n,1);
     true_resps = NaN(n,1);
+    pred_cont_test = NaN(n,1);
     pred_resps_train = NaN(length(train_inds)*folds,1);
     true_resps_train = NaN(length(train_inds)*folds,1);
 
@@ -120,8 +123,8 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
 
         % fprintf(['thresh = ', num2str(thresh(thresh_ind)), '\n'])
 
-        preds_test = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
-        preds_train = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
+        [preds_test, e_test] = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
+        [preds_train, ~] = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
 
         % Store
         filled = sum(~isnan(pred_resps));
@@ -129,12 +132,15 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
 
         pred_resps(filled+1:filled+length(preds_test)) = preds_test;
         true_resps(filled+1:filled+length(preds_test)) = resps(test_inds);
+        pred_cont_test(filled+1:filled+length(preds_test)) = e_test;
         pred_resps_train(filled_train+1:filled_train+length(preds_train)) = preds_train;
         true_resps_train(filled_train+1:filled_train+length(preds_train)) = resps(train_inds);
+        
+
     end
 end
 
-function p = rc(stimuli, representation, thresh, mean_zero)
+function [p, e] = rc(stimuli, representation, thresh, mean_zero)
     arguments
         stimuli
         representation
