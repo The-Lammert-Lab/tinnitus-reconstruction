@@ -65,11 +65,10 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval
     end
 
     [resps, stimuli_matrix] = collect_data('config', options.config, 'verbose', options.verbose, 'data_dir', options.data_dir);
+    T_follow_up = collect_data_follow_up('config',options.config,'data_dir',options.data_dir,'verbose',options.verbose);
 
-    survey_info = dir(fullfile(options.data_dir, ['survey_',get_hash(options.config),'*.csv']));
-    survey = readtable(fullfile(survey_info.folder, survey_info.name));
-    mult = survey.mult(1);
-    binrange = survey.binrange(1);
+    mult = T_follow_up.mult(1);
+    binrange = T_follow_up.binrange(1);
 
     stimgen = eval([char(options.config.stimuli_type), 'StimulusGeneration()']);
     stimgen = stimgen.from_config(options.config);
