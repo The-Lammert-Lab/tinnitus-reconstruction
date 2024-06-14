@@ -939,7 +939,9 @@ the predicted responses on the training data.
 OR `folds*(2*(n-round(n/folds))) x 1` vector if dev is run.
 the predicted responses on the training data.
 the original subject responses in the order corresponding 
-to the predicted responses on the training data,
+to the predicted responses on the training data.
+- pred_cont_test: `n x 1` vector,
+The inner product values on testing data before quantization.
 
 
 
