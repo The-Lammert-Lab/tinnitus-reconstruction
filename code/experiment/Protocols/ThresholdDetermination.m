@@ -230,11 +230,9 @@ function ThresholdDetermination(cal_dB, options)
 
     % Show completion screen 
     disp_fullscreen(ScreenEnd, hFig);
-    k = waitforkeypress();
-    if k < 0
-        corelib.verb(options.verbose, 'INFO PitchMatch', 'Exiting...')
-        return
-    end
+    % See note on LoudnessMatch.m for why not waitforkeypress
+    % Matched here for consistency.
+    waitforbuttonpress
 
     if options.del_fig
         delete(hFig)

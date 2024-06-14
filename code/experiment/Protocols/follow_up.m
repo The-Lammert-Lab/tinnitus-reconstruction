@@ -52,7 +52,7 @@
 % 
 % **OUTPUTS:**
 % 
-%   - survey_XXX.csv: csv file, where XXX is the config hash.
+%   - follow_up_XXX.csv: csv file, where XXX is the config hash.
 %       In the data directory. 
 
 function follow_up(cal_dB, options)
@@ -249,7 +249,7 @@ function follow_up(cal_dB, options)
 
     %% Response file
     % Set up response file
-    filename_survey = fullfile(data_dir, ['survey_', options.this_hash, '.csv']);
+    filename_survey = fullfile(data_dir, ['follow_up_', options.this_hash, '.csv']);
     fid_survey = fopen(filename_survey, 'w');
 
     % Version 1 has a different save configuration than future versions.
@@ -312,9 +312,11 @@ function follow_up(cal_dB, options)
                         staticqs_header, comp_headers,'\n'];
         fprintf(fid_survey, all_headers);
 
+        non_question_vals = [options.this_hash,',',num2str(options.version),',', ...
+            num2str(mult),',',num2str(binrange),','];
+
         % Write config hash, version, mult, and binrange params to file.
-        fprintf(fid_survey, [options.this_hash,',',num2str(options.version),',', ...
-            num2str(mult),',',num2str(binrange),',']);
+        fprintf(fid_survey, non_question_vals);
     end
 
     % Scale waveforms to play at desired level
@@ -408,7 +410,7 @@ function follow_up(cal_dB, options)
                         if ii == n_sounds && jj ~= options.n_reps
                             fprintf(fid_survey, [char(value), '\n']);
                             % Fill in the static questions section on new line with 'Null'
-                            fprintf(fid_survey, repmat('Null,',1,4+n_static));
+                            fprintf(fid_survey, [non_question_vals, repmat('Null,',1,n_static)]);
                         elseif ii == n_sounds && jj == options.n_reps
                             fprintf(fid_survey, char(value)); % Last entry doesn't need separator
                         else 

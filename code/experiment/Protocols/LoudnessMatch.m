@@ -244,11 +244,10 @@ function LoudnessMatch(cal_dB, options)
 
     % Show completion screen
     disp_fullscreen(ScreenEnd, hFig);
-    k = waitforkeypress();
-    if k < 0
-        corelib.verb(options.verbose, 'INFO PitchMatch', 'Exiting...')
-        return
-    end
+    % Use instead of waitforkeypress b/c this allows for mouse click. 
+    % When run from RunAllExp, button clicks don't register on this function in particular
+    % this prevents awkwardness having to click the figure then press a button.
+    waitforbuttonpress 
 
     if options.del_fig
         delete(hFig)
