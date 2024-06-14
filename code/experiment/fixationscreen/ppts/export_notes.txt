@@ -1,0 +1,11 @@
+###### Sizes at which to export ppts in png format ######
+Be sure to double check that they display properly on the monitor that will be used.
+
+Follow up: 
+Width: 1300, Height: 722 
+
+RC:
+Width: 1300, Height: 731
+
+Ending Slide:
+Width: 850, Height: 800
