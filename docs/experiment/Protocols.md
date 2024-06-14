@@ -130,7 +130,7 @@ Flag to print information and warnings.
 
 **OUTPUTS:**
 
-- survey_XXX.csv: csv file, where XXX is the config hash.
+- follow_up_XXX.csv: csv file, where XXX is the config hash.
 In the data directory. 
 
 
