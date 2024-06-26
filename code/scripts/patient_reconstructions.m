@@ -17,14 +17,16 @@ num_from_config = false; % Some config setups have subject numbers in them. This
 
 % Analysis flags for response prediction
 rc = true; 
-rc_adjusted = true;
+rc_adjusted = false;
 knn = false;
 lda = false;
 lwlr = false;
 pnr = false;
 randguess = false;
 svm = false;
+itr_lsq = true;
 thresh_loud = true;
+sim_prob = true; n_hists = 20;
 
 follow_up_ttest = true;
 
@@ -114,7 +116,7 @@ if showfigs
         %%%%% Binned %%%%%
     
         % Linear
-        if i == n && n > 2
+        if i == n && n > 2 && mod(n,2) % Last row, more than 2, odd num
             tile = nexttile(t_binned, [1,2]);
         else
             tile = nexttile(t_binned);
@@ -140,7 +142,7 @@ if showfigs
 
         % CS
         if CS
-            if i == n && n > 2
+            if i == n && n > 2 && mod(n,2) % Last row, more than 2, odd num
                 tile = nexttile(t_binned, [1,2]);
             else
                 tile = nexttile(t_binned);
@@ -163,7 +165,7 @@ if showfigs
         %%%%% Unbinned %%%%%
     
         % Linear
-        if i == n && n > 2
+        if i == n && n > 2 && mod(n,2) % Last row, more than 2, odd num
             tile = nexttile(t_unbinned, [1,2]);
         else
             tile = nexttile(t_unbinned);
@@ -193,7 +195,7 @@ if showfigs
 
         % CS
         if CS
-            if i == n && n > 2
+            if i == n && n > 2 && mod(n,2) % Last row, more than 2, odd num
                 tile = nexttile(t_unbinned, [1,2]);
             else
                 tile = nexttile(t_unbinned);
@@ -276,6 +278,10 @@ randtype = 'normal';
 mean_zero_tl = true;
 thresh_vals_tl = linspace(-5000,1,1000);
 
+% Iter lsq
+mean_zero_irwlsq = true;
+weight_func = 'logistic'; % See 'RobustOpts' argument of 'fitlm' for options
+
 % Containers
 pred_acc_cs = zeros(n,1);
 pred_acc_lr = zeros(n,1); 
@@ -294,7 +300,7 @@ if rc
     pred_bal_acc_rc = zeros(n,1);
     pred_acc_rc_train = zeros(n,1);
     pred_bal_acc_rc_train = zeros(n,1);
-    continuous_preds = cell(n,1);
+%     continuous_preds = cell(n,1);
 end
 
 if rc_adjusted
@@ -338,6 +344,11 @@ if svm
     pred_bal_acc_svm = zeros(n,1);
 end
 
+if itr_lsq
+    pred_acc_irwlsq = zeros(n,1);
+    pred_bal_acc_irwlsq = zeros(n,1);
+end
+
 if thresh_loud
     pred_acc_tl_loud = zeros(n,1);
     pred_bal_acc_tl_loud = zeros(n,1);
@@ -356,6 +367,18 @@ if follow_up_ttest
     whitenoise_rating = zeros(n,1);
 end
 
+if sim_prob
+    % Probability distributions of yes or no given a similarity score
+    P_ygs = cell(n,1);
+    P_ngs = cell(n,1);
+    if showfigs
+        f_probs_sep = figure;
+        f_probs_comb = figure;
+        t_probs_sep = tiledlayout(f_probs_sep,n,2);
+        t_probs_comb = tiledlayout(f_probs_comb,n,1);
+    end
+end
+
 for ii = 1:n
     % Get config
     config = parse_config(pathlib.join(config_files(ii).folder, config_files(ii).name));
@@ -372,7 +395,7 @@ for ii = 1:n
 
     % Generate cross-validated predictions
     if rc
-        [pred_rc, true_rc, pred_rc_train, true_rc_train, continuous_preds{ii}] = crossval_rc(folds, thresh_vals_rc, ...
+        [pred_rc, true_rc, pred_rc_train, true_rc_train, pred_rc_continuous] = crossval_rc(folds, thresh_vals_rc, ...
                                                                             'config',config,'data_dir',data_dir, ...
                                                                             'mean_zero',mean_zero,'ridge',gs_ridge, ...
                                                                             'verbose',verbose);
@@ -387,6 +410,14 @@ for ii = 1:n
             'verbose',verbose);
         [pred_acc_rc_adj(ii), pred_bal_acc_rc_adj(ii), ~, ~] = get_accuracy_measures(true_rc_adj, pred_rc_adj);
         [pred_acc_rc_adj_train(ii), pred_bal_acc_rc_adj_train(ii), ~, ~] = get_accuracy_measures(true_rc_train_adj, pred_rc_train_adj);
+    end
+
+    if itr_lsq
+        [pred_irwlsq, true_irwlsq] = crossval_irwlsq(folds, thresh_vals_rc, ...
+                                                'config',config,'data_dir',data_dir, ...
+                                                'mean_zero',mean_zero_irwlsq,'weight_func',weight_func, ...
+                                                'verbose',verbose);
+        [pred_acc_irwlsq(ii), pred_bal_acc_irwlsq(ii), ~, ~] = get_accuracy_measures(true_irwlsq, pred_irwlsq);
     end
 
     if knn
@@ -489,7 +520,40 @@ for ii = 1:n
             xlim([1,32])
             xlabel('Bin Number', 'FontSize', 16)
             ylabel('Amplitude', 'FontSize', 16)
-            title(['Subject #', num2str(ii), ' (' config.subject_ID, ')'], 'FontSize', 16)
+            title(['Subject #', num2str(ii), ' (', config.subject_ID, ')'], 'FontSize', 16)
+        end
+    end
+
+    if sim_prob
+        ys = true_rc == 1; % Probabilities come from CV so use the rotated true vals
+        nos = true_rc == -1;
+        bin_edges = linspace(min(pred_rc_continuous), max(pred_rc_continuous), n_hists+1);
+        bin_cents = (bin_edges(1:end-1) + bin_edges(2:end))/2; % average of each bin
+
+        % P(ans|similarity) = (P(similarity|ans)*P(ans)) / P(similarity)
+        P_ygs{ii} = (histcounts(pred_rc_continuous(ys), bin_edges) * sum(ys)/length(true_rc)) ./ histcounts(pred_rc_continuous, bin_edges);
+        P_ngs{ii} = (histcounts(pred_rc_continuous(nos), bin_edges) * sum(nos)/length(true_rc)) ./ histcounts(pred_rc_continuous, bin_edges);
+        if showfigs
+           nexttile(t_probs_sep);
+           bar(P_ygs{ii});
+           xticks(1:length(P_ygs{ii}))
+           xticklabels(bin_cents)
+           title(['Subject #', num2str(ii), ' (', config.subject_ID, ') P(Y|sim)'], 'FontSize', 16)
+
+           nexttile(t_probs_sep);
+           bar(P_ngs{ii});
+           xticks(1:length(P_ngs{ii}))
+           xticklabels(bin_cents)
+           title(['Subject #', num2str(ii), ' (', config.subject_ID, ') P(N|sim)'], 'FontSize', 16)
+
+           nexttile(t_probs_comb)
+           bar(P_ngs{ii},0.5,'FaceColor',[0.2 0.2 0.5]);
+           hold on
+           bar(P_ygs{ii},0.25,'FaceColor',[0 0.7 0.7]);
+           xticks(1:length(P_ngs{ii}))
+           xticklabels(bin_cents)
+           title(['Subject #', num2str(ii), ' (', config.subject_ID, ') P(ans|sim)'], 'FontSize', 16)
+           legend({'No', 'Yes'})
         end
     end
 end
@@ -551,6 +615,12 @@ if rc_adjusted
     if length(pred_bal_acc_rc) > 1
         [~, CV_rc_adj_bal_acc_p, ~, CV_rc_adj_bal_acc_tstats] = ttest(pred_bal_acc_rc_adj, 0.5)
     end
+end
+
+if itr_lsq
+    T_CV_irwlsq = table(pred_bal_acc_irwlsq, pred_acc_irwlsq, IDs, ...
+        'VariableNames', ["IRWLSQ CV Pred Bal Acc", "IRWLSQ CV Pred Acc", "subject ID"], ...
+        'RowNames', row_names)
 end
 
 if knn

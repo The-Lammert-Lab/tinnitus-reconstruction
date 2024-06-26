@@ -1,13 +1,12 @@
-% ### crossval_rc
+% ### crossval_irwlsq
 % 
 % Generate the cross-validated response predictions for a given 
 % config file or pair of stimuli and responses
-% using the classical reverse correlation model 
-% y = sign(Psi * x) or y = sign(Psi * x + thresh).
+% using iteratively reweighted least squares.
 % 
 % ```matlab
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'config', config, 'data_dir', data_dir)
-%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_rc(folds, thresh, 'responses', responses, 'stimuli', stimuli)
+%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_irwlsq(folds, thresh, 'config', config, 'data_dir', data_dir)
+%   [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_irwlsq(folds, thresh, 'responses', responses, 'stimuli', stimuli)
 % ```
 % 
 % **ARGUMENTS:**
@@ -34,9 +33,9 @@
 %       stimuli to use in reconstruction,
 %       where `m` is the number of bins.
 %       Only used if passed with `responses`.
-%   - ridge: `bool`, name-value, default: `false`,
-%       flag to use ridge regression instead of standard linear regression
-%       for reconstruction.
+%   - weight_func: `char`, name-value, default: `'bisquare'`,
+%       The weight function to use. See `RobustOpts` argument
+%       in `fitlm` docs for valid options. 
 %   - mean_zero: `bool`, name-value, default: `false`,
 %       flag to set the mean of the stimuli to zero when computing the
 %       reconstruction and both the mean of the stimuli and the
@@ -60,10 +59,8 @@
 %       the predicted responses on the training data.
 %       the original subject responses in the order corresponding 
 %       to the predicted responses on the training data.
-%   - pred_cont_test: `n x 1` vector,
-%       The inner product values on testing data before quantization.
 
-function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_test] = crossval_rc(folds, thresh, options)
+function [pred_resps, true_resps, pred_resps_train, true_resps_train] = crossval_irwlsq(folds,thresh,options)
     arguments
         folds (1,1) {mustBeInteger, mustBePositive}
         thresh (1,:) {mustBeReal}
@@ -71,7 +68,7 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
         options.data_dir char = ''
         options.responses (:,1) {mustBeReal, mustBeInteger} = []
         options.stimuli (:,:) {mustBeReal} = []
-        options.ridge logical = false
+        options.weight_func char = 'bisquare'
         options.mean_zero logical = false
         options.verbose logical = true
     end
@@ -101,17 +98,23 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
     % Containers
     pred_resps = NaN(n,1);
     true_resps = NaN(n,1);
-    pred_cont_test = NaN(n,1);
     pred_resps_train = NaN(length(train_inds)*folds,1);
     true_resps_train = NaN(length(train_inds)*folds,1);
+
+    if options.mean_zero
+        mdlr = fitlm((stimuli_matrix-mean(stimuli_matrix,2))',resps,'RobustOpts',options.weight_func);
+    else
+        mdlr = fitlm(stimuli_matrix',resps,'RobustOpts',options.weight_func);
+    end
+
+    W = mdlr.Robust.Weights;
 
     for ii = 1:folds
         resps = circshift(resps, n_test);
         stimuli_matrix = circshift(stimuli_matrix, n_test, 2);
 
         % Create reconstructions
-        recon = gs(resps(train_inds), stimuli_matrix(:,train_inds)', 'ridge', options.ridge, ...
-                'mean_zero', options.mean_zero);
+        recon = make_recon(stimuli_matrix(:,train_inds)',diag(W(train_inds)),resps(train_inds),'mean_zero',options.mean_zero);
 
         if rundev
             preds_dev = rc(stimuli_matrix(:,dev_inds)', recon, thresh, options.mean_zero);
@@ -121,8 +124,8 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
             thresh_ind = 1;
         end
 
-        [preds_test, e_test] = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
-        [preds_train, ~] = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
+        preds_test = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
+        preds_train = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);
 
         % Store
         filled = sum(~isnan(pred_resps));
@@ -130,13 +133,12 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
 
         pred_resps(filled+1:filled+length(preds_test)) = preds_test;
         true_resps(filled+1:filled+length(preds_test)) = resps(test_inds);
-        pred_cont_test(filled+1:filled+length(preds_test)) = e_test;
         pred_resps_train(filled_train+1:filled_train+length(preds_train)) = preds_train;
         true_resps_train(filled_train+1:filled_train+length(preds_train)) = resps(train_inds);
     end
 end
 
-function [p, e] = rc(stimuli, representation, thresh, mean_zero)
+function p = rc(stimuli, representation, thresh, mean_zero)
     arguments
         stimuli
         representation
@@ -150,7 +152,20 @@ function [p, e] = rc(stimuli, representation, thresh, mean_zero)
     else
         e = stimuli * representation(:);
     end
-    
+
     % Convert to response
     p = sign(e + thresh);
+end
+
+function recon = make_recon(X,W,y,options)
+    arguments
+        X (:,:)
+        W (:,:)
+        y (:,1)
+        options.mean_zero = false
+    end
+    if options.mean_zero
+        X = X - mean(X,1);
+    end
+    recon = (X'*W*X)\(X'*W*y);
 end
