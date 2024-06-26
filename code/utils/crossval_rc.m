@@ -121,8 +121,6 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
             thresh_ind = 1;
         end
 
-        % fprintf(['thresh = ', num2str(thresh(thresh_ind)), '\n'])
-
         [preds_test, e_test] = rc(stimuli_matrix(:,test_inds)', recon, thresh(thresh_ind), options.mean_zero);
         [preds_train, ~] = rc(stimuli_matrix(:,train_inds)', recon, thresh(thresh_ind), options.mean_zero);        
 
@@ -135,8 +133,6 @@ function [pred_resps, true_resps, pred_resps_train, true_resps_train, pred_cont_
         pred_cont_test(filled+1:filled+length(preds_test)) = e_test;
         pred_resps_train(filled_train+1:filled_train+length(preds_train)) = preds_train;
         true_resps_train(filled_train+1:filled_train+length(preds_train)) = resps(train_inds);
-        
-
     end
 end
 
@@ -154,8 +150,6 @@ function [p, e] = rc(stimuli, representation, thresh, mean_zero)
     else
         e = stimuli * representation(:);
     end
-%     fprintf(['max(e) = ', num2str(max(e)), '\n'])
-%     fprintf(['min(e) = ', num2str(min(e)), '\n'])
     
     % Convert to response
     p = sign(e + thresh);

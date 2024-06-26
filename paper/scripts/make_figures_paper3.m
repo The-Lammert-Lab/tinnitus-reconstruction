@@ -30,10 +30,10 @@ T_preds = outerjoin(T_CV_rc,T_CV_rc_train,'Keys',{'subject ID'},'MergeKeys',true
 T_preds = outerjoin(T_preds,T_CV_thresh,'Keys',{'subject ID'},'MergeKeys',true);
 T_preds = outerjoin(T_preds,T_CV_loud,'Keys',{'subject ID'},'MergeKeys',true);
 T_preds = outerjoin(T_preds,T_yesses,'Keys',{'subject ID'},'MergeKeys',true);
-T_preds = movevars(T_preds,'subject ID','After',width(T_preds));
+T_preds = movevars(T_preds,'subject ID','After',size(T_preds,2));
 
 T_tl_corrs = outerjoin(T_dB_loud_corrs, T_dB_thresh_corrs, 'Keys', {'subject ID'}, 'MergeKeys', true);
-T_tl_corrs = movevars(T_tl_corrs,'subject ID','After',width(T_tl_corrs));
+T_tl_corrs = movevars(T_tl_corrs,'subject ID','After',size(T_tl_corrs,2));
 
 % Create prediction ttest table
 T_preds_ttest = [table([mean(pred_bal_acc_rc); mean(pred_bal_acc_tl_loud); mean(pred_bal_acc_tl_thresh)], ...
