@@ -1,0 +1,3690 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Nelson Barnett">
+      
+      
+      
+        <link rel="prev" href="../stimgen/UniformPriorWeightedSamplingStimulusGeneration/">
+      
+      
+        <link rel="next" href="../scripts/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>All utilities - tinnitus-reconstruction</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#utilities" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tinnitus-reconstruction" class="md-header__button md-logo" aria-label="tinnitus-reconstruction" data-md-component="logo">
+      
+  <img src="../Midjourney_logo3.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tinnitus-reconstruction
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              All utilities
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alec-hoyland/tinnitus-reconstruction" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tinnitus-reconstruction" class="md-nav__button md-logo" aria-label="tinnitus-reconstruction" data-md-component="logo">
+      
+  <img src="../Midjourney_logo3.png" alt="logo">
+
+    </a>
+    tinnitus-reconstruction
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alec-hoyland/tinnitus-reconstruction" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation and Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Experiment
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Experiment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../experiment/configs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../experiment/Protocols/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Protocols
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../experiment/ata/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Target Sounds
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Stimulus Generation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Stimulus Generation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Abstract classes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Abstract classes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/AbstractStimulusGenerationMethod/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Abstract for all classes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/AbstractBinnedStimulusGenerationMethod/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Abstract for binned representations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/BernoulliStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bernoulli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/BrimijoinStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Brimijoin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/GaussianNoiseNoBinsStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gaussian Noise With No Bins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/GaussianNoiseStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gaussian Noise With Bins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/GaussianPriorStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gaussian Prior
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/HierarchicalGaussianStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hierarchical Gaussian
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/NorenaBinnedStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Norena Binned
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/NorenaStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Norena
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/PowerDistributionStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Power Distribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/UniformNoiseNoBinsStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniform Noise With No Bins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/UniformNoiseStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniform Noise With Bins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/UniformPriorRandomNBinsStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniform Prior Random N Bins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/UniformPriorStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniform Prior
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stimgen/UniformPriorWeightedSamplingStimulusGeneration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniform Prior Weighted Sampling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Utilities
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    All utilities
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    All utilities
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adjust_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_volume
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allcomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      allcomb
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binnedrepr2spect" class="md-nav__link">
+    <span class="md-ellipsis">
+      binnedrepr2spect
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data_pitch_match" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data_pitch_match
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data_thresh_or_loud" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data_thresh_or_loud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_parameters
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_reconstructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_reconstructions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config2table" class="md-nav__link">
+    <span class="md-ellipsis">
+      config2table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli_2afc" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli_2afc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli_phasen" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli_phaseN
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_irwlsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_irwlsq
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_knn" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_knn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_lda" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_lda
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_lwlr" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_lwlr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_pnr" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_pnr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_predicted_responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_predicted_responses
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_rc" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_rc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_rc_adjusted" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_rc_adjusted
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_svm" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_svm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cs" class="md-nav__link">
+    <span class="md-ellipsis">
+      cs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disp_fullscreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      disp_fullscreen
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filematch" class="md-nav__link">
+    <span class="md-ellipsis">
+      filematch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gen_octaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      gen_octaves
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_accuracy_measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_accuracy_measures
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_best_pitch" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_best_pitch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_gamma_from_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_gamma_from_config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_highest_power_of_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_highest_power_of_2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_reconstruction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gs" class="md-nav__link">
+    <span class="md-ellipsis">
+      gs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#knn_classify" class="md-nav__link">
+    <span class="md-ellipsis">
+      knn_classify
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#munge_hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      munge_hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      P
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parse_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parse_rand_nbins" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_rand_nbins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#play_calibration_sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_calibration_sound
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prop2str" class="md-nav__link">
+    <span class="md-ellipsis">
+      prop2str
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pure_tone" class="md-nav__link">
+    <span class="md-ellipsis">
+      pure_tone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r_viz" class="md-nav__link">
+    <span class="md-ellipsis">
+      r_viz
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rand_str" class="md-nav__link">
+    <span class="md-ellipsis">
+      rand_str
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semitones" class="md-nav__link">
+    <span class="md-ellipsis">
+      semitones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spect2binnedrepr" class="md-nav__link">
+    <span class="md-ellipsis">
+      spect2binnedrepr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#str2prop" class="md-nav__link">
+    <span class="md-ellipsis">
+      str2prop
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subject_selection_process" class="md-nav__link">
+    <span class="md-ellipsis">
+      subject_selection_process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tones_to_binspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      tones_to_binspace
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update_hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#view_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      view_table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#waitforkeypress" class="md-nav__link">
+    <span class="md-ellipsis">
+      waitforkeypress
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wav2spect" class="md-nav__link">
+    <span class="md-ellipsis">
+      wav2spect
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#white_noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      white_noise
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zhangpassivegamma" class="md-nav__link">
+    <span class="md-ellipsis">
+      zhangpassivegamma
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Data Processing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Data Processing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scripts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs_styleguide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation Styleguide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adjust_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_volume
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allcomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      allcomb
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binnedrepr2spect" class="md-nav__link">
+    <span class="md-ellipsis">
+      binnedrepr2spect
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data_pitch_match" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data_pitch_match
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_data_thresh_or_loud" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_data_thresh_or_loud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_parameters
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_reconstructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect_reconstructions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config2table" class="md-nav__link">
+    <span class="md-ellipsis">
+      config2table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli_2afc" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli_2afc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create_files_and_stimuli_phasen" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_files_and_stimuli_phaseN
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_irwlsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_irwlsq
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_knn" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_knn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_lda" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_lda
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_lwlr" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_lwlr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_pnr" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_pnr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_predicted_responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_predicted_responses
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_rc" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_rc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_rc_adjusted" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_rc_adjusted
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossval_svm" class="md-nav__link">
+    <span class="md-ellipsis">
+      crossval_svm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cs" class="md-nav__link">
+    <span class="md-ellipsis">
+      cs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disp_fullscreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      disp_fullscreen
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filematch" class="md-nav__link">
+    <span class="md-ellipsis">
+      filematch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gen_octaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      gen_octaves
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_accuracy_measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_accuracy_measures
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_best_pitch" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_best_pitch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_gamma_from_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_gamma_from_config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_highest_power_of_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_highest_power_of_2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_reconstruction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gs" class="md-nav__link">
+    <span class="md-ellipsis">
+      gs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#knn_classify" class="md-nav__link">
+    <span class="md-ellipsis">
+      knn_classify
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#munge_hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      munge_hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      P
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parse_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parse_rand_nbins" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_rand_nbins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#play_calibration_sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_calibration_sound
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prop2str" class="md-nav__link">
+    <span class="md-ellipsis">
+      prop2str
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pure_tone" class="md-nav__link">
+    <span class="md-ellipsis">
+      pure_tone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r_viz" class="md-nav__link">
+    <span class="md-ellipsis">
+      r_viz
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rand_str" class="md-nav__link">
+    <span class="md-ellipsis">
+      rand_str
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semitones" class="md-nav__link">
+    <span class="md-ellipsis">
+      semitones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spect2binnedrepr" class="md-nav__link">
+    <span class="md-ellipsis">
+      spect2binnedrepr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#str2prop" class="md-nav__link">
+    <span class="md-ellipsis">
+      str2prop
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subject_selection_process" class="md-nav__link">
+    <span class="md-ellipsis">
+      subject_selection_process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tones_to_binspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      tones_to_binspace
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update_hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#view_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      view_table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#waitforkeypress" class="md-nav__link">
+    <span class="md-ellipsis">
+      waitforkeypress
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wav2spect" class="md-nav__link">
+    <span class="md-ellipsis">
+      wav2spect
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#white_noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      white_noise
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zhangpassivegamma" class="md-nav__link">
+    <span class="md-ellipsis">
+      zhangpassivegamma
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h1>
+<p>This folder stores many helpful, and in some cases critical utilities. This folder as added to the path via <code>setup.m</code>. Some files are not original to this project, in which case documentation and credit is clearly maintained.</p>
+<h3 id="adjust_volume">adjust_volume<a class="headerlink" href="#adjust_volume" title="Permanent link">&para;</a></h3>
+<p>For use in A-X experimental protocols.
+<code>adjust_volume</code> is a utility to dynamically adjust the target sound volume via a scaling factor.
+Opens a GUI using a standard MATLAB figure window 
+with a slider for scaling the target sound audio 
+and a button for replaying the sound compared to an unchanged stimulus noise.  </p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>target_sound: <code>n x 1</code> vector, the target sound.</li>
+<li>target_fs: <code>1 x 1</code> scalar, the frequency of target_sound.</li>
+<li>stimuli: <code>n x 1</code> vector, a sample stimulus sound.</li>
+<li>Fs: <code>1 x 1</code> scalar, the frequency of the sample stimuli.</li>
+<li>scale_factor: <code>1 x 1</code> scalar, the scalar by which to multipy the target sound.
+default: <code>1.0</code>.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>scale_factor: <code>1 x 1</code> scalar, 
+the scalar by which the target signal is multipled 
+that results in the preferred volume chosen by the user.</li>
+</ul>
+<hr />
+<h3 id="allcomb">allcomb<a class="headerlink" href="#allcomb" title="Permanent link">&para;</a></h3>
+<p>ALLCOMB - All combinations
+B = ALLCOMB(A1,A2,A3,...,AN) returns all combinations of the elements
+in the arrays A1, A2, ..., and AN. B is P-by-N matrix is which P is the product
+of the number of elements of the N inputs. This functionality is also
+known as the Cartesian Product. The arguments can be numerical and/or
+characters, or they can be cell arrays.</p>
+<p>Examples:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">allcomb</span><span class="p">([</span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">5</span><span class="p">],[</span><span class="o">-</span><span class="mi">3</span><span class="w"> </span><span class="mi">8</span><span class="p">],[</span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="c">% numerical input:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="o">-</span><span class="mi">3</span><span class="w">   </span><span class="mi">0</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="mi">1</span><span class="w">  </span><span class="o">-</span><span class="mi">3</span><span class="w">   </span><span class="mi">1</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">1</span><span class="w">   </span><span class="s">8</span><span class="w">   </span><span class="s">0</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">...</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="mi">5</span><span class="w">  </span><span class="o">-</span><span class="mi">3</span><span class="w">   </span><span class="mi">1</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">5</span><span class="w">   </span><span class="s">8</span><span class="w">   </span><span class="s">1</span><span class="w"> </span><span class="s">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="c">% a 12-by-3 array</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">allcomb</span><span class="p">(</span><span class="s">&#39;abc&#39;</span><span class="p">,</span><span class="s">&#39;XY&#39;</span><span class="p">)</span><span class="w"> </span><span class="c">% character arrays</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="n">aX</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">aY</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">bX</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">bY</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">cX</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">cY</span><span class="p">]</span><span class="w"> </span><span class="c">% a 6-by-2 character array</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">allcomb</span><span class="p">(</span><span class="s">&#39;xy&#39;</span><span class="p">,[</span><span class="mi">65</span><span class="w"> </span><span class="mi">66</span><span class="p">])</span><span class="w"> </span><span class="c">% a combination</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;xA&#39;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="s">&#39;xB&#39;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="s">&#39;yA&#39;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="s">&#39;yB&#39;</span><span class="p">]</span><span class="w"> </span><span class="c">% a 4-by-2 character array</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">allcomb</span><span class="p">({</span><span class="s">&#39;hello&#39;</span><span class="p">,</span><span class="s">&#39;Bye&#39;</span><span class="p">},{</span><span class="s">&#39;Joe&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">},{</span><span class="mi">99999</span><span class="w"> </span><span class="p">[]})</span><span class="w"> </span><span class="c">% all cell arrays</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="s">&#39;hello&#39;</span><span class="w">  </span><span class="s">&#39;Joe&#39;</span><span class="w">        </span><span class="p">[</span><span class="mi">99999</span><span class="p">]</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="s">&#39;hello&#39;</span><span class="w">  </span><span class="s">&#39;Joe&#39;</span><span class="w">             </span><span class="p">[]</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="s">&#39;hello&#39;</span><span class="w">  </span><span class="p">[</span>1<span class="n">x3</span><span class="w"> </span><span class="nb">double</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">99999</span><span class="p">]</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="s">&#39;hello&#39;</span><span class="w">  </span><span class="p">[</span>1<span class="n">x3</span><span class="w"> </span><span class="nb">double</span><span class="p">]</span><span class="w">      </span><span class="p">[]</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="s">&#39;Bye&#39;</span><span class="w">    </span><span class="s">&#39;Joe&#39;</span><span class="w">        </span><span class="p">[</span><span class="mi">99999</span><span class="p">]</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="s">&#39;Bye&#39;</span><span class="w">    </span><span class="s">&#39;Joe&#39;</span><span class="w">             </span><span class="p">[]</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="s">&#39;Bye&#39;</span><span class="w">    </span><span class="p">[</span>1<span class="n">x3</span><span class="w"> </span><span class="nb">double</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">99999</span><span class="p">]</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="s">&#39;Bye&#39;</span><span class="w">    </span><span class="p">[</span>1<span class="n">x3</span><span class="w"> </span><span class="nb">double</span><span class="p">]</span><span class="w">      </span><span class="p">[]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="c">% a 8-by-3 cell array</span>
+</code></pre></div>
+<p><code>ALLCOMB(..., 'matlab')</code> causes the first column to change fastest which
+is consistent with matlab indexing. 
+Example: 
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">allcomb</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span><span class="s">&#39;matlab&#39;</span><span class="p">)</span><span class="w"> </span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="s">4</span><span class="w"> </span><span class="s">5</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="s">3</span><span class="w"> </span><span class="s">6</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">...</span><span class="c"> ; 2 4 6 ]</span>
+</code></pre></div></p>
+<p>If one of the arguments is empty, ALLCOMB returns a <code>0-by-N</code> empty array.</p>
+<p>Tested in Matlab R2015a
+version 4.1 (feb 2016)
+(c) Jos van der Geest
+email: samelinoa@gmail.com</p>
+<p>History:</p>
+<p>1.1 (feb 2006), removed minor bug when entering empty cell arrays;
+added option to let the first input run fastest (suggestion by JD)</p>
+<p>1.2 (jan 2010), using ii as an index on the left-hand for the multiple
+output by NDGRID. Thanks to Jan Simon, for showing this little trick</p>
+<p>2.0 (dec 2010). Bruno Luong convinced me that an empty input should
+return an empty output.</p>
+<p>2.1 (feb 2011). A cell as input argument caused the check on the last
+argument (specifying the order) to crash.</p>
+<p>2.2 (jan 2012). removed a superfluous line of code (ischar(..))</p>
+<p>3.0 (may 2012) removed check for doubles so character arrays are accepted</p>
+<p>4.0 (feb 2014) added support for cell arrays</p>
+<p>4.1 (feb 2016) fixed error for cell array input with last argument being
+<code>matlab</code>. Thanks to Richard for pointing this out.</p>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="https://www.mathworks.com/help/matlab/ref/nchoosek.html">NCHOOSEK</a> </li>
+<li><a href="https://www.mathworks.com/help/matlab/ref/perms.html?s_tid=doc_ta">PERMS</a></li>
+<li><a href="https://www.mathworks.com/help/matlab/ref/ndgrid.html?s_tid=doc_ta">NDGRID</a></li>
+<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/20011-nchoose?s_tid=ta_fx_results">NCHOOSE</a></li>
+<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/33922-kthcombn?s_tid=ta_fx_results">KTHCOMBN</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="binnedrepr2spect">binnedrepr2spect<a class="headerlink" href="#binnedrepr2spect" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">T</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">binnedrepr2spect</span><span class="p">(</span><span class="n">binned_repr</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">T</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">binnedrepr2spect</span><span class="p">(</span><span class="n">binned_repr</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">n_bins</span><span class="p">)</span>
+</code></pre></div>
+<p>Get the stimuli spectra from a binned representation.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>binned_repr: <code>n_trials x n_bins</code> matrix
+representing the amplitude in each frequency bin
+for each trial.</li>
+<li>B: <code>1 x n_frequencies</code> vector
+representing the bin numbers
+(e.g., <code>[1, 1, 2, 2, 2, 3, 3, 3, 3, ...]</code>)</li>
+<li>n_bins: <code>1 x 1</code> scalar
+representing the number of bins
+if not passed as an argument,
+it is computed from the maximum of B</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>T: <code>n_trials x n_frequencies</code> matrix
+representing the stimulus spectra</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#spect2binnedrepr">spect2binnedrepr</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="collect_data">collect_data<a class="headerlink" href="#collect_data" title="Permanent link">&para;</a></h3>
+<p>Returns the saved responses and stimuli 
+from reverse correlation experiments for a given config file.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config_file: <code>char</code>, name-value, default: <code>''</code>
+Path to the desired config file.
+GUI will open for the user to select a config if no path is supplied.</li>
+<li>config: <code>struct</code>, name-value, default: <code>[]</code>
+An already-loaded config struct.</li>
+<li>data_dir: <code>char</code>, name-value, default: <code>''</code>
+Filepath to directory in which data is stored. 
+<code>config.data_dir</code> is used if left empty. </li>
+<li>phase: <code>1 x 1</code> positive integer, name-value, default: <code>1</code>
+Experiment phase from which to collect data. </li>
+<li>verbose, <code>logical</code>, name-value, default: <code>true</code>,
+Flag to show informational messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>responses: <code>n x 1</code> numerical vector of {-1,1}, 
+all responses associated with this config file, 
+where <code>n</code> is the number of trials.</li>
+<li>stimuli: <code>p x n</code> numerical array, of <code>config.stimuli_save_type</code>,
+all of the stimulus vectors associated with this config file,
+where <code>p</code> is the length of the stimulus vector.</li>
+</ul>
+<hr />
+<h3 id="collect_data_pitch_match">collect_data_pitch_match<a class="headerlink" href="#collect_data_pitch_match" title="Permanent link">&para;</a></h3>
+<p>Returns the saved responses and stimuli 
+from pitch matching experiments for a given config file.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config_file: <code>char</code>, name-value, default: <code>''</code>
+Path to the desired config file.
+GUI will open for the user to select a config if no path is supplied.</li>
+<li>config: <code>struct</code>, name-value, default: <code>[]</code>
+An already-loaded config struct.</li>
+<li>data_dir: <code>char</code>, name-value, default: <code>''</code>
+Filepath to directory in which data is stored. 
+<code>config.data_dir</code> is used if left empty. </li>
+<li>verbose, <code>logical</code>, name-value, default: <code>true</code>,
+Flag to show informational messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>responses: <code>n x 1</code> cell of vectors containing responses on {0,1},
+where <code>n</code> is the number of PitchMatch experiments run with this config file.
+Each row contains the responses from separate experiments.</li>
+<li>stimuli: <code>n x 1</code> cell of vectors containing frequency values 
+corresponding to the responses. 
+Each row contains the responses from separate experiments.</li>
+<li>octave_responses: <code>n x 1</code> cell of vectors containing responses 
+on {0,1} to the "octave confusion" section of the PitchMatch experiment. 
+Each row contains the responses of separate experiments.</li>
+<li>octave_stimuli: <code>n x 1</code> cell of vectors containing frequency values
+from the "octave confusion" section of the PitchMatch experiment. 
+Each row contains the responses of separate experiments.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../experiment/Protocols/#pitchmatch">PitchMatch</a></li>
+<li><a href="./#get_best_pitch">get_best_pitch</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="collect_data_thresh_or_loud">collect_data_thresh_or_loud<a class="headerlink" href="#collect_data_thresh_or_loud" title="Permanent link">&para;</a></h3>
+<p>Returns the saved dB levels and corresponding tones
+from either threshold determination or loudness matching
+experiments for a given config file.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>exp_type: <code>char</code>, valid values: 'threshold' or 'loudness',
+the type of experimental data to collect.</li>
+<li>config_file: <code>char</code>, name-value, default: <code>''</code>
+Path to the desired config file.
+GUI will open for the user to select a config if no path is supplied.</li>
+<li>config: <code>struct</code>, name-value, default: <code>[]</code>
+An already-loaded config struct.</li>
+<li>data_dir: <code>char</code>, name-value, default: <code>''</code>
+Filepath to directory in which data is stored. 
+<code>config.data_dir</code> is used if left empty. </li>
+<li>average: <code>logical</code>, name-value, default: <code>true</code>,
+Flag to average dB values for all repeated tones.</li>
+<li>fill_nans: <code>logical</code>, name-value, default: <code>false</code>,
+Flag to fill in NaN values with the previous non-NaN value</li>
+<li>verbose, <code>logical</code>, name-value, default: <code>true</code>,
+Flag to show informational messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pres_dBs: <code>n x 1</code> vector containing dB values,
+where <code>n</code> is the number of unique tones if <code>average</code> is <code>true</code>,
+or is the number of presented stimuli if <code>average</code> is `false.</li>
+<li>amp_dBs: <code>n x 1</code> vector containing amplitude values.</li>
+<li>tones: <code>n x 1</code> vector containing frequency values for each response.</li>
+</ul>
+<hr />
+<h3 id="collect_parameters">collect_parameters<a class="headerlink" href="#collect_parameters" title="Permanent link">&para;</a></h3>
+<p>Read parameters out from character vectors of text contained in
+a character vector or cell array.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>filenames: <code>cell array</code> of character vectors or <code>character vector</code>
+that contains the filenames (or text strings)
+out of which to read parameters.</li>
+</ul>
+<p>If <code>filenames</code> is a cell array, parameters are read from each
+character vector contained in the cell array.
+Filenames should not have file endings like <code>'.csv'</code>.
+The regular expressions are not sophisticated enough to skip them.</p>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>data_table: <code>table</code></li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">data_table</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">collect_parameters</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_reconstructions">collect_reconstructions</a></li>
+<li><a href="./#collect_data">collect_data</a></li>
+<li><a href="./#config2table">config2table</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="collect_reconstructions">collect_reconstructions<a class="headerlink" href="#collect_reconstructions" title="Permanent link">&para;</a></h3>
+<p>Collect reconstructions (or other data) from <code>.csv</code> files
+following a naming convention.
+Returns a matrix of all the data.</p>
+<p>While this function was intended to read reconstructions,
+it should be able to return data
+from any <code>.csv</code> files containing data that can be represented
+in a MATLAB matrix (e.g., numerical data of the same length).</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>data_struct: struct vector or character vector
+A struct containing the output of a call to <code>dir()</code>
+indicating which files to extract from or a character vector
+which is used as an argument for <code>dir()</code> (e.g., <code>dir(data_struct)</code>).
+The regular expression
+is used to filter the data struct
+based on the filenames.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>
+<p>reconstructions: numerical matrix
+<code>m x n</code> matrix that contains the numerical data,
+where <code>m</code> is the length of the data
+and <code>n</code> is the number of files.</p>
+</li>
+<li>
+<p>reconstruction_files: cell array of character vectors
+Contains the filepaths to each file read,
+corresponding to the columns of <code>reconstructions</code>.</p>
+</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_data">collect_data</a></li>
+<li><a href="https://www.mathworks.com/help/matlab/ref/dir.html">dir</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="config2table">config2table<a class="headerlink" href="#config2table" title="Permanent link">&para;</a></h3>
+<p>Take information from directory containing config files and return
+a table with all relevant information for each config.</p>
+<p><strong>ARGUMENTS:</strong> </p>
+<ul>
+<li>
+<p>curr_dir: <code>struct</code>, 
+which is the directory information 
+containing config file name, path, and other
+returns from <code>dir()</code> function.</p>
+</li>
+<li>
+<p>variables_to_remove: <code>cell</code>, default: <code>{}</code>,
+a cell array of character vectors,
+indicating which variables (columns) of
+the data table to remove.
+If empty, re-defaults to:
+<code>{'n_trials_per_block', 'n_blocks', ...
+'min_freq', 'max_freq', 'duration', 'n_bins', ...
+'target_signal_filepath', 'bin_target_signal', ...
+'data_dir', 'stimuli_save_type'}</code>.</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong> </p>
+<ul>
+<li>data_table: <code>table</code></li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#parse_config">parse_config</a></li>
+<li><a href="https://www.mathworks.com/help/matlab/ref/dir.html">dir</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="create_files_and_stimuli">create_files_and_stimuli<a class="headerlink" href="#create_files_and_stimuli" title="Permanent link">&para;</a></h3>
+<p>Create files for the stimuli, responses, and metadata and create the stimuli.
+Write the stimuli into the stimuli file.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config: <code>1 x 1</code> struct, the config struct to associate the files with.</li>
+<li>stimuli_object: <code>1 x 1</code> AbstractStimulusGenerationMethod, 
+a StimulusGeneration object from which stimuli will be generated.</li>
+<li>hash_prefix: <code>char</code>, default: <code>''</code>,
+the portion of the hash attached to the output files 
+that appears before the spectrum matrix hash.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>stimuli_matrix: <code>n x p</code> numerical array, stimulus waveforms
+where <code>n</code> is the length of the waveform and <code>p</code> is <code>config.n_trials</code></li>
+<li>Fs: <code>1 x 1</code> positive scalar, the sampling rate in Hz</li>
+<li>filename_responses: <code>char</code> the full path to the empty <code>CSV</code> file 
+in which responses can be written for this experiment.</li>
+<li>filename_stimuli: <code>char</code> the full path to the <code>CSV</code> file 
+in which the stimuli are written according to <code>config.stimuli_save_type</code>.</li>
+<li>filename_meta: <code>char</code> the full path to the empty <code>CSV</code> file
+in which the metadata can be written for this experiment.</li>
+<li>file_hash: <code>char</code> the full hash string associated with all the output files.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../experiment/Protocols/#revcorr">RevCorr</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="create_files_and_stimuli_2afc">create_files_and_stimuli_2afc<a class="headerlink" href="#create_files_and_stimuli_2afc" title="Permanent link">&para;</a></h3>
+<p>Create files for the stimuli, responses, and metadata and create the stimuli
+for a 2-AFC experiment.
+Write the stimuli into the stimuli file.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li>config: 1x1 <code>struct</code> 
+containing a stimulus generation configuration.</li>
+<li>stimuli_object: 1x1 <code>AbstractStimulusGenerationMethod</code></li>
+<li>hash_prefix: 1 x n character vector, default value: <code>get_hash(config)</code></li>
+</ul>
+<p><strong>Outputs:</strong></p>
+<ul>
+<li>stimuli_matrix_1</li>
+<li>stimuli_matrix_2</li>
+<li>Fs</li>
+<li>filename_responses</li>
+<li>filename_stimuli_1</li>
+<li>filename_stimuli_2</li>
+<li>filename_meta</li>
+<li>file_hash_1</li>
+<li>file_hash_2</li>
+<li>file_hash_combined</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">[</span><span class="n">stimuli_matrix_1</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli_matrix_2</span><span class="p">,</span><span class="w"> </span><span class="n">Fs</span><span class="p">,</span><span class="w"> </span><span class="n">filename_responses</span><span class="p">,</span><span class="w"> </span><span class="n">filename_stimuli_1</span><span class="p">,</span><span class="w"> </span><span class="n">filename_stimuli_2</span><span class="p">,</span><span class="w"> </span><span class="n">filename_meta</span><span class="p">,</span><span class="w"> </span><span class="n">file_hash_1</span><span class="p">,</span><span class="w"> </span><span class="n">file_hash_2</span><span class="p">,</span><span class="w"> </span><span class="n">file_hash_combined</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">create_files_and_stimuli_2afc</span><span class="p">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli_object</span><span class="p">,</span><span class="w"> </span><span class="n">hash_prefix</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../experiment/Protocols/#revcorr">RevCorr</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="create_files_and_stimuli_phasen">create_files_and_stimuli_phaseN<a class="headerlink" href="#create_files_and_stimuli_phasen" title="Permanent link">&para;</a></h3>
+<p>For RevCorr_phaseN experiments, 
+create files for the stimuli, responses, and metadata and create the stimuli.
+Write the stimuli into the stimuli file.</p>
+<p>Stimuli are generated by applying random noise and other modifiers 
+to the phase 1 reconstruction.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config: <code>1 x 1</code> struct, the config struct to associate the files with.</li>
+<li>phase: <code>1 x 1</code> integer &gt; 1, the current phase of experiment. 
+Practically, this indicates which phase's reconstruction to perturb from (<code>phase</code> - 1).</li>
+<li>pert_bounds: <code>1 x 2</code> vector of positive values, 
+the min and max factor to perturb by. Ex: <code>[0.5, 1.5]</code> will range 
+from half to 1.5x the magnitude of the reconstruction values. </li>
+<li>data_dir: <code>char</code>, the directory in which phase (<code>phase</code> - 1) 
+stimuli-response pairs can be found </li>
+<li>hash_prefix: <code>char</code>, default: <code>''</code>,
+the hash prefix associated with the 
+phase (<code>phase</code> - 1) stimuli-response pairs</li>
+<li>reconstruction: <code>n x 1</code> numerical vector, default: <code>[]</code>,
+the reconstruction from which to generate stimuli.
+Overrides generating from config if not empty.</li>
+<li>mult_range: <code>n x m</code> numerical array, 
+the min and max values possible for the mult parameter in <code>binnedrepr2wav</code>.
+Array can technically be any size, but only min and max are used.</li>
+<li>binrange_range: <code>n x m</code> positive numerical array, 
+the min and max values possible for the binrange parameter in <code>binnedrepr2wav</code>.
+Array can technically be any size, but only min and max are used.</li>
+<li>lowcut_range: <code>n x m</code> numerical array &gt;= 0, 
+the min and max values possible for the low cutoff frequency in <code>binnedrepr2wav</code>.
+Array can technically be any size, but only min and max are used.</li>
+<li>highcut_range: <code>n x m</code> positive numerical array, 
+the min and max values possible for the low cutoff frequency in <code>binnedrepr2wav</code>.
+Array can technically be any size, but only min and max are used.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>stimuli_matrix: <code>n x p</code> numerical array, stimulus waveforms
+where <code>n</code> is the length of the waveform and <code>p</code> is <code>config.n_trials</code></li>
+<li>Fs: <code>1 x 1</code> positive scalar, the sampling rate in Hz</li>
+<li>filename_responses: <code>char</code> the full path to the empty <code>CSV</code> file 
+in which responses can be written for this experiment.</li>
+<li>filename_stimuli: <code>char</code> the full path to the <code>CSV</code> file 
+in which the stimuli are written according to <code>config.stimuli_save_type</code>.</li>
+<li>filename_meta: <code>char</code> the full path to the empty <code>CSV</code> file
+in which the metadata can be written for this experiment.</li>
+<li>file_hash: <code>char</code> the full hash string associated with all the output files.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../experiment/Protocols/#revcorr_phasen">RevCorr_phaseN</a></li>
+<li><a href="../stimgen/AbstractBinnedStimulusGenerationMethod/#binnedrepr2wav">AbstractBinnedStimulusGenerationMethod.binnedrepr2wav</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="crossval_irwlsq">crossval_irwlsq<a class="headerlink" href="#crossval_irwlsq" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using iteratively reweighted least squares.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_irwlsq</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_irwlsq</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>thresh: <code>1 x p</code> numerical vector or <code>scalar</code>, 
+representing the threshold value in the estimate to response
+conversion: <code>sign(X*b + threshold)</code>.
+If there are multiple values,
+it will be optimized in the development section.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>weight_func: <code>char</code>, name-value, default: <code>'bisquare'</code>,
+The weight function to use. See <code>RobustOpts</code> argument
+in <code>fitlm</code> docs for valid options. </li>
+<li>mean_zero: <code>bool</code>, name-value, default: <code>false</code>,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+<li>pred_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.</li>
+<li>true_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data.</li>
+</ul>
+<hr />
+<h3 id="crossval_knn">crossval_knn<a class="headerlink" href="#crossval_knn" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using K-Nearest Neighbors.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_knn</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_knn</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>k: <code>1 x p</code> numerical vector or <code>scalar</code>,
+number of nearest neighbors to consider.
+If there are multiple values, 
+it will be optimized in the development section.</li>
+<li>method: <code>char</code>, name-value, default: 'mode',
+class determination style to be passed to knn function.</li>
+<li>percent: <code>scalar</code>, name-value, default: 75,
+Target percent passed to knn function if <code>knn_method</code> is 'percent'.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>norm_stim: <code>bool</code>, name-value, default: <code>false</code>,
+flag to normalize the stimuli after loading.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+<li>pred_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.</li>
+<li>true_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,</li>
+</ul>
+<hr />
+<h3 id="crossval_lda">crossval_lda<a class="headerlink" href="#crossval_lda" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using linear discriminant analysis.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_lda</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_lda</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="https://mathworks.com/help/stats/fitcdiscr.html">fitcdiscr</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="crossval_lwlr">crossval_lwlr<a class="headerlink" href="#crossval_lwlr" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using locally weighted linear regression.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_lwlr</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_lwlr</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>h: <code>1 x p</code> numerical vector or <code>scalar</code>,
+representing the width parameter(s) for the Gaussian kernel.
+If there are multiple values, 
+it will be optimized in the development section.</li>
+<li>thresh: <code>1 x q</code> numerical vector or <code>scalar</code>, 
+representing the threshold value in the estimate to response
+conversion: <code>sign(X*b + threshold)</code>.
+If there are multiple values,
+it will be optimized in the development section.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>norm_stim: <code>bool</code>, name-value, default: <code>false</code>,
+flag to normalize the stimuli after loading.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+<li>pred_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.</li>
+<li>true_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data,</li>
+</ul>
+<hr />
+<h3 id="crossval_pnr">crossval_pnr<a class="headerlink" href="#crossval_pnr" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using polynomial regression.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_pnr</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">ords</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_pnr</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">ords</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>ords: <code>1 x p</code> numerical vector or <code>scalar</code>,
+representing the polynomial order(s) on which to perform regression.
+If there are multiple values, 
+it will be optimized in the development section.</li>
+<li>thresh: <code>1 x q</code> numerical vector or <code>scalar</code>,
+representing the percentile threshold value(s).
+If there are multiple values, 
+it will be optimized in the development section.
+Values must be on (0,100].</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>norm_stimuli: <code>bool</code>, name-value, default: <code>false</code>,
+flag to normalize the stimuli after loading.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="https://mathworks.com/matlabcentral/fileexchange/34765-polyfitn">polyfitn</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="crossval_predicted_responses">crossval_predicted_responses<a class="headerlink" href="#crossval_predicted_responses" title="Permanent link">&para;</a></h3>
+<p>Generate response predictions for a given 
+config file or pair of stimuli and responses
+using stratified cross validation and either
+the subject response model.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">[</span><span class="n">given_resps</span><span class="p">,</span><span class="w"> </span><span class="n">training_resps</span><span class="p">,</span><span class="w"> </span><span class="n">on_test</span><span class="p">,</span><span class="w"> </span><span class="n">on_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_predicted_responses</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="p">[</span><span class="n">given_resps</span><span class="p">,</span><span class="w"> </span><span class="n">training_resps</span><span class="p">,</span><span class="w"> </span><span class="n">on_test</span><span class="p">,</span><span class="w"> </span><span class="n">on_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_predicted_responses</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>normalize: <code>bool</code>, name-value, default: <code>false</code>,
+flag to normalize the stimuli after loading.</li>
+<li>gamma: <code>1 x 1</code> scalar, name-value, default: <code>8</code>,</li>
+<li>mean_zero: <code>bool</code>, name-value, default: <code>false</code>,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.</li>
+<li>from_responses: <code>bool</code>, name-value, default: <code>false</code>,
+flag to determine the threshold from the given responses. 
+Overwrites <code>threshold_values</code> and does not run threshold
+development cycle.</li>
+<li>ridge_reg: <code>bool</code>, name-value, default: <code>false</code>,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.</li>
+<li>threshold_values: <code>1 x m</code> numerical vector, name-value, default:
+<code>linspace(10,90,200)</code>, representing the percentile threshold values
+on which to perform development to identify optimum. 
+Values must be on (0,100].
+representing the gamma value to use in 
+compressed sensing reconstructions if <code>config</code> is empty.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.       </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>given_resps: <code>p x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector. <code>p</code> is the number of original responses.</li>
+<li>training_resps: <code>(folds-2)*p x 1</code> vector,
+the original subject responses used in the training phase.
+The training data is partially repeated between folds.</li>
+<li>on_test: <code>struct</code> with <code>p x 1</code> vectors in fields
+<code>cs</code>, <code>lr</code>, predicted responses on testing data.</li>
+<li>on_train: <code>struct</code> with <code>(folds-2)*p x 1</code> vectors in fields
+<code>cs</code>, <code>lr</code> predicted responses on training data.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#subject_selection_process">subject_selection_process</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="crossval_rc">crossval_rc<a class="headerlink" href="#crossval_rc" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using the classical reverse correlation model 
+y = sign(Psi * x) or y = sign(Psi * x + thresh).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_rc</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_rc</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>thresh: <code>1 x p</code> numerical vector or <code>scalar</code>, 
+representing the threshold value in the estimate to response
+conversion: <code>sign(X*b + threshold)</code>.
+If there are multiple values,
+it will be optimized in the development section.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>ridge: <code>bool</code>, name-value, default: <code>false</code>,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.</li>
+<li>mean_zero: <code>bool</code>, name-value, default: <code>false</code>,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+<li>pred_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.</li>
+<li>true_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding 
+to the predicted responses on the training data.</li>
+<li>pred_cont_test: <code>n x 1</code> vector,
+The inner product values on testing data before quantization.</li>
+</ul>
+<hr />
+<h3 id="crossval_rc_adjusted">crossval_rc_adjusted<a class="headerlink" href="#crossval_rc_adjusted" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given
+config file using the upsampled and peak sharpened representation in bin form.
+Config file must have an associated survey with mult and binrange values.
+Reconstruction methods can be the classical reverse correlation model
+y = sign(Psi * x) or y = sign(Psi * x + thresh).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">,</span><span class="w"> </span><span class="n">pred_resps_train</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps_train</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_rc_adjusted</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="n">thresh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.
+Data will be partitioned into <code>1/folds</code> for <code>test</code> and <code>dev</code> sets
+and the remaining for the <code>train</code> set.</li>
+<li>thresh: <code>1 x p</code> numerical vector or <code>scalar</code>,
+representing the threshold value in the estimate to response
+conversion: <code>sign(X*b + threshold)</code>.
+If there are multiple values,
+it will be optimized in the development section.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the
+config structis stored.</li>
+<li>ridge: <code>bool</code>, name-value, default: <code>false</code>,
+flag to use ridge regression instead of standard linear regression
+for reconstruction.</li>
+<li>mean_zero: <code>bool</code>, name-value, default: <code>false</code>,
+flag to set the mean of the stimuli to zero when computing the
+reconstruction and both the mean of the stimuli and the
+reconstruction to zero when generating the predictions.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding
+to the predicted responses, i.e., a shifted version of the
+original response vector.</li>
+<li>pred_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.</li>
+<li>true_resps_train: <code>folds*(n-round(n/folds)) x 1</code> vector,
+OR <code>folds*(2*(n-round(n/folds))) x 1</code> vector if dev is run.
+the predicted responses on the training data.
+the original subject responses in the order corresponding
+to the predicted responses on the training data,</li>
+</ul>
+<hr />
+<h3 id="crossval_svm">crossval_svm<a class="headerlink" href="#crossval_svm" title="Permanent link">&para;</a></h3>
+<p>Generate the cross-validated response predictions for a given 
+config file or pair of stimuli and responses
+using support vector machines.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_svm</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;config&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">data_dir</span><span class="p">)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="p">[</span><span class="n">pred_resps</span><span class="p">,</span><span class="w"> </span><span class="n">true_resps</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">crossval_svm</span><span class="p">(</span><span class="n">folds</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;stimuli&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>folds: <code>scalar</code> positive integer, must be greater than 3,
+representing the number of cross validation folds to complete.</li>
+<li>config: <code>struct</code>, name-value, deafult: <code>[]</code>
+config struct from which to find responses and stimuli</li>
+<li>data_dir: <code>char</code>, name-value, deafult: <code>''</code>
+the path to directory in which the data corresponding to the 
+config structis stored.</li>
+<li>responses: <code>n x 1</code> array, name-value, default: <code>[]</code>
+responses to use in reconstruction, 
+where <code>n</code> is the number of responses.
+Only used if passed with <code>stimuli</code>.</li>
+<li>stimuli: <code>m x n</code> array, name-value, default: <code>[]</code>
+stimuli to use in reconstruction,
+where <code>m</code> is the number of bins.
+Only used if passed with <code>responses</code>.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information messages.    </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>pred_resps: <code>n x 1</code> vector,
+the predicted responses.</li>
+<li>true_resps: <code>n x 1</code> vector,
+the original subject responses in the order corresponding 
+to the predicted responses, i.e., a shifted version of the 
+original response vector.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="https://mathworks.com/help/stats/fitclinear.html">fitclinear</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="cs">cs<a class="headerlink" href="#cs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">cs</span><span class="p">(</span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="n">Phi</span><span class="p">,</span><span class="w"> </span><span class="n">Gamma</span><span class="p">)</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">cs</span><span class="p">(</span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="n">Phi</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>responses: <code>n x 1</code> vector</p>
+</li>
+<li>
+<p>Phi: <code>n x m</code> matrix,
+where <code>n</code> is the number of trials/samples
+and <code>m</code> is the dimensionality of the stimuli/spectrum/bins</p>
+</li>
+<li>
+<p>Gamma: Positive scalar, default: 32
+optional value for zhangpassivegamma function.</p>
+</li>
+<li>
+<p>mean_zero: <code>bool</code>, name-value, default: <code>false</code>,
+a flag for setting the mean of <code>Phi</code> to zero.</p>
+</li>
+<li>
+<p>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+a flag to print information messages</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>x: <code>m x 1</code> vector,
+representing the compressed sensing reconstruction of the signal.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#cs_no_basis">cs_no_basis</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="disp_fullscreen">disp_fullscreen<a class="headerlink" href="#disp_fullscreen" title="Permanent link">&para;</a></h3>
+<p>Expand current figure to full screen and fill with an image.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>img: <code>n x m x 3</code> array representing an 
+image. Typically loaded via imread().</li>
+<li>hFig: handle to figure. 
+Defaults to current figure.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>hFig now displays an image.</li>
+</ul>
+<hr />
+<h3 id="filematch">filematch<a class="headerlink" href="#filematch" title="Permanent link">&para;</a></h3>
+<p>Match files by terminal UUID or other identifier.
+This function expects filenames in the form</p>
+<p><code>foo_bar_UUID.baz</code></p>
+<p>Where foo_bar can be anything,
+so long as the UUID or other identifier comes last
+before the 'dot filetype'.
+The functions returns indices of unmatched files.</p>
+<p>Example:</p>
+<p><code>filematch(files1, files2)</code></p>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_data">collect_data</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="gen_octaves">gen_octaves<a class="headerlink" href="#gen_octaves" title="Permanent link">&para;</a></h3>
+<p>Returns a vector of doubled values from 
+min_freq to as close to max_freq as possible 
+with optional, equally spaced in-octave values.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>min_freq: <code>1 x 1</code> scalar, the minimum and initial frequency</li>
+<li>max_freq: <code>1 x 1</code> scalar, the maximum possible frequency, 
+not guaranteed to be in the final array.</li>
+<li>n_in_oct: <code>1 x 1</code> integer, the number of points inside each octave.
+If <code>spacing_type</code> == <code>'semitone'</code>, 
+<code>n_in_oct</code> must be in {1,2,3,5,11}. 
+Otherwise, can be any integer &gt;= 0.</li>
+<li>spacing_type: <code>char</code>, default: <code>'semitone'</code>, 
+the in-octave spacing method. 
+<code>'linear'</code> returns linearly spaced spaced values
+<code>'semitone'</code> splits the octave into half notes 
+then chooses <code>n_in_oct</code> evenly spaced values.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>freqs: <code>n x 1</code> numerical vector of octaves starting at <code>min_freq</code>.</li>
+</ul>
+<hr />
+<h3 id="get_accuracy_measures">get_accuracy_measures<a class="headerlink" href="#get_accuracy_measures" title="Permanent link">&para;</a></h3>
+<p>Computes standard accuracy measures between true and predicted labels.
+Values greater than or equal to 1 are considered positives,
+and values less than 1 are considered negative.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>y: <code>m x p</code> numerical matrix,
+representing true labels.</li>
+<li>y_hat: <code>m x n</code> numerical matrix,
+representing predicted labels.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>accuracy: <code>scalar</code> or <code>1 x max(n,p)</code> vector,
+the correct prediction rate. </li>
+<li>balanced_accuracy: <code>scalar</code> or <code>1 x max(n,p)</code> vector,
+the average of <code>sensitivity</code> and <code>specificity</code>.</li>
+<li>sensitivity: <code>scalar</code> or <code>1 x max(n,p)</code> vector,
+the true positive rate.</li>
+<li>specificity: <code>scalar</code> or <code>1 x max(n,p)</code> vector,
+the true negative rate.</li>
+</ul>
+<hr />
+<h3 id="get_best_pitch">get_best_pitch<a class="headerlink" href="#get_best_pitch" title="Permanent link">&para;</a></h3>
+<p>Returns the matched pitch for a given config's PM data 
+and whether or not all any octaves were confused</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config_file: <code>character vector</code>, name-value, default: <code>''</code>
+Path to the desired config file.
+GUI will open for the user to select a config if no path is supplied.</li>
+<li>config: <code>struct</code>, name-value, default: <code>[]</code>,
+the loaded config.</li>
+<li>data_dir: <code>character vector</code>, name-value, default: <code>''</code>,
+the path to the location of the data. 
+If none is supplied, config.data_dir will be used.</li>
+<li>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+flag to print information text.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>best_freq: <code>1x1</code> scalar, the identified best frequency.</li>
+<li>oct_agree: <code>bool</code>, <code>true</code> if there was never any octave confusion over all data
+<code>false</code> if there was ever any octave confusion.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../experiment/Protocols/#pitchmatch">PitchMatch</a></li>
+<li><a href="./#collect_data_pitch_match">collect_data_pitch_match</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="get_gamma_from_config">get_gamma_from_config<a class="headerlink" href="#get_gamma_from_config" title="Permanent link">&para;</a></h3>
+<p>Choose a gamma value to be used in <code>cs</code> based on data in the config.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config: <code>struct</code>, config from which to find gamma</li>
+<li>verbose: <code>bool</code>, default: <code>true</code>,
+flag to print information messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>this_gamma: <code>scalar</code>, the chosen gamma value.</li>
+</ul>
+<hr />
+<h3 id="get_highest_power_of_2">get_highest_power_of_2<a class="headerlink" href="#get_highest_power_of_2" title="Permanent link">&para;</a></h3>
+<p>Compute the highest power of two less than or equal
+to a number.
+For example, an input of 9 would return 8.</p>
+<p><strong>EXAMPLE:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">n</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">get_highest_power_of_2</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>N: a 1x1 scalar, positive, real integer</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>n: a 1x1 scalar, positive, real power of 2</li>
+</ul>
+<hr />
+<h3 id="get_reconstruction">get_reconstruction<a class="headerlink" href="#get_reconstruction" title="Permanent link">&para;</a></h3>
+<p>Compute reconstructions using data specified
+by a configuration file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">responses_output</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli_matrix_output</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">get_reconstruction</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="c">)</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">get_reconstruction</span><span class="p">(</span><span class="s">&#39;config_file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;path_to_config&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;preprocessing&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;bit_flip&#39;</span><span class="p">},</span><span class="w"> </span><span class="s">&#39;method&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cs&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config_file: string or character array, name-value, default: <code>''</code>
+A path to a YAML-spec configuration file.
+Either this argument or <code>config</code> is required.</li>
+<li>config: struct, name-value, default: <code>[]</code>
+A configuration file struct
+(e.g., one created by <code>parse_config</code>).</li>
+<li>preprocessing: cell array of character vectors, name-value, default: <code>{}</code>
+A list of preprocessing steps to take.
+Currently, the only supported preprocessing step is <code>'bit flip'</code>,
+which flips the sign on all responses before computing the reconstruction.</li>
+<li>method: character vector, name-value, default: <code>'cs'</code>
+Which reconstruction algorithm to use. 
+Options: <code>'cs'</code>, <code>'cs_nb'</code>, <code>'linear'`,</code>'linear_ridge'``.</li>
+<li>use_n_trials: Positive scalar, name-value, default: <code>inf</code>
+Indicates how many trials to use of data. <code>inf</code> uses all data.</li>
+<li>bootstrap: Positive scalar, name-value, deafult: 0
+Number of bootstrap iterations to perform.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_reconstructions">collect_reconstructions</a></li>
+<li><a href="./#collect_data">collect_data</a></li>
+<li><a href="./#config2table">config2table</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="gs">gs<a class="headerlink" href="#gs" title="Permanent link">&para;</a></h3>
+<p>Returns the linear reconstruction of stimuli and responses.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">gs</span><span class="p">(</span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="n">Phi</span><span class="p">)</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">gs</span><span class="p">(</span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="n">Phi</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;ridge&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean_zero&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>responses: <code>n x 1</code> vector of 1 and -1 values,
+representing the subject's responses.</p>
+</li>
+<li>
+<p>Phi: <code>n x m</code> numerical matrix,
+where m is the length of each stimulus 
+and n is the same length as the responses</p>
+</li>
+<li>
+<p>ridge: <code>boolean</code>, name-value, default: <code>false</code>,
+a flag to for using ridge regression.</p>
+</li>
+<li>
+<p>mean_zero: <code>boolean</code>, name-value, defaut: <code>false</code>,
+a flag for setting the mean of <code>Phi</code> to zero.</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>x: <code>m x 1</code> vector,
+representing the linear reconstruction of the signal, 
+where m is the length of a stimulus. </li>
+</ul>
+<hr />
+<h3 id="knn_classify">knn_classify<a class="headerlink" href="#knn_classify" title="Permanent link">&para;</a></h3>
+<p>Returns the estimated class labels for a matrix of 
+reference points T, given data points X and labels y.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>y: <code>n x 1</code> vector,
+representing class labels that correspond to data points in <code>X</code>.</li>
+<li>X: <code>n x p</code> numerical matrix,
+labelled data points.</li>
+<li>T: <code>m x p</code> numerical matrix,
+representing reference points without/needing class labels</li>
+<li>k: <code>scalar</code>,
+indicating the number of nearest neighbors to be considered.</li>
+<li>method: <code>char</code>, name-value, default: 'mode',
+method by which to determine the class label.
+Valid methods are 'mode', which takes the most common neighbor label
+'min_class', which takes the least common, 
+and 'percent', which takes the class with the closest percent occurrance.</li>
+<li>percent: <code>scalar</code>, name-value, default: 75,
+if method is 'percent', label is assigned based on the class with 
+the closest percent occurrance to this argument.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>z_hat: <code>m x 1</code> vector,
+estimated class labels for data points in T.</li>
+</ul>
+<hr />
+<h3 id="munge_hashes">munge_hashes<a class="headerlink" href="#munge_hashes" title="Permanent link">&para;</a></h3>
+<p>Processes config files, correcting errors.
+Then, fixes the hashes for saved data files
+associated with changed config files.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">munge_hashes</span><span class="p">(</span><span class="s">&quot;file_string&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;config*.yaml&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;verbose&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li>
+<p>file_string: <code>string</code> or <code>character vector</code>, name-value, default: <code>"config*.yaml"</code><br />
+A file pattern, optionally using globs that is passed to <code>dir</code>
+to search for configuration files to munge.</p>
+</li>
+<li>
+<p>legacy_flag: <code>logical scalar</code>, name-value, default: <code>false</code><br />
+Whether to load config files in "legacy mode", e.g., with <code>ReadYaml</code>
+instead of <code>yaml.loadFile</code>.</p>
+</li>
+<li>
+<p>verbose: <code>logical scalar</code>, name-value, default: <code>true</code><br />
+Whether to print informative text.</p>
+</li>
+<li>
+<p>data_dir: <code>string</code> or <code>character vector</code>, name-value, default: <code>"."</code><br />
+Path to the directory where the data files to-be-munged are.</p>
+</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#update_hashes">update_hashes</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="p">P<a class="headerlink" href="#p" title="Permanent link">&para;</a></h3>
+<p>Soft threshold operator used in compressed sensing</p>
+<hr />
+<h3 id="parse_config">parse_config<a class="headerlink" href="#parse_config" title="Permanent link">&para;</a></h3>
+<p>Read a config file and perform any special parsing that is required.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>config_file: character vector, default: []
+Path to the config file to be used.
+If empty, opens a GUI to find the file using a file browser.</li>
+<li>legacy: <code>logical</code>, name-value, default: <code>false</code>,
+flag to indicate use of legacy <code>ReadYaml</code> package. </li>
+<li>verbose: <code>logical</code>, name-value, default: <code>true</code>,
+flag to show informational messages.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>config: <code>struct</code>, the parsed config file.</li>
+<li>config_file: <code>char</code>, 
+the provided path or else the full path chosen from GUI.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../stimgen/yaml/#loadfile">yaml.loadFile</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="parse_rand_nbins">parse_rand_nbins<a class="headerlink" href="#parse_rand_nbins" title="Permanent link">&para;</a></h3>
+<p>Parses stimuli and responses into cells 
+based on number of bins in the stimuli
+For use with UniformPriorRandNBinsStimulusGeneration stimuli</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>responses: <code>n x 1</code> numerical array, response data, 
+where <code>n</code> is the number of completed trials.</li>
+<li>stimuli: <code>m x n</code>, the stimuli data,
+where <code>m</code> is the max number of bins</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>resp_cell: <code>p x 1</code> cell, where <code>p</code> is the number of unique bins.
+Responses organized into arrays within the cell.</li>
+<li>stim_cell: <code>p x 1</code> cell, the corresponding stimuli to 
+<code>resp_cell</code> in increasing bin order.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../stimgen/UniformPriorRandNBinsStimulusGeneration/#generate_stimuli_matrix">UniformPriorRandNBinsStimulusGeneration.generate_stimuli_matrix</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="play_calibration_sound">play_calibration_sound<a class="headerlink" href="#play_calibration_sound" title="Permanent link">&para;</a></h3>
+<p>Plays a 1000 Hz tone at system volume with a sample rate of 44100 Hz.
+No arguments.</p>
+<hr />
+<h3 id="prop2str">prop2str<a class="headerlink" href="#prop2str" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">stringified_properties</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">prop2str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="s">&#39;&amp;&amp;&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>Converts the property names and values of a struct or object
+into a character vector.
+For example, a struct, s, with the properties, s.a = 1, s.b = 2,
+would become 'a=1-b=2'.
+If some of the property values are cell arrays,
+they should be character vectors or numerical vectors
+and of the same type within each cell array.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>obj: <code>1 x 1</code> struct or object,
+the object with properties to be stringified</p>
+</li>
+<li>
+<p>properties_to_skip: character vector or cell array
+Properties to not include in the output character vector.</p>
+</li>
+<li>
+<p>property_separator: character vector
+What separator to use between parameter statements.</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>stringified_properties: character vector</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_parameters">collect_parameters</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="pure_tone">pure_tone<a class="headerlink" href="#pure_tone" title="Permanent link">&para;</a></h3>
+<p>Generate a sinusoidal pure tone stimuli</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>tone_freq: <code>1 x 1</code> positive scalar, the frequency to play</li>
+<li>dur: <code>1 x 1</code> positive scalar, 
+the duration of the sound in seconds, default: 0.5  </li>
+<li>Fs: <code>1 x 1</code> positive scalar, 
+the sample rate of the sound in Hz, deafult: 44100</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>stim: <code>1 x n</code> numerical vector, the sinusoidal waveform</li>
+</ul>
+<hr />
+<h3 id="r_viz">r_viz<a class="headerlink" href="#r_viz" title="Permanent link">&para;</a></h3>
+<p>Plots bar charts of r values from table data. 
+A separate figure is made for each subject.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>T: <code>table</code> that includes r values of interest</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>n figures, where n is the number of subjects included
+in the table.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../scripts/#pilot_reconstructions">pilot_reconstructions</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="rand_str">rand_str<a class="headerlink" href="#rand_str" title="Permanent link">&para;</a></h3>
+<p>Generates a random string of length <code>len</code>
+with numbers 0-9 and letters Aa-Zz</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>len: <code>1 x 1</code> positive integer, default: <code>8</code>
+the length of the string</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>str: <code>1 x len</code> random character vector</li>
+</ul>
+<hr />
+<h3 id="semitones">semitones<a class="headerlink" href="#semitones" title="Permanent link">&para;</a></h3>
+<p>Returns one octave of semitones from the initial frequency,
+includes both octave endpoints.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>init_freq: <code>1 x 1</code> scalar, the initial frequency.</li>
+<li>n: <code>1 x 1</code> positive integer, default: <code>12</code>,
+the number of semitones above init_freq to to return.</li>
+<li>direction: <code>char</code>, default: <code>'up'</code>, options: <code>'up'</code>, <code>'down'</code>.
+direction in which to generate semitones from <code>init_freq</code>.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>tones: <code>n+1 x 1</code> numerical vector, 
+<code>n+1</code> semitones starting at <code>init_freq</code>.</li>
+</ul>
+<hr />
+<h3 id="spect2binnedrepr">spect2binnedrepr<a class="headerlink" href="#spect2binnedrepr" title="Permanent link">&para;</a></h3>
+<p>binned_repr = spect2binnedrepr(T, B)
+binned_repr = spect2binnedrepr(T, B, n_bins)</p>
+<p>Get the binned representation,
+which is a vector containing the amplitude
+of the spectrum in each frequency bin.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>T: <code>n_trials x n_frequencies</code> matrix
+representing the stimulus spectra</p>
+</li>
+<li>
+<p>B: <code>1 x n_frequencies</code> vector
+representing the bin numbers
+(e.g., <code>[1, 1, 2, 2, 2, 3, 3, 3, 3, ...]</code>)</p>
+</li>
+<li>
+<p>n_bins: <code>1x1</code> scalar
+representing the number of bins
+if not passed as an argument,
+it is computed from the maximum of B</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>binned_repr: <code>n_trials x n_bins</code> matrix
+representing the amplitude for each frequency bin
+for each trial</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#binnedrepr2spect">binnedrepr2spect</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="str2prop">str2prop<a class="headerlink" href="#str2prop" title="Permanent link">&para;</a></h3>
+<p>Converts a string of properties and values
+into a struct or cell array.
+TODO: more documentation, use property_separator</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>prop_string: character vector
+String containing property : value pairs</p>
+</li>
+<li>
+<p>properties_to_skip: character vector or cell array
+Properties to not incude in the output character vector</p>
+</li>
+<li>
+<p>property_separator: character vector
+What separator to use between parameter statements.</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>obj: struct or cell array</li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="n">obj</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">str2prop</span><span class="p">(</span><span class="n">prop_string</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="s">&#39;&amp;&amp;&#39;</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_parameters">collect_parameters</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="subject_selection_process">subject_selection_process<a class="headerlink" href="#subject_selection_process" title="Permanent link">&para;</a></h3>
+<p>Returns a response vector and the stimuli
+where the response vector is made of up -1 and 1 values
+corresponding to yes and no statements
+about how well the stimuli correspond to the representation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">subject_selection_process</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">)</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">subject_selection_process</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="n">responses</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean_zero&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;from_responses&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">subject_selection_process</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;method&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;sign&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;lambda&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">subject_selection_process</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span><span class="w"> </span><span class="n">stimuli</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="s">&#39;threshold&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">subject_selection_process</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="n">n_samples</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>
+<p>representation: <code>n x 1</code> numerical vector,
+the signal to compare against (e.g., the tinnitus signal).</p>
+</li>
+<li>
+<p>stimuli: numerical matrix,
+an <code>m x n</code> matrix where m is the number of samples/trials
+and n is the same length as the representation.
+If stimuli is empty, a random Bernoulli matrix (p = 0.5) is used.</p>
+</li>
+<li>
+<p>n_samples: integer scalar
+representing how many samples are used when generating the Bernoulli matrix default
+for stimuli, if the stimuli argument is empty.</p>
+</li>
+<li>
+<p>responses: <code>m x 1</code> numerical vector, 
+which contains only <code>-1</code> and <code>1</code> values,
+used to determine the threshold if using one of the custom options.</p>
+</li>
+<li>
+<p>mean_zero: <code>bool</code>, name-value, default: <code>false</code>, 
+representing a flag that centers the mean of the stimuli and representation.</p>
+</li>
+<li>
+<p>method: <code>character vector</code>, name-value, default: <code>percentile</code>,
+the method to use to convert estimations into response values.
+Options are: <code>percentile</code>, which uses the whole estimation vector
+and <code>threshold</code>, <code>sign</code> which computes <code>sign(e + lambda)</code>,
+and <code>ten_scale</code>, which returns values from 0-10 using.</p>
+</li>
+<li>
+<p>from_responses: <code>bool</code>, name-value, default: <code>false</code>,
+a flag to determine the threshold from the given responses. 
+The default results in 50% threshold. 
+If using this option, <code>responses</code> must be passed as well.</p>
+</li>
+<li>
+<p>threshold: Positive scalar, name-value, default: 50,
+representing the percent of -1 responses in <code>y</code>.
+If <code>from_responses</code> is true, this will be ignored.</p>
+</li>
+<li>
+<p>lambda: Scalar &gt;= 0, name-value, default: 0,
+value for use in <code>sign(e + lambda)</code> if <code>method</code> is <code>sign</code>.</p>
+</li>
+<li>
+<p>verbose: <code>bool</code>, name-value, default: <code>true</code>,
+a flag to print information messages</p>
+</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>
+<p>y: numerical vector,
+A vector of <code>-1</code> and <code>1</code> corresponding to negative and positive responses.</p>
+</li>
+<li>
+<p>X: numerical matrix,
+the stimuli.</p>
+</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../stimgen/AbstractStimulusGenerationMethod/#subject_selection_process">AbstractStimulusGenerationMethod.subject_selection_process</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="tones_to_binspace">tones_to_binspace<a class="headerlink" href="#tones_to_binspace" title="Permanent link">&para;</a></h3>
+<p>Spaces the values in a frequency vector into bins 
+determined by the stimgen object.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>tones: <code>n x 1</code> vector of frequency values</li>
+<li>stimgen: Any object that inherets from <code>AbstractBinnedStimulusGenerationMethod</code>,
+used to inform the spacing (min and max freqs, number of bins)      </li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>tones_bindist: <code>n_bins x 1</code> vector in Hz which contains the values in <code>tones</code>
+placed into the appropriate bin (values are averaged if multiple fit into the same bin)
+and the bin center frequency in all bins for which there was no value in <code>tones</code>.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../stimgen/AbstractBinnedStimulusGenerationMethod/#get_freq_bins">AbstractBinnedStimulusGenerationMethod.get_freq_bins</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="update_hashes">update_hashes<a class="headerlink" href="#update_hashes" title="Permanent link">&para;</a></h3>
+<p>Updates data files that match an old hash to a new hash.
+Ordinarily this is <em>not</em> something that you want to do.
+However, there are some situations where the config spec
+changed or something was mislabeled
+and so the config hash does not match
+the hashes in the data file names.
+This function re-aligns the data to the config
+by updating the hashes.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li>new_hash: character vector</li>
+<li>old_hash: character vector</li>
+<li>data_dir: character vector
+pointing to the directory where the data files are stored.</li>
+</ul>
+<p><strong>Outputs:</strong></p>
+<ul>
+<li>None</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="./#collect_data">collect_data</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="view_table">view_table<a class="headerlink" href="#view_table" title="Permanent link">&para;</a></h3>
+<p>Filters data table from <code>pilot_reconstructions.m</code>
+and generates a figure with a uitable for easy viewing.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li>T: <code>table</code> generated by pilot_reconstructions</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>1 figure</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="../scripts/#pilot_reconstructions">pilot_reconstructions</a></li>
+</ul>
+</div>
+<hr />
+<h3 id="waitforkeypress">waitforkeypress<a class="headerlink" href="#waitforkeypress" title="Permanent link">&para;</a></h3>
+<p>Wait for a keypress, ignoring mouse clicks.
+Returns 1 when a key is pressed.
+Returns -1 when the function encounters an error
+which usually happens when the figure is deleted.</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>verbose: <code>bool</code>, default: true</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>k: <code>1 x 1</code> scalar,
+<code>1</code> when a key is pressed, <code>-1</code> if an error occurs</li>
+</ul>
+<hr />
+<h3 id="wav2spect">wav2spect<a class="headerlink" href="#wav2spect" title="Permanent link">&para;</a></h3>
+<p>Reads an audio file (e.g., a .wav file) and returns a spectrum
+in terms of magnitudes, s (in dB), and frequencies, f (in Hz).</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>audio_file: <code>char</code>, path to the audio file.</li>
+<li>duration: <code>1x1</code> scalar, default: 0.5,
+the duration to crop the audio file to in seconds.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>s: The spectrum in dB</li>
+<li>f: The associated frequencies in Hz.</li>
+</ul>
+<hr />
+<h3 id="white_noise">white_noise<a class="headerlink" href="#white_noise" title="Permanent link">&para;</a></h3>
+<p>Generate a white noise waveform of specified length</p>
+<p><strong>ARGUMENTS:</strong></p>
+<ul>
+<li>dur: <code>1 x 1</code> positive scalar,
+the duration of the waveform in seconds.</li>
+<li>Fs: <code>1 x 1</code> positive scalar, default: 44100
+The sampling rate in Hz.</li>
+</ul>
+<p><strong>OUTPUTS:</strong></p>
+<ul>
+<li>wav: <code>n x 1</code> numerical vector, where <code>n</code> is dur*Fs, 
+the white noise waveform.</li>
+</ul>
+<hr />
+<h3 id="zhangpassivegamma">zhangpassivegamma<a class="headerlink" href="#zhangpassivegamma" title="Permanent link">&para;</a></h3>
+<p>Passive algorithm for 1-bit compressed sensing with no basis.</p>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<ul>
+<li>Zhang, L., Yi, J. and Jin, R., 2014, June. Efficient algorithms for robust one-bit compressive sensing. In <em>International Conference on Machine Learning</em> (pp. 820-828). PMLR.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
